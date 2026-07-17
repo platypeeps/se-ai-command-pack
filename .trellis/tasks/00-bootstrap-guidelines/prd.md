@@ -14,7 +14,7 @@ listed in per-task jsonl manifests. Empty spec = sub-agents write generic
 code. Real spec = sub-agents match the team's actual patterns.
 
 Don't dump instructions. Open with a short greeting, figure out if the repo
-has any existing convention docs (CLAUDE.md, .cursorrules, etc.), and drive
+has any existing tool-specific convention docs, and drive
 the rest conversationally.
 
 ---
@@ -57,7 +57,7 @@ usually much faster than documenting from scratch.
 
 | File / Directory | Tool |
 |------|------|
-| `CLAUDE.md` / `CLAUDE.local.md` | Claude Code |
+| Claude Code project instructions (when present) | Claude Code |
 | `AGENTS.md` | Codex / Claude Code / agent-compatible tools |
 | `.cursorrules` | Cursor |
 | `.cursor/rules/*.mdc` | Cursor (rules directory) |
@@ -122,5 +122,5 @@ After archive, every new developer who joins this project will get a
 "Welcome to Trellis! Your init just set me up to help you fill the project
 spec — a one-time setup so every future AI session follows the team's
 conventions instead of writing generic code. Before we start, do you have
-any existing convention docs (CLAUDE.md, .cursorrules, CONTRIBUTING.md,
-etc.) I can pull from, or should I scan the codebase from scratch?"
+any existing tool-specific convention docs or a CONTRIBUTING.md file I can
+pull from, or should I scan the codebase from scratch?"
