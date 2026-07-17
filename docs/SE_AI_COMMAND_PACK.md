@@ -123,5 +123,5 @@ prefix is reserved; document any future variable here.
   `sourceRoot` points at a moved/deleted clone. Re-run `install.py --user`
   from the checkout's new location to refresh the receipts.
 - **Remove preserved files you wanted gone** — they drifted from the
-  installed version; re-run with `remove --force` after reviewing the
-  list.
+  installed version; re-run with `python3 install.py remove --user --force`
+  after reviewing the list.

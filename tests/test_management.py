@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 from unittest import mock
 
 from install_test_support import (
+    PACK_ROOT,
     TempDirTestCase,
     install_ok,
     make_home,
@@ -20,10 +22,13 @@ class StatusCommandTest(TempDirTestCase):
     def test_status_reports_install_checkout_and_platforms(self) -> None:
         home = make_home(self.base)
         install_ok("--root", str(home))
+        expected_version = json.loads(
+            (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )["version"]
 
         result = install_ok("status", "--root", str(home))
 
-        self.assertIn("se-ai-command-pack 0.2.0", result.stdout)
+        self.assertIn(f"se-ai-command-pack {expected_version}", result.stdout)
         self.assertIn("platforms: agents, claude, codex", result.stdout)
         self.assertIn("installed version matches", result.stdout)
 

@@ -88,7 +88,8 @@ python3 install.py remove --user
 
 Removal is vouched: a file is deleted only when its content matches the
 recorded install hash or the current template. Files you have edited are
-preserved and reported; `remove --force` deletes them too. Empty parent
+preserved and reported; `python3 install.py remove --user --force` deletes
+them too. Empty parent
 directories are pruned.
 
 ## How it works
