@@ -1,4 +1,4 @@
-# Journal - Sven Delmas (Part 1)
+# Journal - sdelmas (Part 1)
 
 > AI development session journal
 > Started: 2026-07-17

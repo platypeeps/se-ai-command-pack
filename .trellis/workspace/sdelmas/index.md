@@ -1,4 +1,4 @@
-# Workspace Index - Sven Delmas
+# Workspace Index - sdelmas
 
 > Journal tracking for AI development sessions.
 
