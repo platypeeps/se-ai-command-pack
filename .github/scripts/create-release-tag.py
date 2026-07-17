@@ -45,8 +45,29 @@ def main(argv: list[str] | None = None) -> int:
         return 1
     tag = f"v{version}"
 
-    existing = run_git(repo, "rev-parse", "--verify", f"refs/tags/{tag}")
-    if existing.returncode == 0:
+    # CI checkouts are shallow and tag-less, so a local ref check alone
+    # would recreate an existing release tag at the new HEAD and fail on
+    # push. When pushing, the remote is the authority.
+    if args.push:
+        remote = run_git(
+            repo, "ls-remote", "--exit-code", "--tags", "origin",
+            f"refs/tags/{tag}",
+        )
+        if remote.returncode == 0:
+            print(f"tag {tag} already exists on origin; leaving it in place")
+            return 0
+        if remote.returncode != 2:
+            print(
+                f"error: cannot query origin for tag {tag}: "
+                f"{remote.stderr.strip()}",
+                file=sys.stderr,
+            )
+            return 1
+
+    existing_locally = (
+        run_git(repo, "rev-parse", "--verify", f"refs/tags/{tag}").returncode == 0
+    )
+    if existing_locally and not args.push:
         print(f"tag {tag} already exists; leaving it in place")
         return 0
 
@@ -54,12 +75,13 @@ def main(argv: list[str] | None = None) -> int:
         print(f"would create tag {tag} at HEAD" + (" and push" if args.push else ""))
         return 0
 
-    created = run_git(repo, "tag", tag, "HEAD")
-    if created.returncode != 0:
-        print(f"error: cannot create tag {tag}: {created.stderr.strip()}",
-              file=sys.stderr)
-        return 1
-    print(f"created tag {tag} at HEAD")
+    if not existing_locally:
+        created = run_git(repo, "tag", tag, "HEAD")
+        if created.returncode != 0:
+            print(f"error: cannot create tag {tag}: {created.stderr.strip()}",
+                  file=sys.stderr)
+            return 1
+        print(f"created tag {tag} at HEAD")
     if args.push:
         pushed = run_git(repo, "push", "origin", tag)
         if pushed.returncode != 0:

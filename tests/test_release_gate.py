@@ -157,6 +157,26 @@ class ReleaseTagTest(TempDirTestCase):
         )
         return set(result.stdout.split())
 
+    def add_bare_origin(self) -> Path:
+        origin = self.base / "origin.git"
+        subprocess.run(
+            ["git", "init", "--bare", str(origin)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        git(self.repo, "remote", "add", "origin", str(origin))
+        return origin
+
+    def remote_tags(self, origin: Path) -> set[str]:
+        result = subprocess.run(
+            ["git", "-C", str(origin), "tag"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return set(result.stdout.split())
+
     def test_creates_tag_once(self) -> None:
         result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
         self.assertEqual(result.returncode, 0, result.stderr)
@@ -168,6 +188,32 @@ class ReleaseTagTest(TempDirTestCase):
     def test_dry_run_creates_nothing(self) -> None:
         result = run_script(TAG_SCRIPT, "--repo", str(self.repo), "--dry-run")
         self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.tags(), set())
+
+    def test_push_creates_and_pushes(self) -> None:
+        origin = self.add_bare_origin()
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo), "--push")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.tags(), {"v1.0.0"})
+        self.assertEqual(self.remote_tags(origin), {"v1.0.0"})
+
+    def test_push_respects_remote_tag_missing_locally(self) -> None:
+        # The CI situation: the release tag exists on origin, but the
+        # runner's checkout has no tags. The script must not recreate it.
+        origin = self.add_bare_origin()
+        git(self.repo, "tag", "v1.0.0")
+        git(self.repo, "push", "origin", "v1.0.0")
+        git(self.repo, "tag", "-d", "v1.0.0")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo), "--push")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("already exists on origin", result.stdout)
+        self.assertEqual(self.tags(), set())
+        self.assertEqual(self.remote_tags(origin), {"v1.0.0"})
+
+    def test_push_without_origin_fails_cleanly(self) -> None:
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo), "--push")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("cannot query origin", result.stderr)
         self.assertEqual(self.tags(), set())
 
 
