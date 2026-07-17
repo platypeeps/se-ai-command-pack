@@ -1,0 +1,393 @@
+#!/usr/bin/env python3
+"""Generate the committed manifest rows from the registry skill list.
+
+`installer/registry.py` (SKILL_NAMES, PLATFORM_REGISTRY, SHARED_REFERENCES)
+is the source of truth. The generator validates every canonical skill under
+templates/skills/<name>/ (frontmatter shape, required body sections,
+framework-neutral wording) and regenerates manifest.json's files array: one
+row per (skill file x platform), plus shared-reference fan-out rows so each
+installed skill dir is self-contained. Manifest header fields are preserved
+verbatim; only the files array is derived.
+
+--check regenerates to memory and fails when the committed manifest drifts.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+PACK_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(PACK_ROOT))
+
+from installer.registry import (  # noqa: E402
+    IF_ANCHOR_EXISTS,
+    PACK_NAME,
+    PLATFORM_REGISTRY,
+    ROOT,
+    SHARED_REFERENCES,
+    SKILL_NAMES,
+    SKILL_PREFIX,
+    TEMPLATES_SKILLS_DIR,
+    USER_SCOPE,
+)
+
+MANIFEST_PATH = ROOT / "manifest.json"
+SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
+SHARED_DIR_NAME = "_shared"
+
+REQUIRED_SECTIONS = (
+    "## When to use",
+    "## Arguments",
+    "## Workflow",
+    "## Safety rules",
+    "## Final report",
+)
+
+ALLOWED_FRONTMATTER_KEYS = ("name", "description")
+DESCRIPTION_PREFIX = "Use when"
+DESCRIPTION_MAX_LENGTH = 1024
+
+# Canonical bodies speak in capabilities ("your web search tooling"), not
+# tool brand names, so one skill text serves every platform. Lowercase
+# dotted paths like `.claude/skills` are allowed; brand words are not.
+BANNED_PHRASE_PATTERN = re.compile(
+    r"\b(Claude|Cowork|Codex|Copilot|Gemini|ChatGPT|OpenAI|Anthropic|Amp)\b"
+)
+
+DEFAULT_MANIFEST_HEADER = {
+    "schemaVersion": 1,
+    "name": PACK_NAME,
+    "version": "0.1.0",
+    "license": "MIT",
+    "description": (
+        "Install user-level knowledge-work skills (research, briefs, "
+        "meeting prep, scans, digests) into agent skill directories."
+    ),
+}
+HEADER_FIELDS = tuple(DEFAULT_MANIFEST_HEADER)
+
+
+class GenerationError(Exception):
+    """Raised for any validation or drift failure; no partial writes."""
+
+
+def _display(path: Path) -> str:
+    """Repo-relative label when possible; sandboxed test trees fall back
+    to the absolute path."""
+    try:
+        return path.relative_to(ROOT).as_posix()
+    except ValueError:
+        return path.as_posix()
+
+
+def parse_frontmatter(text: str, label: str) -> tuple[dict, str]:
+    if not text.startswith("---\n"):
+        raise GenerationError(f"{label}: missing YAML frontmatter opening '---'")
+    end = text.find("\n---\n", len("---\n") - 1)
+    if end == -1:
+        raise GenerationError(f"{label}: missing YAML frontmatter closing '---'")
+    raw = text[len("---\n") : end + 1]
+    body = text[end + len("\n---\n") :]
+    import yaml
+
+    try:
+        data = yaml.safe_load(raw)
+    except yaml.YAMLError as error:
+        raise GenerationError(f"{label}: invalid frontmatter YAML ({error})") from None
+    if not isinstance(data, dict):
+        raise GenerationError(f"{label}: frontmatter must be a YAML mapping")
+    return data, body
+
+
+def validate_skill(name: str) -> list[str]:
+    errors: list[str] = []
+    skill_dir = SKILLS_ROOT / name
+    skill_md = skill_dir / "SKILL.md"
+    label = _display(skill_md)
+    if not skill_md.is_file():
+        return [f"{label}: missing canonical SKILL.md"]
+    text = skill_md.read_text(encoding="utf-8")
+    try:
+        frontmatter, body = parse_frontmatter(text, label)
+    except GenerationError as error:
+        return [str(error)]
+
+    extra_keys = sorted(set(frontmatter) - set(ALLOWED_FRONTMATTER_KEYS))
+    if extra_keys:
+        errors.append(
+            f"{label}: frontmatter keys {extra_keys} are not allowed "
+            f"(allowed: {', '.join(ALLOWED_FRONTMATTER_KEYS)})"
+        )
+    if frontmatter.get("name") != name:
+        errors.append(
+            f"{label}: frontmatter name {frontmatter.get('name')!r} must equal "
+            f"the skill directory name {name!r}"
+        )
+    description = frontmatter.get("description")
+    if not isinstance(description, str) or not description.strip():
+        errors.append(f"{label}: frontmatter description is missing or empty")
+    else:
+        if not description.startswith(DESCRIPTION_PREFIX):
+            errors.append(
+                f"{label}: description must start with {DESCRIPTION_PREFIX!r}"
+            )
+        if '"' in description:
+            errors.append(f"{label}: description must not contain double quotes")
+        if "\n" in description.strip():
+            errors.append(f"{label}: description must be a single line")
+        if len(description) > DESCRIPTION_MAX_LENGTH:
+            errors.append(
+                f"{label}: description exceeds {DESCRIPTION_MAX_LENGTH} characters"
+            )
+
+    if not text.endswith("\n"):
+        errors.append(f"{label}: file must end with a newline")
+    if not body.lstrip("\n").startswith("# "):
+        errors.append(f"{label}: body must open with an H1 title")
+    last_index = -1
+    for section in REQUIRED_SECTIONS:
+        index = body.find(f"\n{section}\n")
+        if index == -1:
+            errors.append(f"{label}: missing required section {section!r}")
+            continue
+        if index < last_index:
+            errors.append(f"{label}: section {section!r} is out of order")
+        last_index = index
+
+    banned = sorted({match.group(0) for match in BANNED_PHRASE_PATTERN.finditer(text)})
+    if banned:
+        errors.append(
+            f"{label}: framework-neutrality lint: replace brand names {banned} "
+            "with capability phrasing (e.g. 'your web search tooling')"
+        )
+
+    for path in sorted(skill_dir.rglob("*")):
+        if path.is_dir():
+            if path.relative_to(skill_dir).as_posix() != "references":
+                errors.append(
+                    f"{label}: unexpected directory "
+                    f"{path.relative_to(skill_dir).as_posix()}/ (only references/ "
+                    "is shipped in this pack version)"
+                )
+            continue
+        relative = path.relative_to(skill_dir).as_posix()
+        if relative == "SKILL.md":
+            continue
+        if not relative.startswith("references/") or path.suffix != ".md":
+            errors.append(
+                f"{label}: unexpected file {relative} (only SKILL.md and "
+                "references/*.md are shipped in this pack version)"
+            )
+    return errors
+
+
+def validate_skills() -> None:
+    errors: list[str] = []
+    if not SKILLS_ROOT.is_dir():
+        raise GenerationError(f"missing skills root {SKILLS_ROOT}")
+    actual = sorted(
+        entry.name
+        for entry in SKILLS_ROOT.iterdir()
+        if entry.is_dir() and entry.name != SHARED_DIR_NAME
+    )
+    registered = sorted(SKILL_NAMES)
+    missing_dirs = sorted(set(registered) - set(actual))
+    unregistered = sorted(set(actual) - set(registered))
+    for name in missing_dirs:
+        errors.append(
+            f"registry skill {name} has no directory under {TEMPLATES_SKILLS_DIR}/"
+        )
+    for name in unregistered:
+        errors.append(
+            f"{TEMPLATES_SKILLS_DIR}/{name}/ is not registered in "
+            "installer/registry.py SKILL_NAMES"
+        )
+        if not name.startswith(SKILL_PREFIX):
+            errors.append(
+                f"{TEMPLATES_SKILLS_DIR}/{name}/ is missing the "
+                f"{SKILL_PREFIX} prefix"
+            )
+
+    for name in SKILL_NAMES:
+        if name in missing_dirs:
+            continue
+        errors.extend(validate_skill(name))
+
+    shared_dir = SKILLS_ROOT / SHARED_DIR_NAME
+    shared_sources = set(SHARED_REFERENCES)
+    if shared_dir.is_dir():
+        for path in sorted(shared_dir.rglob("*")):
+            if path.is_dir():
+                continue
+            relative = path.relative_to(SKILLS_ROOT).as_posix()
+            if relative not in shared_sources:
+                errors.append(
+                    f"{TEMPLATES_SKILLS_DIR}/{relative} is not registered in "
+                    "installer/registry.py SHARED_REFERENCES"
+                )
+    for source, consumers in SHARED_REFERENCES.items():
+        source_path = SKILLS_ROOT / source
+        if not source_path.is_file():
+            errors.append(f"missing shared reference {TEMPLATES_SKILLS_DIR}/{source}")
+            continue
+        basename = source_path.name
+        for consumer in consumers:
+            own_copy = SKILLS_ROOT / consumer / "references" / basename
+            if own_copy.exists():
+                errors.append(
+                    f"{TEMPLATES_SKILLS_DIR}/{consumer}/references/{basename} "
+                    f"collides with the shared reference fan-out of {source}"
+                )
+
+    if errors:
+        raise GenerationError(
+            "skill validation failed:\n" + "\n".join(f"- {error}" for error in errors)
+        )
+
+
+def skill_payload_files(name: str) -> list[str]:
+    """Per-skill shipped file list: SKILL.md first, then sorted references."""
+    skill_dir = SKILLS_ROOT / name
+    references_dir = skill_dir / "references"
+    references: list[str] = []
+    if references_dir.is_dir():
+        references = sorted(
+            path.relative_to(skill_dir).as_posix()
+            for path in references_dir.rglob("*.md")
+            if path.is_file()
+        )
+    return ["SKILL.md", *references]
+
+
+def build_rows() -> list[dict]:
+    rows: list[dict] = []
+    for name in SKILL_NAMES:
+        payload = skill_payload_files(name)
+        shared = [
+            source
+            for source, consumers in SHARED_REFERENCES.items()
+            if name in consumers
+        ]
+        for platform in sorted(PLATFORM_REGISTRY):
+            info = PLATFORM_REGISTRY[platform]
+            for relative in payload:
+                rows.append(
+                    {
+                        "platform": platform,
+                        "kind": "skill",
+                        "scope": USER_SCOPE,
+                        "source": f"{TEMPLATES_SKILLS_DIR}/{name}/{relative}",
+                        "target": f"{info.skills_dir}/{name}/{relative}",
+                        "anchor": info.anchor,
+                        "install": IF_ANCHOR_EXISTS,
+                    }
+                )
+            for source in shared:
+                basename = Path(source).name
+                rows.append(
+                    {
+                        "platform": platform,
+                        "kind": "skill",
+                        "scope": USER_SCOPE,
+                        "source": f"{TEMPLATES_SKILLS_DIR}/{source}",
+                        "target": f"{info.skills_dir}/{name}/references/{basename}",
+                        "anchor": info.anchor,
+                        "install": IF_ANCHOR_EXISTS,
+                    }
+                )
+
+    seen: dict[str, str] = {}
+    for row in rows:
+        key = row["target"].casefold()
+        if key in seen:
+            raise GenerationError(
+                f"duplicate manifest target {row['target']} "
+                f"(also produced as {seen[key]})"
+            )
+        seen[key] = row["target"]
+    return rows
+
+
+def is_derived_row(row: dict) -> bool:
+    return str(row.get("source", "")).startswith(f"{TEMPLATES_SKILLS_DIR}/")
+
+
+def regenerated_manifest_text() -> str:
+    if MANIFEST_PATH.is_file():
+        try:
+            current = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            raise GenerationError(f"cannot read manifest.json: {error}") from None
+        if not isinstance(current, dict):
+            raise GenerationError("manifest.json must be a JSON object")
+    else:
+        current = dict(DEFAULT_MANIFEST_HEADER)
+
+    manifest: dict = {}
+    for field in HEADER_FIELDS:
+        manifest[field] = current.get(field, DEFAULT_MANIFEST_HEADER[field])
+    unknown_header_fields = sorted(set(current) - {*HEADER_FIELDS, "files"})
+    if unknown_header_fields:
+        raise GenerationError(
+            f"manifest.json has unknown header fields {unknown_header_fields}; "
+            "extend the generator before adding header fields"
+        )
+
+    existing_files = current.get("files", [])
+    if not isinstance(existing_files, list):
+        raise GenerationError("manifest.json 'files' must be an array")
+    static_rows = [
+        row
+        for row in existing_files
+        if isinstance(row, dict) and not is_derived_row(row)
+    ]
+    manifest["files"] = [*static_rows, *build_rows()]
+    return json.dumps(manifest, indent=2) + "\n"
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        description="Validate canonical skills and regenerate manifest.json rows."
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Fail when the committed manifest drifts from the regenerated one.",
+    )
+    args = parser.parse_args(argv if argv is not None else sys.argv[1:])
+
+    try:
+        validate_skills()
+        regenerated = regenerated_manifest_text()
+    except GenerationError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+
+    committed = (
+        MANIFEST_PATH.read_text(encoding="utf-8") if MANIFEST_PATH.is_file() else None
+    )
+    if args.check:
+        if committed != regenerated:
+            print(
+                "error: manifest.json drifts from the generated surfaces; "
+                "run `make generate` and commit the result",
+                file=sys.stderr,
+            )
+            return 1
+        print("manifest.json matches the generated surfaces")
+        return 0
+
+    if committed == regenerated:
+        print("manifest.json unchanged")
+        return 0
+    MANIFEST_PATH.write_text(regenerated, encoding="utf-8")
+    print(f"wrote {_display(MANIFEST_PATH)}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,5 @@
+# The test suite uses stdlib unittest plus PyYAML for skill frontmatter parsing.
+# Ruff and mypy provide the CI lint lane.
+PyYAML==6.0.3
+ruff==0.15.21
+mypy==2.3.0
