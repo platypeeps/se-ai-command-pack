@@ -106,22 +106,34 @@ def _source_checkout(root: Path) -> Path:
     return source_root
 
 
-def _run_git(source_root: Path, *args: str, capture: bool = False) -> str:
+def _run_git(source_root: Path, *args: str) -> str:
     result = subprocess.run(
         ["git", "-C", str(source_root), *args],
         text=True,
-        capture_output=capture,
+        capture_output=True,
         check=False,
     )
     if result.returncode != 0:
-        detail = result.stderr.strip() if capture else ""
+        detail = (result.stderr or result.stdout).strip()
         suffix = f": {detail}" if detail else ""
         raise SystemExit(f"error: git {' '.join(args)} failed{suffix}")
-    return result.stdout.strip() if capture else ""
+    return result.stdout.strip()
 
 
-def _installer_args(root: Path, *, dry_run: bool, force: bool, backup: bool) -> list[str]:
+def _installer_args(
+    root: Path,
+    *,
+    dry_run: bool,
+    force: bool,
+    backup: bool,
+    platforms: list[str] | None,
+    install_all: bool,
+) -> list[str]:
     args = ["refresh", "--root", str(root)]
+    for platform in platforms or []:
+        args.extend(("--platform", platform))
+    if install_all:
+        args.append("--all")
     if dry_run:
         args.append("--dry-run")
     if force:
@@ -137,10 +149,12 @@ def update_pack(
     dry_run: bool,
     force: bool,
     backup: bool,
+    platforms: list[str] | None,
+    install_all: bool,
 ) -> int:
     """Fast-forward the recorded checkout and refresh with a new process."""
     source_root = _source_checkout(root)
-    dirty = _run_git(source_root, "status", "--porcelain", capture=True)
+    dirty = _run_git(source_root, "status", "--porcelain")
     if dirty:
         raise SystemExit(
             f"error: recorded source checkout has uncommitted changes: {source_root}"
@@ -154,7 +168,6 @@ def update_pack(
             "--left-right",
             "--count",
             "HEAD...@{upstream}",
-            capture=True,
         )
         print(f"update plan: checkout {source_root}")
         print(f"git divergence (local remote): {relation.replace(chr(9), ' ')}")
@@ -163,7 +176,12 @@ def update_pack(
                 sys.executable,
                 str(source_root / "install.py"),
                 *_installer_args(
-                    root, dry_run=True, force=force, backup=backup
+                    root,
+                    dry_run=True,
+                    force=force,
+                    backup=backup,
+                    platforms=platforms,
+                    install_all=install_all,
                 ),
             ],
             check=False,
@@ -175,7 +193,14 @@ def update_pack(
         [
             sys.executable,
             installer,
-            *_installer_args(root, dry_run=True, force=force, backup=backup),
+            *_installer_args(
+                root,
+                dry_run=True,
+                force=force,
+                backup=backup,
+                platforms=platforms,
+                install_all=install_all,
+            ),
         ],
         check=False,
     )
@@ -185,7 +210,14 @@ def update_pack(
         [
             sys.executable,
             installer,
-            *_installer_args(root, dry_run=False, force=force, backup=backup),
+            *_installer_args(
+                root,
+                dry_run=False,
+                force=force,
+                backup=backup,
+                platforms=platforms,
+                install_all=install_all,
+            ),
         ],
         check=False,
     ).returncode

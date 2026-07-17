@@ -309,9 +309,6 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     root = resolve_install_root(args)
-    manifest_data, files = load_manifest()
-    validate_manifest(files)
-    preflight_checks(root, manifest_data)
 
     if command == "status":
         return pack_status(root)
@@ -322,7 +319,13 @@ def main(argv: list[str] | None = None) -> int:
             dry_run=args.dry_run,
             force=args.force,
             backup=args.backup,
+            platforms=args.platform,
+            install_all=args.all,
         )
+
+    manifest_data, files = load_manifest()
+    validate_manifest(files)
+    preflight_checks(root, manifest_data)
 
     if command == "remove":
         return remove_installed_pack(

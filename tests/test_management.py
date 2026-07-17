@@ -12,7 +12,8 @@ from install_test_support import (
     run_installer,
 )
 
-from installer.management import update_pack
+from install import main
+from installer.management import _run_git, update_pack
 
 
 class StatusCommandTest(TempDirTestCase):
@@ -31,6 +32,16 @@ class StatusCommandTest(TempDirTestCase):
         result = run_installer("status", "--root", str(home))
         self.assertEqual(result.returncode, 1)
         self.assertIn("not installed", result.stdout)
+
+    @mock.patch("install.load_manifest", side_effect=AssertionError)
+    def test_status_does_not_load_checkout_manifest(
+        self, load_manifest: mock.Mock
+    ) -> None:
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+
+        self.assertEqual(main(["status", "--root", str(home)]), 0)
+        load_manifest.assert_not_called()
 
 
 class LifecycleCompatibilityTest(TempDirTestCase):
@@ -60,6 +71,27 @@ class UpdateCommandTest(TempDirTestCase):
         install_ok("--root", str(home))
         return home
 
+    @mock.patch("install.update_pack", return_value=0)
+    def test_cli_forwards_platform_selection(self, update: mock.Mock) -> None:
+        home = self._installed_home()
+
+        result = main(
+            ["update", "--root", str(home), "--platform", "codex", "--all"]
+        )
+
+        self.assertEqual(result, 0)
+        self.assertEqual(update.call_args.kwargs["platforms"], ["codex"])
+        self.assertTrue(update.call_args.kwargs["install_all"])
+
+    @mock.patch("installer.management.subprocess.run")
+    def test_git_failure_includes_stderr(self, run_process: mock.Mock) -> None:
+        run_process.return_value = subprocess.CompletedProcess(
+            [], 1, stdout="", stderr="no upstream configured\n"
+        )
+
+        with self.assertRaisesRegex(SystemExit, "no upstream configured"):
+            _run_git(self.base, "pull", "--ff-only")
+
     def test_update_dry_run_fetches_and_plans_only(self) -> None:
         home = self._installed_home()
         with (
@@ -70,7 +102,12 @@ class UpdateCommandTest(TempDirTestCase):
             run_process.return_value = subprocess.CompletedProcess([], 0)
 
             result = update_pack(
-                home, dry_run=True, force=False, backup=False
+                home,
+                dry_run=True,
+                force=False,
+                backup=False,
+                platforms=["codex"],
+                install_all=False,
             )
 
         self.assertEqual(result, 0)
@@ -78,6 +115,8 @@ class UpdateCommandTest(TempDirTestCase):
         self.assertEqual(run_git.call_args_list[1].args[1:], ("fetch", "--quiet"))
         self.assertEqual(run_process.call_count, 1)
         self.assertIn("--dry-run", run_process.call_args.args[0])
+        self.assertIn("--platform", run_process.call_args.args[0])
+        self.assertIn("codex", run_process.call_args.args[0])
 
     def test_update_applies_with_fresh_process_after_ff_only_pull(self) -> None:
         home = self._installed_home()
@@ -92,7 +131,12 @@ class UpdateCommandTest(TempDirTestCase):
             ]
 
             result = update_pack(
-                home, dry_run=False, force=False, backup=False
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
             )
 
         self.assertEqual(result, 0)
@@ -100,6 +144,8 @@ class UpdateCommandTest(TempDirTestCase):
         self.assertEqual(run_process.call_count, 2)
         self.assertIn("--dry-run", run_process.call_args_list[0].args[0])
         self.assertNotIn("--dry-run", run_process.call_args_list[1].args[0])
+        self.assertIn("--all", run_process.call_args_list[0].args[0])
+        self.assertIn("--all", run_process.call_args_list[1].args[0])
 
     @mock.patch("installer.management._run_git")
     def test_update_refuses_dirty_checkout(self, run_git: mock.Mock) -> None:
@@ -107,7 +153,14 @@ class UpdateCommandTest(TempDirTestCase):
         run_git.return_value = " M install.py"
 
         with self.assertRaisesRegex(SystemExit, "uncommitted changes"):
-            update_pack(home, dry_run=False, force=False, backup=False)
+            update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=False,
+            )
 
 
 if __name__ == "__main__":
