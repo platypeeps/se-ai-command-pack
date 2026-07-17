@@ -16,6 +16,7 @@ from installer.fileops import (
     install_file,
     selected_files,
 )
+from installer.management import pack_status, update_pack
 from installer.manifest import (
     PackFile,
     load_manifest,
@@ -71,6 +72,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action=ManifestVersionAction,
         help="Print the se-ai-command-pack version and exit.",
     )
+    parser.add_argument(
+        "command",
+        nargs="?",
+        choices=("install", "status", "refresh", "update", "remove"),
+        default="install",
+        help=(
+            "Lifecycle command. Bare invocation remains an install/refresh "
+            "for backward compatibility."
+        ),
+    )
     root_group = parser.add_mutually_exclusive_group()
     root_group.add_argument(
         "--user",
@@ -102,16 +113,6 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         ),
     )
     parser.add_argument(
-        "--remove",
-        action="store_true",
-        help=(
-            "Remove this pack from the install root. By default this deletes "
-            "vouched or template-identical pack files while preserving "
-            "drifted or user-owned files; add --force to delete drifted "
-            "pack files too."
-        ),
-    )
-    parser.add_argument(
         "--force",
         action="store_true",
         help=(
@@ -123,7 +124,7 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         "--backup",
         action="store_true",
         help=(
-            "With --force or --remove, save a .bak copy next to each "
+            "With --force or the remove command, save a .bak copy next to each "
             "overwritten or deleted file before changing it."
         ),
     )
@@ -301,15 +302,29 @@ def _print_install_summary(
 
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv if argv is not None else sys.argv[1:])
-    if args.backup and not args.force and not args.remove:
-        raise SystemExit("error: --backup requires --force unless --remove is set")
+    command = args.command
+    if args.backup and not args.force and command != "remove":
+        raise SystemExit(
+            "error: --backup requires --force unless the remove command is used"
+        )
 
     root = resolve_install_root(args)
     manifest_data, files = load_manifest()
     validate_manifest(files)
     preflight_checks(root, manifest_data)
 
-    if args.remove:
+    if command == "status":
+        return pack_status(root)
+
+    if command == "update":
+        return update_pack(
+            root,
+            dry_run=args.dry_run,
+            force=args.force,
+            backup=args.backup,
+        )
+
+    if command == "remove":
         return remove_installed_pack(
             manifest_data,
             files,

@@ -57,7 +57,6 @@ SKILL_NAMES: tuple[str, ...] = (
     "se-meeting-prep",
     "se-scan",
     "se-digest",
-    "se-pack",
 )
 
 # Shared reference source (relative to templates/skills/) -> consuming skills.

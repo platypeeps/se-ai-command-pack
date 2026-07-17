@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills (research, briefs, meeting prep, scans, digests) into agent skill directories.",
   "files": [
@@ -299,33 +299,6 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-digest/references/source-standards.md",
-      "anchor": ".codex",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "agents",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-pack/SKILL.md",
-      "target": ".config/agents/skills/se-pack/SKILL.md",
-      "anchor": ".config/agents",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "claude",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-pack/SKILL.md",
-      "target": ".claude/skills/se-pack/SKILL.md",
-      "anchor": ".claude",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "codex",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-pack/SKILL.md",
-      "target": ".codex/skills/se-pack/SKILL.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     }

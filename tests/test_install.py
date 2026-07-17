@@ -130,6 +130,11 @@ class ModesAndFlagsTest(TempDirTestCase):
             f"se-ai-command-pack {MANIFEST['version']}",
         )
 
+    def test_explicit_install_command(self) -> None:
+        home = make_home(self.base)
+        result = install_ok("install", "--root", str(home), "--dry-run")
+        self.assertIn("mode: dry-run", result.stdout)
+
     def test_missing_root_errors(self) -> None:
         result = run_installer("--root", str(self.base / "nope"))
         self.assertNotEqual(result.returncode, 0)
@@ -140,7 +145,7 @@ class ModesAndFlagsTest(TempDirTestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("pack source checkout", result.stderr)
 
-    def test_backup_requires_force_or_remove(self) -> None:
+    def test_backup_requires_force_or_remove_command(self) -> None:
         result = run_installer("--root", str(self.base), "--backup")
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("--backup requires --force", result.stderr)

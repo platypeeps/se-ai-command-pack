@@ -46,7 +46,11 @@ GENERATED_REMOVAL_TARGETS = frozenset(
 # scopes do not accumulate orphaned pack files. Retiring a skill means:
 # remove it from registry SKILL_NAMES, regenerate the manifest, and add the
 # paths the last shipping manifest listed for it here.
-RETIRED_TARGETS: tuple[str, ...] = ()
+RETIRED_TARGETS: tuple[str, ...] = (
+    ".config/agents/skills/se-pack/SKILL.md",
+    ".claude/skills/se-pack/SKILL.md",
+    ".codex/skills/se-pack/SKILL.md",
+)
 
 # remove_pack_file statuses renamed so the install summary reads as
 # retirement, not pack removal ("missing" is excluded on purpose: absent

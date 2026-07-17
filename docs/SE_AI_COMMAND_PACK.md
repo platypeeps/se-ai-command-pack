@@ -51,7 +51,7 @@ again with symlinks resolved at install time).
 | File | Contents |
 |---|---|
 | `manifest.json` | Verbatim copy of the installed manifest. |
-| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. `sourceRoot` is the checkout the install ran from — `se-pack` uses it to run updates. |
+| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
 | `installed-targets.txt` | Sorted list of every installed path, including the receipts. Entries for platforms skipped in a filtered run are kept so a later remove still covers them. |
 
 Removal vouching: a candidate (union of receipt + provenance entries, or
@@ -106,8 +106,7 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
 2. CI lanes: unittest (Linux/macOS), lint (ruff + mypy), release payload
    gate, aggregated in `ci-result`.
 3. On merge to `main`, CI tags `v<version>` if the tag does not exist.
-4. Machines pick the release up via `git pull && python3 install.py
-   --user`, or `se-pack action=update` from inside a session.
+4. Machines pick the release up via `python3 install.py update --user`.
 
 ## Configuration
 
@@ -120,9 +119,9 @@ prefix is reserved; document any future variable here.
   content. Inspect it; re-run with `--force` (and `--backup`) to overwrite.
 - **A platform is skipped** — its anchor directory does not exist. Pass
   `--platform <id>` or `--all`, or create the tool's directory.
-- **`se-pack` cannot find the checkout** — `provenance.json`'s
+- **The updater cannot find the checkout** — `provenance.json`'s
   `sourceRoot` points at a moved/deleted clone. Re-run `install.py --user`
   from the checkout's new location to refresh the receipts.
 - **Remove preserved files you wanted gone** — they drifted from the
-  installed version; re-run with `--remove --force` after reviewing the
+  installed version; re-run with `remove --force` after reviewing the
   list.

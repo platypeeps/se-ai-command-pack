@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import unittest
 
 from install_test_support import (
@@ -23,7 +25,7 @@ class RemoveTest(TempDirTestCase):
 
     def test_full_remove_restores_empty_root(self) -> None:
         home = self.installed_home()
-        result = install_ok("--root", str(home), "--remove")
+        result = install_ok("remove", "--root", str(home))
         self.assertIn("removed", result.stdout)
         self.assertEqual(tree_paths(home), set())
         # Anchor dirs that only ever held pack files are pruned too.
@@ -33,7 +35,7 @@ class RemoveTest(TempDirTestCase):
         home = self.installed_home()
         drifted = home / ".claude/skills/se-brief/SKILL.md"
         drifted.write_text("edited by user\n", encoding="utf-8")
-        result = install_ok("--root", str(home), "--remove")
+        result = install_ok("remove", "--root", str(home))
         self.assertIn("content differs from installed pack version", result.stdout)
         self.assertTrue(drifted.is_file())
         self.assertEqual(
@@ -44,13 +46,13 @@ class RemoveTest(TempDirTestCase):
         home = self.installed_home()
         drifted = home / ".claude/skills/se-brief/SKILL.md"
         drifted.write_text("edited by user\n", encoding="utf-8")
-        install_ok("--root", str(home), "--remove", "--force")
+        install_ok("remove", "--root", str(home), "--force")
         self.assertEqual(tree_paths(home), set())
 
     def test_dry_run_deletes_nothing(self) -> None:
         home = self.installed_home()
         before = tree_paths(home)
-        result = install_ok("--root", str(home), "--remove", "--dry-run")
+        result = install_ok("remove", "--root", str(home), "--dry-run")
         self.assertIn("would-remove", result.stdout)
         self.assertEqual(tree_paths(home), before)
 
@@ -64,7 +66,7 @@ class RemoveTest(TempDirTestCase):
             receipt.read_text(encoding="utf-8") + "Documents/keep-me.txt\n",
             encoding="utf-8",
         )
-        result = install_ok("--root", str(home), "--remove")
+        result = install_ok("remove", "--root", str(home))
         self.assertIn("not a recognized se-ai-command-pack target", result.stdout)
         self.assertTrue(stray.is_file())
 
@@ -78,25 +80,45 @@ class RemoveTest(TempDirTestCase):
             receipt.read_text(encoding="utf-8") + ".git/config\n",
             encoding="utf-8",
         )
-        result = install_ok("--root", str(home), "--remove", "--force")
+        result = install_ok("remove", "--root", str(home), "--force")
         self.assertIn("refusing to remove .git internals", result.stdout)
         self.assertTrue(git_file.is_file())
 
     def test_remove_works_from_provenance_when_receipt_missing(self) -> None:
         home = self.installed_home()
         (home / RECEIPT_FILE).unlink()
-        install_ok("--root", str(home), "--remove")
+        install_ok("remove", "--root", str(home))
         self.assertEqual(tree_paths(home), set())
 
     def test_remove_after_partial_install(self) -> None:
         home = make_home(self.base, anchors=("codex",))
         install_ok("--root", str(home))
-        install_ok("--root", str(home), "--remove")
+        install_ok("remove", "--root", str(home))
         self.assertEqual(tree_paths(home), set())
+
+    def test_refresh_retires_vouched_se_pack_skill(self) -> None:
+        home = self.installed_home()
+        retired = home / ".codex/skills/se-pack/SKILL.md"
+        retired.parent.mkdir(parents=True, exist_ok=True)
+        retired.write_text("retired pack skill\n", encoding="utf-8")
+        digest = hashlib.sha256(retired.read_bytes()).hexdigest()
+        provenance_path = home / ".se-ai-command-pack/provenance.json"
+        provenance = json.loads(provenance_path.read_text(encoding="utf-8"))
+        provenance["files"][".codex/skills/se-pack/SKILL.md"] = (
+            f"sha256:{digest}"
+        )
+        provenance_path.write_text(
+            json.dumps(provenance, indent=2) + "\n", encoding="utf-8"
+        )
+
+        result = install_ok("refresh", "--root", str(home))
+
+        self.assertIn("retired", result.stdout)
+        self.assertFalse(retired.exists())
 
     def test_backup_on_remove_keeps_bak_copies(self) -> None:
         home = self.installed_home()
-        result = install_ok("--root", str(home), "--remove", "--backup")
+        result = install_ok("remove", "--root", str(home), "--backup")
         self.assertIn("removed", result.stdout)
         remaining = tree_paths(home)
         self.assertTrue(remaining)
@@ -106,7 +128,7 @@ class RemoveTest(TempDirTestCase):
 
     def test_remove_missing_install_reports_missing(self) -> None:
         home = make_home(self.base)
-        result = install_ok("--root", str(home), "--remove")
+        result = install_ok("remove", "--root", str(home))
         self.assertIn("missing", result.stdout)
         self.assertEqual(tree_paths(home), set())
 
@@ -117,7 +139,7 @@ class RemoveTest(TempDirTestCase):
         real.write_bytes(target.read_bytes())
         target.unlink()
         target.symlink_to(real)
-        result = run_installer("--root", str(home), "--remove")
+        result = run_installer("remove", "--root", str(home))
         self.assertEqual(result.returncode, 0)
         self.assertIn("target is a symlink", result.stdout)
         self.assertTrue(target.is_symlink())
