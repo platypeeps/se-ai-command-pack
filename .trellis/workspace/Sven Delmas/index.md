@@ -1,4 +1,4 @@
-# Workspace Index - sdelmas
+# Workspace Index - Sven Delmas
 
 > Journal tracking for AI development sessions.
 
@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 0
-- **Last Active**: -
+- **Total Sessions**: 1
+- **Last Active**: 2026-07-17
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~0 | Active |
+| `journal-1.md` | ~44 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 1 | 2026-07-17 | Consolidate pack lifecycle in installer | `33a9b12`, `5d67e6f`, `aa610c1`, `485d9f9`, `a3d4d87` | `codex/consolidate-installer-lifecycle` |
 <!-- @@@/auto:session-history -->
 
 ---

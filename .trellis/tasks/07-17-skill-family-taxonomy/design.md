@@ -61,7 +61,8 @@ Document future per-platform commands only as thin, flat adapters such as
 ## Boundaries And Non-Goals
 
 - Do not move `templates/skills/se-*` into family directories.
-- Do not alter installed paths such as `.codex/skills/se-research/SKILL.md`.
+- Do not move sources such as `templates/skills/se-research/SKILL.md` or
+  change the existing flat installed layout.
 - Do not add family fields to generated manifest rows or bump the manifest
   schema.
 - Do not add `--family` installer selection.
