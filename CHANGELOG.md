@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 - 2026-07-17
+
+- Move pack lifecycle management into tested `install.py` commands:
+  `status`, `refresh`, `update`, and `remove`.
+- Preserve the convenient bare install and conventional `--version`
+  interfaces while making removal command-only.
+- Retire `se-pack`; normal refreshes remove its vouched installed copies now
+  that lifecycle management is owned entirely by the installer CLI.
+
 ## 0.1.0 - 2026-07-16
 
 - Initial release.

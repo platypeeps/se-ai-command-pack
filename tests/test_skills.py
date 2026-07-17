@@ -106,20 +106,6 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "references/verification-protocol.md", skill_text("se-research")
         )
 
-    def test_pack_skill_git_safety(self) -> None:
-        text = skill_text("se-pack")
-        self.assertIn("--ff-only", text)
-        self.assertIn("--dry-run", text)
-        self.assertIn("status --porcelain", text)
-        self.assertNotIn("reset --hard", text)
-        self.assertNotIn("git clean", text)
-
-    def test_pack_skill_dry_run_precedes_apply(self) -> None:
-        self.assertIn(
-            "Always run the installer with `--dry-run` first",
-            normalized("se-pack"),
-        )
-
     def test_brief_is_read_only(self) -> None:
         self.assertIn("read-only", normalized("se-brief"))
 

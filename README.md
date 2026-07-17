@@ -19,7 +19,6 @@ instead of per-repo adapters, and has no Trellis dependency.
 | `se-meeting-prep` | One-page dossier on meeting participants, company, and context, plus goal-aligned talking points and questions. |
 | `se-scan` | Competitive/market landscape scan: inventory the players, compare on consistent criteria, surface whitespace. |
 | `se-digest` | Synthesize user-supplied documents/threads/links into one decision-ready brief with disagreements surfaced. |
-| `se-pack` | Manage the pack itself from inside a session: status, update, refresh, remove. |
 
 Research-family skills share one quality bar: a `source-standards.md`
 reference (source tiers, independence, dating, confidence vocabulary) is
@@ -64,23 +63,33 @@ keep `.bak` copies).
 
 ```sh
 cd se-ai-command-pack
-git pull --ff-only
-python3 install.py --user
+python3 install.py update --user --dry-run
+python3 install.py update --user
 ```
 
-Or, from inside any session where the pack is installed, invoke `se-pack`
-with `action=update` — it locates the checkout via the install receipts,
-pulls fast-forward only, shows the dry-run plan, and reapplies.
+The update command locates the checkout through the install receipt, refuses
+a dirty worktree, pulls fast-forward only, previews the refreshed install,
+then reapplies it from a fresh Python process.
+
+Other lifecycle commands:
+
+```sh
+python3 install.py status --user
+python3 install.py refresh --user --dry-run
+python3 install.py refresh --user
+```
 
 ## Remove
 
 ```sh
-python3 install.py --remove            # add --dry-run to preview
+python3 install.py remove --user --dry-run
+python3 install.py remove --user
 ```
 
 Removal is vouched: a file is deleted only when its content matches the
 recorded install hash or the current template. Files you have edited are
-preserved and reported; `--remove --force` deletes them too. Empty parent
+preserved and reported; `python3 install.py remove --user --force` deletes
+them too. Empty parent
 directories are pruned.
 
 ## How it works
@@ -90,7 +99,7 @@ directories are pruned.
 - `installer/registry.py` declares the platforms, the skill list, and the
   shared-reference fan-out; `make generate` regenerates `manifest.json`
   from it (one row per skill file per platform).
-- `install.py` applies the manifest to your home directory (or `--root`
+- `install.py` owns the pack lifecycle and applies the manifest to your home directory (or `--root`
   elsewhere) and writes receipts under `~/.se-ai-command-pack/`:
   - `manifest.json` — copy of the installed manifest (version lookup);
   - `provenance.json` — sha256 per installed file plus `sourceRoot`, the

@@ -140,8 +140,8 @@ def provenance_content(
     payload = {
         "pack": manifest["name"],
         "version": manifest["version"],
-        # Where the pack checkout lives, so the se-pack skill can find it
-        # to run updates. Refreshes from a different checkout overwrite it.
+        # Where the pack checkout lives, so install.py can run updates.
+        # Refreshes from a different checkout overwrite it.
         "sourceRoot": str(ROOT),
         "files": dict(sorted(files.items())),
     }
