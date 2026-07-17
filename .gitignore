@@ -17,3 +17,19 @@ build/
 dist/
 *.egg-info/
 unittest-output.log
+
+# Trellis local/runtime state (see also .trellis/.gitignore).
+.trellis/.template-hashes.json
+.trellis/worktrees/
+
+# Claude Code project files are Trellis-owned here; regenerate with
+# `trellis init --claude --skip-existing`.
+.claude/
+
+# Codex local state; config/hooks/agents stay tracked.
+.codex/**/.cache/
+.codex/**/cache/
+.codex/**/logs/
+.codex/**/sessions/
+.codex/**/tmp/
+.codex/**/*.log
