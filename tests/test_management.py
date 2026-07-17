@@ -38,6 +38,14 @@ class StatusCommandTest(TempDirTestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("not installed", result.stdout)
 
+    def test_early_commands_reject_missing_install_root(self) -> None:
+        missing = self.base / "missing"
+        for command in ("status", "update"):
+            with self.subTest(command=command):
+                result = run_installer(command, "--root", str(missing))
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("install root not found", result.stderr)
+
     @mock.patch("install.load_manifest", side_effect=AssertionError)
     def test_status_does_not_load_checkout_manifest(
         self, load_manifest: mock.Mock

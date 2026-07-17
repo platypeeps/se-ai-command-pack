@@ -309,6 +309,7 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     root = resolve_install_root(args)
+    require_install_root(root)
 
     if command == "status":
         return pack_status(root)
