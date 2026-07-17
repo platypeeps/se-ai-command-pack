@@ -6,49 +6,65 @@
 
 ## Overview
 
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
+Changes must preserve safe, deterministic installation across supported Python
+and operating-system versions. Prefer small modules, explicit data flow,
+immutable result records, plan-before-apply operations, and tests at the same
+boundary users exercise.
 
 ---
 
 ## Forbidden Patterns
 
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
+- Hand-editing generated `manifest.json` rows instead of changing the registry
+  or canonical templates and running `make generate`.
+- Writing outside the validated install root or following untrusted symlinked
+  receipt/destination paths.
+- Destructive overwrite/removal without hash or template provenance, except
+  when the user explicitly requests `--force`.
+- Network/Git mutation during a dry-run.
+- Broad exception catches that hide actionable filesystem or subprocess errors.
+- Adding a shipped payload change without a manifest version bump and matching
+  `CHANGELOG.md` entry.
 
 ---
 
 ## Required Patterns
 
-<!-- Patterns that must always be used -->
-
-(To be filled by the team)
+- Validate manifest, registry, source, and destination paths before mutation.
+- Preview a multi-file lifecycle operation before applying it.
+- Use atomic writes for installed files and receipts.
+- Keep canonical skill content under `templates/skills/` and pack declarations
+  in `installer/registry.py`.
+- Preserve compatibility with Python 3.10; use postponed annotations where
+  modern typing syntax appears.
+- Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
+  `F`, `I`, and `B` rules; keep mypy clean for `installer` and `install.py`.
 
 ---
 
 ## Testing Requirements
 
-<!-- What level of testing is expected -->
-
-(To be filled by the team)
+- Add focused unittest coverage for every observable behavior change, including
+  failure and preservation paths when filesystem state is involved.
+- Use temporary install roots; never target the developer's real home directory
+  from tests.
+- Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
+  retaining end-to-end CLI tests for parsing, exit codes, and installed files.
+- Run `make check`: generation parity, Ruff, mypy, the unittest suite, and the
+  release payload/version gate must all pass.
 
 ---
 
 ## Code Review Checklist
 
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+- Is the change made in the canonical registry/template/module rather than a
+  generated or duplicated surface?
+- Are all paths constrained to the intended source/install roots?
+- Does dry-run avoid mutation, and does apply reuse or revalidate its plan?
+- Are user-modified files preserved by default?
+- Do errors include actionable context without leaking sensitive contents?
+- Do tests cover success, invalid input, conflicts, and compatibility state?
+- If payload changed, are `manifest.json`, version, and `CHANGELOG.md` aligned?
 
 ---
 

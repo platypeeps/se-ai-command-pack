@@ -1,51 +1,60 @@
 # Database Guidelines
 
-> Database patterns and conventions for this project.
+> Database guidance for this project.
 
 ---
 
 ## Overview
 
-<!--
-Document your project's database conventions here.
+This project has no database, ORM, migrations, tables, transactions, or query
+layer. Persistent state is a small set of UTF-8 JSON and text receipts under
+`.se-ai-command-pack/` in the selected install root.
 
-Questions to answer:
-- What ORM/query library do you use?
-- How are migrations managed?
-- What are the naming conventions for tables/columns?
-- How do you handle transactions?
--->
+Do not introduce a database abstraction for pack state. The filesystem receipt
+contract is intentionally inspectable and portable across supported platforms.
 
-(To be filled by the team)
+## State Access Patterns
 
----
+- Read installed `manifest.json`, `provenance.json`, and
+  `installed-targets.txt` through the focused helpers in
+  `installer/provenance.py` and `installer/management.py`.
+- Treat malformed, missing, symlinked, or unreadable receipts conservatively.
+  Status helpers return unavailable/not-installed state; mutating operations
+  fail before writing when required provenance cannot be trusted.
+- Write generated receipts through the same plan/apply and atomic-file paths as
+  other installed content. `installer/fileops.atomic_write_bytes()` writes a
+  temporary file, fsyncs it, sets its mode, and replaces the destination.
+- Store relative installed targets, content hashes, pack identity, version, and
+  source checkout data in the existing receipt formats. Schema changes require
+  compatibility tests for prior installations.
 
-## Query Patterns
+## Schema and Migration Policy
 
-<!-- How should queries be written? Batch operations? -->
+There is no migration framework. Receipt evolution is handled in installer
+code that can read installations produced by earlier pack releases. The
+manifest has an integer `schemaVersion`; `installer/manifest.py` rejects schema
+versions newer than the installer supports.
 
-(To be filled by the team)
+When changing persistent fields:
 
----
+1. Keep old receipts readable or fail with an actionable error.
+2. Add fixtures/tests for missing, malformed, and prior-shape data.
+3. Update install, status, update, removal, and provenance behavior together.
+4. Bump the release version when the shipped payload or manifest changes.
 
-## Migrations
+## Examples
 
-<!-- How to create and run migrations -->
-
-(To be filled by the team)
-
----
-
-## Naming Conventions
-
-<!-- Table names, column names, index names -->
-
-(To be filled by the team)
-
----
+- `installer/management._read_json_object()` accepts only regular JSON-object
+  receipt files and returns `None` for untrusted input.
+- `installer/provenance.py` records and reads the installed-target receipt and
+  content provenance used to vouch safe updates and removals.
+- `installer/manifest.load_manifest()` validates the generated payload schema
+  before any installation plan is applied.
 
 ## Common Mistakes
 
-<!-- Database-related mistakes your team has made -->
-
-(To be filled by the team)
+- Treating arbitrary receipt values as trusted paths without resolving and
+  validating them.
+- Writing receipt files directly and non-atomically.
+- Adding a new receipt field without tests for installations where it is absent.
+- Describing this project as having database conventions when it has none.
