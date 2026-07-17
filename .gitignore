@@ -33,3 +33,21 @@ unittest-output.log
 .codex/**/sessions/
 .codex/**/tmp/
 .codex/**/*.log
+
+# Gemini CLI local state; settings/hooks/agents stay tracked.
+.gemini/settings.local.json
+.gemini/**/.cache/
+.gemini/**/cache/
+.gemini/**/logs/
+.gemini/**/tmp/
+.gemini/**/*.log
+
+# OpenCode local state; plugins/lib/agents stay tracked.
+.opencode/**/.cache/
+.opencode/**/cache/
+.opencode/**/logs/
+.opencode/**/tmp/
+.opencode/**/state/
+.opencode/**/sessions/
+.opencode/node_modules/
+.opencode/**/*.log
