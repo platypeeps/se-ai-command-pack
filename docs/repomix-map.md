@@ -1453,11 +1453,12 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repomix_version="1.16.1"
 cache_root="${XDG_CACHE_HOME:-}"
+default_tmp="${TMPDIR:-/tmp}"
 
 if [ -n "$cache_root" ]; then
   cache_root="${cache_root%/}/se-ai-command-pack"
 else
-  cache_root="${TMPDIR:-/tmp}/se-ai-command-pack-${UID:-unknown}"
+  cache_root="${default_tmp%/}/se-ai-command-pack-${UID:-unknown}"
 fi
 npm_cache="$cache_root/npm-cache"
 
@@ -5387,63 +5388,6 @@ changelog = (PACK_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
 }
 ````
 
-## File: repomix.config.json
-````json
-{
-  "$schema": "https://repomix.com/schemas/latest/schema.json",
-  "output": {
-    "filePath": "docs/repomix-map.md",
-    "style": "markdown",
-    "compress": true,
-    "parsableStyle": true,
-    "fileSummary": true,
-    "directoryStructure": true,
-    "files": true,
-    "topFilesLength": 10
-  },
-  "ignore": {
-    "customPatterns": [
-      "docs/repomix-map.md",
-      ".obsidian-kb/**",
-      ".sd-ai-command-pack/**",
-      ".agents/**",
-      ".agent/**",
-      ".claude/**",
-      ".codebuddy/**",
-      ".codex/**",
-      ".cursor/**",
-      ".devin/**",
-      ".factory/**",
-      ".gemini/**",
-      ".github/agents/**",
-      ".github/copilot/**",
-      ".github/copilot-instructions.md",
-      ".github/hooks/**",
-      ".github/prompts/**",
-      ".github/skills/**",
-      ".github/PULL_REQUEST_TEMPLATE.md",
-      ".kiro/**",
-      ".kilocode/**",
-      ".opencode/**",
-      ".pi/**",
-      ".qoder/**",
-      ".reasonix/**",
-      ".trae/**",
-      ".zcode/**",
-      ".trellis/.gitignore",
-      ".trellis/.version",
-      ".trellis/agents/**",
-      ".trellis/config.yaml",
-      ".trellis/scripts/**",
-      ".trellis/tasks/**",
-      ".trellis/workspace/**",
-      ".trellis/workflow.md",
-      "scripts/sd-ai-command-pack-*"
-    ]
-  }
-}
-````
-
 ## File: docs/SE_AI_COMMAND_PACK.md
 ````markdown
 # SE AI Command Pack — Operator Guide
@@ -5611,6 +5555,63 @@ release-check:
 	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py
 
 check: test lint release-check
+````
+
+## File: repomix.config.json
+````json
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "output": {
+    "filePath": "docs/repomix-map.md",
+    "style": "markdown",
+    "compress": true,
+    "parsableStyle": true,
+    "fileSummary": true,
+    "directoryStructure": true,
+    "files": true,
+    "topFilesLength": 10
+  },
+  "ignore": {
+    "customPatterns": [
+      "docs/repomix-map.md",
+      ".obsidian-kb/**",
+      ".sd-ai-command-pack/**",
+      ".agents/**",
+      ".agent/**",
+      ".claude/**",
+      ".codebuddy/**",
+      ".codex/**",
+      ".cursor/**",
+      ".devin/**",
+      ".factory/**",
+      ".gemini/**",
+      ".github/agents/**",
+      ".github/copilot/**",
+      ".github/copilot-instructions.md",
+      ".github/hooks/**",
+      ".github/prompts/**",
+      ".github/skills/**",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".kiro/**",
+      ".kilocode/**",
+      ".opencode/**",
+      ".pi/**",
+      ".qoder/**",
+      ".reasonix/**",
+      ".trae/**",
+      ".zcode/**",
+      ".trellis/.gitignore",
+      ".trellis/.version",
+      ".trellis/agents/**",
+      ".trellis/config.yaml",
+      ".trellis/scripts/**",
+      ".trellis/tasks/**",
+      ".trellis/workspace/**",
+      ".trellis/workflow.md",
+      "scripts/sd-ai-command-pack-*"
+    ]
+  }
+}
 ````
 
 ## File: tests/test_management.py

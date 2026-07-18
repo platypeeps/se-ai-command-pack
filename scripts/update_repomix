@@ -4,11 +4,12 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 repomix_version="1.16.1"
 cache_root="${XDG_CACHE_HOME:-}"
+default_tmp="${TMPDIR:-/tmp}"
 
 if [ -n "$cache_root" ]; then
   cache_root="${cache_root%/}/se-ai-command-pack"
 else
-  cache_root="${TMPDIR:-/tmp}/se-ai-command-pack-${UID:-unknown}"
+  cache_root="${default_tmp%/}/se-ai-command-pack-${UID:-unknown}"
 fi
 npm_cache="$cache_root/npm-cache"
 
