@@ -175,14 +175,14 @@ One command surface owns removal, with an explicit preview before application.
 
 ```text
 make repomix
-bash scripts/update_repomix.sh
+bash scripts/update_repomix
 ```
 
 ### 3. Contracts
 
 - `repomix.config.json` owns the input exclusions and writes compressed,
   parsable Markdown to `docs/repomix-map.md`.
-- `scripts/update_repomix.sh` runs the pinned Repomix version through `npx`
+- `scripts/update_repomix` runs the pinned Repomix version through `npx`
   without adding Node dependencies to this Python project.
 - The generated map excludes itself, local knowledge copies and receipts,
   Trellis task/session state, and copied agent-platform surfaces.

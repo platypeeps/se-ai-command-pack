@@ -14,7 +14,7 @@ generate:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py
 
 repomix:
-	bash scripts/update_repomix.sh
+	bash scripts/update_repomix
 
 # Dogfood: refresh this machine's user-level install from templates/.
 sync:

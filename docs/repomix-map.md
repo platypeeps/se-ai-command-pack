@@ -80,7 +80,7 @@ installer/
   status.py
 scripts/
   sd_ai_command_pack_lib.py
-  update_repomix.sh
+  update_repomix
 templates/
   skills/
     _shared/
@@ -123,6 +123,33 @@ requirements-dev.txt
 ```
 
 # Files
+
+## File: scripts/update_repomix
+````
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repomix_version="1.16.1"
+cache_root="${XDG_CACHE_HOME:-}"
+
+if [ -n "$cache_root" ]; then
+  cache_root="${cache_root%/}/se-ai-command-pack"
+else
+  cache_root="${TMPDIR:-/tmp}/se-ai-command-pack-${UID:-unknown}"
+fi
+npm_cache="$cache_root/npm-cache"
+
+if ! command -v npx >/dev/null 2>&1; then
+  echo "error: npx is required to refresh docs/repomix-map.md" >&2
+  exit 1
+fi
+
+cd "$repo_root"
+mkdir -p "$npm_cache"
+export NPM_CONFIG_CACHE="$npm_cache"
+exec npx --yes "repomix@${repomix_version}" --config repomix.config.json
+````
 
 ## File: .github/scripts/check-release-payload.py
 ````python
@@ -1477,26 +1504,6 @@ def repo_root(*, fallback_to_cwd: bool = False) -> Path
 toplevel = git_stdout(
 ````
 
-## File: scripts/update_repomix.sh
-````bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-repomix_version="1.16.1"
-npm_cache="${TMPDIR:-/tmp}/se-ai-command-pack-npm-cache"
-
-if ! command -v npx >/dev/null 2>&1; then
-  echo "error: npx is required to refresh docs/repomix-map.md" >&2
-  exit 1
-fi
-
-cd "$repo_root"
-mkdir -p "$npm_cache"
-export NPM_CONFIG_CACHE="$npm_cache"
-exec npx --yes "repomix@${repomix_version}" --config repomix.config.json
-````
-
 ## File: templates/skills/_shared/references/source-standards.md
 ````markdown
 # Source standards
@@ -2560,61 +2567,6 @@ select = ["E4", "E7", "E9", "F", "I", "B"]
 python_version = "3.10"
 check_untyped_defs = true
 warn_unused_ignores = true
-````
-
-## File: repomix.config.json
-````json
-{
-  "$schema": "https://repomix.com/schemas/latest/schema.json",
-  "output": {
-    "filePath": "docs/repomix-map.md",
-    "style": "markdown",
-    "compress": true,
-    "parsableStyle": true,
-    "fileSummary": true,
-    "directoryStructure": true,
-    "files": true,
-    "topFilesLength": 10
-  },
-  "ignore": {
-    "customPatterns": [
-      "docs/repomix-map.md",
-      ".obsidian-kb/**",
-      ".sd-ai-command-pack/**",
-      ".agents/**",
-      ".agent/**",
-      ".claude/**",
-      ".codebuddy/**",
-      ".codex/**",
-      ".cursor/**",
-      ".devin/**",
-      ".factory/**",
-      ".gemini/**",
-      ".github/agents/**",
-      ".github/copilot/**",
-      ".github/hooks/**",
-      ".github/prompts/**",
-      ".github/skills/**",
-      ".kiro/**",
-      ".kilocode/**",
-      ".opencode/**",
-      ".pi/**",
-      ".qoder/**",
-      ".reasonix/**",
-      ".trae/**",
-      ".zcode/**",
-      ".trellis/.gitignore",
-      ".trellis/.version",
-      ".trellis/agents/**",
-      ".trellis/config.yaml",
-      ".trellis/scripts/**",
-      ".trellis/tasks/**",
-      ".trellis/workspace/**",
-      ".trellis/workflow.md",
-      "scripts/sd-ai-command-pack-*"
-    ]
-  }
-}
 ````
 
 ## File: requirements-dev.txt
@@ -5270,7 +5222,7 @@ generate:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py
 
 repomix:
-	bash scripts/update_repomix.sh
+	bash scripts/update_repomix
 
 # Dogfood: refresh this machine's user-level install from templates/.
 sync:
@@ -5600,6 +5552,61 @@ check: test lint release-check
 }
 ````
 
+## File: repomix.config.json
+````json
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "output": {
+    "filePath": "docs/repomix-map.md",
+    "style": "markdown",
+    "compress": true,
+    "parsableStyle": true,
+    "fileSummary": true,
+    "directoryStructure": true,
+    "files": true,
+    "topFilesLength": 10
+  },
+  "ignore": {
+    "customPatterns": [
+      "docs/repomix-map.md",
+      ".obsidian-kb/**",
+      ".sd-ai-command-pack/**",
+      ".agents/**",
+      ".agent/**",
+      ".claude/**",
+      ".codebuddy/**",
+      ".codex/**",
+      ".cursor/**",
+      ".devin/**",
+      ".factory/**",
+      ".gemini/**",
+      ".github/agents/**",
+      ".github/copilot/**",
+      ".github/hooks/**",
+      ".github/prompts/**",
+      ".github/skills/**",
+      ".kiro/**",
+      ".kilocode/**",
+      ".opencode/**",
+      ".pi/**",
+      ".qoder/**",
+      ".reasonix/**",
+      ".trae/**",
+      ".zcode/**",
+      ".trellis/.gitignore",
+      ".trellis/.version",
+      ".trellis/agents/**",
+      ".trellis/config.yaml",
+      ".trellis/scripts/**",
+      ".trellis/tasks/**",
+      ".trellis/workspace/**",
+      ".trellis/workflow.md",
+      "scripts/sd-ai-command-pack-*"
+    ]
+  }
+}
+````
+
 ## File: docs/SE_AI_COMMAND_PACK.md
 ````markdown
 # SE AI Command Pack — Operator Guide
@@ -5910,14 +5917,14 @@ One command surface owns removal, with an explicit preview before application.
 
 ```text
 make repomix
-bash scripts/update_repomix.sh
+bash scripts/update_repomix
 ```
 
 ### 3. Contracts
 
 - `repomix.config.json` owns the input exclusions and writes compressed,
   parsable Markdown to `docs/repomix-map.md`.
-- `scripts/update_repomix.sh` runs the pinned Repomix version through `npx`
+- `scripts/update_repomix` runs the pinned Repomix version through `npx`
   without adding Node dependencies to this Python project.
 - The generated map excludes itself, local knowledge copies and receipts,
   Trellis task/session state, and copied agent-platform surfaces.
