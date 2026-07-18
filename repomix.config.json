@@ -37,10 +37,14 @@
       ".reasonix/**",
       ".trae/**",
       ".zcode/**",
+      ".trellis/.gitignore",
+      ".trellis/.version",
       ".trellis/agents/**",
+      ".trellis/config.yaml",
       ".trellis/scripts/**",
       ".trellis/tasks/**",
       ".trellis/workspace/**",
+      ".trellis/workflow.md",
       "scripts/sd-ai-command-pack-*"
     ]
   }
