@@ -76,3 +76,36 @@ Added a pinned Repomix workflow and focused generated repository map, documented
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Add Repomix scope regression guard
+
+**Date**: 2026-07-17
+**Task**: Add Repomix scope regression guard
+**Branch**: `codex/add-repomix`
+
+### Summary
+
+Added deterministic configuration and generated-map tests that enforce copied/runtime exclusions while preserving representative repo-owned sources and specs; regenerated the map and passed focused, full, CI, and Copilot review gates.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1b20d1e` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
