@@ -53,8 +53,8 @@ external or time-sensitive evidence.
   remains `se-digest`.
 - Do not build the execution plan; hand an accepted decision to `se-plan`.
 - Do not execute, purchase, message, schedule, or otherwise act on the choice.
-- Do not create a separate `se-compare` skill until real use shows a distinct
-  trigger that cannot be expressed inside `se-decide`.
+- Keep neutral evidence framing and alternative comparison in `se-compare`;
+  `se-decide` owns user-specific judgment and the resulting recommendation.
 
 ## SD Work Designs Boundary Update - 2026-07-17
 
@@ -66,7 +66,7 @@ frame-sensitivity without an aggregate winner. `se-decide` consumes that
 artifact when available, adds user-specific criteria/constraints/weighting and
 judgment, and owns the recommendation, confidence, reversibility, and next action.
 
-This update supersedes the provisional non-creation bullet above.
+This update replaces the earlier provisional non-creation boundary.
 
 ## Affected Files
 
