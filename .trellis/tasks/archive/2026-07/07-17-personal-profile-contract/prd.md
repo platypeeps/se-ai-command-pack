@@ -59,21 +59,28 @@ for leaking private evidence into public outputs.
 
 ## Acceptance Criteria
 
-- [ ] The artifact is readable and editable by the user without special tooling.
-- [ ] Every assertion has provenance, confidence, scope, status, and freshness.
-- [ ] Sensitive or protected attributes are neither inferred nor stored without
+- [x] The artifact is readable and editable by the user without special tooling.
+- [x] Every assertion has provenance, confidence, scope, status, and freshness.
+- [x] Sensitive or protected attributes are neither inferred nor stored without
       explicit user direction.
-- [ ] Outward-facing outputs can use preferences without exposing private source
+- [x] Outward-facing outputs can use preferences without exposing private source
       text or presenting inferred experience as fact.
-- [ ] Explicit current instructions and audience needs have documented precedence.
-- [ ] Audience overlays are sparse, traceable, explicitly selected or safely
+- [x] Explicit current instructions and audience needs have documented precedence.
+- [x] Audience overlays are sparse, traceable, explicitly selected or safely
       matched, and cannot override privacy or factual-integrity constraints.
-- [ ] Periodic review identifies stale, contradictory, overgeneralized, unused,
+- [x] Periodic review identifies stale, contradictory, overgeneralized, unused,
       and audience-specific entries without silently rewriting the profile.
-- [ ] Missing, stale, conflicting, or unreachable profiles have safe behavior.
-- [ ] Obsidian-primary and Notion-fallback persistence remains connector-neutral
+- [x] Missing, stale, conflicting, or unreachable profiles have safe behavior.
+- [x] Obsidian-primary and Notion-fallback persistence remains connector-neutral
       and requires verified read-back after writes.
-- [ ] Consumer skills and their required tests/docs are enumerated.
+- [x] Consumer skills and their required tests/docs are enumerated.
+
+## Decision Record - 2026-07-18
+
+The user approved implementation of this design task. The contract in
+`design.md` is the accepted v1 planning baseline. Shipping the shared reference,
+skill payloads, fixtures, and manifest entries remains owned by the separate
+`se-profile` implementation task, as specified in this task's boundaries.
 
 ## Out of Scope
 

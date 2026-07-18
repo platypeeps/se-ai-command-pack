@@ -76,3 +76,14 @@ cross-skill fan-out is implemented.
   profile demonstrates that one Markdown artifact is too large or slow.
 - Consider installer-level profile discovery only after at least two host
   platforms need the same configuration and migration behavior.
+
+## Completion Record - 2026-07-18
+
+- The v1 schema, precedence, persistence, overlay, review, privacy, and consumer
+  contracts are approved as the planning baseline.
+- Synthetic review matrices are recorded in `design.md`; no private profile
+  fixture or personal locator was committed.
+- `se-profile` remains the implementation owner for the shared reference,
+  synthetic executable fixtures, registry fan-out, documentation, and tests.
+- `se-ask-me` remains the first planned read-only consumer. Other consumers
+  adopt the contract only in their bounded implementation streams.
