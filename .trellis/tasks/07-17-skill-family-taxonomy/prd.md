@@ -13,8 +13,8 @@ appropriate categorization mechanism.
 
 ## Requirements
 
-- Define stable outcome-oriented families: Understand, Decide, Coordinate, and
-  Improve.
+- Define stable outcome-oriented families: Understand, Decide, Create,
+  Coordinate, Operate, and Improve.
 - Make family membership a single source of truth in the registry while
   preserving a derived `SKILL_NAMES` interface where compatibility requires it.
 - Group the public skill catalog by family without duplicating canonical skill
@@ -31,6 +31,9 @@ appropriate categorization mechanism.
 ## Acceptance Criteria
 
 - [ ] Every registered skill belongs to exactly one allowed family.
+- [ ] Create and Operate are valid families even before their first shipped
+      skills land; Learn remains a documented subtheme within Understand rather
+      than a separate top-level family.
 - [ ] Existing manifest target paths and current skill IDs are unchanged.
 - [ ] README skill listings are grouped by family and remain synchronized with
       registry/frontmatter data through generation or an equivalent drift gate.

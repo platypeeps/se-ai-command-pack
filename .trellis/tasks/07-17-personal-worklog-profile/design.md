@@ -128,3 +128,19 @@ No public installer/profile files should be added by this task.
   metadata, endpoints, and credentials before review.
 - Require separate user approval before creating implementation tasks or
   changing the private automation.
+
+## SD Work Designs Scope Update - 2026-07-17
+
+The earlier recommendation against a pack-wide profile contract was based on a
+single worklog use case. The user has now explicitly requested a reusable,
+user-owned personal operating profile consumed by authoring, papers, generated
+communications, and a read-only self-query workflow. That is sufficient product
+evidence to revisit the general mechanism without weakening this task's privacy
+boundary.
+
+Keep worklog destination paths, filenames, connector fallbacks, and TaskNotes
+rules in the private worklog layer. Coordinate the new general profile work
+through the separate `personal-profile-contract`, `se-profile`, and `se-ask-me`
+tasks. The general profile must store portable preferences, voice evidence,
+values, goals, working patterns, and explicit boundaries—not workflow-specific
+vault paths, credentials, or automation state.

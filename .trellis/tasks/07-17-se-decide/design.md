@@ -53,8 +53,20 @@ external or time-sensitive evidence.
   remains `se-digest`.
 - Do not build the execution plan; hand an accepted decision to `se-plan`.
 - Do not execute, purchase, message, schedule, or otherwise act on the choice.
-- Do not create a separate `se-compare` skill until real use shows a distinct
-  trigger that cannot be expressed inside `se-decide`.
+- Keep neutral evidence framing and alternative comparison in `se-compare`;
+  `se-decide` owns user-specific judgment and the resulting recommendation.
+
+## SD Work Designs Boundary Update - 2026-07-17
+
+The expanded roadmap now explicitly approves `se-compare` with a distinct
+trigger: a neutral, same-frame comparison of known alternatives when the user
+does not yet want or is not authorized to make a choice. Treat `se-compare` as
+the owner of evidence matrices, tradeoffs, eligibility, asymmetry, and
+frame-sensitivity without an aggregate winner. `se-decide` consumes that
+artifact when available, adds user-specific criteria/constraints/weighting and
+judgment, and owns the recommendation, confidence, reversibility, and next action.
+
+This update replaces the earlier provisional non-creation boundary.
 
 ## Affected Files
 
