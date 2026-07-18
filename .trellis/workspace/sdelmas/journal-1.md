@@ -142,3 +142,37 @@ Disabled Repomix Git change-count sorting so identical repository contents gener
 ### Next Steps
 
 - None - task complete
+
+
+## Session 5: Complete personal profile contract
+
+**Date**: 2026-07-18
+**Task**: Complete personal profile contract
+**Branch**: `codex/complete-personal-profile-contract`
+
+### Summary
+
+Approved and archived the privacy-preserving personal profile v1 contract, recorded synthetic review matrices, and removed generated context seed rows caught by the deterministic PR gate.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f774463` | (see git log) |
+| `dd20365` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
