@@ -8,7 +8,10 @@
     "fileSummary": true,
     "directoryStructure": true,
     "files": true,
-    "topFilesLength": 10
+    "topFilesLength": 10,
+    "git": {
+      "sortByChanges": false
+    }
   },
   "ignore": {
     "customPatterns": [

@@ -182,6 +182,8 @@ bash scripts/update_repomix
 
 - `repomix.config.json` owns the input exclusions and writes compressed,
   parsable Markdown to `docs/repomix-map.md`.
+- Git change-count sorting is disabled so identical repository contents
+  generate byte-stable file ordering before and after commits.
 - `scripts/update_repomix` runs the pinned Repomix version through `npx`
   without adding Node dependencies to this Python project.
 - The generated map excludes itself, local knowledge copies and receipts,
@@ -195,6 +197,7 @@ bash scripts/update_repomix
 | Repomix installation or generation fails | Propagate the nonzero exit; do not report a refreshed map. |
 | Repomix detects suspicious content | Treat the generation as failed and inspect before committing. |
 | Configuration changes | Regenerate and commit `docs/repomix-map.md` in the same change. |
+| Identical inputs generate a different map | Treat the map as nondeterministic; do not commit ordering-only churn. |
 
 ### 5. Good/Base/Bad Cases
 

@@ -80,6 +80,7 @@ class RepomixContractTest(unittest.TestCase):
         self.assertEqual(config["output"]["filePath"], "docs/repomix-map.md")
         self.assertEqual(config["output"]["style"], "markdown")
         self.assertTrue(config["output"]["compress"])
+        self.assertFalse(config["output"]["git"]["sortByChanges"])
         exclusions = set(config["ignore"]["customPatterns"])
         self.assertEqual(REQUIRED_EXCLUSIONS - exclusions, set())
 
