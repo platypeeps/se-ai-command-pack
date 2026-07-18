@@ -411,11 +411,16 @@ dependencies. It checks for duplicate npm override sources of truth, changed
 copied Trellis or SD command-pack surfaces without companion repo-owned
 integration context, personal absolute paths in docs/prompts/specs, missing
 repo path references in docs/prompts/specs, completed Trellis journal
-placeholder or journal/index commit drift, edits to historical journal sessions
-relative to the review base, and large diffs that are likely to skip remote AI
-review. Journal history is append-only: newly added/current sessions remain
-editable, but an older session must be restored and the intended current session
-edited by its explicit `## Session <n>:` heading. Target repos can tune roots,
+placeholder or journal/index commit drift, generated `_example` seed rows in
+changed task context after a task is completed or archived, edits to historical
+journal sessions relative to the review base, and large diffs that are likely
+to skip remote AI review. The task-context check inspects `implement.jsonl` and
+`check.jsonl`; a changed `task.json` that marks completion also checks both
+sibling files. Active planning scaffolds, untouched legacy archives, and
+symlinked context files are skipped. Journal history is append-only: newly
+added/current sessions remain editable, but an older session must be restored
+and the intended current session edited by its explicit `## Session <n>:`
+heading. Target repos can tune roots,
 path-reference prefixes, integration paths, optional paths, copied-template
 paths, and warning thresholds
 with `.sd-ai-command-pack/review-preflight.json`. Repos that intentionally
@@ -805,6 +810,12 @@ stage arguments such as `timeout-minutes=` pass through. It adds no new
 gate logic; every stage's own gates remain authoritative, and a failed or
 blocked stage stops the chain with that stage's report.
 
+Lifecycle side effects have one owner. `until=review` keeps finish-work in
+`sd-review-pr`. The default merge-through chain defers finish-work to Stage 4,
+watches with `no-merge` in Stage 3, and invokes housekeeping exactly once in
+Stage 4. A blocked or timed-out watch therefore leaves the active Trellis task
+available for a later resume instead of archiving it before the PR settles.
+
 The `sd-retro` command captures a structured retrospective after a
 debugging stream or incident: what broke, the root cause, why existing
 gates and tests missed it, and what limited the blast radius. It records
@@ -906,9 +917,13 @@ ephemeral tool state and do not change what the checks validate.
   refresh hint.
 - `SD_AI_COMMAND_PACK_FULL_CHECK_PACK_DRIFT=0`: skip the pack source drift
   gates (template twin parity, release-version coverage for shipped payload
-  changes, and env-var documentation coverage). These gates only run inside the
-  sd-ai-command-pack source repository itself and are skipped automatically in
-  target repos.
+  changes, and env-var documentation coverage). In `auto` mode, generic source
+  markers (`install.py`, `manifest.json`, and `templates/`) only make a repo a
+  candidate: the gates run only when the parsed root manifest has
+  `name: sd-ai-command-pack` plus a non-empty `version` and a `files` list.
+  Other installer repos, including `se-ai-command-pack`, skip the SD-specific
+  gates. A malformed manifest that asserts the SD identity fails conservatively
+  instead of silently bypassing source checks.
 - `SD_AI_COMMAND_PACK_FULL_CHECK_RELEASE_BASE_REF`: explicit base ref for the
   pack-source release-version gate. Defaults to
   `SD_AI_COMMAND_PACK_FULL_CHECK_BASE_REF`, then the discovered branch-diff
@@ -1034,7 +1049,15 @@ ephemeral tool state and do not change what the checks validate.
 
 ### Scope And PR Body Checks
 
-- `SD_AI_COMMAND_PACK_SCOPE_CHECK=0`: skip tooling/generated file scope checks.
+- `SD_AI_COMMAND_PACK_SCOPE_CHECK=0`: skip tooling/generated file scope checks
+  (`off`/`disabled` also work, and disable the early advisory below too).
+- `SD_AI_COMMAND_PACK_SCOPE_CHECK=advisory`: classify the working/branch diff
+  and, when a tooling/generated file is present, warn naming the required PR
+  scope section without contacting `gh` or a PR. The shared review preflight
+  (`sd-ai-command-pack-review-preflight.mjs`, which the local pre-PR gate runs)
+  invokes this automatically, so the reminder to add a
+  `Tooling/generated scope:` section arrives before the PR exists — while the
+  full-check hard-fail with a PR present is unchanged.
 - `SD_AI_COMMAND_PACK_TARGETS_FILE`: explicit installed-targets file for the
   review-scope check. Defaults to `.sd-ai-command-pack/installed-targets.txt`.
 - `SD_AI_COMMAND_PACK_SCOPE_CHECK_GH=required`: fail when `gh` cannot resolve the
@@ -1043,9 +1066,7 @@ ephemeral tool state and do not change what the checks validate.
   Defaults to `SD_AI_COMMAND_PACK_FULL_CHECK_BASE_REF`, then the discovered
   branch-diff sequence above.
 - `SD_AI_COMMAND_PACK_SCOPE_PR_BODY`: explicit PR body text for tooling/generated
-  scope checks when `gh pr view` should not be used. Deprecated fallback:
-  `REVIEW_PREFLIGHT_PR_BODY`, honored through `0.15.x` and scheduled for
-  removal in `0.16.0`.
+  scope checks when `gh pr view` should not be used.
 - `SD_AI_COMMAND_PACK_REVIEW_PR_SELECTOR`: PR number or URL for `sd-review-pr`
   when the command cannot resolve the pull request from the current branch.
 - `SD_AI_COMMAND_PACK_REVIEW_PR_REMOTE_REVIEWER`: remote reviewer request
@@ -1082,9 +1103,7 @@ ephemeral tool state and do not change what the checks validate.
   `.sd-ai-command-pack/pr-body-scope.json` when present.
 - `SD_AI_COMMAND_PACK_PR_BODY_SCOPE_PR_BODY`: explicit PR body text for
   configurable PR-body scope checks. Falls back to
-  `SD_AI_COMMAND_PACK_SCOPE_PR_BODY`, then the deprecated
-  `REVIEW_PREFLIGHT_PR_BODY`, honored through `0.15.x` and scheduled for
-  removal in `0.16.0`.
+  `SD_AI_COMMAND_PACK_SCOPE_PR_BODY`.
 - `SD_AI_COMMAND_PACK_PR_BODY_SCOPE_CHANGED_FILES`: explicit newline- or
   NUL-delimited changed path list for configurable PR-body scope checks.
 - `SD_AI_COMMAND_PACK_CHANGED_FILES`: fallback changed-path list for the
@@ -1127,10 +1146,12 @@ checks.
 
 ## Housekeeping cadence
 
-Run housekeeping after a PR is merged and any finish-work journal commit has
-landed. If the command reports anomalies, treat them as the next manual action:
-dirty files, an unmerged PR, extra branches, open PRs/issues, or remaining
-Trellis tasks mean the repo is not yet in the expected clean state.
+Run housekeeping at the end of a development stream. From an open PR branch it
+owns finish-work before applying the merge gate; after an already-merged PR it
+performs the remaining cleanup and verification. If the command reports
+anomalies, treat them as the next manual action: dirty files, an unmerged PR,
+extra branches, open PRs/issues, or remaining Trellis tasks mean the repo is
+not yet in the expected clean state.
 
 ## Updating the pack
 
@@ -1139,6 +1160,36 @@ To refresh installed assets from the pack checkout:
 ```bash
 python3 /path/to/sd-ai-command-pack/install.py /path/to/target/repo --force
 ```
+
+Inspect before refreshing without modifying the target:
+
+```bash
+python3 /path/to/sd-ai-command-pack/install.py /path/to/target/repo --status
+python3 /path/to/sd-ai-command-pack/install.py /path/to/target/repo --status --audit
+python3 /path/to/sd-ai-command-pack/install.py /path/to/target/repo --check
+python3 /path/to/sd-ai-command-pack/install.py /path/to/target/repo --check --json
+```
+
+`--status` reports `current`, `refresh-required`, `not-installed`, or `invalid`
+and exits `0` for every non-invalid informational result. Add `--audit` to run
+the shipped structural audit. `--check` always runs the audit and exits `0`
+only for a current, audit-clean install; it exits `3` for a valid missing or
+stale install and `1` for invalid receipts, vouched-file drift, audit failures,
+or operational errors. Argument-usage errors remain exit `2`.
+
+`--json` emits schema version `1` with the pack and target, source and installed
+versions, version relation, state, installed and active platforms, result
+counts, change count, reasons, and captured audit status/output. JSON output
+does not change exit semantics. Inspection modes are read-only and reject
+install, removal, platform-selection, force, backup, local-only, dry-run, and
+diff-check options.
+
+| Exit | Inspection meaning |
+| --- | --- |
+| `0` | Status completed; for `--check`, the install is current and audit-clean. |
+| `1` | Installed state is invalid, audit failed, or inspection could not run. |
+| `2` | Command-line usage is invalid. |
+| `3` | `--check` found a valid missing or stale installation that needs action. |
 
 Use `python3 /path/to/sd-ai-command-pack/install.py --help` for the safe CLI
 summary, or `--version` to print the pack name and version without touching a
