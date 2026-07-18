@@ -38,3 +38,41 @@ Created an assigned Trellis roadmap with nine implementation-ready child tasks, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 2: Add Repomix repository map
+
+**Date**: 2026-07-17
+**Task**: Add Repomix repository map
+**Branch**: `codex/add-repomix`
+
+### Summary
+
+Added a pinned Repomix workflow and focused generated repository map, documented its tooling contract, refreshed the Obsidian knowledge copy, and addressed six Copilot findings across six review rounds.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e464f42` | (see git log) |
+| `963b0fd` | (see git log) |
+| `370f370` | (see git log) |
+| `ba37fd5` | (see git log) |
+| `8452f08` | (see git log) |
+| `7eb5e30` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
