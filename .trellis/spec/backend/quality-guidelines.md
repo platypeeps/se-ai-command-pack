@@ -205,6 +205,9 @@ bash scripts/update_repomix
 
 ### 6. Tests Required
 
+- `tests/test_repomix.py` asserts the required copied/runtime exclusion set and
+  verifies the checked-in map omits those files while retaining representative
+  repo-owned source, tests, templates, and specs.
 - Run `make repomix` and require a successful Repomix security scan.
 - Run `git diff --check` and verify `docs/repomix-map.md` is the configured
   output and does not include itself.

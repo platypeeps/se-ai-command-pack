@@ -98,6 +98,7 @@ tests/
   test_provenance.py
   test_release_gate.py
   test_remove.py
+  test_repomix.py
   test_skills.py
 .gitignore
 AGENTS.md
@@ -114,6 +115,32 @@ requirements-dev.txt
 ```
 
 # Files
+
+## File: tests/test_repomix.py
+````python
+"""Repository-map configuration and generated-artifact contract tests."""
+⋮----
+CONFIG_PATH = PACK_ROOT / "repomix.config.json"
+MAP_PATH = PACK_ROOT / "docs" / "repomix-map.md"
+⋮----
+REQUIRED_EXCLUSIONS = {
+⋮----
+EXCLUDED_MAP_HEADERS = {
+⋮----
+REQUIRED_MAP_HEADERS = {
+⋮----
+class RepomixContractTest(unittest.TestCase)
+⋮----
+def test_config_declares_required_output_and_exclusions(self) -> None
+⋮----
+config = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
+⋮----
+exclusions = set(config["ignore"]["customPatterns"])
+⋮----
+def test_checked_in_map_matches_scope_contract(self) -> None
+⋮----
+repository_map = MAP_PATH.read_text(encoding="utf-8")
+````
 
 ## File: .github/scripts/check-release-payload.py
 ````python
@@ -3990,66 +4017,6 @@ release-check:
 check: test lint release-check
 ````
 
-## File: repomix.config.json
-````json
-{
-  "$schema": "https://repomix.com/schemas/latest/schema.json",
-  "output": {
-    "filePath": "docs/repomix-map.md",
-    "style": "markdown",
-    "compress": true,
-    "parsableStyle": true,
-    "fileSummary": true,
-    "directoryStructure": true,
-    "files": true,
-    "topFilesLength": 10
-  },
-  "ignore": {
-    "customPatterns": [
-      "docs/repomix-map.md",
-      ".obsidian-kb/**",
-      ".sd-ai-command-pack/**",
-      ".agents/**",
-      ".agent/**",
-      ".claude/**",
-      ".codebuddy/**",
-      ".codex/**",
-      ".cursor/**",
-      ".devin/**",
-      ".factory/**",
-      ".gemini/**",
-      ".gito/**",
-      ".github/agents/**",
-      ".github/copilot/**",
-      ".github/copilot-instructions.md",
-      ".github/hooks/**",
-      ".github/prompts/**",
-      ".github/skills/**",
-      ".github/PULL_REQUEST_TEMPLATE.md",
-      ".kiro/**",
-      ".kilocode/**",
-      ".opencode/**",
-      ".pi/**",
-      ".prism/**",
-      ".qoder/**",
-      ".reasonix/**",
-      ".trae/**",
-      ".zcode/**",
-      ".trellis/.gitignore",
-      ".trellis/.version",
-      ".trellis/agents/**",
-      ".trellis/config.yaml",
-      ".trellis/scripts/**",
-      ".trellis/tasks/**",
-      ".trellis/workspace/**",
-      ".trellis/workflow.md",
-      "docs/SD_AI_COMMAND_PACK.md",
-      "scripts/sd-ai-command-pack-*"
-    ]
-  }
-}
-````
-
 ## File: tests/test_management.py
 ````python
 """Pack lifecycle command tests."""
@@ -4357,6 +4324,66 @@ project.
 MIT — see [LICENSE](LICENSE).
 ````
 
+## File: repomix.config.json
+````json
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "output": {
+    "filePath": "docs/repomix-map.md",
+    "style": "markdown",
+    "compress": true,
+    "parsableStyle": true,
+    "fileSummary": true,
+    "directoryStructure": true,
+    "files": true,
+    "topFilesLength": 10
+  },
+  "ignore": {
+    "customPatterns": [
+      "docs/repomix-map.md",
+      ".obsidian-kb/**",
+      ".sd-ai-command-pack/**",
+      ".agents/**",
+      ".agent/**",
+      ".claude/**",
+      ".codebuddy/**",
+      ".codex/**",
+      ".cursor/**",
+      ".devin/**",
+      ".factory/**",
+      ".gemini/**",
+      ".gito/**",
+      ".github/agents/**",
+      ".github/copilot/**",
+      ".github/copilot-instructions.md",
+      ".github/hooks/**",
+      ".github/prompts/**",
+      ".github/skills/**",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".kiro/**",
+      ".kilocode/**",
+      ".opencode/**",
+      ".pi/**",
+      ".prism/**",
+      ".qoder/**",
+      ".reasonix/**",
+      ".trae/**",
+      ".zcode/**",
+      ".trellis/.gitignore",
+      ".trellis/.version",
+      ".trellis/agents/**",
+      ".trellis/config.yaml",
+      ".trellis/scripts/**",
+      ".trellis/tasks/**",
+      ".trellis/workspace/**",
+      ".trellis/workflow.md",
+      "docs/SD_AI_COMMAND_PACK.md",
+      "scripts/sd-ai-command-pack-*"
+    ]
+  }
+}
+````
+
 ## File: .trellis/spec/backend/quality-guidelines.md
 ````markdown
 # Quality Guidelines
@@ -4566,6 +4593,9 @@ bash scripts/update_repomix
 
 ### 6. Tests Required
 
+- `tests/test_repomix.py` asserts the required copied/runtime exclusion set and
+  verifies the checked-in map omits those files while retaining representative
+  repo-owned source, tests, templates, and specs.
 - Run `make repomix` and require a successful Repomix security scan.
 - Run `git diff --check` and verify `docs/repomix-map.md` is the configured
   output and does not include itself.
