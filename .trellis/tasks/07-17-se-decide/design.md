@@ -56,6 +56,18 @@ external or time-sensitive evidence.
 - Do not create a separate `se-compare` skill until real use shows a distinct
   trigger that cannot be expressed inside `se-decide`.
 
+## SD Work Designs Boundary Update - 2026-07-17
+
+The expanded roadmap now explicitly approves `se-compare` with a distinct
+trigger: a neutral, same-frame comparison of known alternatives when the user
+does not yet want or is not authorized to make a choice. Treat `se-compare` as
+the owner of evidence matrices, tradeoffs, eligibility, asymmetry, and
+frame-sensitivity without an aggregate winner. `se-decide` consumes that
+artifact when available, adds user-specific criteria/constraints/weighting and
+judgment, and owns the recommendation, confidence, reversibility, and next action.
+
+This update supersedes the provisional non-creation bullet above.
+
 ## Affected Files
 
 - `templates/skills/se-decide/SKILL.md` — new canonical skill.

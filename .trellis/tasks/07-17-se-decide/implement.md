@@ -49,3 +49,10 @@
 - Observe real invocations before deciding whether comparison deserves a
   separate skill.
 - Treat action/execution integrations as separately authorized future work.
+
+## SD Work Designs Boundary Update - 2026-07-17
+
+`se-compare` is now an approved sibling skill. Add it to trigger-boundary tests
+and documentation. When a neutral comparison artifact is supplied, reuse its
+frame/evidence rather than rebuilding it; `se-decide` remains responsible for
+user weighting, the recommendation, confidence, reversibility, and next action.

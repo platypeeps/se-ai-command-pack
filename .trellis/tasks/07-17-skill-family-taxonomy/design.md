@@ -114,3 +114,79 @@ real payload change. Do not bump the release merely for registry/catalog tooling
 - Run `make generate` twice and confirm the second run is a no-op.
 - Run `make check` and verify `manifest.json` and version remain unchanged when
   there is no payload change.
+
+## SD Work Designs Proposal - 2026-07-17
+
+### Expanded Family Model
+
+The expanded roadmap supersedes the original four-family list. Use six stable,
+outcome-oriented top-level families in this display order:
+
+- `understand` → Understand
+- `decide` → Decide
+- `create` → Create
+- `coordinate` → Coordinate
+- `operate` → Operate
+- `improve` → Improve
+
+The distinction is based on the primary outcome of invoking a skill:
+
+- **Understand** finds, verifies, synthesizes, explains, compares, or teaches
+  knowledge. Learning remains a subtheme here until multiple implemented skills
+  demonstrate a need for a separate top-level family.
+- **Decide** selects direction or turns accepted direction into bounded choices
+  and plans.
+- **Create** develops original or adapted intellectual artifacts such as
+  articles, papers, proposals, tutorials, presentations, diagrams, and publication drafts.
+- **Coordinate** aligns people, meetings, commitments, status, communication,
+  and handoffs.
+- **Operate** supports repeatable execution, monitoring, capture into operating
+  systems, runbooks, procedures, and checklists.
+- **Improve** critiques, evaluates, stress-tests, learns from outcomes, and
+  refines existing work.
+
+The family remains singular canonical metadata: each skill belongs to exactly
+one family even when it hands work to another family. Cross-family relationships
+belong in skill documentation, not additional registry memberships.
+
+### Assignment Guidance
+
+The taxonomy task only registers skills that exist when it is implemented. Use
+this planned map to keep later child tasks consistent without adding unshipped
+names prematurely:
+
+- **Understand**: `se-research`, `se-scan`, `se-digest`, `se-fact-check`,
+  `se-distill`, `se-explain`, `se-literature-map`, `se-compare`, `se-learn`,
+  `se-study-guide`, `se-socratic-review`, `se-video-notes`, `se-knowledge-gap`,
+  `se-ask-me`.
+- **Decide**: `se-decide`, `se-plan`, `se-premortem`.
+- **Create**: `se-author`, `se-paper`, `se-topic-radar`, `se-proposal`,
+  `se-tutorial`, `se-presentation`, `se-diagram`, `se-publish`.
+- **Coordinate**: `se-brief`, `se-meeting-prep`, `se-status`, `se-handoff`,
+  `se-action-inbox`, `se-thread-digest`, `se-agenda`, `se-stakeholder-map`,
+  `se-feedback`, `se-meeting-follow-through`.
+- **Operate**: `se-monitor`, `se-watchlist`, `se-capture`,
+  `se-knowledge-capture`, `se-bookmark-triage`, `se-runbook`, `se-sop`,
+  `se-checklist`, `se-profile`.
+- **Improve**: `se-retro`, `se-postmortem`, `se-evaluate`, `se-red-team`,
+  `se-technical-editor`, `se-weekly-review`.
+
+When a later task reveals a stronger primary outcome, update this guidance and
+that task together. Do not encode multi-family aliases to avoid making catalog
+placement ambiguous.
+
+### Changes To The Original Proposal
+
+- Expand `FAMILY_LABELS` from four entries to six in the order above.
+- Keep existing shipped assignments unchanged: `se-research`, `se-scan`, and
+  `se-digest` remain Understand; `se-brief` and `se-meeting-prep` remain Coordinate.
+- Treat Decide, Create, Operate, and Improve as valid empty families until their
+  respective child tasks ship. Continue omitting empty family sections from the README.
+- Add tests proving all six identifiers are accepted, unknown identifiers are
+  rejected, and empty-family omission does not change declared family order.
+- Update operator documentation to use “family” as the canonical term;
+  “category” may appear only as a plain-language synonym.
+
+All original compatibility boundaries remain: flat source/install paths,
+unchanged skill IDs, no manifest family fields, no installer family filter, and
+no nested command namespace.
