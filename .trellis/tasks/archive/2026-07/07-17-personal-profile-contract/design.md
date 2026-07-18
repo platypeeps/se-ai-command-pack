@@ -285,3 +285,31 @@ No private Obsidian/Notion artifact is a repository file.
   names, private URLs, and source excerpts.
 - Run `git diff --check` for this design task. The implementation task later runs
   focused tests, generation, and the full pack gate.
+
+## Contract Review - 2026-07-18
+
+The v1 contract was reviewed against synthetic scenarios before approval:
+
+- Assertion matrix: explicit, observed, and inferred bases remain distinct;
+  inferred entries cannot enter Active Profile without approval; confirmed,
+  proposed, contested, and retired states remain visible and correctable.
+- Scope matrix: `private-only`, `internal`, and `outward-safe` control use of an
+  assertion independently from its evidence; private evidence is never made
+  outward-safe merely because a derived preference is usable.
+- Overlay matrix: explicit selection wins, a unique audience/channel match may
+  apply automatically, and ambiguous, conflicting, stale, or boundary-weakening
+  overlays fall back safely and are disclosed.
+- Consumer matrix: `profile=off`, missing/unreachable profiles, stale entries,
+  explicit current instructions, venue constraints, and unsupported first-person
+  claims all have deterministic non-fabricating behavior.
+- Persistence matrix: new-note creation, manual-edit preservation, failed write,
+  failed read-back, Obsidian unavailability, Notion fallback, export, and schema
+  migration all preserve preview, approval, and semantic read-back boundaries.
+- Feedback-loop matrix: assistant-generated derivatives cannot independently
+  corroborate assertions based on their own underlying source.
+
+The dependent `se-profile` and `se-ask-me` plans assign mutation solely to
+`se-profile` and read-only consumption to other skills. Planned outward-facing
+consumers already record the profile argument and/or outward-safe, read-only
+boundary. No real identity, locator, credential, source excerpt, or profile
+instance was introduced by this review.
