@@ -4,7 +4,7 @@ VENV ?= .venv
 VENV_PYTHON = $(VENV)/bin/python
 RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON)"; else printf '%s' "$(PYTHON)"; fi)
 
-.PHONY: setup generate sync test lint release-check check
+.PHONY: setup generate repomix sync test lint release-check check
 
 setup:
 	"$(PYTHON)" -m venv "$(VENV)"
@@ -12,6 +12,9 @@ setup:
 
 generate:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py
+
+repomix:
+	bash scripts/update_repomix
 
 # Dogfood: refresh this machine's user-level install from templates/.
 sync:

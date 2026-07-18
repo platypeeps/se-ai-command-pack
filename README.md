@@ -119,6 +119,20 @@ directories are pruned.
 4. `make check` (tests, lint, release gates), then PR.
 5. `make sync` to dogfood the result into your own home directory.
 
+## Repository map
+
+The generated [Repomix repository map](docs/repomix-map.md) provides a compact,
+AI-friendly view of the repository. Refresh it after structural or substantial
+documentation changes:
+
+```sh
+make repomix
+```
+
+The refresh script runs the pinned Repomix version through `npx`; Node.js and
+`npx` are required, but no Node dependencies are installed into this Python
+project.
+
 ## Non-goals in v0.1 (designed-for, not built)
 
 - **Per-folder installs** — the manifest already carries a `scope` field

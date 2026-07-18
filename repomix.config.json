@@ -1,0 +1,59 @@
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "output": {
+    "filePath": "docs/repomix-map.md",
+    "style": "markdown",
+    "compress": true,
+    "parsableStyle": true,
+    "fileSummary": true,
+    "directoryStructure": true,
+    "files": true,
+    "topFilesLength": 10,
+    "git": {
+      "sortByChanges": false
+    }
+  },
+  "ignore": {
+    "customPatterns": [
+      "docs/repomix-map.md",
+      ".obsidian-kb/**",
+      ".sd-ai-command-pack/**",
+      ".agents/**",
+      ".agent/**",
+      ".claude/**",
+      ".codebuddy/**",
+      ".codex/**",
+      ".cursor/**",
+      ".devin/**",
+      ".factory/**",
+      ".gemini/**",
+      ".gito/**",
+      ".github/agents/**",
+      ".github/copilot/**",
+      ".github/copilot-instructions.md",
+      ".github/hooks/**",
+      ".github/prompts/**",
+      ".github/skills/**",
+      ".github/PULL_REQUEST_TEMPLATE.md",
+      ".kiro/**",
+      ".kilocode/**",
+      ".opencode/**",
+      ".pi/**",
+      ".prism/**",
+      ".qoder/**",
+      ".reasonix/**",
+      ".trae/**",
+      ".zcode/**",
+      ".trellis/.gitignore",
+      ".trellis/.version",
+      ".trellis/agents/**",
+      ".trellis/config.yaml",
+      ".trellis/scripts/**",
+      ".trellis/tasks/**",
+      ".trellis/workspace/**",
+      ".trellis/workflow.md",
+      "docs/SD_AI_COMMAND_PACK.md",
+      "scripts/sd-ai-command-pack-*"
+    ]
+  }
+}
