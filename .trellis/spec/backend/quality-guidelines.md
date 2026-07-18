@@ -163,3 +163,66 @@ python3 install.py remove --user
 ```
 
 One command surface owns removal, with an explicit preview before application.
+
+## Scenario: Repomix Repository Map Refresh
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing the checked-in repository map, its Repomix
+  configuration, or its refresh command.
+
+### 2. Signatures
+
+```text
+make repomix
+bash scripts/update_repomix.sh
+```
+
+### 3. Contracts
+
+- `repomix.config.json` owns the input exclusions and writes compressed,
+  parsable Markdown to `docs/repomix-map.md`.
+- `scripts/update_repomix.sh` runs the pinned Repomix version through `npx`
+  without adding Node dependencies to this Python project.
+- The generated map excludes itself, local knowledge copies and receipts,
+  Trellis task/session state, and copied agent-platform surfaces.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| `npx` is unavailable | Exit nonzero with an actionable requirement message. |
+| Repomix installation or generation fails | Propagate the nonzero exit; do not report a refreshed map. |
+| Repomix detects suspicious content | Treat the generation as failed and inspect before committing. |
+| Configuration changes | Regenerate and commit `docs/repomix-map.md` in the same change. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `make repomix` uses the pinned version and replaces the tracked map.
+- Base: rerunning the command without source changes produces no map diff.
+- Bad: running an unpinned global or latest Repomix version and committing an
+  output whose behavior cannot be reproduced from the repository.
+
+### 6. Tests Required
+
+- Run `make repomix` and require a successful Repomix security scan.
+- Run `git diff --check` and verify `docs/repomix-map.md` is the configured
+  output and does not include itself.
+- Run `make check` so repository-map tooling changes do not regress the Python
+  pack, generated surfaces, or release gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+npx repomix@latest
+```
+
+#### Correct
+
+```text
+make repomix
+```
+
+The repository-owned command pins the tool and applies the curated exclusions.

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "output": {
+    "filePath": "docs/repomix-map.md",
+    "style": "markdown",
+    "compress": true,
+    "parsableStyle": true,
+    "fileSummary": true,
+    "directoryStructure": true,
+    "files": true,
+    "topFilesLength": 10
+  },
+  "ignore": {
+    "customPatterns": [
+      "docs/repomix-map.md",
+      ".obsidian-kb/**",
+      ".sd-ai-command-pack/**",
+      ".agents/**",
+      ".agent/**",
+      ".claude/**",
+      ".codebuddy/**",
+      ".codex/**",
+      ".cursor/**",
+      ".devin/**",
+      ".factory/**",
+      ".gemini/**",
+      ".github/agents/**",
+      ".github/copilot/**",
+      ".github/hooks/**",
+      ".github/prompts/**",
+      ".github/skills/**",
+      ".kiro/**",
+      ".kilocode/**",
+      ".opencode/**",
+      ".pi/**",
+      ".qoder/**",
+      ".reasonix/**",
+      ".trae/**",
+      ".zcode/**",
+      ".trellis/agents/**",
+      ".trellis/scripts/**",
+      ".trellis/tasks/**",
+      ".trellis/workspace/**",
+      "scripts/sd-ai-command-pack-*"
+    ]
+  }
+}
