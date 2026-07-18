@@ -20,6 +20,14 @@ Quick links:
 
 ## What is installed
 
+- `.agents/skills/sd-help/SKILL.md`: read-only SD command discovery,
+  comparison, explanation, and recommendation workflow.
+- `.agents/skills/sd-help/references/command-catalog.md`: generated command
+  families, descriptions, release version, and bundled availability policy.
+- `.agents/skills/sd-help/references/examples.md`: authored examples for common
+  delivery goals and command overlaps.
+- `.agents/skills/sd-status/SKILL.md`: read-only local repository and
+  configured fleet status reporting.
 - `.agents/skills/sd-start/SKILL.md`: Codex-visible Trellis start wrapper.
 - `.agents/skills/sd-continue/SKILL.md`: Codex-visible Trellis continue wrapper.
 - `.agents/skills/sd-finish-work/SKILL.md`: Codex-visible Trellis finish-work wrapper.
@@ -62,6 +70,10 @@ Quick links:
   deterministic Python resolver used by SD workflows before dependency-sensitive
   checks.
 - `scripts/sd-ai-command-pack-housekeeping.sh`: canonical post-merge housekeeping script.
+- `scripts/sd-ai-command-pack-status.py`: read-only local/fleet status collector
+  and schema-versioned JSON reporter used by housekeeping final verification.
+- `scripts/sd_ai_command_pack_fleet_lib.py`: shared fleet-manifest validation,
+  machine-profile resolution, checkout override, and release-ledger contracts.
 - `scripts/sd-ai-command-pack-record-session.py`: one-shot session journal
   recorder — wraps Trellis' `add_session.py`, resolving commit subjects
   from git (failing fast on unknown hashes), filling the Main Changes and
@@ -112,7 +124,8 @@ in the shared skills and scripts. The update-spec workflow runs the
 Trellis-provided `trellis-update-spec` skill as-is, refreshes repo-owned
 repospec artifacts through existing maintenance infrastructure when available,
 and then performs the architecture-overview check.
-Codex exposes the pack entry points as skills named `sd-start`, `sd-continue`,
+Codex exposes the pack entry points as skills named `sd-help`, `sd-status`,
+`sd-start`, `sd-continue`,
 `sd-finish-work`, `sd-create-pr`, `sd-work-backlog`, `sd-work-designs`,
 `sd-full-check`, `sd-housekeeping`, `sd-review-pr`, `sd-review-local`,
 `sd-review-learnings`, `sd-audit-repo`, `sd-ship`,
@@ -142,6 +155,11 @@ loaded project command files.
 
 ## Recommended review loop
 
+When you do not know which workflow owns the next step, start with `sd-help`.
+It inspects the bundled catalog and current skill inventory, recommends the
+smallest fitting command, and returns a copy-ready invocation without running
+it. Use a separate request to execute the recommendation.
+
 1. Iterate with the narrowest deterministic checks for the files you touched.
 2. Use the continue command when resuming an in-progress Trellis task.
 3. Run the full-check command or `bash scripts/sd-ai-command-pack-full-check.sh`
@@ -170,8 +188,10 @@ loaded project command files.
    input, and reports links to every planning document it created or updated.
 10. Use the review-pr command for an existing PR loop. It should run the deterministic
    local full-check path with Prism/Gito disabled before requesting remote
-   review. Run `sd-full-check` or `sd-review-local` (optionally with `all`)
-   explicitly when you want Prism/Gito.
+   review, then disposition any first-review boundary-risk, authored-source
+   size, or multi-task scope advisory before round one. Run `sd-full-check` or
+   `sd-review-local` (optionally with `all`) explicitly when you want
+   Prism/Gito.
 11. Request the configured remote reviewer, defaulting to GitHub Copilot, after
    a clean local pass and again after every pushed review-fix commit made
    during the loop, unless the user explicitly asked for local-only review.
@@ -179,7 +199,9 @@ loaded project command files.
    normal loop once findings are fixed, rebutted with evidence, or confirmed
    already addressed.
 13. Use the review-learnings command when review comments repeat across PRs and
-   you want to capture repo-specific preventive guidance.
+   you want to capture repo-specific preventive guidance. The review-pr loop
+   automatically attempts one read-only, PR-scoped learning pass after the
+   overall cycle is clean; it never runs the learning pass after each round.
 14. Run the update-spec command when the work taught you a durable
    implementation contract or convention. It runs the existing update-spec skill
    and also checks whether an existing architectural overview needs to be
@@ -207,7 +229,11 @@ counts the review as materialized. Target repos can override it with
 `SD_AI_COMMAND_PACK_REVIEW_PR_REMOTE_ROUND_LIMIT`. The bounded materialization
 wait uses `SD_AI_COMMAND_PACK_REVIEW_PR_REMOTE_SETTLE_POLLS`. The round limit
 defaults to five configured remote-review requests before the command asks
-whether to keep going.
+whether to keep going. Once the overall loop meets its stop conditions,
+review-pr runs
+`sd-ai-command-pack-review-learnings.py --github-pr <number> --dry-run`
+exactly once and reports any preventive follow-up without reopening the clean
+review cycle.
 
 The create-pr wrapper honors `SD_AI_COMMAND_PACK_CREATE_PR_BASE` for a base
 branch override, `SD_AI_COMMAND_PACK_CREATE_PR_COMMIT_MESSAGE` when it creates
@@ -236,6 +262,14 @@ guidance without starting implementation, parks tasks that need user input,
 and ends with numbered links to every planning document it created or
 updated.
 
+The help command is a read-only orientation surface. Use bare help for a
+compact lifecycle tour, `all` for the complete catalog, an exact command for
+an explanation, two or more commands for a comparison, or an ordinary-language
+goal for a recommendation. It distinguishes commands available in the current
+session from bundled-but-undiscoverable, source-checkout-only, and external
+skills. It reports observed version information honestly and never executes,
+delegates to, or mutates state on behalf of the selected command.
+
 ## Commands
 
 Use the platform-native command when available.
@@ -243,6 +277,8 @@ Use the platform-native command when available.
 Claude Code and Gemini CLI:
 
 ```bash
+/sd:help
+/sd:status
 /sd:start
 /sd:continue
 /sd:finish-work
@@ -268,6 +304,8 @@ Cursor command files, GitHub Copilot prompt files, OpenCode command files,
 Qoder commands, Trae commands, Pi prompts, workflow adapters, and Codex skills:
 
 ```bash
+/sd-help
+/sd-status
 /sd-start
 /sd-continue
 /sd-finish-work
@@ -291,6 +329,20 @@ Qoder commands, Trae commands, Pi prompts, workflow adapters, and Codex skills:
 
 In Codex, you can also invoke the enabled skills explicitly with
 `$sd-review-pr`-style skill mentions.
+
+Common help requests:
+
+```text
+/sd:help
+/sd:help review-pr
+/sd:help "compare sd-create-pr and sd-ship"
+/sd:help "I need to fix failing CI"
+/sd:help all
+```
+
+Use the equivalent native adapter form on other platforms. A help response may
+recommend one command or a bounded workflow, but execution always requires a
+separate explicit request.
 
 CodeBuddy, Factory Droid, and ZCode use namespaced `sd/<command>` command
 folders. Kiro and Reasonix expose the same entries as native `sd-*` skills.
@@ -343,8 +395,33 @@ bash scripts/sd-ai-command-pack-full-check.sh
 bash scripts/sd-ai-command-pack-review-local.sh
 bash scripts/sd-ai-command-pack-review-local.sh --full-codebase
 bash scripts/sd-ai-command-pack-housekeeping.sh
-python3 scripts/sd-ai-command-pack-review-learnings.py --include-working-tree
+bash scripts/sd-ai-command-pack-toolchain.sh run-python -- scripts/sd-ai-command-pack-status.py
+bash scripts/sd-ai-command-pack-toolchain.sh run-python -- scripts/sd-ai-command-pack-status.py fleet --json
+bash scripts/sd-ai-command-pack-toolchain.sh run-python -- \
+  scripts/sd-ai-command-pack-review-learnings.py --include-working-tree
 ```
+
+`sd-status` is the read-only delivery snapshot for a repository. It reports the
+branch, staged/unstaged/untracked counts, Git stash count, upstream ahead/behind state, default
+and local/remote branches, installed SD pack and Trellis versions, relevant PR,
+open PRs/issues, current/in-progress/planned Trellis work, anomalies, and
+numbered next steps. `--no-network` suppresses GitHub calls, `--repo PATH`
+selects another checkout, and `--json` emits schema version 1. Ordinary runs do
+not fetch and label ref-derived values `cached`. Relevant-PR review totals use
+GitHub's GraphQL `reviews.totalCount`, so repositories with more than one REST
+page of review events are reported accurately without fetching every review.
+
+The optional positional `fleet` mode works from any installed checkout. It
+resolves the canonical fleet manifest from `--fleet-manifest`,
+`SD_AI_COMMAND_PACK_FLEET_MANIFEST`, the machine-local fleet profile, or the
+canonical source checkout, in that order. It preserves rollout priority,
+reports missing checkouts, compares installed versions to the source manifest
+version, and returns one bounded row per fleet member. A dirty, stale, missing,
+behind, or diverged repository is advisory in ordinary status; the command
+remains read-only and exits zero after producing the report. Invalid
+repositories and malformed, missing, or stale fleet configuration exit
+nonzero. This repository-status command is separate from `install.py --status`,
+which compares one target's installed payload to the current pack.
 
 The full-check script runs `git diff --check`, `git diff --cached --check`,
 review preflight through `scripts/sd-ai-command-pack-review-preflight.mjs`, any
@@ -412,17 +489,30 @@ copied Trellis or SD command-pack surfaces without companion repo-owned
 integration context, personal absolute paths in docs/prompts/specs, missing
 repo path references in docs/prompts/specs, completed Trellis journal
 placeholder or journal/index commit drift, generated `_example` seed rows in
-changed task context after a task is completed or archived, edits to historical
+changed task context after a task enters implementation, completes, or is
+archived, edits to historical
 journal sessions relative to the review base, and large diffs that are likely
-to skip remote AI review. The task-context check inspects `implement.jsonl` and
-`check.jsonl`; a changed `task.json` that marks completion also checks both
-sibling files. Active planning scaffolds, untouched legacy archives, and
+to skip remote AI review. It also emits soft first-review warnings when changed
+code adds parser/structured-input, subprocess, filesystem/path, environment or
+global-state, or digest/integrity behavior. The warning names a conservative
+boundary-test matrix for author disposition before remote review. Diff sizing
+uses the complete review-base-to-working-tree state plus untracked files; large
+untracked files are counted as large without reading the entire file. The same
+byte limit bounds the first-review boundary-risk content scan; skipped
+oversized untracked code files are named in an explicit warning. Its
+authored-source threshold excludes installed pack/Trellis mirrors, Trellis task
+and workspace records, and known generated reports. A separate warning calls
+out changes spanning more than one Trellis task directory. The task-context
+check inspects `implement.jsonl` and
+`check.jsonl`; a changed qualifying `task.json` also checks both sibling files.
+Planning scaffolds, untouched legacy archives, and
 symlinked context files are skipped. Journal history is append-only: newly
 added/current sessions remain editable, but an older session must be restored
 and the intended current session edited by its explicit `## Session <n>:`
 heading. Target repos can tune roots,
 path-reference prefixes, integration paths, optional paths, copied-template
-paths, and warning thresholds
+paths, and the `diffSizeWarningLines`, `largeFileWarningLines`,
+`sourceReviewWarningLines`, and `untrackedFileReadLimitBytes` warning thresholds
 with `.sd-ai-command-pack/review-preflight.json`. Repos that intentionally
 document service-user paths under `/home/<user>/` can add those service users to
 `allowedLinuxHomeUsers` in that config. The script requires Node 16.9 or newer
@@ -643,10 +733,13 @@ When that is true, it merges the PR and then performs normal cleanup. If that ga
 not satisfied, it behaves as a post-merge cleanup command: fetch/prune
 `origin`, confirm the current feature branch's PR is merged and the local branch
 head matches that PR before deleting it, switch to the default branch,
-fast-forward from `origin`, delete the merged local and remote branch, and then
-report the current-stream clean state plus anomalies. Repo-wide open PRs, open
-issues, and active Trellis tasks are reported in a separate inventory section
-rather than blockers for this cleanup.
+fast-forward from `origin`, and delete the merged local and remote branch. The
+script then invokes the installed `sd-status` collector in strict mode, passing
+the default/source branches, remote-branch policy, cleanup anomalies, and a
+`refreshed` label after a successful fetch/prune. That shared collector owns the
+final Git verification, pack/Trellis versions, relevant PR/review count,
+repo-wide open PRs/issues, Trellis inventory, anomaly list, and numbered next
+steps. Repo-wide inventory remains context rather than a cleanup blocker.
 
 The installed script also supports
 `bash scripts/sd-ai-command-pack-housekeeping.sh --self-test`, which verifies
@@ -655,23 +748,36 @@ It is hermetic (no git, gh, or network access), so repos can run it from CI or
 a test suite instead of maintaining bespoke contract tests over the vendored
 script; it fails non-zero if any gate scenario misbehaves.
 
-A clean current-stream housekeeping run should end with:
+A clean current-stream housekeeping run should end with the shared status
+shape:
 
 ```text
+SD status: healthy
+Ref freshness: refreshed
+
 ==> Expected clean state
 - branch: <default>
 - working tree: clean
-- <default> matches origin/<default>
-- local branches: only <default>
-- remote branches: only origin/HEAD and origin/<default>
+- upstream: origin/<default>; synchronized
+- local branches (1): <default>
+- git stashes: 0
+- remote source branch absent: origin/<feature>
+
+==> Delivery
+- SD pack: <installed version>
+- Trellis: <installed version>
+- relevant PR: #<number> MERGED
 
 ==> Inventory
-- open PRs: <summary>
-- open issues: <summary>
-- Trellis active tasks: <summary>
+- open PRs (<count>): <summary>
+- open issues (<count>): <summary>
+- current Trellis task: <summary>
 
 ==> Anomalies
 none
+
+==> Next Steps
+1. <highest-value evidence-backed next action>
 ```
 
 The agent-facing final response should summarize that script output in a short
@@ -810,6 +916,17 @@ stage arguments such as `timeout-minutes=` pass through. It adds no new
 gate logic; every stage's own gates remain authoritative, and a failed or
 blocked stage stops the chain with that stage's report.
 
+Stage 1 delegates `sd-create-pr` with an internal composite-only orchestration
+context that returns after PR publication. It is not a public argument or
+environment variable. This keeps standalone `sd-create-pr` behavior unchanged
+while making Stage 2 the only review owner in `sd-ship`: no review for
+`until=pr`, one normal review for `until=review`, and one deferred-finish-work
+review for `until=merge`.
+
+Stage 2 also owns the one post-cycle review-learning pass performed by
+`sd-review-pr`. No later ship, watch, finish-work, or housekeeping stage repeats
+it.
+
 Lifecycle side effects have one owner. `until=review` keeps finish-work in
 `sd-review-pr`. The default merge-through chain defers finish-work to Stage 4,
 watches with `no-merge` in Stage 3, and invokes housekeeping exactly once in
@@ -827,6 +944,43 @@ auto-creates tasks and makes no code changes.
 ## Configuration
 
 Common environment variables:
+
+### Fleet Status
+
+Create or refresh the machine-local fleet profile explicitly from the
+canonical pack checkout:
+
+```bash
+python3 /path/to/sd-ai-command-pack/install.py /path/to/target/repo \
+  --configure-fleet
+```
+
+The default profile is
+`$XDG_CONFIG_HOME/sd-ai-command-pack/config.json` when `XDG_CONFIG_HOME` is
+set, otherwise `~/.config/sd-ai-command-pack/config.json`. It has schema
+version 1 and stores `packSource`, optional `fleetManifest`, and optional
+`pathOverrides` keyed by fleet consumer name. Only machine-specific locations
+belong there: the checked-in `docs/fleet/consumers.json` remains authoritative
+for fleet membership, rollout priority, platforms, and candidate commands.
+Existing path overrides are preserved when the installer refreshes the
+profile. `sd-status` reads but never writes it.
+
+```json
+{
+  "schemaVersion": 1,
+  "packSource": "/path/to/sd-ai-command-pack",
+  "fleetManifest": "/path/to/sd-ai-command-pack/docs/fleet/consumers.json",
+  "pathOverrides": {
+    "rwbp-coordinator": "/path/to/rwbp-coordinator"
+  }
+}
+```
+
+- `SD_AI_COMMAND_PACK_FLEET_CONFIG`: advanced override for the machine profile
+  path, useful when several independent pack sources are present.
+- `SD_AI_COMMAND_PACK_FLEET_MANIFEST`: override the canonical fleet manifest
+  for one environment. The public `--fleet-manifest` option has higher
+  precedence; both take precedence over the machine profile.
 
 ### Full Check And Preflight
 
@@ -897,7 +1051,10 @@ ephemeral tool state and do not change what the checks validate.
 - `SD_AI_COMMAND_PACK_REVIEW_PREFLIGHT_BASE_REF`: explicit base ref for the
   JavaScript review-preflight branch-diff probes. Defaults to
   `SD_AI_COMMAND_PACK_FULL_CHECK_BASE_REF`, then the discovered branch-diff
-  sequence above.
+  sequence above. Review size and added-code risk probes compare the working
+  tree with the merge base of this ref and `HEAD`, so upstream-only changes do
+  not inflate the advisory. If no merge base exists, the preflight warns and
+  conservatively falls back to the configured or discovered base ref.
 - `SD_AI_COMMAND_PACK_FULL_CHECK_REVIEW_PREFLIGHT=0`: skip
   repo-local review preflight.
 - `SD_AI_COMMAND_PACK_FULL_CHECK_REVIEW_PREFLIGHT=required`: fail if no configured
@@ -1160,6 +1317,11 @@ To refresh installed assets from the pack checkout:
 ```bash
 python3 /path/to/sd-ai-command-pack/install.py /path/to/target/repo --force
 ```
+
+Add `--configure-fleet` when this machine should also use that pack checkout as
+the source for `sd-status fleet`. Ordinary installs do not create or modify
+user-global configuration. The option honors `--dry-run`, preserves existing
+checkout path overrides, and is incompatible with inspection or removal modes.
 
 Inspect before refreshing without modifying the target:
 
