@@ -29,7 +29,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Files matching these patterns are excluded: docs/repomix-map.md, .obsidian-kb/**, .sd-ai-command-pack/**, .agents/**, .agent/**, .claude/**, .codebuddy/**, .codex/**, .cursor/**, .devin/**, .factory/**, .gemini/**, .github/agents/**, .github/copilot/**, .github/hooks/**, .github/prompts/**, .github/skills/**, .kiro/**, .kilocode/**, .opencode/**, .pi/**, .qoder/**, .reasonix/**, .trae/**, .zcode/**, .trellis/.gitignore, .trellis/.version, .trellis/agents/**, .trellis/config.yaml, .trellis/scripts/**, .trellis/tasks/**, .trellis/workspace/**, .trellis/workflow.md, scripts/sd-ai-command-pack-*
+- Files matching these patterns are excluded: docs/repomix-map.md, .obsidian-kb/**, .sd-ai-command-pack/**, .agents/**, .agent/**, .claude/**, .codebuddy/**, .codex/**, .cursor/**, .devin/**, .factory/**, .gemini/**, .github/agents/**, .github/copilot/**, .github/copilot-instructions.md, .github/hooks/**, .github/prompts/**, .github/skills/**, .github/PULL_REQUEST_TEMPLATE.md, .kiro/**, .kilocode/**, .opencode/**, .pi/**, .qoder/**, .reasonix/**, .trae/**, .zcode/**, .trellis/.gitignore, .trellis/.version, .trellis/agents/**, .trellis/config.yaml, .trellis/scripts/**, .trellis/tasks/**, .trellis/workspace/**, .trellis/workflow.md, scripts/sd-ai-command-pack-*
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Content has been formatted for parsing in markdown style
@@ -45,8 +45,6 @@ The content is organized as follows:
     generate-skill-surfaces.py
   workflows/
     tests.yml
-  copilot-instructions.md
-  PULL_REQUEST_TEMPLATE.md
 .gito/
   config.toml
   sd-ai-command-pack.env
@@ -123,33 +121,6 @@ requirements-dev.txt
 ```
 
 # Files
-
-## File: scripts/update_repomix
-````
-#!/usr/bin/env bash
-set -euo pipefail
-
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-repomix_version="1.16.1"
-cache_root="${XDG_CACHE_HOME:-}"
-
-if [ -n "$cache_root" ]; then
-  cache_root="${cache_root%/}/se-ai-command-pack"
-else
-  cache_root="${TMPDIR:-/tmp}/se-ai-command-pack-${UID:-unknown}"
-fi
-npm_cache="$cache_root/npm-cache"
-
-if ! command -v npx >/dev/null 2>&1; then
-  echo "error: npx is required to refresh docs/repomix-map.md" >&2
-  exit 1
-fi
-
-cd "$repo_root"
-mkdir -p "$npm_cache"
-export NPM_CONFIG_CACHE="$npm_cache"
-exec npx --yes "repomix@${repomix_version}" --config repomix.config.json
-````
 
 ## File: .github/scripts/check-release-payload.py
 ````python
@@ -383,36 +354,6 @@ args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 regenerated = regenerated_manifest_text()
 ⋮----
 committed = (
-````
-
-## File: .github/PULL_REQUEST_TEMPLATE.md
-````markdown
-## Summary
-
-<!-- 1-3 bullets: what changed and why. Name every behavior change in the diff. -->
-<!-- If the diff touches copied pack/Trellis tooling, broad automation, or
-CI/review files, add the matching explicit scope section on its own line —
-"Tooling/generated scope:", "Automation scope:", or "CI/review scope:" — as
-described in docs/SD_AI_COMMAND_PACK.md. -->
-
-## Test plan
-
-<!-- Focused checks first, then the local gate. -->
-
-- [ ] Focused local checks:
-- [ ] Local gate: `bash scripts/sd-ai-command-pack-full-check.sh`
-
-## Pre-PR checklist
-
-<!-- Tick each item once confirmed, or replace the box with "N/A — reason". -->
-
-- [ ] Docs, help text, and env-var references match the changed behavior
-- [ ] Failure paths keep state consistent (no mutate-before-success)
-- [ ] Helper errors are caught at entrypoints and reported, not raw tracebacks
-- [ ] Portability checked (macOS/BSD vs GNU tools, CRLF, Windows paths)
-- [ ] Copied pack/Trellis files changed only via the pack installer
-- [ ] Trellis journals and task notes carry real content, no placeholders
-- [ ] Review fixes are batched: address all comments, re-run the gate, push once
 ````
 
 ## File: .gito/config.toml
@@ -1502,6 +1443,33 @@ stripped = result.stdout.strip()
 def repo_root(*, fallback_to_cwd: bool = False) -> Path
 ⋮----
 toplevel = git_stdout(
+````
+
+## File: scripts/update_repomix
+````
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repomix_version="1.16.1"
+cache_root="${XDG_CACHE_HOME:-}"
+
+if [ -n "$cache_root" ]; then
+  cache_root="${cache_root%/}/se-ai-command-pack"
+else
+  cache_root="${TMPDIR:-/tmp}/se-ai-command-pack-${UID:-unknown}"
+fi
+npm_cache="$cache_root/npm-cache"
+
+if ! command -v npx >/dev/null 2>&1; then
+  echo "error: npx is required to refresh docs/repomix-map.md" >&2
+  exit 1
+fi
+
+cd "$repo_root"
+mkdir -p "$npm_cache"
+export NPM_CONFIG_CACHE="$npm_cache"
+exec npx --yes "repomix@${repomix_version}" --config repomix.config.json
 ````
 
 ## File: templates/skills/_shared/references/source-standards.md
@@ -2716,101 +2684,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: python3 .github/scripts/create-release-tag.py --push
-````
-
-## File: .github/copilot-instructions.md
-````markdown
-<!-- TRELLIS:COPILOT-GUIDANCE:START -->
-# Trellis Review Guidance
-
-When reviewing a Trellis-enabled repository:
-
-- Treat Trellis-generated runtime and platform payloads as copied integration files in consumer repositories. Examples include `.trellis/scripts/**`, `.trellis/agents/**`, `.trellis/workflow.md`, and platform Trellis files under `.agents/**`, `.claude/**`, `.codex/**`, `.cursor/**`, `.gemini/**`, `.github/**`, `.opencode/**`, `.qoder/**`, `.codebuddy/**`, `.factory/**`, `.pi/**`, `.reasonix/**`, `.trae/**`, and `.zcode/**`.
-- Do not leave line-by-line style, wording, or local refactor comments on those copied files unless the PR explicitly changes Trellis integration, the copied file is the primary subject, it leaks secrets, it has syntax or wiring breakage, or it contradicts the PR goal.
-- If a Trellis-generated file needs a behavior change, leave one handoff comment asking for an upstream Trellis fix. Include the affected path, expected behavior, observed evidence or reproduction steps, and why the fix belongs upstream.
-- Continue reviewing repo-owned `.trellis/spec/**`, `.trellis/tasks/**`, application code, migrations, tests, docs, and non-Trellis scripts normally.
-- Group duplicate root-cause findings into one comment and point to a deterministic local check when one already covers the issue class.
-<!-- TRELLIS:COPILOT-GUIDANCE:END -->
-
-<!-- SD-AI-COMMAND-PACK:COPILOT-GUIDANCE:START -->
-## Trellis And SD AI Command Pack Review Guidance
-
-- Trellis is the repository workflow foundation; the SD AI Command Pack adds
-  Software Delivery command wrappers, local review tooling, post-merge
-  housekeeping, and update-spec knowledge refreshes on top of it. Repo-local
-  entry points: `.trellis/workflow.md`, `.agents/skills/sd-*/SKILL.md`, and
-  `docs/SD_AI_COMMAND_PACK.md`.
-- Treat copied-in Trellis and SD AI command pack payloads as vendored files:
-  do not comment on their wording, style, examples, or implementation details
-  unless the PR explicitly changes that integration, the copied file is the
-  primary subject, it leaks a secret, breaks obvious syntax or repository
-  wiring, or directly contradicts the PR's stated tooling goal. Copied
-  payloads match these families:
-  <!-- narrow-globs: skip - cross-platform generated payload families include optional platform anchors. -->
-  - `.trellis/scripts/**` and `.trellis/agents/**`
-  - `**/skills/trellis-*/**` and `**/skills/sd-*/**` under `.agents/`,
-    `.agent/`, `.claude/`, `.codebuddy/`, `.codex/`, `.cursor/`, `.devin/`,
-    `.factory/`, `.gemini/`, `.github/`, `.kiro/`, `.kilocode/`,
-    `.opencode/`, `.pi/`, `.qoder/`, `.reasonix/`, and `.trae/`
-  - Trellis and `sd` command, prompt, or workflow files under
-    `.agent/workflows/`, `.claude/commands/`, `.codebuddy/commands/`,
-    `.cursor/commands/`, `.devin/workflows/`, `.factory/commands/`,
-    `.gemini/commands/`, `.github/prompts/` (including `continue.prompt.md` and `finish-work.prompt.md`),
-    `.kilocode/workflows/`,
-    `.opencode/commands/`, `.pi/prompts/`, `.qoder/commands/`,
-    `.trae/commands/`, and `.zcode/commands/`
-  - `.github/copilot/**`, `.github/hooks/trellis.json`, and
-    `.github/agents/trellis-*`; platform hook/agent payloads under
-    `.codebuddy/`, `.factory/`, `.qoder/`, `.trae/`, `.zcode/agents/`, and
-    legacy `.zcode/cli/agents/`
-  - `scripts/sd-ai-command-pack-*`, legacy `scripts/trellis-*.sh`, and
-    `scripts/update_repomix*`
-  - The `.gito/`, `.prism/`, and `.sd-ai-command-pack/` directories,
-    `docs/SD_AI_COMMAND_PACK.md`, and legacy `docs/TRELLIS_REVIEW_PR_PACK.md`
-- Original Trellis-owned runtime/template copies are not valid modification
-  targets for target-repo or sd-ai-command-pack PRs, and should not be reviewed
-  line by line. Treat diffs in upstream Trellis-owned surfaces such as
-  <!-- narrow-globs: skip - optional Trellis-owned payload locations may not exist in every repo. -->
-  `.trellis/scripts/**`, `.trellis/agents/**`, and platform `trellis-*` skills,
-  agents, commands, prompts, workflows, hooks, and settings as ownership/scope
-  issues. This does not apply to repo-owned `.trellis/spec/**` guidance or
-  `.trellis/tasks/**` task documents. If a change appears needed, leave one
-  handoff comment instead:
-  ```text
-  Handoff for sd-ai-command-pack source session:
-  A change appears needed in original Trellis-owned runtime/template files,
-  which should not be edited in the consumer repo copy.
-  Affected file(s): <paths>
-  Desired behavior: <short behavior>
-  Evidence/repro: <commands, review finding, or failure>
-  Please decide whether this belongs in an sd-ai-command-pack wrapper/template,
-  a pack-owned guard, or an upstream Trellis change, then implement the durable
-  source-owned fix.
-  ```
-- Spend review budget on app behavior, data contracts,
-  data/access/security boundaries, migrations and rollback behavior, token or
-  invitation fail-closed behavior, tests, operator-facing documentation, and
-  repo-owned scripts.
-- Before reviewing generated, copied, Trellis workspace, repository-map, or
-  pack files, look for a `Tooling/generated scope:` section in the PR body.
-  Broad automation or CI diffs use `Automation scope:` or `CI/review scope:`;
-  repos add categories via `.sd-ai-command-pack/pr-body-scope.json`. If the
-  matching section is missing, request it once instead of scattering scope
-  comments across files.
-- Group duplicate root causes into one comment. When deterministic local checks
-  already cover a repeated issue class, point at the failing check once instead
-  of repeating inline findings; if the check is missing or fragile, ask for one
-  focused fixture in the local guard suite.
-- Separate current, non-outdated unresolved findings from
-  stale or outdated review threads. Treat copied or generated payloads as
-  source and sync-contract review surfaces, not style-review surfaces.
-- On pack refresh PRs (typically titled
-  `refresh sd-ai-command-pack to <version>`), the vendored payload was
-  reviewed upstream in the
-  sd-ai-command-pack repository before release; review this repo's
-  integration (PR metadata, repo-owned files, wiring) rather than
-  re-reviewing the vendored file contents line by line.
-<!-- SD-AI-COMMAND-PACK:COPILOT-GUIDANCE:END -->
 ````
 
 ## File: .trellis/spec/backend/database-guidelines.md
@@ -5204,44 +5077,6 @@ changelog = (PACK_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
   version bumps and dated changelog headings.
 ````
 
-## File: Makefile
-````makefile
-BREW_PYTHON ?= /opt/homebrew/bin/python3.13
-PYTHON ?= $(shell if [ -x "$(BREW_PYTHON)" ]; then printf '%s' "$(BREW_PYTHON)"; elif [ -x /usr/local/bin/python3.13 ]; then printf '%s' /usr/local/bin/python3.13; elif [ -x /opt/homebrew/bin/python3 ]; then printf '%s' /opt/homebrew/bin/python3; elif [ -x /usr/local/bin/python3 ]; then printf '%s' /usr/local/bin/python3; else command -v python3; fi)
-VENV ?= .venv
-VENV_PYTHON = $(VENV)/bin/python
-RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON)"; else printf '%s' "$(PYTHON)"; fi)
-
-.PHONY: setup generate repomix sync test lint release-check check
-
-setup:
-	"$(PYTHON)" -m venv "$(VENV)"
-	"$(VENV_PYTHON)" -m pip install -r requirements-dev.txt
-
-generate:
-	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py
-
-repomix:
-	bash scripts/update_repomix
-
-# Dogfood: refresh this machine's user-level install from templates/.
-sync:
-	"$(RUN_PYTHON)" install.py --user
-
-test:
-	"$(RUN_PYTHON)" -m unittest discover -s tests -v
-
-lint:
-	"$(RUN_PYTHON)" -m ruff check install.py installer tests .github/scripts
-	"$(RUN_PYTHON)" -m mypy installer install.py
-
-release-check:
-	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check
-	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py
-
-check: test lint release-check
-````
-
 ## File: manifest.json
 ````json
 {
@@ -5582,9 +5417,11 @@ check: test lint release-check
       ".gemini/**",
       ".github/agents/**",
       ".github/copilot/**",
+      ".github/copilot-instructions.md",
       ".github/hooks/**",
       ".github/prompts/**",
       ".github/skills/**",
+      ".github/PULL_REQUEST_TEMPLATE.md",
       ".kiro/**",
       ".kilocode/**",
       ".opencode/**",
@@ -5738,236 +5575,42 @@ prefix is reserved; document any future variable here.
   after reviewing the list.
 ````
 
-## File: .trellis/spec/backend/quality-guidelines.md
-````markdown
-# Quality Guidelines
+## File: Makefile
+````makefile
+BREW_PYTHON ?= /opt/homebrew/bin/python3.13
+PYTHON ?= $(shell if [ -x "$(BREW_PYTHON)" ]; then printf '%s' "$(BREW_PYTHON)"; elif [ -x /usr/local/bin/python3.13 ]; then printf '%s' /usr/local/bin/python3.13; elif [ -x /opt/homebrew/bin/python3 ]; then printf '%s' /opt/homebrew/bin/python3; elif [ -x /usr/local/bin/python3 ]; then printf '%s' /usr/local/bin/python3; else command -v python3; fi)
+VENV ?= .venv
+VENV_PYTHON = $(VENV)/bin/python
+RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON)"; else printf '%s' "$(PYTHON)"; fi)
 
-> Code quality standards for backend development.
+.PHONY: setup generate repomix sync test lint release-check check
 
----
+setup:
+	"$(PYTHON)" -m venv "$(VENV)"
+	"$(VENV_PYTHON)" -m pip install -r requirements-dev.txt
 
-## Overview
+generate:
+	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py
 
-Changes must preserve safe, deterministic installation across supported Python
-and operating-system versions. Prefer small modules, explicit data flow,
-immutable result records, plan-before-apply operations, and tests at the same
-boundary users exercise.
+repomix:
+	bash scripts/update_repomix
 
----
+# Dogfood: refresh this machine's user-level install from templates/.
+sync:
+	"$(RUN_PYTHON)" install.py --user
 
-## Forbidden Patterns
+test:
+	"$(RUN_PYTHON)" -m unittest discover -s tests -v
 
-- Hand-editing generated `manifest.json` rows instead of changing the registry
-  or canonical templates and running `make generate`.
-- Writing outside the validated install root or following untrusted symlinked
-  receipt/destination paths.
-- Destructive overwrite/removal without hash or template provenance, except
-  when the user explicitly requests `--force`.
-- Network/Git mutation during a dry-run.
-- Broad exception catches that hide actionable filesystem or subprocess errors.
-- Adding a shipped payload change without a manifest version bump and matching
-  `CHANGELOG.md` entry.
+lint:
+	"$(RUN_PYTHON)" -m ruff check install.py installer tests .github/scripts
+	"$(RUN_PYTHON)" -m mypy installer install.py
 
----
+release-check:
+	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check
+	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py
 
-## Required Patterns
-
-- Validate manifest, registry, source, and destination paths before mutation.
-- Preview a multi-file lifecycle operation before applying it.
-- Use atomic writes for installed files and receipts.
-- Keep canonical skill content under `templates/skills/` and pack declarations
-  in `installer/registry.py`.
-- Preserve compatibility with Python 3.10; use postponed annotations where
-  modern typing syntax appears.
-- Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
-  `F`, `I`, and `B` rules; keep mypy clean for `installer` and `install.py`.
-
----
-
-## Testing Requirements
-
-- Add focused unittest coverage for every observable behavior change, including
-  failure and preservation paths when filesystem state is involved.
-- Use temporary install roots; never target the developer's real home directory
-  from tests.
-- Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
-  retaining end-to-end CLI tests for parsing, exit codes, and installed files.
-- Run `make check`: generation parity, Ruff, mypy, the unittest suite, and the
-  release payload/version gate must all pass.
-
----
-
-## Code Review Checklist
-
-- Is the change made in the canonical registry/template/module rather than a
-  generated or duplicated surface?
-- Are all paths constrained to the intended source/install roots?
-- Does dry-run avoid mutation, and does apply reuse or revalidate its plan?
-- Are user-modified files preserved by default?
-- Do errors include actionable context without leaking sensitive contents?
-- Do tests cover success, invalid input, conflicts, and compatibility state?
-- If payload changed, are `manifest.json`, version, and `CHANGELOG.md` aligned?
-
----
-
-## Scenario: Pack Lifecycle CLI Changes
-
-### 1. Scope / Trigger
-
-- Trigger: changing `install.py` commands, install receipts, source-checkout
-  updates, removal, or retired-skill cleanup.
-- Why: these surfaces cross CLI parsing, filesystem state, Git state, generated
-  manifests, installed user scopes, and release compatibility.
-
-### 2. Signatures
-
-```text
-python3 install.py [install] [--user | --root PATH] [install options]
-python3 install.py status [--user | --root PATH]
-python3 install.py refresh [--user | --root PATH] [install options]
-python3 install.py update [--user | --root PATH] [install options]
-python3 install.py remove [--user | --root PATH] [removal options]
-python3 install.py --version
-```
-
-The bare invocation remains the convenient install form. Lifecycle operations
-are positional commands; do not add parallel action flags such as `--remove`.
-
-### 3. Contracts
-
-- `status` reads `.se-ai-command-pack/{manifest,provenance}.json` plus
-  `installed-targets.txt` without modifying them.
-- `refresh` applies the current checkout through the normal plan-before-apply
-  installer path.
-- `update` trusts only the provenance-recorded `sourceRoot`, requires the
-  expected pack manifest, refuses a dirty checkout, and fast-forwards with
-  `git pull --ff-only`.
-- After pulling, `update` launches a fresh Python process, runs a dry-run, and
-  applies only when that plan succeeds. This prevents old imported modules
-  from being mixed with newly pulled files.
-- `remove` and retired-target cleanup delete only hash-vouched or
-  template-identical files unless the user explicitly passes `--force`.
-- Retiring a skill requires removing it from `SKILL_NAMES`, deleting its
-  canonical template, regenerating `manifest.json`, and registering every
-  previously shipped target in `RETIRED_TARGETS`.
-
-### 4. Validation & Error Matrix
-
-| Condition | Required behavior |
-|---|---|
-| Install root is missing | Exit nonzero with `install root not found`. |
-| Status receipts are absent or invalid | Report not installed and return 1. |
-| Recorded source checkout is missing or is the wrong pack | Exit before Git or filesystem writes. |
-| Source checkout is dirty | Exit before fetch, pull, or refresh. |
-| Fast-forward pull fails | Exit with the Git failure; never merge or rebase. |
-| Refreshed dry-run fails | Do not run the applying refresh. |
-| Retired target is hash-vouched | Remove it during normal refresh. |
-| Retired target drifted | Preserve and report it unless `--force` is explicit. |
-
-### 5. Good/Base/Bad Cases
-
-- Good: `python3 install.py update --user` fast-forwards a clean recorded
-  checkout, previews the new payload, and reapplies from a fresh process.
-- Base: `python3 install.py --user` remains an idempotent install/refresh.
-- Bad: implementing lifecycle behavior in a skill prompt, accepting both a
-  positional command and an action flag, continuing in the pre-pull Python
-  process, or deleting retired files without provenance vouching.
-
-### 6. Tests Required
-
-- CLI tests assert each positional command dispatches correctly and obsolete
-  action flags are rejected.
-- Status tests assert installed version, source checkout, platform grouping,
-  and the not-installed return code.
-- Update tests assert dirty-checkout refusal, `--ff-only`, dry-run-before-apply,
-  and two fresh-process invocations for planning and application.
-- Retirement tests inject a prior provenance hash and assert normal refresh
-  removes the vouched old target while existing drift-preservation tests stay
-  green.
-- Run `make check` to cover unit tests, Ruff, mypy, generated manifest parity,
-  and the release payload/version gate.
-
-### 7. Wrong vs Correct
-
-#### Wrong
-
-```text
-python3 install.py --remove
-```
-
-This duplicates the positional command model and creates a second parser path.
-
-#### Correct
-
-```text
-python3 install.py remove --user --dry-run
-python3 install.py remove --user
-```
-
-One command surface owns removal, with an explicit preview before application.
-
-## Scenario: Repomix Repository Map Refresh
-
-### 1. Scope / Trigger
-
-- Trigger: adding or changing the checked-in repository map, its Repomix
-  configuration, or its refresh command.
-
-### 2. Signatures
-
-```text
-make repomix
-bash scripts/update_repomix
-```
-
-### 3. Contracts
-
-- `repomix.config.json` owns the input exclusions and writes compressed,
-  parsable Markdown to `docs/repomix-map.md`.
-- `scripts/update_repomix` runs the pinned Repomix version through `npx`
-  without adding Node dependencies to this Python project.
-- The generated map excludes itself, local knowledge copies and receipts,
-  Trellis task/session state, and copied agent-platform surfaces.
-
-### 4. Validation & Error Matrix
-
-| Condition | Required behavior |
-|---|---|
-| `npx` is unavailable | Exit nonzero with an actionable requirement message. |
-| Repomix installation or generation fails | Propagate the nonzero exit; do not report a refreshed map. |
-| Repomix detects suspicious content | Treat the generation as failed and inspect before committing. |
-| Configuration changes | Regenerate and commit `docs/repomix-map.md` in the same change. |
-
-### 5. Good/Base/Bad Cases
-
-- Good: `make repomix` uses the pinned version and replaces the tracked map.
-- Base: rerunning the command without source changes produces no map diff.
-- Bad: running an unpinned global or latest Repomix version and committing an
-  output whose behavior cannot be reproduced from the repository.
-
-### 6. Tests Required
-
-- Run `make repomix` and require a successful Repomix security scan.
-- Run `git diff --check` and verify `docs/repomix-map.md` is the configured
-  output and does not include itself.
-- Run `make check` so repository-map tooling changes do not regress the Python
-  pack, generated surfaces, or release gate.
-
-### 7. Wrong vs Correct
-
-#### Wrong
-
-```text
-npx repomix@latest
-```
-
-#### Correct
-
-```text
-make repomix
-```
-
-The repository-owned command pins the tool and applies the curated exclusions.
+check: test lint release-check
 ````
 
 ## File: tests/test_management.py
@@ -6275,6 +5918,238 @@ project.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+````
+
+## File: .trellis/spec/backend/quality-guidelines.md
+````markdown
+# Quality Guidelines
+
+> Code quality standards for backend development.
+
+---
+
+## Overview
+
+Changes must preserve safe, deterministic installation across supported Python
+and operating-system versions. Prefer small modules, explicit data flow,
+immutable result records, plan-before-apply operations, and tests at the same
+boundary users exercise.
+
+---
+
+## Forbidden Patterns
+
+- Hand-editing generated `manifest.json` rows instead of changing the registry
+  or canonical templates and running `make generate`.
+- Writing outside the validated install root or following untrusted symlinked
+  receipt/destination paths.
+- Destructive overwrite/removal without hash or template provenance, except
+  when the user explicitly requests `--force`.
+- Network/Git mutation during a dry-run.
+- Broad exception catches that hide actionable filesystem or subprocess errors.
+- Adding a shipped payload change without a manifest version bump and matching
+  `CHANGELOG.md` entry.
+
+---
+
+## Required Patterns
+
+- Validate manifest, registry, source, and destination paths before mutation.
+- Preview a multi-file lifecycle operation before applying it.
+- Use atomic writes for installed files and receipts.
+- Keep canonical skill content under `templates/skills/` and pack declarations
+  in `installer/registry.py`.
+- Preserve compatibility with Python 3.10; use postponed annotations where
+  modern typing syntax appears.
+- Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
+  `F`, `I`, and `B` rules; keep mypy clean for `installer` and `install.py`.
+
+---
+
+## Testing Requirements
+
+- Add focused unittest coverage for every observable behavior change, including
+  failure and preservation paths when filesystem state is involved.
+- Use temporary install roots; never target the developer's real home directory
+  from tests.
+- Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
+  retaining end-to-end CLI tests for parsing, exit codes, and installed files.
+- Run `make check`: generation parity, Ruff, mypy, the unittest suite, and the
+  release payload/version gate must all pass.
+
+---
+
+## Code Review Checklist
+
+- Is the change made in the canonical registry/template/module rather than a
+  generated or duplicated surface?
+- Are all paths constrained to the intended source/install roots?
+- Does dry-run avoid mutation, and does apply reuse or revalidate its plan?
+- Are user-modified files preserved by default?
+- Do errors include actionable context without leaking sensitive contents?
+- Do tests cover success, invalid input, conflicts, and compatibility state?
+- If payload changed, are `manifest.json`, version, and `CHANGELOG.md` aligned?
+
+---
+
+## Scenario: Pack Lifecycle CLI Changes
+
+### 1. Scope / Trigger
+
+- Trigger: changing `install.py` commands, install receipts, source-checkout
+  updates, removal, or retired-skill cleanup.
+- Why: these surfaces cross CLI parsing, filesystem state, Git state, generated
+  manifests, installed user scopes, and release compatibility.
+
+### 2. Signatures
+
+```text
+python3 install.py [install] [--user | --root PATH] [install options]
+python3 install.py status [--user | --root PATH]
+python3 install.py refresh [--user | --root PATH] [install options]
+python3 install.py update [--user | --root PATH] [install options]
+python3 install.py remove [--user | --root PATH] [removal options]
+python3 install.py --version
+```
+
+The bare invocation remains the convenient install form. Lifecycle operations
+are positional commands; do not add parallel action flags such as `--remove`.
+
+### 3. Contracts
+
+- `status` reads `.se-ai-command-pack/{manifest,provenance}.json` plus
+  `installed-targets.txt` without modifying them.
+- `refresh` applies the current checkout through the normal plan-before-apply
+  installer path.
+- `update` trusts only the provenance-recorded `sourceRoot`, requires the
+  expected pack manifest, refuses a dirty checkout, and fast-forwards with
+  `git pull --ff-only`.
+- After pulling, `update` launches a fresh Python process, runs a dry-run, and
+  applies only when that plan succeeds. This prevents old imported modules
+  from being mixed with newly pulled files.
+- `remove` and retired-target cleanup delete only hash-vouched or
+  template-identical files unless the user explicitly passes `--force`.
+- Retiring a skill requires removing it from `SKILL_NAMES`, deleting its
+  canonical template, regenerating `manifest.json`, and registering every
+  previously shipped target in `RETIRED_TARGETS`.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Install root is missing | Exit nonzero with `install root not found`. |
+| Status receipts are absent or invalid | Report not installed and return 1. |
+| Recorded source checkout is missing or is the wrong pack | Exit before Git or filesystem writes. |
+| Source checkout is dirty | Exit before fetch, pull, or refresh. |
+| Fast-forward pull fails | Exit with the Git failure; never merge or rebase. |
+| Refreshed dry-run fails | Do not run the applying refresh. |
+| Retired target is hash-vouched | Remove it during normal refresh. |
+| Retired target drifted | Preserve and report it unless `--force` is explicit. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `python3 install.py update --user` fast-forwards a clean recorded
+  checkout, previews the new payload, and reapplies from a fresh process.
+- Base: `python3 install.py --user` remains an idempotent install/refresh.
+- Bad: implementing lifecycle behavior in a skill prompt, accepting both a
+  positional command and an action flag, continuing in the pre-pull Python
+  process, or deleting retired files without provenance vouching.
+
+### 6. Tests Required
+
+- CLI tests assert each positional command dispatches correctly and obsolete
+  action flags are rejected.
+- Status tests assert installed version, source checkout, platform grouping,
+  and the not-installed return code.
+- Update tests assert dirty-checkout refusal, `--ff-only`, dry-run-before-apply,
+  and two fresh-process invocations for planning and application.
+- Retirement tests inject a prior provenance hash and assert normal refresh
+  removes the vouched old target while existing drift-preservation tests stay
+  green.
+- Run `make check` to cover unit tests, Ruff, mypy, generated manifest parity,
+  and the release payload/version gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+python3 install.py --remove
+```
+
+This duplicates the positional command model and creates a second parser path.
+
+#### Correct
+
+```text
+python3 install.py remove --user --dry-run
+python3 install.py remove --user
+```
+
+One command surface owns removal, with an explicit preview before application.
+
+## Scenario: Repomix Repository Map Refresh
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing the checked-in repository map, its Repomix
+  configuration, or its refresh command.
+
+### 2. Signatures
+
+```text
+make repomix
+bash scripts/update_repomix
+```
+
+### 3. Contracts
+
+- `repomix.config.json` owns the input exclusions and writes compressed,
+  parsable Markdown to `docs/repomix-map.md`.
+- `scripts/update_repomix` runs the pinned Repomix version through `npx`
+  without adding Node dependencies to this Python project.
+- The generated map excludes itself, local knowledge copies and receipts,
+  Trellis task/session state, and copied agent-platform surfaces.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| `npx` is unavailable | Exit nonzero with an actionable requirement message. |
+| Repomix installation or generation fails | Propagate the nonzero exit; do not report a refreshed map. |
+| Repomix detects suspicious content | Treat the generation as failed and inspect before committing. |
+| Configuration changes | Regenerate and commit `docs/repomix-map.md` in the same change. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `make repomix` uses the pinned version and replaces the tracked map.
+- Base: rerunning the command without source changes produces no map diff.
+- Bad: running an unpinned global or latest Repomix version and committing an
+  output whose behavior cannot be reproduced from the repository.
+
+### 6. Tests Required
+
+- Run `make repomix` and require a successful Repomix security scan.
+- Run `git diff --check` and verify `docs/repomix-map.md` is the configured
+  output and does not include itself.
+- Run `make check` so repository-map tooling changes do not regress the Python
+  pack, generated surfaces, or release gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+npx repomix@latest
+```
+
+#### Correct
+
+```text
+make repomix
+```
+
+The repository-owned command pins the tool and applies the curated exclusions.
 ````
 
 ## File: .gitignore
