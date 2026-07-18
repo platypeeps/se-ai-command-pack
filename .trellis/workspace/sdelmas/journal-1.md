@@ -109,3 +109,36 @@ Added deterministic configuration and generated-map tests that enforce copied/ru
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: Stabilize Repomix map generation
+
+**Date**: 2026-07-17
+**Task**: Stabilize Repomix map generation
+**Branch**: `codex/add-repomix`
+
+### Summary
+
+Disabled Repomix Git change-count sorting so identical repository contents generate byte-stable map ordering. Added an executable config assertion, refreshed the generated map and Trellis quality contract, passed the full local gate, and completed a clean Copilot review round on PR #6.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1366e36` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
