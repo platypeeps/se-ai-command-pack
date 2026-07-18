@@ -69,6 +69,7 @@ installer/
   removal.py
   status.py
 scripts/
+  sd_ai_command_pack_fleet_lib.py
   sd_ai_command_pack_lib.py
   update_repomix
 templates/
@@ -2381,6 +2382,247 @@ VOUCHABLE_STATUSES = frozenset(
 WRITTEN_REMOVE_STATUSES = frozenset(
 ⋮----
 __all__ = [
+````
+
+## File: scripts/sd_ai_command_pack_fleet_lib.py
+````python
+#!/usr/bin/env python3
+"""Shared fleet manifest, payload digest, and candidate-ledger contracts."""
+⋮----
+FLEET_SCHEMA_VERSION = 3
+FLEET_PROFILE_SCHEMA_VERSION = 1
+CANDIDATE_LEDGER_SCHEMA_VERSION = 2
+MAX_CANDIDATE_TIMEOUT_SECONDS = 3600
+SHA_RE = re.compile(r"^[0-9a-f]{40,64}$")
+CONSUMER_NAME_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+PACK_NAME = "sd-ai-command-pack"
+DEFAULT_FLEET_MANIFEST = Path("docs/fleet/consumers.json")
+FLEET_CONFIG_ENV = "SD_AI_COMMAND_PACK_FLEET_CONFIG"
+FLEET_MANIFEST_ENV = "SD_AI_COMMAND_PACK_FLEET_MANIFEST"
+⋮----
+class FleetConfigError(ValueError)
+⋮----
+"""Raised when source-owned fleet configuration is invalid."""
+⋮----
+@dataclass(frozen=True)
+class FleetConsumer
+⋮----
+name: str
+github: str
+path_hint: str
+platforms: tuple[str, ...]
+rollout_priority: int
+candidate_timeout_seconds: int
+candidate_prepare: tuple[tuple[str, ...], ...]
+candidate_checks: tuple[tuple[str, ...], ...]
+⋮----
+@dataclass(frozen=True)
+class PayloadSource
+⋮----
+content: bytes
+executable: bool
+⋮----
+@dataclass(frozen=True)
+class FleetProfile
+⋮----
+path: Path
+pack_source: Path
+fleet_manifest: Path
+path_overrides: Mapping[str, Path]
+⋮----
+@dataclass(frozen=True)
+class FleetResolution
+⋮----
+manifest_path: Path
+⋮----
+target_version: str
+⋮----
+source: str
+profile_path: Path | None = None
+⋮----
+@dataclass(frozen=True)
+class FleetProfileUpdate
+⋮----
+status: str
+⋮----
+def load_json_object(path: Path, label: str) -> dict[str, Any]
+⋮----
+payload = json.loads(path.read_text(encoding="utf-8", errors="strict"))
+⋮----
+def _configured_path(value: str, *, base: Path) -> Path
+⋮----
+path = Path(value).expanduser()
+⋮----
+path = base / path
+⋮----
+env = os.environ if environ is None else environ
+base = Path.cwd() if cwd is None else cwd
+explicit = env.get(FLEET_CONFIG_ENV, "").strip()
+⋮----
+xdg_home = env.get("XDG_CONFIG_HOME", "").strip()
+⋮----
+xdg_path = Path(xdg_home).expanduser()
+⋮----
+config_home = xdg_path
+⋮----
+config_home = (Path.home() if home is None else home).expanduser() / ".config"
+⋮----
+value = payload.get(field)
+⋮----
+def load_fleet_profile(path: Path) -> FleetProfile
+⋮----
+payload = load_json_object(path, "fleet profile")
+⋮----
+pack_source_value = _profile_string(payload, "packSource", required=True)
+⋮----
+pack_source = _configured_path(pack_source_value, base=path.parent)
+manifest_value = _profile_string(payload, "fleetManifest", required=False)
+manifest_path = (
+⋮----
+raw_overrides = payload.get("pathOverrides", {})
+⋮----
+overrides: dict[str, Path] = {}
+seen: set[str] = set()
+⋮----
+key = name.casefold()
+⋮----
+def _pack_identity(pack_source: Path) -> tuple[Path, str]
+⋮----
+resolved_source = pack_source.expanduser().resolve()
+manifest = load_json_object(resolved_source / "manifest.json", "pack manifest")
+⋮----
+def _find_pack_source(manifest_path: Path) -> Path | None
+⋮----
+pack_manifest = candidate / "manifest.json"
+⋮----
+manifest = load_json_object(pack_manifest, "pack manifest")
+⋮----
+requested_manifest: Path | None = None
+source = ""
+⋮----
+requested_manifest = _configured_path(str(fleet_manifest), base=base)
+source = "command line"
+⋮----
+requested_manifest = _configured_path(env[FLEET_MANIFEST_ENV], base=base)
+source = FLEET_MANIFEST_ENV
+⋮----
+inferred_source = _find_pack_source(requested_manifest)
+⋮----
+profile_path = fleet_profile_path(env, home=home, cwd=base)
+⋮----
+profile = load_fleet_profile(profile_path)
+⋮----
+manifest_path = (resolved_source / DEFAULT_FLEET_MANIFEST).resolve()
+⋮----
+profile_path = (
+⋮----
+overrides: dict[str, str] = {}
+⋮----
+existing_payload = load_json_object(profile_path, "fleet profile")
+raw_overrides = existing_payload.get("pathOverrides", {})
+⋮----
+overrides = dict(raw_overrides)
+payload = {
+content = json.dumps(payload, indent=2, sort_keys=True) + "\n"
+current = None
+⋮----
+current = profile_path.read_text(encoding="utf-8", errors="strict")
+⋮----
+# Missing profile means a first-time write; keep current absent.
+⋮----
+status = "planned" if dry_run else ("updated" if current is not None else "created")
+⋮----
+temporary_path = Path(temporary_name)
+⋮----
+def _required_string(item: Mapping[str, Any], field: str, label: str) -> str
+⋮----
+value = item.get(field)
+⋮----
+def _parse_platforms(item: Mapping[str, Any], label: str) -> tuple[str, ...]
+⋮----
+platforms = item.get("platforms")
+⋮----
+parsed: list[str] = []
+⋮----
+commands = item.get(field)
+⋮----
+parsed: list[tuple[str, ...]] = []
+⋮----
+command_label = f"{label} {field}[{command_index}]"
+⋮----
+argv: list[str] = []
+⋮----
+consumers = manifest.get("consumers")
+⋮----
+parsed: list[FleetConsumer] = []
+seen_names: set[str] = set()
+seen_priorities: set[int] = set()
+⋮----
+label = f"fleet manifest consumer {item.get('name', index)}"
+name = _required_string(item, "name", label)
+⋮----
+name_key = name.casefold()
+⋮----
+github = _required_string(item, "github", label)
+⋮----
+path_hint = _required_string(item, "pathHint", label)
+priority = item.get("rolloutPriority")
+⋮----
+timeout = item.get("candidateTimeoutSeconds")
+⋮----
+def load_fleet_consumers(path: Path) -> list[FleetConsumer]
+⋮----
+def manifest_version(manifest: Mapping[str, Any], label: str = "pack manifest") -> str
+⋮----
+version = manifest.get("version")
+⋮----
+def pack_version(path: Path) -> str
+⋮----
+files = manifest.get("files")
+⋮----
+sources: set[str] = set()
+⋮----
+source = item.get("source")
+⋮----
+source_path = PurePosixPath(source)
+⋮----
+digest = hashlib.sha256()
+⋮----
+payload = source_loader(source)
+⋮----
+def filesystem_payload_digest(manifest_path: Path) -> str
+⋮----
+manifest = load_json_object(manifest_path, "pack manifest")
+root = manifest_path.resolve().parent
+⋮----
+def load_source(relative_path: str) -> PayloadSource
+⋮----
+path = root / relative_path
+⋮----
+resolved = path.resolve(strict=True)
+⋮----
+mode = resolved.stat().st_mode
+⋮----
+def fleet_manifest_digest(content: bytes) -> str
+⋮----
+errors: list[str] = []
+⋮----
+raw_results = ledger.get("consumers")
+⋮----
+by_name: dict[str, Mapping[str, Any]] = {}
+⋮----
+name = result.get("name")
+⋮----
+expected_names = {consumer.name.casefold() for consumer in consumers}
+actual_names = set(by_name)
+⋮----
+result = by_name.get(consumer.name.casefold())
+⋮----
+base_commit = result.get("baseCommit")
+⋮----
+expected_prepares = [list(command) for command in consumer.candidate_prepare]
+⋮----
+expected_checks = [list(command) for command in consumer.candidate_checks]
 ````
 
 ## File: scripts/sd_ai_command_pack_lib.py
