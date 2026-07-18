@@ -24,6 +24,7 @@
       ".devin/**",
       ".factory/**",
       ".gemini/**",
+      ".gito/**",
       ".github/agents/**",
       ".github/copilot/**",
       ".github/copilot-instructions.md",
@@ -35,6 +36,7 @@
       ".kilocode/**",
       ".opencode/**",
       ".pi/**",
+      ".prism/**",
       ".qoder/**",
       ".reasonix/**",
       ".trae/**",
@@ -47,6 +49,7 @@
       ".trellis/tasks/**",
       ".trellis/workspace/**",
       ".trellis/workflow.md",
+      "docs/SD_AI_COMMAND_PACK.md",
       "scripts/sd-ai-command-pack-*"
     ]
   }
