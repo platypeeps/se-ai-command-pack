@@ -3,7 +3,7 @@
   "name": "se-status",
   "title": "Implement se-status",
   "description": "Add a project-status workflow that synthesizes work sources into outcomes, progress, changes, blockers, risks, decisions, asks, and next actions without overlapping topical briefs.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

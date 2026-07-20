@@ -42,6 +42,16 @@ with the separately delivered `se-compare`, and post-decision execution
 planning with `se-plan`. The skill remains read-only; acting on a recommendation
 always requires a separate request and the relevant action capability.
 
+### Project-status workflow boundary
+
+`se-status` owns objective-oriented reporting across supplied or connected
+project sources. It separates completed outcomes from activity, current state,
+blockers, risks, recorded decisions, asks, and next actions while naming stale,
+unavailable, or contradictory inputs. Topic recency stays with `se-brief`,
+supplied-corpus synthesis with `se-digest`, recommendations with `se-decide`,
+and external baseline monitoring with `se-monitor`. The skill is read-only: it
+does not update project systems or send the resulting report.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):

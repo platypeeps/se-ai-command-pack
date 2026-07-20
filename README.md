@@ -1,8 +1,9 @@
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: deep research,
-decision support, daily briefs, meeting prep, landscape scans, and document digests —
-installed once per machine, centrally managed from this repository.
+decision support, project-status reporting, daily briefs, meeting prep,
+landscape scans, and document digests — installed once per machine, centrally
+managed from this repository.
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -36,6 +37,7 @@ come directly from canonical skill frontmatter.
 |---|---|
 | `se-brief` | Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update. |
 | `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
+| `se-status` | Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a

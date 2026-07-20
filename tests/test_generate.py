@@ -87,6 +87,11 @@ class RealRepoGeneratorTest(unittest.TestCase):
             "Use when the user wants a defensible recommendation",
             rendered,
         )
+        self.assertIn(
+            "Use when the user wants an objective-oriented project status",
+            rendered,
+        )
+        self.assertLess(rendered.index("`se-meeting-prep`"), rendered.index("`se-status`"))
 
     def test_check_mode_passes(self) -> None:
         self.assertEqual(gen.main(["--check"]), 0)

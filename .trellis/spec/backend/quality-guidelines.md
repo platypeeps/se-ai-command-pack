@@ -265,6 +265,108 @@ are testable, and execution is separate.
 
 ---
 
+## Scenario: Project Status Evidence And Authority Boundary
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing a skill that reports progress, current state,
+  blockers, risks, decisions, asks, or next actions for a project or objective.
+- Why: status prose can turn activity into outcomes, hide missing or stale
+  sources, invent ownership or dates, and imply authority to update or send.
+
+### 2. Signatures
+
+```text
+project=<initiative or workstream>
+objective=<intended outcome>
+since=<date, duration, or last-status>
+sources=<authorized project evidence>
+audience=<intended readers>
+length=short|standard
+```
+
+The final report exposes the reporting window, objective, confidence, outcomes,
+activity, current state, blockers, risks, recorded decisions, asks, next
+actions, source coverage, and material gaps.
+
+### 3. Contracts
+
+- Project, objective, reporting window, through-date, audience, and source
+  inventory are explicit. Material assumptions are visible before gathering.
+- Activity is not an outcome. Commits, meetings, messages, and task movement
+  count as progress only when evidence establishes changed state against the
+  objective.
+- Mutable claims are dated and attributed. Stale, inaccessible, conflicting,
+  or missing sources are named instead of silently excluded.
+- Completed outcomes, activity, current state, blockers, risks, recorded
+  decisions, asks, and next actions remain distinct report categories.
+- Unknown owners, dates, deadlines, percentages, and causal claims stay unknown;
+  concise no-material-change periods are valid.
+- Project status is distinct from topical recency, corpus synthesis,
+  recommendation, and external baseline monitoring.
+- Status skills are read-only. Reporting never grants authority to update tasks
+  or repositories, assign work, publish, message, or send the report.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Project or objective is materially ambiguous | Ask before classifying progress. |
+| Reporting window is absent | Use only a context-established cadence; otherwise ask. |
+| `last-status` baseline is unavailable | Name the missing baseline and require an explicit replacement window. |
+| A requested source is stale or inaccessible | Name it in source coverage and lower confidence. |
+| Sources disagree | Show each dated position and source; do not silently pick one. |
+| Evidence shows effort but no changed state | Report activity, not an outcome. |
+| No material change occurred | Return a short no-material-change report without filler. |
+| User asks to update or send | Require a separate request and the relevant action authority. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: report dated outcomes against an explicit objective, keep activity and
+  current state separate, surface blockers and source gaps, and identify only
+  evidenced decisions, asks, and next actions.
+- Base: sources are available but show no changed state, so the result is a
+  concise no-material-change report with current blockers and coverage.
+- Bad: summarize commit counts as outcomes, invent a completion percentage or
+  owner, hide an unavailable task system, make a new decision, or send the
+  report automatically.
+
+### 6. Tests Required
+
+- Pin the unknown-argument stop rule, prompt-injection boundary, read-only
+  authority, and explicit sibling-workflow routing.
+- Pin objective and reporting-window handling, outcome-versus-activity wording,
+  unavailable-source disclosure, no-material-change behavior, and the ban on
+  invented owners or dates.
+- Pin every required final-report field and shared source-standard fan-out.
+- Run focused skill/generator tests, `make generate`, `make check`, and the
+  release payload/version gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+We merged 14 commits, so the project is 80% complete. I assigned the remaining
+work and sent this update to stakeholders.
+```
+
+Activity was promoted to an outcome, the percentage and authority were
+invented, and reporting was incorrectly treated as permission to act.
+
+#### Correct
+
+```text
+Outcome: the dated acceptance evidence shows the stated objective now supports
+workflow X. Activity: 14 commits landed, but source Y is unavailable and no
+completion percentage is supported. Next action has no recorded owner.
+```
+
+The outcome is tied to changed state, activity stays separate, source limits
+remain visible, and unknown ownership is preserved.
+
+---
+
 ## Scenario: Pack Lifecycle CLI Changes
 
 ### 1. Scope / Trigger
