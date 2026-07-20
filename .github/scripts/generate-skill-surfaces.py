@@ -396,15 +396,21 @@ def rendered_skill_catalog(metadata: dict[str, dict[str, str]]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def read_readme_text() -> str:
+    try:
+        return README_PATH.read_text(encoding="utf-8")
+    except OSError as error:
+        raise GenerationError(f"cannot read README.md: {error}") from None
+
+
 def regenerated_readme_text(
     metadata: dict[str, dict[str, str]] | None = None,
+    current: str | None = None,
 ) -> str:
     if metadata is None:
         metadata = validate_skills()
-    try:
-        current = README_PATH.read_text(encoding="utf-8")
-    except OSError as error:
-        raise GenerationError(f"cannot read README.md: {error}") from None
+    if current is None:
+        current = read_readme_text()
     if (
         current.count(README_CATALOG_START) != 1
         or current.count(README_CATALOG_END) != 1
@@ -436,7 +442,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         metadata = validate_skills()
         regenerated_manifest = regenerated_manifest_text()
-        regenerated_readme = regenerated_readme_text(metadata)
+        committed_readme = read_readme_text()
+        regenerated_readme = regenerated_readme_text(metadata, committed_readme)
     except GenerationError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
@@ -444,7 +451,6 @@ def main(argv: list[str] | None = None) -> int:
     committed_manifest = (
         MANIFEST_PATH.read_text(encoding="utf-8") if MANIFEST_PATH.is_file() else None
     )
-    committed_readme = README_PATH.read_text(encoding="utf-8")
     if args.check:
         drifted = False
         if committed_manifest != regenerated_manifest:

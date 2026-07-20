@@ -320,6 +320,12 @@ class SandboxGeneratorTest(TempDirTestCase):
                 gen.regenerated_readme_text()
             self.assertIn("catalog markers", str(caught.exception))
 
+    def test_missing_readme_fails_cleanly_before_manifest_write(self) -> None:
+        self.write_skill()
+        self.readme_path.unlink()
+        self.assertEqual(gen.main([]), 1)
+        self.assertFalse(self.manifest_path.exists())
+
     def test_validation_failure_writes_neither_surface(self) -> None:
         self.write_skill()
         self.readme_path.write_text("# Missing markers\n", encoding="utf-8")

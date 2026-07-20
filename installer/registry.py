@@ -58,7 +58,8 @@ PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
 PLATFORMS = tuple(sorted(PLATFORM_REGISTRY))
 
 # Families describe a skill's primary outcome. Mapping order is the public
-# catalog order; empty families remain valid but are omitted from the catalog.
+# catalog order; declared families with zero registered skills remain valid but
+# are omitted from the catalog.
 FAMILY_LABELS: dict[str, str] = {
     "understand": "Understand",
     "decide": "Decide",
