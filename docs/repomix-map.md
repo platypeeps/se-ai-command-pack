@@ -2217,10 +2217,10 @@ does not update project systems or send the resulting report.
 ### Claim-audit workflow boundary
 
 `se-fact-check` starts from supplied claims or an artifact and returns a
-claim-by-claim ledger using exactly supported, partially supported, unverified,
-contradicted, or outdated. Open-ended evidence questions stay with
-`se-research`, while multi-document synthesis stays with `se-digest` unless the
-request explicitly asks to audit claims. Both `se-research` and
+claim-by-claim ledger using exactly five verdicts: supported, partially
+supported, unverified, contradicted, or outdated. Open-ended evidence questions
+stay with `se-research`, while multi-document synthesis stays with `se-digest`
+unless the request explicitly asks to audit claims. Both `se-research` and
 `se-fact-check` consume the shared `verification-protocol.md`; the canonical
 source lives under `_shared/references/` while installed paths remain local to
 each skill. The audit is read-only and offers only minimal corrected wording.
@@ -4171,6 +4171,11 @@ targets = {row["target"] for row in manifest["files"]}
 ⋮----
 basename = Path(source).name
 ⋮----
+def test_fact_check_installs_all_cited_shared_references(self) -> None
+⋮----
+expected_sources = {
+actual_sources = {
+⋮----
 def test_verification_protocol_preserves_research_targets(self) -> None
 ⋮----
 source = "_shared/references/verification-protocol.md"
@@ -5936,6 +5941,15 @@ check: test lint release-check
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-fact-check/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".config/agents/skills/se-fact-check/references/verification-protocol.md",
       "anchor": ".config/agents",
@@ -5954,6 +5968,15 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-fact-check/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".claude/skills/se-fact-check/references/verification-protocol.md",
       "anchor": ".claude",
@@ -5965,6 +5988,15 @@ check: test lint release-check
       "scope": "user",
       "source": "templates/skills/se-fact-check/SKILL.md",
       "target": ".codex/skills/se-fact-check/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-fact-check/references/source-standards.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
