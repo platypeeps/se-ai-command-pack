@@ -332,6 +332,40 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.assertEqual(gen.main([]), 1)
         self.assertFalse(self.manifest_path.exists())
 
+    def test_readme_write_failure_keeps_manifest_unchanged(self) -> None:
+        self.write_skill()
+        committed_readme = self.readme_path.read_text(encoding="utf-8")
+        calls: list[Path] = []
+
+        def fail_readme(path: Path, content: str) -> None:
+            calls.append(path)
+            raise SystemExit(f"error: cannot write {path}: read-only fixture")
+
+        with mock.patch.object(gen, "atomic_write_text", side_effect=fail_readme):
+            self.assertEqual(gen.main([]), 1)
+        self.assertEqual(calls, [self.readme_path])
+        self.assertEqual(
+            self.readme_path.read_text(encoding="utf-8"), committed_readme
+        )
+        self.assertFalse(self.manifest_path.exists())
+
+    def test_manifest_write_failure_rolls_back_readme(self) -> None:
+        self.write_skill()
+        committed_readme = self.readme_path.read_text(encoding="utf-8")
+        atomic_write_text = gen.atomic_write_text
+
+        def fail_manifest(path: Path, content: str) -> None:
+            if path == self.manifest_path:
+                raise SystemExit(f"error: cannot write {path}: read-only fixture")
+            atomic_write_text(path, content)
+
+        with mock.patch.object(gen, "atomic_write_text", side_effect=fail_manifest):
+            self.assertEqual(gen.main([]), 1)
+        self.assertEqual(
+            self.readme_path.read_text(encoding="utf-8"), committed_readme
+        )
+        self.assertFalse(self.manifest_path.exists())
+
     def test_check_detects_drift(self) -> None:
         self.write_skill()
         self.assertEqual(gen.main([]), 0)

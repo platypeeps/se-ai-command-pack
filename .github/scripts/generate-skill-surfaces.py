@@ -21,6 +21,7 @@ from pathlib import Path
 PACK_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PACK_ROOT))
 
+from installer.fileops import atomic_write_text  # noqa: E402
 from installer.registry import (  # noqa: E402
     FAMILY_LABELS,
     IF_ANCHOR_EXISTS,
@@ -428,6 +429,30 @@ def regenerated_readme_text(
     return f"{current[:start]}\n{catalog}\n{current[end:]}"
 
 
+def write_generated_surfaces(
+    updates: list[tuple[Path, str, str | None]],
+) -> None:
+    written: list[tuple[Path, str | None]] = []
+    try:
+        for path, regenerated, committed in updates:
+            atomic_write_text(path, regenerated)
+            written.append((path, committed))
+    except SystemExit as error:
+        rollback_errors: list[str] = []
+        for path, committed in reversed(written):
+            try:
+                if committed is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    atomic_write_text(path, committed)
+            except (OSError, SystemExit) as rollback_error:
+                rollback_errors.append(f"{_display(path)}: {rollback_error}")
+        detail = str(error).removeprefix("error: ")
+        if rollback_errors:
+            detail += "; rollback failed for " + ", ".join(rollback_errors)
+        raise GenerationError(detail) from None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Validate skills and regenerate manifest and README surfaces."
@@ -448,9 +473,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
-    committed_manifest = (
-        MANIFEST_PATH.read_text(encoding="utf-8") if MANIFEST_PATH.is_file() else None
-    )
+    try:
+        committed_manifest = (
+            MANIFEST_PATH.read_text(encoding="utf-8")
+            if MANIFEST_PATH.is_file()
+            else None
+        )
+    except OSError as error:
+        print(f"error: cannot read manifest.json: {error}", file=sys.stderr)
+        return 1
     if args.check:
         drifted = False
         if committed_manifest != regenerated_manifest:
@@ -472,17 +503,21 @@ def main(argv: list[str] | None = None) -> int:
         print("manifest.json and README.md match the generated surfaces")
         return 0
 
-    changed = False
-    if committed_manifest != regenerated_manifest:
-        MANIFEST_PATH.write_text(regenerated_manifest, encoding="utf-8")
-        print(f"wrote {_display(MANIFEST_PATH)}")
-        changed = True
+    updates: list[tuple[Path, str, str | None]] = []
     if committed_readme != regenerated_readme:
-        README_PATH.write_text(regenerated_readme, encoding="utf-8")
-        print(f"wrote {_display(README_PATH)}")
-        changed = True
-    if not changed:
+        updates.append((README_PATH, regenerated_readme, committed_readme))
+    if committed_manifest != regenerated_manifest:
+        updates.append((MANIFEST_PATH, regenerated_manifest, committed_manifest))
+    if not updates:
         print("manifest.json and README.md unchanged")
+        return 0
+    try:
+        write_generated_surfaces(updates)
+    except GenerationError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+    for path, _, _ in updates:
+        print(f"wrote {_display(path)}")
     return 0
 
 

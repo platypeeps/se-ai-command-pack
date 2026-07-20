@@ -259,6 +259,7 @@ Manifest header fields and README content outside the markers are preserved.
 ⋮----
 PACK_ROOT = Path(__file__).resolve().parents[2]
 ⋮----
+from installer.fileops import atomic_write_text  # noqa: E402
 from installer.registry import (  # noqa: E402
 ⋮----
 MANIFEST_PATH = ROOT / "manifest.json"
@@ -397,14 +398,22 @@ family_skills: list[SkillInfo] = [
 ⋮----
 description = metadata[skill.name]["description"]
 ⋮----
+def read_readme_text() -> str
+⋮----
 metadata = validate_skills()
 ⋮----
-current = README_PATH.read_text(encoding="utf-8")
+current = read_readme_text()
 ⋮----
 start = current.index(README_CATALOG_START) + len(README_CATALOG_START)
 end = current.index(README_CATALOG_END)
 ⋮----
 catalog = rendered_skill_catalog(metadata).rstrip("\n")
+⋮----
+written: list[tuple[Path, str | None]] = []
+⋮----
+rollback_errors: list[str] = []
+⋮----
+detail = str(error).removeprefix("error: ")
 ⋮----
 def main(argv: list[str] | None = None) -> int
 ⋮----
@@ -413,18 +422,16 @@ parser = argparse.ArgumentParser(
 args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 ⋮----
 regenerated_manifest = regenerated_manifest_text()
-regenerated_readme = regenerated_readme_text(metadata)
+committed_readme = read_readme_text()
+regenerated_readme = regenerated_readme_text(metadata, committed_readme)
 ⋮----
 committed_manifest = (
-committed_readme = README_PATH.read_text(encoding="utf-8")
 ⋮----
 drifted = False
 ⋮----
 drifted = True
 ⋮----
-changed = False
-⋮----
-changed = True
+updates: list[tuple[Path, str, str | None]] = []
 ````
 
 ## File: .github/workflows/tests.yml
@@ -2387,7 +2394,8 @@ PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
 PLATFORMS = tuple(sorted(PLATFORM_REGISTRY))
 ⋮----
 # Families describe a skill's primary outcome. Mapping order is the public
-# catalog order; empty families remain valid but are omitted from the catalog.
+# catalog order; declared families with zero registered skills remain valid but
+# are omitted from the catalog.
 FAMILY_LABELS: dict[str, str] = {
 ⋮----
 # Canonical skill registry. Row order remains the manifest/install order;
@@ -3557,7 +3565,22 @@ first = VALID_SKILL.format(name="se-test").replace(
 ⋮----
 def test_catalog_requires_exactly_one_marker_pair(self) -> None
 ⋮----
+def test_missing_readme_fails_cleanly_before_manifest_write(self) -> None
+⋮----
 def test_validation_failure_writes_neither_surface(self) -> None
+⋮----
+def test_readme_write_failure_keeps_manifest_unchanged(self) -> None
+⋮----
+committed_readme = self.readme_path.read_text(encoding="utf-8")
+calls: list[Path] = []
+⋮----
+def fail_readme(path: Path, content: str) -> None
+⋮----
+def test_manifest_write_failure_rolls_back_readme(self) -> None
+⋮----
+atomic_write_text = gen.atomic_write_text
+⋮----
+def fail_manifest(path: Path, content: str) -> None
 ⋮----
 def test_check_detects_drift(self) -> None
 ⋮----
