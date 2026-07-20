@@ -3680,6 +3680,10 @@ def test_manifest_matches_generated(self) -> None
 ⋮----
 committed = (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
 ⋮----
+def test_manifest_description_matches_bootstrap_default(self) -> None
+⋮----
+committed = json.loads(
+⋮----
 def test_readme_catalog_matches_generated(self) -> None
 ⋮----
 committed = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
@@ -4991,7 +4995,7 @@ check: test lint release-check
   "name": "se-ai-command-pack",
   "version": "0.3.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills (research, briefs, meeting prep, scans, digests) into agent skill directories.",
+  "description": "Install user-level knowledge-work skills (research, decisions, briefs, meeting prep, scans, digests) into agent skill directories.",
   "files": [
     {
       "platform": "agents",
@@ -5373,7 +5377,7 @@ warn_unused_ignores = true
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: deep research,
-daily briefs, meeting prep, landscape scans, and document digests —
+decision support, daily briefs, meeting prep, landscape scans, and document digests —
 installed once per machine, centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling

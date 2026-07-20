@@ -3,7 +3,7 @@
   "name": "se-ai-command-pack",
   "version": "0.3.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills (research, briefs, meeting prep, scans, digests) into agent skill directories.",
+  "description": "Install user-level knowledge-work skills (research, decisions, briefs, meeting prep, scans, digests) into agent skill directories.",
   "files": [
     {
       "platform": "agents",

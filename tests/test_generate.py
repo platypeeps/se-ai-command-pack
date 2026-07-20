@@ -59,6 +59,15 @@ class RealRepoGeneratorTest(unittest.TestCase):
         committed = (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
         self.assertEqual(committed, gen.regenerated_manifest_text())
 
+    def test_manifest_description_matches_bootstrap_default(self) -> None:
+        committed = json.loads(
+            (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            committed["description"],
+            gen.DEFAULT_MANIFEST_HEADER["description"],
+        )
+
     def test_readme_catalog_matches_generated(self) -> None:
         committed = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
         self.assertEqual(committed, gen.regenerated_readme_text())

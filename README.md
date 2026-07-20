@@ -1,7 +1,7 @@
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: deep research,
-daily briefs, meeting prep, landscape scans, and document digests —
+decision support, daily briefs, meeting prep, landscape scans, and document digests —
 installed once per machine, centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling
