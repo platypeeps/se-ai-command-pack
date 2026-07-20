@@ -24,6 +24,12 @@ come directly from canonical skill frontmatter.
 | `se-scan` | Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria. |
 | `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
 
+### Decide
+
+| Skill | Use when |
+|---|---|
+| `se-decide` | Use when the user wants a defensible recommendation between known options using explicit criteria, constraints, evidence, tradeoffs, and uncertainty. |
+
 ### Coordinate
 
 | Skill | Use when |

@@ -39,11 +39,12 @@ The workflow should:
 7. Deliver the decision, tradeoffs, confidence, reversibility, missing evidence,
    and smallest next action.
 
-Register the skill in the Decide family when the taxonomy task has landed. If
-this task lands first, add it to the current `SKILL_NAMES` tuple in an order
-that can be migrated mechanically to the family registry later. Fan
-`source-standards.md` into the skill because the decision matrix can contain
-external or time-sensitive evidence.
+Register the skill in the landed `SKILLS` registry under the Decide family,
+preserving the registry's canonical manifest order. Fan `source-standards.md`
+into the skill because the decision matrix can contain external or
+time-sensitive evidence. Regenerate the marker-bounded README catalog and
+manifest from those canonical sources rather than editing either surface by
+hand.
 
 ## Boundaries And Non-Goals
 
@@ -77,7 +78,9 @@ This update replaces the earlier provisional non-creation boundary.
 - `tests/test_skills.py` — decision-specific safety and output pins.
 - `tests/test_generate.py` — existing fan-out coverage should include the new
   registry entry; add focused coverage only if taxonomy changes its fixtures.
-- `README.md` and `docs/SE_AI_COMMAND_PACK.md` — catalog and maintenance docs.
+- `README.md` — generated family-grouped catalog entry.
+- `docs/SE_AI_COMMAND_PACK.md` — operator inventory and boundary guidance when
+  the generated catalog alone is insufficient.
 - `CHANGELOG.md` and the manifest version — release metadata.
 
 ## Risks And Edge Cases
@@ -105,3 +108,5 @@ This update replaces the earlier provisional non-creation boundary.
   generated rows.
 - Run focused skill/generator tests, then `make check` for unittest, Ruff, mypy,
   generation parity, and the payload/version release gate.
+- Run `make repomix` and refresh the existing Obsidian KB after the final
+  source/spec changes so generated knowledge surfaces stay synchronized.

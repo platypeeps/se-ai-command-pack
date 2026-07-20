@@ -1,1 +1,4 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Canonical skill, registry, shared-reference, generated README, and manifest ownership boundaries."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Skill structure, source validation, generated-surface parity, testing, and release-gate contracts."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Reuse existing skills and shared references instead of duplicating discovery, research, digest, or comparison behavior."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Trace the skill source through registry, generation, documentation, release metadata, and installed targets."}

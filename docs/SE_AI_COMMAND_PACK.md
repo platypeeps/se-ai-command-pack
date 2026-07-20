@@ -32,6 +32,16 @@ process. User-facing install/update/remove instructions live in the
   surface. None are currently shipped, and family names do not create nested
   command namespaces.
 
+### Decision workflow boundary
+
+`se-decide` owns a recommendation between known options using explicit
+criteria, constraints, evidence, tradeoffs, confidence, and reversibility.
+Candidate discovery stays with `se-scan`, open evidence gathering with
+`se-research`, supplied-corpus synthesis with `se-digest`, neutral comparison
+with the separately delivered `se-compare`, and post-decision execution
+planning with `se-plan`. The skill remains read-only; acting on a recommendation
+always requires a separate request and the relevant action capability.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):

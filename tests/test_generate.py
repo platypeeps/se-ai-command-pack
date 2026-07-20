@@ -65,13 +65,17 @@ class RealRepoGeneratorTest(unittest.TestCase):
 
     def test_readme_catalog_uses_family_order_and_frontmatter(self) -> None:
         rendered = gen.regenerated_readme_text()
-        self.assertLess(rendered.index("### Understand"), rendered.index("### Coordinate"))
-        self.assertNotIn("### Decide", rendered)
+        self.assertLess(rendered.index("### Understand"), rendered.index("### Decide"))
+        self.assertLess(rendered.index("### Decide"), rendered.index("### Coordinate"))
         self.assertNotIn("### Create", rendered)
         self.assertNotIn("### Operate", rendered)
         self.assertNotIn("### Improve", rendered)
         self.assertIn(
             "Use when the user asks for deep, multi-source research",
+            rendered,
+        )
+        self.assertIn(
+            "Use when the user wants a defensible recommendation",
             rendered,
         )
 

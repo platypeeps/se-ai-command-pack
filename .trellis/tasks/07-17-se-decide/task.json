@@ -3,7 +3,7 @@
   "name": "se-decide",
   "title": "Implement se-decide",
   "description": "Add a decision workflow that turns known options, constraints, criteria, and evidence into a recommendation with tradeoffs, confidence, reversibility, missing evidence, and next actions.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

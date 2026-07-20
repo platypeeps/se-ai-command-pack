@@ -35,6 +35,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-meeting-prep",
     "se-scan",
     "se-digest",
+    "se-decide",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -117,6 +118,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-meeting-prep",
                 "se-scan",
                 "se-digest",
+                "se-decide",
             ),
         )
         self.assertEqual(
@@ -127,6 +129,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-meeting-prep": "coordinate",
                 "se-scan": "understand",
                 "se-digest": "understand",
+                "se-decide": "decide",
             },
         )
 
@@ -187,6 +190,38 @@ class SkillSafetyPinsTest(unittest.TestCase):
 
     def test_brief_is_read_only(self) -> None:
         self.assertIn("read-only", normalized("se-brief"))
+
+    def test_decide_preserves_uncertainty_and_never_acts(self) -> None:
+        text = normalized("se-decide").lower()
+        self.assertIn("read-only", text)
+        self.assertIn("unknown remains unknown", text)
+        self.assertIn("do not invent weights, scores, or numeric precision", text)
+        self.assertIn("strongest counterargument", text)
+        self.assertIn("conditions would change the recommendation", text)
+
+    def test_decide_has_explicit_sibling_boundaries(self) -> None:
+        text = normalized("se-decide")
+        for sibling in (
+            "se-scan",
+            "se-research",
+            "se-digest",
+            "se-compare",
+            "se-plan",
+        ):
+            self.assertIn(f"`{sibling}`", text)
+
+    def test_decide_final_report_contract(self) -> None:
+        text = skill_text("se-decide")
+        for field in (
+            "**Decision**",
+            "**Option comparison**",
+            "**Tradeoffs**",
+            "**Confidence**",
+            "**Reversibility**",
+            "**Missing evidence**",
+            "**Next action**",
+        ):
+            self.assertIn(field, text)
 
     def test_meeting_prep_excludes_sensitive_data(self) -> None:
         text = normalized("se-meeting-prep")
