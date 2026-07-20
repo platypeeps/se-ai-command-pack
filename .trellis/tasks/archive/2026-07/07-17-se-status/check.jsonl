@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify canonical structure, status evidence boundaries, safety pins, generated parity, and version/changelog release behavior."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Check objective-status trigger boundaries and prevent duplicated sibling-skill workflows."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Check registry-to-manifest-to-installed-target flow and generated documentation synchronization."}

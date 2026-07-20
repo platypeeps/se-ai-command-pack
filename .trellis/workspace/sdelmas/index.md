@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 7
+- **Total Sessions**: 8
 - **Last Active**: 2026-07-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~267 | Active |
+| `journal-1.md` | ~314 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 8 | 2026-07-20 | Add se-status project reporting workflow | `b54aef6` | `codex/se-status` |
 | 7 | 2026-07-20 | Add se-decide decision workflow | `2a97c10`, `6a9a559` | `codex/se-decide` |
 | 6 | 2026-07-20 | Skill family taxonomy and generated catalog | `8d615b7`, `b39cd3f`, `6d38018`, `0fe29d4` | `codex/skill-family-taxonomy` |
 | 5 | 2026-07-18 | Complete personal profile contract | `f774463`, `dd20365` | `codex/complete-personal-profile-contract` |

@@ -39,8 +39,8 @@ The workflow should:
 6. Date material changes, attribute load-bearing statements, and deliver a
    concise update with a source-coverage footer.
 
-Register the skill under Coordinate, or under the current flat registry if the
-taxonomy task has not landed. Add it to the shared source-standard consumers
+Register the skill under the landed Coordinate family while preserving flat
+canonical and installed paths. Add it to the shared source-standard consumers
 and to the external-input safety test set.
 
 ## Boundaries And Non-Goals
@@ -48,6 +48,8 @@ and to the external-input safety test set.
 - `se-brief` remains responsible for recent information across standing topics.
 - `se-digest` remains responsible for reconciling a supplied corpus rather than
   reporting progress toward an objective.
+- `se-decide` recommends between known options; status may report an already
+  recorded decision but must not make one on the project's behalf.
 - `se-monitor` will own baseline-to-baseline change detection for an external
   subject; status owns project state and stakeholder communication.
 - Do not update tasks, repositories, calendars, or messages.
@@ -58,10 +60,11 @@ and to the external-input safety test set.
 - `templates/skills/se-status/SKILL.md` — new canonical skill.
 - `installer/registry.py` — Coordinate registration and source-standard fan-out.
 - `manifest.json` — generated platform payload rows.
-- `tests/test_skills.py` — objective, outcome/activity, source-gap, and read-only
-  pins.
+- `tests/test_skills.py` — registry, objective, outcome/activity, source-gap,
+  sibling-boundary, final-report, and read-only pins.
 - `tests/test_generate.py` — registry/fan-out coverage where needed.
-- `README.md`, `docs/SE_AI_COMMAND_PACK.md`, `CHANGELOG.md`, and manifest version.
+- `README.md`, generator/manifest identity, `docs/SE_AI_COMMAND_PACK.md`,
+  `CHANGELOG.md`, and manifest version `0.4.0`.
 
 ## Risks And Edge Cases
 

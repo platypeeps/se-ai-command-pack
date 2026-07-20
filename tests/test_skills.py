@@ -36,6 +36,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-scan",
     "se-digest",
     "se-decide",
+    "se-status",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -119,6 +120,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-scan",
                 "se-digest",
                 "se-decide",
+                "se-status",
             ),
         )
         self.assertEqual(
@@ -130,6 +132,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-scan": "understand",
                 "se-digest": "understand",
                 "se-decide": "decide",
+                "se-status": "coordinate",
             },
         )
 
@@ -220,6 +223,35 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Reversibility**",
             "**Missing evidence**",
             "**Next action**",
+        ):
+            self.assertIn(field, text)
+
+    def test_status_preserves_objective_evidence_and_authority(self) -> None:
+        text = normalized("se-status").lower()
+        self.assertIn("read-only", text)
+        self.assertIn("activity is not an outcome", text)
+        self.assertIn("no-material-change", text)
+        self.assertIn("stale, inaccessible, or contradictory", text)
+        self.assertIn("never invent an owner, date", text)
+
+    def test_status_has_explicit_sibling_boundaries(self) -> None:
+        text = normalized("se-status")
+        for sibling in ("se-brief", "se-digest", "se-decide", "se-monitor"):
+            self.assertIn(f"`{sibling}`", text)
+
+    def test_status_final_report_contract(self) -> None:
+        text = skill_text("se-status")
+        for field in (
+            "**Status header**",
+            "**Executive status**",
+            "**Outcomes**",
+            "**Activity**",
+            "**Current state**",
+            "**Blockers and risks**",
+            "**Decisions**",
+            "**Asks**",
+            "**Next actions**",
+            "**Source coverage and gaps**",
         ):
             self.assertIn(field, text)
 

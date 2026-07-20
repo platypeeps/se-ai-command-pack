@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 - 2026-07-20
+
+- Add `se-status`, a read-only, objective-oriented project-status workflow that
+  distinguishes outcomes from activity and surfaces current state, blockers,
+  risks, recorded decisions, asks, next actions, and source gaps.
+- Register `se-status` under Coordinate, fan shared source standards into every
+  installed copy, and generate flat skill targets for each supported platform.
+- Align pack identity and operator guidance with stakeholder-ready status
+  reporting and add focused evidence, authority, boundary, and report-contract
+  tests.
+
 ## 0.3.0 - 2026-07-20
 
 - Add `se-decide`, a read-only decision workflow for recommendations between
