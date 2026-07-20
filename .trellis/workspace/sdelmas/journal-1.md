@@ -265,3 +265,50 @@ Added and shipped a read-only decision-support skill with explicit evidence boun
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: Add se-status project reporting workflow
+
+**Date**: 2026-07-20
+**Task**: Add se-status project reporting workflow
+**Branch**: `codex/se-status`
+
+### Summary
+
+Added and shipped an objective-oriented, read-only project-status skill with evidence boundaries, generated install surfaces, release metadata, documentation, and regression coverage.
+
+### Main Changes
+
+## Changes
+
+- Added the read-only `se-status` workflow for objective-oriented project reporting with explicit outcome-versus-activity, source-coverage, audience, and authority boundaries.
+- Registered the skill under Coordinate and generated flat skill plus shared-reference targets for every supported platform.
+- Published version `0.4.0`, aligned pack identity and operator guidance, and added a reusable project-status evidence scenario to backend quality specs.
+- Added focused registry, generation, external-input, sibling-boundary, no-material-change, and final-report contract coverage.
+
+## Verification
+
+- `make check` — 183 tests passed; Ruff, mypy, generated parity, and the `0.3.0` to `0.4.0` release gate passed.
+- `SD_PRISM_ENABLED=0 SD_GITO_ENABLED=0 bash scripts/sd-ai-command-pack-full-check.sh` — passed with the expected, dispositioned generated-map scope warning.
+- `make repomix` — completed with no suspicious files detected; Obsidian KB freshness passed.
+- GitHub Actions — all required test-matrix, lint, release-payload, and aggregate checks passed on `b54aef6`.
+- Copilot reviewed all 16 files on `b54aef6`, generated no comments, and left no unresolved threads.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b54aef6` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
