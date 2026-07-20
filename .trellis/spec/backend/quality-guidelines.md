@@ -169,6 +169,102 @@ description.
 
 ---
 
+## Scenario: Decision Skill Evidence And Authority Boundary
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing a skill that recommends one option, scores a
+  choice, or turns evidence into user-specific judgment.
+- Why: recommendation language can hide assumptions, upgrade weak evidence,
+  blur neutral comparison with decision authority, or imply permission to act.
+
+### 2. Signatures
+
+```text
+question=<bounded choice>
+options=<two or more known alternatives>
+criteria=<comparison axes>
+constraints=<hard limits>
+evidence=<authorized sources>
+format=brief|memo
+```
+
+The final report exposes the decision, option comparison, tradeoffs,
+confidence, reversibility, missing evidence, next action, sources, and
+assumptions.
+
+### 3. Contracts
+
+- Decision work starts from at least two known options. Candidate discovery,
+  open research, supplied-corpus synthesis, neutral comparison, and execution
+  planning remain separately owned workflows.
+- Hard constraints are evaluated before preference criteria and cannot be
+  hidden inside an aggregate score.
+- Sourced fact, inference, assumption, and judgment remain visible. Unknown
+  evidence stays unknown and weak evidence is never normalized upward.
+- Use only user-supplied weights or clearly labeled provisional assumptions;
+  do not invent scores or numeric precision.
+- Stress-test the leading option against the strongest counterargument and
+  state what would change the recommendation.
+- Recommendation skills are read-only. A choice never grants authority to
+  purchase, message, schedule, publish, modify, or otherwise execute it.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Fewer than two known options | Ask for another option or route to candidate discovery. |
+| Materially ambiguous goal or constraint | Stop for clarification before evaluating. |
+| Missing criteria | Derive only from stated goals and label them provisional. |
+| Constraint disqualifies an option | Keep the option visible with the disqualification reason. |
+| Evidence is missing or asymmetric | Mark the affected cells unknown and lower confidence. |
+| No defensible winner | Return an explicit no-decision result and the evidence needed. |
+| User asks to act on the choice | Require a separate request and the relevant action authority. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: compare known options on one consistent frame, apply constraints first,
+  expose assumptions, challenge the leading option, and recommend with
+  calibrated confidence and reversal conditions.
+- Base: evidence is insufficient, so the report makes no recommendation and
+  names the smallest evidence-gathering step.
+- Bad: silently discover a preferred option, invent weights, turn unknowns into
+  zeros, present judgment as fact, or execute the recommendation.
+
+### 6. Tests Required
+
+- Pin the unknown-argument stop rule, prompt-injection boundary, read-only
+  authority, and explicit sibling-workflow routing.
+- Pin the counterargument and recommendation-change conditions.
+- Pin every required final-report field and the distinction between unknown,
+  assumption, inference, and judgment.
+- Run focused skill/generator tests, `make generate`, `make check`, and the
+  release payload/version gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+Option A scores 87 and wins. I will purchase it now.
+```
+
+The score has no owned weighting contract, uncertainty is hidden, and the
+recommendation is incorrectly treated as execution authority.
+
+#### Correct
+
+```text
+Recommend Option A with medium confidence. Constraint X disqualifies B;
+criterion Y remains unknown; evidence Z or a change in deadline would reverse
+the recommendation. Next action: validate Y before committing.
+```
+
+The decision is explicit, evidence limits remain visible, reversal conditions
+are testable, and execution is separate.
+
+---
+
 ## Scenario: Pack Lifecycle CLI Changes
 
 ### 1. Scope / Trigger

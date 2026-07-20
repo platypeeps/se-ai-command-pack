@@ -1,7 +1,7 @@
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: deep research,
-daily briefs, meeting prep, landscape scans, and document digests —
+decision support, daily briefs, meeting prep, landscape scans, and document digests —
 installed once per machine, centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling
@@ -23,6 +23,12 @@ come directly from canonical skill frontmatter.
 | `se-research` | Use when the user asks for deep, multi-source research on a question or topic and wants a verified, source-graded written brief rather than a quick answer. |
 | `se-scan` | Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria. |
 | `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
+
+### Decide
+
+| Skill | Use when |
+|---|---|
+| `se-decide` | Use when the user wants a defensible recommendation between known options using explicit criteria, constraints, evidence, tradeoffs, and uncertainty. |
 
 ### Coordinate
 

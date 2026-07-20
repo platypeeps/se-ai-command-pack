@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 - 2026-07-20
+
+- Add `se-decide`, a read-only decision workflow for recommendations between
+  known options with explicit constraints, tradeoffs, uncertainty, reversal
+  conditions, and next actions.
+- Fan the shared source standards into `se-decide` and generate flat installed
+  skill targets for every supported platform.
+- Publish the stable outcome-family registry and generated grouped README
+  catalog used by this and future skills.
+
 ## 0.2.0 - 2026-07-17
 
 - Move pack lifecycle management into tested `install.py` commands:
