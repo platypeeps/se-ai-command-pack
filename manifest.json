@@ -423,6 +423,15 @@
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-fact-check/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".config/agents/skills/se-fact-check/references/verification-protocol.md",
       "anchor": ".config/agents",
@@ -441,6 +450,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-fact-check/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".claude/skills/se-fact-check/references/verification-protocol.md",
       "anchor": ".claude",
@@ -452,6 +470,15 @@
       "scope": "user",
       "source": "templates/skills/se-fact-check/SKILL.md",
       "target": ".codex/skills/se-fact-check/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-fact-check/references/source-standards.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },

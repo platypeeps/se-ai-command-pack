@@ -95,6 +95,7 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-digest",
         "se-decide",
         "se-status",
+        "se-fact-check",
     ),
     "_shared/references/verification-protocol.md": (
         "se-research",

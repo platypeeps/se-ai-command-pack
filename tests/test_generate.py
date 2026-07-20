@@ -126,6 +126,18 @@ class RealRepoGeneratorTest(unittest.TestCase):
                         targets,
                     )
 
+    def test_fact_check_installs_all_cited_shared_references(self) -> None:
+        expected_sources = {
+            "_shared/references/source-standards.md",
+            "_shared/references/verification-protocol.md",
+        }
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-fact-check" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
     def test_verification_protocol_preserves_research_targets(self) -> None:
         source = "_shared/references/verification-protocol.md"
         self.assertEqual(
