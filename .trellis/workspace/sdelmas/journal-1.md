@@ -218,3 +218,50 @@ Introduced stable skill-family metadata and a generated family-grouped README ca
 ### Next Steps
 
 - None - task complete
+
+
+## Session 7: Add se-decide decision workflow
+
+**Date**: 2026-07-20
+**Task**: Add se-decide decision workflow
+**Branch**: `codex/se-decide`
+
+### Summary
+
+Added and shipped a read-only decision-support skill with explicit evidence boundaries, generated install surfaces, release metadata, and regression coverage.
+
+### Main Changes
+
+## Changes
+
+- Added the read-only `se-decide` workflow with explicit evidence, uncertainty, authority, reversibility, and sibling-skill boundaries.
+- Registered the Decide family and generated all supported install targets plus shared source standards.
+- Published version `0.3.0`, updated operator/spec documentation, and aligned the generator, manifest, and README pack descriptions.
+- Added focused registry, generation, safety, report-contract, and manifest-description regression coverage.
+
+## Verification
+
+- `make check` — 180 tests passed; Ruff, mypy, generated-surface parity, and release-payload gate passed.
+- `SD_PRISM_ENABLED=0 SD_GITO_ENABLED=0 bash scripts/sd-ai-command-pack-full-check.sh` — passed with expected, dispositioned scope warnings.
+- GitHub Actions — required matrix, lint, release payload, and aggregate checks passed on `6a9a559`.
+- Copilot review round 2 reviewed all 16 files on `6a9a559` and generated no comments; all review threads are resolved.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2a97c10` | (see git log) |
+| `6a9a559` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
