@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-"""Generate the committed manifest rows from the registry skill list.
+"""Generate the committed manifest rows and README skill catalog.
 
-`installer/registry.py` (SKILL_NAMES, PLATFORM_REGISTRY, SHARED_REFERENCES)
-is the source of truth. The generator validates every canonical skill under
-templates/skills/<name>/ (frontmatter shape, required body sections,
-framework-neutral wording) and regenerates manifest.json's files array: one
-row per (skill file x platform), plus shared-reference fan-out rows so each
-installed skill dir is self-contained. Manifest header fields are preserved
-verbatim; only the files array is derived.
+`installer/registry.py` (SKILLS, PLATFORM_REGISTRY, SHARED_REFERENCES) and
+canonical skill frontmatter are the sources of truth. The generator validates
+every canonical skill, regenerates manifest.json's files array, and replaces
+the marker-bounded README catalog with family-grouped frontmatter descriptions.
+Manifest header fields and README content outside the markers are preserved.
 
---check regenerates to memory and fails when the committed manifest drifts.
+--check regenerates to memory and fails when either committed surface drifts.
 """
 
 from __future__ import annotations
@@ -23,7 +21,9 @@ from pathlib import Path
 PACK_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PACK_ROOT))
 
+from installer.fileops import atomic_write_text  # noqa: E402
 from installer.registry import (  # noqa: E402
+    FAMILY_LABELS,
     IF_ANCHOR_EXISTS,
     PACK_NAME,
     PLATFORM_REGISTRY,
@@ -31,13 +31,18 @@ from installer.registry import (  # noqa: E402
     SHARED_REFERENCES,
     SKILL_NAMES,
     SKILL_PREFIX,
+    SKILLS,
     TEMPLATES_SKILLS_DIR,
     USER_SCOPE,
+    SkillInfo,
 )
 
 MANIFEST_PATH = ROOT / "manifest.json"
+README_PATH = ROOT / "README.md"
 SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
 SHARED_DIR_NAME = "_shared"
+README_CATALOG_START = "<!-- SE_SKILL_CATALOG:START -->"
+README_CATALOG_END = "<!-- SE_SKILL_CATALOG:END -->"
 
 REQUIRED_SECTIONS = (
     "## When to use",
@@ -103,18 +108,18 @@ def parse_frontmatter(text: str, label: str) -> tuple[dict, str]:
     return data, body
 
 
-def validate_skill(name: str) -> list[str]:
+def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
     errors: list[str] = []
     skill_dir = SKILLS_ROOT / name
     skill_md = skill_dir / "SKILL.md"
     label = _display(skill_md)
     if not skill_md.is_file():
-        return [f"{label}: missing canonical SKILL.md"]
+        return [f"{label}: missing canonical SKILL.md"], None
     text = skill_md.read_text(encoding="utf-8")
     try:
         frontmatter, body = parse_frontmatter(text, label)
     except GenerationError as error:
-        return [str(error)]
+        return [str(error)], None
 
     extra_keys = sorted(set(frontmatter) - set(ALLOWED_FRONTMATTER_KEYS))
     if extra_keys:
@@ -182,11 +187,15 @@ def validate_skill(name: str) -> list[str]:
                 f"{label}: unexpected file {relative} (only SKILL.md and "
                 "references/*.md are shipped in this pack version)"
             )
-    return errors
+    metadata = None
+    if not errors and isinstance(description, str):
+        metadata = {"name": name, "description": description}
+    return errors, metadata
 
 
-def validate_skills() -> None:
+def validate_skills() -> dict[str, dict[str, str]]:
     errors: list[str] = []
+    metadata: dict[str, dict[str, str]] = {}
     if not SKILLS_ROOT.is_dir():
         raise GenerationError(f"missing skills root {SKILLS_ROOT}")
     actual = sorted(
@@ -215,7 +224,10 @@ def validate_skills() -> None:
     for name in SKILL_NAMES:
         if name in missing_dirs:
             continue
-        errors.extend(validate_skill(name))
+        skill_errors, skill_metadata = validate_skill(name)
+        errors.extend(skill_errors)
+        if skill_metadata is not None:
+            metadata[name] = skill_metadata
 
     shared_dir = SKILLS_ROOT / SHARED_DIR_NAME
     shared_sources = set(SHARED_REFERENCES)
@@ -247,6 +259,7 @@ def validate_skills() -> None:
         raise GenerationError(
             "skill validation failed:\n" + "\n".join(f"- {error}" for error in errors)
         )
+    return metadata
 
 
 def skill_payload_files(name: str) -> list[str]:
@@ -349,43 +362,162 @@ def regenerated_manifest_text() -> str:
     return json.dumps(manifest, indent=2) + "\n"
 
 
+def _catalog_table_cell(value: str) -> str:
+    return value.replace("|", "\\|")
+
+
+def rendered_skill_catalog(metadata: dict[str, dict[str, str]]) -> str:
+    lines: list[str] = []
+    for family, label in FAMILY_LABELS.items():
+        family_skills: list[SkillInfo] = [
+            skill for skill in SKILLS if skill.family == family
+        ]
+        if not family_skills:
+            continue
+        if lines:
+            lines.append("")
+        lines.extend(
+            [
+                f"### {label}",
+                "",
+                "| Skill | Use when |",
+                "|---|---|",
+            ]
+        )
+        for skill in family_skills:
+            try:
+                description = metadata[skill.name]["description"]
+            except KeyError:
+                raise GenerationError(
+                    f"validated metadata missing for registry skill {skill.name}"
+                ) from None
+            lines.append(
+                f"| `{skill.name}` | {_catalog_table_cell(description)} |"
+            )
+    return "\n".join(lines) + "\n"
+
+
+def read_readme_text() -> str:
+    try:
+        return README_PATH.read_text(encoding="utf-8")
+    except OSError as error:
+        raise GenerationError(f"cannot read README.md: {error}") from None
+
+
+def regenerated_readme_text(
+    metadata: dict[str, dict[str, str]] | None = None,
+    current: str | None = None,
+) -> str:
+    if metadata is None:
+        metadata = validate_skills()
+    if current is None:
+        current = read_readme_text()
+    if (
+        current.count(README_CATALOG_START) != 1
+        or current.count(README_CATALOG_END) != 1
+    ):
+        raise GenerationError(
+            "README.md must contain exactly one ordered pair of skill catalog markers"
+        )
+    start = current.index(README_CATALOG_START) + len(README_CATALOG_START)
+    end = current.index(README_CATALOG_END)
+    if start >= end:
+        raise GenerationError(
+            "README.md must contain exactly one ordered pair of skill catalog markers"
+        )
+    catalog = rendered_skill_catalog(metadata).rstrip("\n")
+    return f"{current[:start]}\n{catalog}\n{current[end:]}"
+
+
+def write_generated_surfaces(
+    updates: list[tuple[Path, str, str | None]],
+) -> None:
+    written: list[tuple[Path, str | None]] = []
+    try:
+        for path, regenerated, committed in updates:
+            atomic_write_text(path, regenerated)
+            written.append((path, committed))
+    except SystemExit as error:
+        rollback_errors: list[str] = []
+        for path, committed in reversed(written):
+            try:
+                if committed is None:
+                    path.unlink(missing_ok=True)
+                else:
+                    atomic_write_text(path, committed)
+            except (OSError, SystemExit) as rollback_error:
+                rollback_errors.append(f"{_display(path)}: {rollback_error}")
+        detail = str(error).removeprefix("error: ")
+        if rollback_errors:
+            detail += "; rollback failed for " + ", ".join(rollback_errors)
+        raise GenerationError(detail) from None
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Validate canonical skills and regenerate manifest.json rows."
+        description="Validate skills and regenerate manifest and README surfaces."
     )
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Fail when the committed manifest drifts from the regenerated one.",
+        help="Fail when a committed generated surface drifts.",
     )
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 
     try:
-        validate_skills()
-        regenerated = regenerated_manifest_text()
+        metadata = validate_skills()
+        regenerated_manifest = regenerated_manifest_text()
+        committed_readme = read_readme_text()
+        regenerated_readme = regenerated_readme_text(metadata, committed_readme)
     except GenerationError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
-    committed = (
-        MANIFEST_PATH.read_text(encoding="utf-8") if MANIFEST_PATH.is_file() else None
-    )
+    try:
+        committed_manifest = (
+            MANIFEST_PATH.read_text(encoding="utf-8")
+            if MANIFEST_PATH.is_file()
+            else None
+        )
+    except OSError as error:
+        print(f"error: cannot read manifest.json: {error}", file=sys.stderr)
+        return 1
     if args.check:
-        if committed != regenerated:
+        drifted = False
+        if committed_manifest != regenerated_manifest:
             print(
                 "error: manifest.json drifts from the generated surfaces; "
                 "run `make generate` and commit the result",
                 file=sys.stderr,
             )
+            drifted = True
+        if committed_readme != regenerated_readme:
+            print(
+                "error: README.md skill catalog drifts from the generated surfaces; "
+                "run `make generate` and commit the result",
+                file=sys.stderr,
+            )
+            drifted = True
+        if drifted:
             return 1
-        print("manifest.json matches the generated surfaces")
+        print("manifest.json and README.md match the generated surfaces")
         return 0
 
-    if committed == regenerated:
-        print("manifest.json unchanged")
+    updates: list[tuple[Path, str, str | None]] = []
+    if committed_readme != regenerated_readme:
+        updates.append((README_PATH, regenerated_readme, committed_readme))
+    if committed_manifest != regenerated_manifest:
+        updates.append((MANIFEST_PATH, regenerated_manifest, committed_manifest))
+    if not updates:
+        print("manifest.json and README.md unchanged")
         return 0
-    MANIFEST_PATH.write_text(regenerated, encoding="utf-8")
-    print(f"wrote {_display(MANIFEST_PATH)}")
+    try:
+        write_generated_surfaces(updates)
+    except GenerationError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
+    for path, _, _ in updates:
+        print(f"wrote {_display(path)}")
     return 0
 
 

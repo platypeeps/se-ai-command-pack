@@ -3,14 +3,19 @@
 from __future__ import annotations
 
 import unittest
+from unittest import mock
 
 import yaml
 from install_test_support import PACK_ROOT
 
 from installer.registry import (
+    FAMILY_LABELS,
     SHARED_REFERENCES,
     SKILL_NAMES,
+    SKILLS,
     TEMPLATES_SKILLS_DIR,
+    SkillInfo,
+    validate_registry,
 )
 
 SKILLS_ROOT = PACK_ROOT / TEMPLATES_SKILLS_DIR
@@ -86,6 +91,80 @@ class SkillConventionsTest(unittest.TestCase):
                 skill_text(name),
                 name,
             )
+
+
+class SkillFamilyRegistryTest(unittest.TestCase):
+    def test_family_labels_have_stable_outcome_order(self) -> None:
+        self.assertEqual(
+            list(FAMILY_LABELS.items()),
+            [
+                ("understand", "Understand"),
+                ("decide", "Decide"),
+                ("create", "Create"),
+                ("coordinate", "Coordinate"),
+                ("operate", "Operate"),
+                ("improve", "Improve"),
+            ],
+        )
+
+    def test_skill_names_are_derived_without_reordering(self) -> None:
+        self.assertEqual(SKILL_NAMES, tuple(skill.name for skill in SKILLS))
+        self.assertEqual(
+            SKILL_NAMES,
+            (
+                "se-research",
+                "se-brief",
+                "se-meeting-prep",
+                "se-scan",
+                "se-digest",
+            ),
+        )
+        self.assertEqual(
+            {skill.name: skill.family for skill in SKILLS},
+            {
+                "se-research": "understand",
+                "se-brief": "coordinate",
+                "se-meeting-prep": "coordinate",
+                "se-scan": "understand",
+                "se-digest": "understand",
+            },
+        )
+
+    def assert_invalid_skills(
+        self, skills: tuple[SkillInfo, ...], fragment: str
+    ) -> None:
+        names = tuple(skill.name for skill in skills)
+        with (
+            mock.patch("installer.registry.SKILLS", skills),
+            mock.patch("installer.registry.SKILL_NAMES", names),
+            mock.patch("installer.registry.SHARED_REFERENCES", {}),
+            self.assertRaises(RuntimeError) as caught,
+        ):
+            validate_registry()
+        self.assertIn(fragment, str(caught.exception))
+
+    def test_registry_rejects_unknown_family(self) -> None:
+        self.assert_invalid_skills(
+            (SkillInfo("se-test", "unknown"),), "unknown family"
+        )
+
+    def test_registry_rejects_empty_name_and_family(self) -> None:
+        self.assert_invalid_skills((SkillInfo("", "understand"),), "empty name")
+        self.assert_invalid_skills((SkillInfo("se-test", ""),), "empty family")
+
+    def test_registry_rejects_duplicate_skill_membership(self) -> None:
+        self.assert_invalid_skills(
+            (
+                SkillInfo("se-test", "understand"),
+                SkillInfo("se-test", "decide"),
+            ),
+            "duplicate skill name",
+        )
+
+    def test_registry_preserves_prefix_validation(self) -> None:
+        self.assert_invalid_skills(
+            (SkillInfo("test", "understand"),), "missing se- prefix"
+        )
 
 
 class SkillSafetyPinsTest(unittest.TestCase):

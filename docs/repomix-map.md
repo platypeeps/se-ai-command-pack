@@ -246,26 +246,28 @@ pushed = run_git(repo, "push", "origin", tag)
 ## File: .github/scripts/generate-skill-surfaces.py
 ````python
 #!/usr/bin/env python3
-"""Generate the committed manifest rows from the registry skill list.
+"""Generate the committed manifest rows and README skill catalog.
 
-`installer/registry.py` (SKILL_NAMES, PLATFORM_REGISTRY, SHARED_REFERENCES)
-is the source of truth. The generator validates every canonical skill under
-templates/skills/<name>/ (frontmatter shape, required body sections,
-framework-neutral wording) and regenerates manifest.json's files array: one
-row per (skill file x platform), plus shared-reference fan-out rows so each
-installed skill dir is self-contained. Manifest header fields are preserved
-verbatim; only the files array is derived.
+`installer/registry.py` (SKILLS, PLATFORM_REGISTRY, SHARED_REFERENCES) and
+canonical skill frontmatter are the sources of truth. The generator validates
+every canonical skill, regenerates manifest.json's files array, and replaces
+the marker-bounded README catalog with family-grouped frontmatter descriptions.
+Manifest header fields and README content outside the markers are preserved.
 
---check regenerates to memory and fails when the committed manifest drifts.
+--check regenerates to memory and fails when either committed surface drifts.
 """
 ⋮----
 PACK_ROOT = Path(__file__).resolve().parents[2]
 ⋮----
+from installer.fileops import atomic_write_text  # noqa: E402
 from installer.registry import (  # noqa: E402
 ⋮----
 MANIFEST_PATH = ROOT / "manifest.json"
+README_PATH = ROOT / "README.md"
 SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
 SHARED_DIR_NAME = "_shared"
+README_CATALOG_START = "<!-- SE_SKILL_CATALOG:START -->"
+README_CATALOG_END = "<!-- SE_SKILL_CATALOG:END -->"
 ⋮----
 REQUIRED_SECTIONS = (
 ⋮----
@@ -299,7 +301,7 @@ body = text[end + len("\n---\n") :]
 ⋮----
 data = yaml.safe_load(raw)
 ⋮----
-def validate_skill(name: str) -> list[str]
+def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]
 ⋮----
 errors: list[str] = []
 skill_dir = SKILLS_ROOT / name
@@ -322,7 +324,13 @@ banned = sorted({match.group(0) for match in BANNED_PHRASE_PATTERN.finditer(text
 ⋮----
 relative = path.relative_to(skill_dir).as_posix()
 ⋮----
-def validate_skills() -> None
+metadata = None
+⋮----
+metadata = {"name": name, "description": description}
+⋮----
+def validate_skills() -> dict[str, dict[str, str]]
+⋮----
+metadata: dict[str, dict[str, str]] = {}
 ⋮----
 actual = sorted(
 registered = sorted(SKILL_NAMES)
@@ -380,15 +388,50 @@ existing_files = current.get("files", [])
 ⋮----
 static_rows = [
 ⋮----
+def _catalog_table_cell(value: str) -> str
+⋮----
+def rendered_skill_catalog(metadata: dict[str, dict[str, str]]) -> str
+⋮----
+lines: list[str] = []
+⋮----
+family_skills: list[SkillInfo] = [
+⋮----
+description = metadata[skill.name]["description"]
+⋮----
+def read_readme_text() -> str
+⋮----
+metadata = validate_skills()
+⋮----
+current = read_readme_text()
+⋮----
+start = current.index(README_CATALOG_START) + len(README_CATALOG_START)
+end = current.index(README_CATALOG_END)
+⋮----
+catalog = rendered_skill_catalog(metadata).rstrip("\n")
+⋮----
+written: list[tuple[Path, str | None]] = []
+⋮----
+rollback_errors: list[str] = []
+⋮----
+detail = str(error).removeprefix("error: ")
+⋮----
 def main(argv: list[str] | None = None) -> int
 ⋮----
 parser = argparse.ArgumentParser(
 ⋮----
 args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 ⋮----
-regenerated = regenerated_manifest_text()
+regenerated_manifest = regenerated_manifest_text()
+committed_readme = read_readme_text()
+regenerated_readme = regenerated_readme_text(metadata, committed_readme)
 ⋮----
-committed = (
+committed_manifest = (
+⋮----
+drifted = False
+⋮----
+drifted = True
+⋮----
+updates: list[tuple[Path, str, str | None]] = []
 ````
 
 ## File: .github/workflows/tests.yml
@@ -573,7 +616,7 @@ content in the registry, and generate the manifest from canonical templates.
 ```text
 install.py                  # CLI parsing and lifecycle orchestration
 installer/                  # installer domain modules
-  registry.py               # platforms, skills, paths, and policy constants
+  registry.py               # platforms, skill families, paths, and policy constants
   manifest.py               # manifest parsing and path-safety validation
   fileops.py                # planning, atomic writes, backups, and file status
   provenance.py             # receipts and installed-content provenance
@@ -581,6 +624,7 @@ installer/                  # installer domain modules
   management.py             # installed status and source-checkout update
 templates/skills/           # canonical shipped skill sources
 manifest.json               # generated payload inventory and release version
+README.md                   # generated family-grouped catalog inside markers
 scripts/                    # generation and release-validation tools
 tests/                      # unittest modules mirroring installer concerns
 ```
@@ -589,10 +633,12 @@ tests/                      # unittest modules mirroring installer concerns
 
 - Keep `install.py` responsible for arguments, high-level sequencing, and
   terminal output. Reusable domain behavior belongs under `installer/`.
-- Put stable pack declarations in `installer/registry.py`; do not duplicate
-  platform or skill lists in scripts or tests.
+- Put stable pack declarations in `installer/registry.py`; `SKILLS` owns each
+  skill's single family and `SKILL_NAMES` is derived for compatibility. Do not
+  duplicate platform, skill, or family lists in scripts or tests.
 - Treat `templates/skills/` and `installer/registry.py` as sources of truth.
-  Run `make generate` to update `manifest.json`.
+  Run `make generate` to update `manifest.json` and the marker-bounded README
+  catalog from canonical skill frontmatter.
 - Add focused modules when a lifecycle concern has its own data flow. For
   example, `installer/management.py` owns status and update rather than adding
   Git subprocess details to `install.py`.
@@ -621,6 +667,8 @@ tests/                      # unittest modules mirroring installer concerns
 ## Avoid
 
 - Do not hand-edit generated `manifest.json` rows.
+- Do not hand-edit generated README catalog rows or move skills into family
+  subdirectories; taxonomy is metadata and installed paths remain flat.
 - Do not add platform-specific copies of skill content; generate fan-out from
   the registry and canonical templates.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI
@@ -825,6 +873,8 @@ boundary users exercise.
 
 - Hand-editing generated `manifest.json` rows instead of changing the registry
   or canonical templates and running `make generate`.
+- Hand-editing the marker-bounded README skill catalog instead of changing
+  `SKILLS` or canonical skill frontmatter and running `make generate`.
 - Writing outside the validated install root or following untrusted symlinked
   receipt/destination paths.
 - Destructive overwrite/removal without hash or template provenance, except
@@ -843,6 +893,9 @@ boundary users exercise.
 - Use atomic writes for installed files and receipts.
 - Keep canonical skill content under `templates/skills/` and pack declarations
   in `installer/registry.py`.
+- Keep family membership singular and canonical in `SKILLS`; derive
+  `SKILL_NAMES`, preserve flat skill paths, and generate grouped catalog prose
+  from validated frontmatter.
 - Preserve compatibility with Python 3.10; use postponed annotations where
   modern typing syntax appears.
 - Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
@@ -873,6 +926,102 @@ boundary users exercise.
 - Do errors include actionable context without leaking sensitive contents?
 - Do tests cover success, invalid input, conflicts, and compatibility state?
 - If payload changed, are `manifest.json`, version, and `CHANGELOG.md` aligned?
+
+---
+
+## Scenario: Skill Family Registry And Generated Catalog
+
+### 1. Scope / Trigger
+
+- Trigger: adding, retiring, reordering, or reclassifying a shipped skill, or
+  changing the marker-bounded README skill catalog.
+- Why: family metadata crosses the registry, canonical frontmatter, generator,
+  README, tests, and manifest-order compatibility even though it does not alter
+  installed paths or the manifest schema.
+
+### 2. Signatures
+
+```text
+FAMILY_LABELS: dict[str, str]
+SKILLS: tuple[SkillInfo, ...]
+SKILL_NAMES = tuple(skill.name for skill in SKILLS)
+make generate
+python .github/scripts/generate-skill-surfaces.py --check
+<!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
+```
+
+`FAMILY_LABELS` order is public catalog order. `SKILLS` order remains canonical
+manifest/install order, and grouping must not reorder generated manifest rows.
+
+### 3. Contracts
+
+- Every `SkillInfo.name` is non-empty, unique, `se-` prefixed, and backed by a
+  flat `templates/skills/<name>/SKILL.md` directory.
+- Every skill has exactly one family from Understand, Decide, Create,
+  Coordinate, Operate, or Improve. Empty families remain valid and are omitted
+  from the rendered catalog.
+- `SKILL_NAMES` is derived for compatibility; no consumer owns a second skill
+  list.
+- The catalog description comes from the already validated frontmatter parse.
+  Markdown table pipes are escaped deterministically; descriptions are not
+  duplicated in registry code.
+- Generation computes and validates both manifest and README results before
+  writing either. README content outside one ordered marker pair is preserved.
+- Family-only metadata and catalog changes do not require a release bump when
+  `manifest.json` and shipped payload bytes remain unchanged.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Empty skill name or family | Raise a registry `RuntimeError` before generation. |
+| Unknown family | Raise a registry `RuntimeError` naming the skill and family. |
+| Duplicate skill name, including cross-family membership | Raise a registry `RuntimeError`; never choose one row implicitly. |
+| Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
+| Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
+| Manifest or README catalog drifts | `--check` reports each drifted surface and exits nonzero. |
+| Family metadata changes but payload does not | Manifest and changelog stay unchanged; release gate passes without a bump. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: add one `SkillInfo` row with one valid family, run `make generate`, and
+  receive a grouped README entry while flat installed targets remain stable.
+- Base: rerun `make generate` with unchanged inputs and receive no file diff.
+- Bad: hand-edit a catalog row, duplicate the description in the registry,
+  move a skill under a family subdirectory, or add family fields to manifest
+  rows.
+
+### 6. Tests Required
+
+- Registry tests pin family order, all valid identifiers, derived name order,
+  prefix rules, and rejection of empty, unknown, or duplicate membership.
+- Generator tests pin grouping, empty-family omission, frontmatter sourcing,
+  pipe escaping, marker validation, independent drift reporting, and patched
+  temporary README paths.
+- `make generate` twice, `make check`, `git diff --check`, and explicit empty
+  diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```python
+SKILL_NAMES = ("se-research", "se-new")
+README_DESCRIPTIONS = {"se-new": "A second description source."}
+```
+
+#### Correct
+
+```python
+SKILLS = (
+    SkillInfo(name="se-research", family="understand"),
+    SkillInfo(name="se-new", family="decide"),
+)
+SKILL_NAMES = tuple(skill.name for skill in SKILLS)
+```
+
+Run `make generate`; canonical `SKILL.md` frontmatter supplies the catalog
+description.
 
 ---
 
@@ -913,7 +1062,7 @@ are positional commands; do not add parallel action flags such as `--remove`.
   from being mixed with newly pulled files.
 - `remove` and retired-target cleanup delete only hash-vouched or
   template-identical files unless the user explicitly passes `--force`.
-- Retiring a skill requires removing it from `SKILL_NAMES`, deleting its
+- Retiring a skill requires removing it from `SKILLS`, deleting its
   canonical template, regenerating `manifest.json`, and registering every
   previously shipped target in `RETIRED_TARGETS`.
 
@@ -1716,12 +1865,26 @@ process. User-facing install/update/remove instructions live in the
 |---|---|
 | `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional `references/*.md`). The only place skills are edited. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
-| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
+| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
-| `.github/scripts/generate-skill-surfaces.py` | Validates skills, regenerates the manifest; `--check` is the CI drift gate. |
+| `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |
+| `.github/scripts/generate-skill-surfaces.py` | Validates skills, regenerates the manifest and README catalog; `--check` gates drift in both. |
 | `.github/scripts/check-release-payload.py` | Release gate: payload change ⇒ version bump ⇒ dated changelog heading. |
 | `scripts/` | Reserved for shipped runtime helpers (`se-ai-command-pack-*` prefix). Empty in v0.1. |
+
+## Product and development surfaces
+
+- **Shipped skills** are the `se-*` entries under `templates/skills/`. They are
+  grouped by primary outcome family in the README but retain flat canonical and
+  installed paths.
+- **Pack lifecycle commands** are the `install.py` install, status, refresh,
+  update, and remove operations. They manage the pack; they are not skills.
+- **Repo-local SD and Trellis helpers** support development in this checkout.
+  They are not registered product skills and are not installed by this pack.
+- **Per-platform command adapters** are a possible future thin invocation
+  surface. None are currently shipped, and family names do not create nested
+  command namespaces.
 
 ## Manifest schema
 
@@ -1779,16 +1942,19 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
      rule.
 2. Optional flat `references/*.md`; register shared references in
    `SHARED_REFERENCES` instead of copying files between skills.
-3. Add the name to `SKILL_NAMES` in `installer/registry.py` (canonical
-   order = manifest order).
-4. `make generate`, then `make check`.
-5. Bump the version + changelog (release gate enforces this).
-6. Update the skill tables in `README.md` and this guide's consumers if
-   the skill families changed.
+3. Add one `SkillInfo(name=..., family=...)` row to `SKILLS` in
+   `installer/registry.py`. Choose exactly one of Understand, Decide, Create,
+   Coordinate, Operate, or Improve. Registry order remains manifest order;
+   `SKILL_NAMES` is derived and must not be edited separately.
+4. `make generate` to update both the manifest and the marker-bounded README
+   catalog, then run `make check`. Never hand-edit catalog rows.
+5. Bump the version + changelog when the shipped payload changes (the release
+   gate enforces this). Family/catalog metadata alone does not require a bump
+   when `manifest.json` remains byte-for-byte unchanged.
 
 ## Retiring a skill
 
-1. Remove it from `SKILL_NAMES` and delete its `templates/skills/` dir.
+1. Remove it from `SKILLS` and delete its `templates/skills/` dir.
 2. `make generate`.
 3. Add the target paths the last shipping manifest listed for it to
    `RETIRED_TARGETS` in `installer/removal.py` — refreshes then delete
@@ -2213,15 +2379,29 @@ skills_dir: str
 anchor: str
 display: str
 ⋮----
+@dataclass(frozen=True)
+class SkillInfo
+⋮----
+"""One canonical skill and its primary outcome family."""
+⋮----
+name: str
+family: str
+⋮----
 # One registry row per platform id. Adding a platform means one row here;
 # `make generate` then fans every skill into its skills_dir.
 PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
 ⋮----
 PLATFORMS = tuple(sorted(PLATFORM_REGISTRY))
 ⋮----
-# Canonical skill list; templates/skills/<name>/SKILL.md must exist for each.
-# Row order is the canonical manifest order.
-SKILL_NAMES: tuple[str, ...] = (
+# Families describe a skill's primary outcome. Mapping order is the public
+# catalog order; declared families with zero registered skills remain valid but
+# are omitted from the catalog.
+FAMILY_LABELS: dict[str, str] = {
+⋮----
+# Canonical skill registry. Row order remains the manifest/install order;
+# catalog display groups these rows through FAMILY_LABELS without moving paths.
+SKILLS: tuple[SkillInfo, ...] = (
+SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 ⋮----
 # Shared reference source (relative to templates/skills/) -> consuming skills.
 # The generator copies each shared reference into every consumer's
@@ -2253,7 +2433,12 @@ def validate_registry() -> None
 ⋮----
 path = Path(value)
 ⋮----
-seen_skills = set()
+expected_names = tuple(skill.name for skill in SKILLS)
+⋮----
+seen_skills: set[str] = set()
+⋮----
+name = skill.name
+family = skill.family
 ⋮----
 unknown = set(consumers) - set(SKILL_NAMES)
 ⋮----
@@ -3287,6 +3472,14 @@ def test_manifest_matches_generated(self) -> None
 ⋮----
 committed = (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
 ⋮----
+def test_readme_catalog_matches_generated(self) -> None
+⋮----
+committed = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
+⋮----
+def test_readme_catalog_uses_family_order_and_frontmatter(self) -> None
+⋮----
+rendered = gen.regenerated_readme_text()
+⋮----
 def test_check_mode_passes(self) -> None
 ⋮----
 def test_rows_cover_every_skill_and_platform(self) -> None
@@ -3366,7 +3559,34 @@ def test_bootstrap_writes_manifest(self) -> None
 ⋮----
 manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
 ⋮----
+def test_catalog_groups_skills_and_escapes_pipes(self) -> None
+⋮----
+first = VALID_SKILL.format(name="se-test").replace(
+⋮----
+def test_catalog_requires_exactly_one_marker_pair(self) -> None
+⋮----
+def test_missing_readme_fails_cleanly_before_manifest_write(self) -> None
+⋮----
+def test_validation_failure_writes_neither_surface(self) -> None
+⋮----
+def test_readme_write_failure_keeps_manifest_unchanged(self) -> None
+⋮----
+committed_readme = self.readme_path.read_text(encoding="utf-8")
+calls: list[Path] = []
+⋮----
+def fail_readme(path: Path, content: str) -> None
+⋮----
+def test_manifest_write_failure_rolls_back_readme(self) -> None
+⋮----
+atomic_write_text = gen.atomic_write_text
+⋮----
+def fail_manifest(path: Path, content: str) -> None
+⋮----
 def test_check_detects_drift(self) -> None
+⋮----
+def test_check_detects_readme_catalog_drift(self) -> None
+⋮----
+committed = self.readme_path.read_text(encoding="utf-8")
 ⋮----
 def test_header_and_static_rows_preserved(self) -> None
 ⋮----
@@ -4047,6 +4267,22 @@ index = text.find(f"\n{section}\n")
 last = index
 ⋮----
 def test_unknown_argument_stop_rule(self) -> None
+⋮----
+class SkillFamilyRegistryTest(unittest.TestCase)
+⋮----
+def test_family_labels_have_stable_outcome_order(self) -> None
+⋮----
+def test_skill_names_are_derived_without_reordering(self) -> None
+⋮----
+names = tuple(skill.name for skill in skills)
+⋮----
+def test_registry_rejects_unknown_family(self) -> None
+⋮----
+def test_registry_rejects_empty_name_and_family(self) -> None
+⋮----
+def test_registry_rejects_duplicate_skill_membership(self) -> None
+⋮----
+def test_registry_preserves_prefix_validation(self) -> None
 ⋮----
 class SkillSafetyPinsTest(unittest.TestCase)
 ⋮----
@@ -4864,17 +5100,30 @@ instead of per-repo adapters, and has no Trellis dependency.
 
 ## Skills
 
-| Skill | Purpose |
-|---|---|
-| `se-research` | Deep multi-source research with verification and an explicit disconfirmation pass; produces a cited, confidence-labeled brief. |
-| `se-brief` | Morning/daily/on-demand brief assembling the user's topics into one dated, scannable update. Read-only by design. |
-| `se-meeting-prep` | One-page dossier on meeting participants, company, and context, plus goal-aligned talking points and questions. |
-| `se-scan` | Competitive/market landscape scan: inventory the players, compare on consistent criteria, surface whitespace. |
-| `se-digest` | Synthesize user-supplied documents/threads/links into one decision-ready brief with disagreements surfaced. |
+The catalog is grouped by each skill's primary outcome family. Descriptions
+come directly from canonical skill frontmatter.
 
-Research-family skills share one quality bar: a `source-standards.md`
-reference (source tiers, independence, dating, confidence vocabulary) is
-installed into each skill's `references/` directory.
+<!-- SE_SKILL_CATALOG:START -->
+### Understand
+
+| Skill | Use when |
+|---|---|
+| `se-research` | Use when the user asks for deep, multi-source research on a question or topic and wants a verified, source-graded written brief rather than a quick answer. |
+| `se-scan` | Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria. |
+| `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
+
+### Coordinate
+
+| Skill | Use when |
+|---|---|
+| `se-brief` | Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update. |
+| `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
+<!-- SE_SKILL_CATALOG:END -->
+
+Skills that use external evidence share one quality bar: a
+`source-standards.md` reference (source tiers, independence, dating,
+confidence vocabulary) is installed into each consumer's `references/`
+directory.
 
 ## What gets installed where
 
@@ -4948,9 +5197,9 @@ directories are pruned.
 
 - `templates/skills/<name>/` holds the canonical skill definitions — the
   only place skills are edited.
-- `installer/registry.py` declares the platforms, the skill list, and the
-  shared-reference fan-out; `make generate` regenerates `manifest.json`
-  from it (one row per skill file per platform).
+- `installer/registry.py` declares platforms, ordered skill-family metadata,
+  and shared-reference fan-out; `make generate` regenerates `manifest.json`
+  and this README's grouped catalog from the registry and skill frontmatter.
 - `install.py` owns the pack lifecycle and applies the manifest to your home directory (or `--root`
   elsewhere) and writes receipts under `~/.se-ai-command-pack/`:
   - `manifest.json` — copy of the installed manifest (version lookup);
@@ -4965,9 +5214,10 @@ directories are pruned.
 1. Edit or add skills under `templates/skills/` (see
    [docs/SE_AI_COMMAND_PACK.md](docs/SE_AI_COMMAND_PACK.md) for the
    add-a-skill checklist).
-2. `make generate` to refresh the manifest.
-3. Bump `version` in `manifest.json` and add the matching `CHANGELOG.md`
-   heading.
+2. `make generate` to refresh the manifest and README catalog.
+3. For shipped payload changes, bump `version` in `manifest.json` and add the
+   matching `CHANGELOG.md` heading. Metadata-only catalog changes do not need a
+   release bump when generated payload bytes stay unchanged.
 4. `make check` (tests, lint, release gates), then PR.
 5. `make sync` to dogfood the result into your own home directory.
 

@@ -27,6 +27,14 @@ class PlatformInfo:
     display: str
 
 
+@dataclass(frozen=True)
+class SkillInfo:
+    """One canonical skill and its primary outcome family."""
+
+    name: str
+    family: str
+
+
 # One registry row per platform id. Adding a platform means one row here;
 # `make generate` then fans every skill into its skills_dir.
 PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
@@ -49,15 +57,28 @@ PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
 
 PLATFORMS = tuple(sorted(PLATFORM_REGISTRY))
 
-# Canonical skill list; templates/skills/<name>/SKILL.md must exist for each.
-# Row order is the canonical manifest order.
-SKILL_NAMES: tuple[str, ...] = (
-    "se-research",
-    "se-brief",
-    "se-meeting-prep",
-    "se-scan",
-    "se-digest",
+# Families describe a skill's primary outcome. Mapping order is the public
+# catalog order; declared families with zero registered skills remain valid but
+# are omitted from the catalog.
+FAMILY_LABELS: dict[str, str] = {
+    "understand": "Understand",
+    "decide": "Decide",
+    "create": "Create",
+    "coordinate": "Coordinate",
+    "operate": "Operate",
+    "improve": "Improve",
+}
+
+# Canonical skill registry. Row order remains the manifest/install order;
+# catalog display groups these rows through FAMILY_LABELS without moving paths.
+SKILLS: tuple[SkillInfo, ...] = (
+    SkillInfo(name="se-research", family="understand"),
+    SkillInfo(name="se-brief", family="coordinate"),
+    SkillInfo(name="se-meeting-prep", family="coordinate"),
+    SkillInfo(name="se-scan", family="understand"),
+    SkillInfo(name="se-digest", family="understand"),
 )
+SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 
 # Shared reference source (relative to templates/skills/) -> consuming skills.
 # The generator copies each shared reference into every consumer's
@@ -119,8 +140,19 @@ def validate_registry() -> None:
                 f"registry platform {platform} anchor {info.anchor!r} does not "
                 f"contain skills_dir {info.skills_dir!r}"
             )
-    seen_skills = set()
-    for name in SKILL_NAMES:
+    expected_names = tuple(skill.name for skill in SKILLS)
+    if SKILL_NAMES != expected_names:
+        raise RuntimeError("SKILL_NAMES must be derived from SKILLS without reordering")
+    seen_skills: set[str] = set()
+    for skill in SKILLS:
+        name = skill.name
+        family = skill.family
+        if not name:
+            raise RuntimeError("skill registry contains an empty name")
+        if not family:
+            raise RuntimeError(f"skill {name} has an empty family")
+        if family not in FAMILY_LABELS:
+            raise RuntimeError(f"skill {name} has unknown family: {family}")
         if not name.startswith(SKILL_PREFIX):
             raise RuntimeError(f"skill name missing {SKILL_PREFIX} prefix: {name}")
         if name in seen_skills:
@@ -144,6 +176,7 @@ validate_registry()
 __all__ = [
     "ALWAYS_INSTALL",
     "ENV_PREFIX",
+    "FAMILY_LABELS",
     "FORCE_PRESERVED_TARGETS",
     "IF_ANCHOR_EXISTS",
     "IF_NOT_EXISTS",
@@ -159,8 +192,10 @@ __all__ = [
     "RECEIPT_DIR",
     "ROOT",
     "SHARED_REFERENCES",
+    "SKILLS",
     "SKILL_NAMES",
     "SKILL_PREFIX",
+    "SkillInfo",
     "TEMPLATES_SKILLS_DIR",
     "USER_SCOPE",
     "validate_registry",

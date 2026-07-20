@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Review family invariants, marker failure behavior, test coverage, and no-payload release expectations."}
+{"file": ".trellis/spec/backend/error-handling.md", "reason": "Review generator failures for actionable nonzero behavior before any surface write."}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Verify canonical ownership and flat source/install path compatibility."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Verify metadata survives registry, generator, documentation, and drift-check boundaries consistently."}

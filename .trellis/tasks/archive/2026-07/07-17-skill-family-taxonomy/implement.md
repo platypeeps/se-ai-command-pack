@@ -49,6 +49,16 @@
 - Reject attempts to add descriptions to both registry and frontmatter.
 - Keep future adapter naming explanatory only; no command files should appear.
 
+## Rollback Points
+
+- Keep the registry model and README generator change in one commit boundary so
+  they can be reverted together if catalog generation proves unsafe.
+- If managed-marker replacement cannot be made deterministic, retain the flat
+  manual README catalog and roll back only the README generation surface; do
+  not alter manifest generation, installed paths, or the manifest schema.
+- No data migration or release rollback is required because this task must not
+  change shipped payload bytes or the pack version.
+
 ## Follow-Ups
 
 - Add family filtering only after users demonstrate catalog-size pain.

@@ -176,3 +176,45 @@ Approved and archived the privacy-preserving personal profile v1 contract, recor
 ### Next Steps
 
 - None - task complete
+
+
+## Session 6: Skill family taxonomy and generated catalog
+
+**Date**: 2026-07-20
+**Task**: Skill family taxonomy and generated catalog
+**Branch**: `codex/skill-family-taxonomy`
+
+### Summary
+
+Introduced stable skill-family metadata and a generated family-grouped README catalog, then hardened the two-surface generator through review.
+
+### Main Changes
+
+- Added the canonical six-family skill registry while preserving flat paths and manifest order.
+- Generated the marker-bounded README catalog from validated frontmatter and family metadata.
+- Made README and manifest updates atomic and recoverable, with regression coverage for read and write failures.
+- Updated Trellis specs, operator documentation, repository map, and generated knowledge surfaces.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8d615b7` | feat: add skill family taxonomy |
+| `b39cd3f` | chore: ground Trellis task context |
+| `6d38018` | fix: handle README catalog read failures |
+| `0fe29d4` | fix: make generated surface writes recoverable |
+
+### Testing
+
+- [OK] make check: 176 tests, Ruff, mypy, generated-surface parity, and release gate passed.
+- [OK] SD full check: preflight, install audit, Obsidian KB freshness, and generated-scope checks passed.
+- [OK] GitHub CI: all required jobs passed on the final review head.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
