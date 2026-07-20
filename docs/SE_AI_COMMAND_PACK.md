@@ -52,6 +52,17 @@ supplied-corpus synthesis with `se-digest`, recommendations with `se-decide`,
 and external baseline monitoring with `se-monitor`. The skill is read-only: it
 does not update project systems or send the resulting report.
 
+### Claim-audit workflow boundary
+
+`se-fact-check` starts from supplied claims or an artifact and returns a
+claim-by-claim ledger using exactly five verdicts: supported, partially
+supported, unverified, contradicted, or outdated. Open-ended evidence questions
+stay with `se-research`, while multi-document synthesis stays with `se-digest`
+unless the request explicitly asks to audit claims. Both `se-research` and
+`se-fact-check` consume the shared `verification-protocol.md`; the canonical
+source lives under `_shared/references/` while installed paths remain local to
+each skill. The audit is read-only and offers only minimal corrected wording.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):

@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Canonical skill, shared-reference, registry, generated README, manifest, and installed-target ownership boundaries."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Skill structure, claim evidence, external-input safety, generated parity, testing, and release-gate contracts."}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Move the verification protocol to one shared source instead of duplicating it and preserve sibling-workflow boundaries."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Trace the canonical reference move through registry fan-out, stable installed targets, documentation, release metadata, and tests."}

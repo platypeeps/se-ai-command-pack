@@ -7,22 +7,24 @@
 2. Add focused failing tests for verdict vocabulary, claim-led behavior, safety
    boundaries, and the stable research protocol target.
 3. Move the verification protocol into `_shared/references/` without changing
-   its basename or content unless a separately justified clarification is
-   required.
+   its basename, claim ladder, passes, or failure behavior; generalize only its
+   research-brief-specific introductory wording for shared ownership.
 4. Create `templates/skills/se-fact-check/SKILL.md` with the canonical section
    order and framework-neutral language.
-5. Register the skill in Understand and configure both shared references for
-   the correct consumers; preserve a derived `SKILL_NAMES` path if taxonomy has
-   landed.
-6. Update catalog/operator documentation for the new skill and shared protocol.
+5. Register the skill under the landed Understand family and configure both
+   shared references for the correct consumers while preserving derived
+   `SKILL_NAMES` compatibility.
+6. Update pack identity and operator documentation for the new skill and shared
+   protocol.
 7. Run `make generate` and verify each supported platform receives the skill,
    source standards, and verification protocol.
-8. Choose the release version from current `main`, update the manifest header
-   and dated changelog, regenerate, and run the validation plan.
+8. Publish version `0.5.0`, update the manifest header and dated changelog,
+   regenerate, and run the validation plan.
 
 ## Validation Plan
 
-- `python3 -m unittest tests.test_skills tests.test_generate`
+- `.venv/bin/python -m unittest discover -s tests -p 'test_skills.py'`
+- `.venv/bin/python -m unittest discover -s tests -p 'test_generate.py'`
 - `make generate`
 - `make check`
 - Inspect the manifest diff and confirm
