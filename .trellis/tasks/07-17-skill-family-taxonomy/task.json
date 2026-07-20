@@ -3,7 +3,7 @@
   "name": "skill-family-taxonomy",
   "title": "Introduce skill family taxonomy and grouped catalog",
   "description": "Add outcome-oriented skill family metadata, generate grouped catalog documentation, preserve flat source and installed paths, and document the separation between shipped skills, installer lifecycle commands, repo development tooling, and future command adapters.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

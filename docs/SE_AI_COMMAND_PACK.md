@@ -11,12 +11,26 @@ process. User-facing install/update/remove instructions live in the
 |---|---|
 | `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional `references/*.md`). The only place skills are edited. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
-| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
+| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
-| `.github/scripts/generate-skill-surfaces.py` | Validates skills, regenerates the manifest; `--check` is the CI drift gate. |
+| `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |
+| `.github/scripts/generate-skill-surfaces.py` | Validates skills, regenerates the manifest and README catalog; `--check` gates drift in both. |
 | `.github/scripts/check-release-payload.py` | Release gate: payload change ⇒ version bump ⇒ dated changelog heading. |
 | `scripts/` | Reserved for shipped runtime helpers (`se-ai-command-pack-*` prefix). Empty in v0.1. |
+
+## Product and development surfaces
+
+- **Shipped skills** are the `se-*` entries under `templates/skills/`. They are
+  grouped by primary outcome family in the README but retain flat canonical and
+  installed paths.
+- **Pack lifecycle commands** are the `install.py` install, status, refresh,
+  update, and remove operations. They manage the pack; they are not skills.
+- **Repo-local SD and Trellis helpers** support development in this checkout.
+  They are not registered product skills and are not installed by this pack.
+- **Per-platform command adapters** are a possible future thin invocation
+  surface. None are currently shipped, and family names do not create nested
+  command namespaces.
 
 ## Manifest schema
 
@@ -74,16 +88,19 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
      rule.
 2. Optional flat `references/*.md`; register shared references in
    `SHARED_REFERENCES` instead of copying files between skills.
-3. Add the name to `SKILL_NAMES` in `installer/registry.py` (canonical
-   order = manifest order).
-4. `make generate`, then `make check`.
-5. Bump the version + changelog (release gate enforces this).
-6. Update the skill tables in `README.md` and this guide's consumers if
-   the skill families changed.
+3. Add one `SkillInfo(name=..., family=...)` row to `SKILLS` in
+   `installer/registry.py`. Choose exactly one of Understand, Decide, Create,
+   Coordinate, Operate, or Improve. Registry order remains manifest order;
+   `SKILL_NAMES` is derived and must not be edited separately.
+4. `make generate` to update both the manifest and the marker-bounded README
+   catalog, then run `make check`. Never hand-edit catalog rows.
+5. Bump the version + changelog when the shipped payload changes (the release
+   gate enforces this). Family/catalog metadata alone does not require a bump
+   when `manifest.json` remains byte-for-byte unchanged.
 
 ## Retiring a skill
 
-1. Remove it from `SKILL_NAMES` and delete its `templates/skills/` dir.
+1. Remove it from `SKILLS` and delete its `templates/skills/` dir.
 2. `make generate`.
 3. Add the target paths the last shipping manifest listed for it to
    `RETIRED_TARGETS` in `installer/removal.py` — refreshes then delete

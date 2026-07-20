@@ -17,6 +17,8 @@ boundary users exercise.
 
 - Hand-editing generated `manifest.json` rows instead of changing the registry
   or canonical templates and running `make generate`.
+- Hand-editing the marker-bounded README skill catalog instead of changing
+  `SKILLS` or canonical skill frontmatter and running `make generate`.
 - Writing outside the validated install root or following untrusted symlinked
   receipt/destination paths.
 - Destructive overwrite/removal without hash or template provenance, except
@@ -35,6 +37,9 @@ boundary users exercise.
 - Use atomic writes for installed files and receipts.
 - Keep canonical skill content under `templates/skills/` and pack declarations
   in `installer/registry.py`.
+- Keep family membership singular and canonical in `SKILLS`; derive
+  `SKILL_NAMES`, preserve flat skill paths, and generate grouped catalog prose
+  from validated frontmatter.
 - Preserve compatibility with Python 3.10; use postponed annotations where
   modern typing syntax appears.
 - Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
@@ -65,6 +70,102 @@ boundary users exercise.
 - Do errors include actionable context without leaking sensitive contents?
 - Do tests cover success, invalid input, conflicts, and compatibility state?
 - If payload changed, are `manifest.json`, version, and `CHANGELOG.md` aligned?
+
+---
+
+## Scenario: Skill Family Registry And Generated Catalog
+
+### 1. Scope / Trigger
+
+- Trigger: adding, retiring, reordering, or reclassifying a shipped skill, or
+  changing the marker-bounded README skill catalog.
+- Why: family metadata crosses the registry, canonical frontmatter, generator,
+  README, tests, and manifest-order compatibility even though it does not alter
+  installed paths or the manifest schema.
+
+### 2. Signatures
+
+```text
+FAMILY_LABELS: dict[str, str]
+SKILLS: tuple[SkillInfo, ...]
+SKILL_NAMES = tuple(skill.name for skill in SKILLS)
+make generate
+python .github/scripts/generate-skill-surfaces.py --check
+<!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
+```
+
+`FAMILY_LABELS` order is public catalog order. `SKILLS` order remains canonical
+manifest/install order, and grouping must not reorder generated manifest rows.
+
+### 3. Contracts
+
+- Every `SkillInfo.name` is non-empty, unique, `se-` prefixed, and backed by a
+  flat `templates/skills/<name>/SKILL.md` directory.
+- Every skill has exactly one family from Understand, Decide, Create,
+  Coordinate, Operate, or Improve. Empty families remain valid and are omitted
+  from the rendered catalog.
+- `SKILL_NAMES` is derived for compatibility; no consumer owns a second skill
+  list.
+- The catalog description comes from the already validated frontmatter parse.
+  Markdown table pipes are escaped deterministically; descriptions are not
+  duplicated in registry code.
+- Generation computes and validates both manifest and README results before
+  writing either. README content outside one ordered marker pair is preserved.
+- Family-only metadata and catalog changes do not require a release bump when
+  `manifest.json` and shipped payload bytes remain unchanged.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Empty skill name or family | Raise a registry `RuntimeError` before generation. |
+| Unknown family | Raise a registry `RuntimeError` naming the skill and family. |
+| Duplicate skill name, including cross-family membership | Raise a registry `RuntimeError`; never choose one row implicitly. |
+| Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
+| Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
+| Manifest or README catalog drifts | `--check` reports each drifted surface and exits nonzero. |
+| Family metadata changes but payload does not | Manifest and changelog stay unchanged; release gate passes without a bump. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: add one `SkillInfo` row with one valid family, run `make generate`, and
+  receive a grouped README entry while flat installed targets remain stable.
+- Base: rerun `make generate` with unchanged inputs and receive no file diff.
+- Bad: hand-edit a catalog row, duplicate the description in the registry,
+  move a skill under a family subdirectory, or add family fields to manifest
+  rows.
+
+### 6. Tests Required
+
+- Registry tests pin family order, all valid identifiers, derived name order,
+  prefix rules, and rejection of empty, unknown, or duplicate membership.
+- Generator tests pin grouping, empty-family omission, frontmatter sourcing,
+  pipe escaping, marker validation, independent drift reporting, and patched
+  temporary README paths.
+- `make generate` twice, `make check`, `git diff --check`, and explicit empty
+  diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```python
+SKILL_NAMES = ("se-research", "se-new")
+README_DESCRIPTIONS = {"se-new": "A second description source."}
+```
+
+#### Correct
+
+```python
+SKILLS = (
+    SkillInfo(name="se-research", family="understand"),
+    SkillInfo(name="se-new", family="decide"),
+)
+SKILL_NAMES = tuple(skill.name for skill in SKILLS)
+```
+
+Run `make generate`; canonical `SKILL.md` frontmatter supplies the catalog
+description.
 
 ---
 
@@ -105,7 +206,7 @@ are positional commands; do not add parallel action flags such as `--remove`.
   from being mixed with newly pulled files.
 - `remove` and retired-target cleanup delete only hash-vouched or
   template-identical files unless the user explicitly passes `--force`.
-- Retiring a skill requires removing it from `SKILL_NAMES`, deleting its
+- Retiring a skill requires removing it from `SKILLS`, deleting its
   canonical template, regenerating `manifest.json`, and registering every
   previously shipped target in `RETIRED_TARGETS`.
 

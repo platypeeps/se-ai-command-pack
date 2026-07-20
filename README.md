@@ -12,17 +12,30 @@ instead of per-repo adapters, and has no Trellis dependency.
 
 ## Skills
 
-| Skill | Purpose |
-|---|---|
-| `se-research` | Deep multi-source research with verification and an explicit disconfirmation pass; produces a cited, confidence-labeled brief. |
-| `se-brief` | Morning/daily/on-demand brief assembling the user's topics into one dated, scannable update. Read-only by design. |
-| `se-meeting-prep` | One-page dossier on meeting participants, company, and context, plus goal-aligned talking points and questions. |
-| `se-scan` | Competitive/market landscape scan: inventory the players, compare on consistent criteria, surface whitespace. |
-| `se-digest` | Synthesize user-supplied documents/threads/links into one decision-ready brief with disagreements surfaced. |
+The catalog is grouped by each skill's primary outcome family. Descriptions
+come directly from canonical skill frontmatter.
 
-Research-family skills share one quality bar: a `source-standards.md`
-reference (source tiers, independence, dating, confidence vocabulary) is
-installed into each skill's `references/` directory.
+<!-- SE_SKILL_CATALOG:START -->
+### Understand
+
+| Skill | Use when |
+|---|---|
+| `se-research` | Use when the user asks for deep, multi-source research on a question or topic and wants a verified, source-graded written brief rather than a quick answer. |
+| `se-scan` | Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria. |
+| `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
+
+### Coordinate
+
+| Skill | Use when |
+|---|---|
+| `se-brief` | Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update. |
+| `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
+<!-- SE_SKILL_CATALOG:END -->
+
+Skills that use external evidence share one quality bar: a
+`source-standards.md` reference (source tiers, independence, dating,
+confidence vocabulary) is installed into each consumer's `references/`
+directory.
 
 ## What gets installed where
 
@@ -96,9 +109,9 @@ directories are pruned.
 
 - `templates/skills/<name>/` holds the canonical skill definitions — the
   only place skills are edited.
-- `installer/registry.py` declares the platforms, the skill list, and the
-  shared-reference fan-out; `make generate` regenerates `manifest.json`
-  from it (one row per skill file per platform).
+- `installer/registry.py` declares platforms, ordered skill-family metadata,
+  and shared-reference fan-out; `make generate` regenerates `manifest.json`
+  and this README's grouped catalog from the registry and skill frontmatter.
 - `install.py` owns the pack lifecycle and applies the manifest to your home directory (or `--root`
   elsewhere) and writes receipts under `~/.se-ai-command-pack/`:
   - `manifest.json` — copy of the installed manifest (version lookup);
@@ -113,9 +126,10 @@ directories are pruned.
 1. Edit or add skills under `templates/skills/` (see
    [docs/SE_AI_COMMAND_PACK.md](docs/SE_AI_COMMAND_PACK.md) for the
    add-a-skill checklist).
-2. `make generate` to refresh the manifest.
-3. Bump `version` in `manifest.json` and add the matching `CHANGELOG.md`
-   heading.
+2. `make generate` to refresh the manifest and README catalog.
+3. For shipped payload changes, bump `version` in `manifest.json` and add the
+   matching `CHANGELOG.md` heading. Metadata-only catalog changes do not need a
+   release bump when generated payload bytes stay unchanged.
 4. `make check` (tests, lint, release gates), then PR.
 5. `make sync` to dogfood the result into your own home directory.
 

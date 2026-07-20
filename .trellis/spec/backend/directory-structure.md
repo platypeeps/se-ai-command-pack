@@ -15,7 +15,7 @@ content in the registry, and generate the manifest from canonical templates.
 ```text
 install.py                  # CLI parsing and lifecycle orchestration
 installer/                  # installer domain modules
-  registry.py               # platforms, skills, paths, and policy constants
+  registry.py               # platforms, skill families, paths, and policy constants
   manifest.py               # manifest parsing and path-safety validation
   fileops.py                # planning, atomic writes, backups, and file status
   provenance.py             # receipts and installed-content provenance
@@ -23,6 +23,7 @@ installer/                  # installer domain modules
   management.py             # installed status and source-checkout update
 templates/skills/           # canonical shipped skill sources
 manifest.json               # generated payload inventory and release version
+README.md                   # generated family-grouped catalog inside markers
 scripts/                    # generation and release-validation tools
 tests/                      # unittest modules mirroring installer concerns
 ```
@@ -31,10 +32,12 @@ tests/                      # unittest modules mirroring installer concerns
 
 - Keep `install.py` responsible for arguments, high-level sequencing, and
   terminal output. Reusable domain behavior belongs under `installer/`.
-- Put stable pack declarations in `installer/registry.py`; do not duplicate
-  platform or skill lists in scripts or tests.
+- Put stable pack declarations in `installer/registry.py`; `SKILLS` owns each
+  skill's single family and `SKILL_NAMES` is derived for compatibility. Do not
+  duplicate platform, skill, or family lists in scripts or tests.
 - Treat `templates/skills/` and `installer/registry.py` as sources of truth.
-  Run `make generate` to update `manifest.json`.
+  Run `make generate` to update `manifest.json` and the marker-bounded README
+  catalog from canonical skill frontmatter.
 - Add focused modules when a lifecycle concern has its own data flow. For
   example, `installer/management.py` owns status and update rather than adding
   Git subprocess details to `install.py`.
@@ -63,6 +66,8 @@ tests/                      # unittest modules mirroring installer concerns
 ## Avoid
 
 - Do not hand-edit generated `manifest.json` rows.
+- Do not hand-edit generated README catalog rows or move skills into family
+  subdirectories; taxonomy is metadata and installed paths remain flat.
 - Do not add platform-specific copies of skill content; generate fan-out from
   the registry and canonical templates.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI

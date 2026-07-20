@@ -59,6 +59,22 @@ class RealRepoGeneratorTest(unittest.TestCase):
         committed = (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
         self.assertEqual(committed, gen.regenerated_manifest_text())
 
+    def test_readme_catalog_matches_generated(self) -> None:
+        committed = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertEqual(committed, gen.regenerated_readme_text())
+
+    def test_readme_catalog_uses_family_order_and_frontmatter(self) -> None:
+        rendered = gen.regenerated_readme_text()
+        self.assertLess(rendered.index("### Understand"), rendered.index("### Coordinate"))
+        self.assertNotIn("### Decide", rendered)
+        self.assertNotIn("### Create", rendered)
+        self.assertNotIn("### Operate", rendered)
+        self.assertNotIn("### Improve", rendered)
+        self.assertIn(
+            "Use when the user asks for deep, multi-source research",
+            rendered,
+        )
+
     def test_check_mode_passes(self) -> None:
         self.assertEqual(gen.main(["--check"]), 0)
 
@@ -97,6 +113,15 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.skills_root = self.base / "templates" / "skills"
         self.skills_root.mkdir(parents=True)
         self.manifest_path = self.base / "manifest.json"
+        self.readme_path = self.base / "README.md"
+        self.readme_path.write_text(
+            "# Fixture\n\n## Skills\n\n"
+            "<!-- SE_SKILL_CATALOG:START -->\n"
+            "old catalog\n"
+            "<!-- SE_SKILL_CATALOG:END -->\n\n"
+            "Tail.\n",
+            encoding="utf-8",
+        )
         stack = ExitStack()
         self.addCleanup(stack.close)
         stack.enter_context(
@@ -104,6 +129,23 @@ class SandboxGeneratorTest(TempDirTestCase):
         )
         stack.enter_context(
             mock.patch.object(gen, "MANIFEST_PATH", self.manifest_path)
+        )
+        stack.enter_context(
+            mock.patch.object(gen, "README_PATH", self.readme_path)
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen,
+                "FAMILY_LABELS",
+                {"understand": "Understand", "decide": "Decide"},
+            )
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen,
+                "SKILLS",
+                (gen.SkillInfo(name="se-test", family="understand"),),
+            )
         )
         stack.enter_context(
             mock.patch.object(gen, "SKILL_NAMES", ("se-test",))
@@ -242,6 +284,47 @@ class SandboxGeneratorTest(TempDirTestCase):
         targets = {row["target"] for row in manifest["files"]}
         for info in gen.PLATFORM_REGISTRY.values():
             self.assertIn(f"{info.skills_dir}/se-test/SKILL.md", targets)
+        self.assertIn("### Understand", self.readme_path.read_text(encoding="utf-8"))
+
+    def test_catalog_groups_skills_and_escapes_pipes(self) -> None:
+        first = VALID_SKILL.format(name="se-test").replace(
+            "end to end.", "end | to end."
+        )
+        self.write_skill(text=first)
+        self.write_skill(name="se-second")
+        with (
+            mock.patch.object(
+                gen,
+                "SKILLS",
+                (
+                    gen.SkillInfo(name="se-test", family="understand"),
+                    gen.SkillInfo(name="se-second", family="decide"),
+                ),
+            ),
+            mock.patch.object(gen, "SKILL_NAMES", ("se-test", "se-second")),
+        ):
+            rendered = gen.regenerated_readme_text()
+        self.assertLess(rendered.index("### Understand"), rendered.index("### Decide"))
+        self.assertIn("end \\| to end.", rendered)
+
+    def test_catalog_requires_exactly_one_marker_pair(self) -> None:
+        self.write_skill()
+        for text in (
+            "# Missing markers\n",
+            "<!-- SE_SKILL_CATALOG:START -->\n"
+            "<!-- SE_SKILL_CATALOG:START -->\n"
+            "<!-- SE_SKILL_CATALOG:END -->\n",
+        ):
+            self.readme_path.write_text(text, encoding="utf-8")
+            with self.assertRaises(gen.GenerationError) as caught:
+                gen.regenerated_readme_text()
+            self.assertIn("catalog markers", str(caught.exception))
+
+    def test_validation_failure_writes_neither_surface(self) -> None:
+        self.write_skill()
+        self.readme_path.write_text("# Missing markers\n", encoding="utf-8")
+        self.assertEqual(gen.main([]), 1)
+        self.assertFalse(self.manifest_path.exists())
 
     def test_check_detects_drift(self) -> None:
         self.write_skill()
@@ -250,6 +333,16 @@ class SandboxGeneratorTest(TempDirTestCase):
         manifest["files"] = []
         self.manifest_path.write_text(
             json.dumps(manifest, indent=2) + "\n", encoding="utf-8"
+        )
+        self.assertEqual(gen.main(["--check"]), 1)
+
+    def test_check_detects_readme_catalog_drift(self) -> None:
+        self.write_skill()
+        self.assertEqual(gen.main([]), 0)
+        committed = self.readme_path.read_text(encoding="utf-8")
+        self.readme_path.write_text(
+            committed.replace("### Understand", "### Drifted"),
+            encoding="utf-8",
         )
         self.assertEqual(gen.main(["--check"]), 1)
 
