@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.5.0 - 2026-07-20
+
+- Add `se-fact-check`, a read-only claim audit with supported, partially
+  supported, unverified, contradicted, and outdated verdicts plus traceable
+  evidence and minimal corrected wording.
+- Move `verification-protocol.md` to one shared canonical source, fan it into
+  both `se-research` and `se-fact-check`, and preserve the existing installed
+  research target on every platform.
+- Register the skill under Understand, align pack identity and operator
+  guidance, and add focused verdict, safety, boundary, report-contract, and
+  target-stability tests.
+
 ## 0.4.0 - 2026-07-20
 
 - Add `se-status`, a read-only, objective-oriented project-status workflow that

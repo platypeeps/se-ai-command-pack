@@ -1,9 +1,9 @@
 # SE AI Command Pack
 
-User-level knowledge-work skills for AI agent frameworks: deep research,
-decision support, project-status reporting, daily briefs, meeting prep,
-landscape scans, and document digests — installed once per machine, centrally
-managed from this repository.
+User-level knowledge-work skills for AI agent frameworks: deep research, claim
+fact-checking, decision support, project-status reporting, daily briefs, meeting
+prep, landscape scans, and document digests — installed once per machine,
+centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -24,6 +24,7 @@ come directly from canonical skill frontmatter.
 | `se-research` | Use when the user asks for deep, multi-source research on a question or topic and wants a verified, source-graded written brief rather than a quick answer. |
 | `se-scan` | Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria. |
 | `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
+| `se-fact-check` | Use when the user supplies claims or a draft and wants a claim-by-claim evidence audit with supported, partially supported, unverified, contradicted, or outdated verdicts. |
 
 ### Decide
 

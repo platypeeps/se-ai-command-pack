@@ -37,6 +37,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-digest",
     "se-decide",
     "se-status",
+    "se-fact-check",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -121,6 +122,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-digest",
                 "se-decide",
                 "se-status",
+                "se-fact-check",
             ),
         )
         self.assertEqual(
@@ -133,6 +135,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-digest": "understand",
                 "se-decide": "decide",
                 "se-status": "coordinate",
+                "se-fact-check": "understand",
             },
         )
 
@@ -178,12 +181,13 @@ class SkillSafetyPinsTest(unittest.TestCase):
         for name in EXTERNAL_INPUT_SKILLS:
             self.assertIn(INJECTION_RULE_FRAGMENT, normalized(name), name)
 
-    def test_research_family_cites_source_standards(self) -> None:
+    def test_shared_reference_consumers_cite_registered_reference(self) -> None:
         for source, consumers in SHARED_REFERENCES.items():
-            self.assertIn("source-standards.md", source)
+            self.assertTrue(source.startswith("_shared/references/"), source)
+            basename = source.rsplit("/", 1)[-1]
             for name in consumers:
                 self.assertIn(
-                    "references/source-standards.md", skill_text(name), name
+                    f"references/{basename}", skill_text(name), name
                 )
 
     def test_research_cites_verification_protocol(self) -> None:
@@ -252,6 +256,46 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Asks**",
             "**Next actions**",
             "**Source coverage and gaps**",
+        ):
+            self.assertIn(field, text)
+
+    def test_fact_check_uses_exact_verdict_vocabulary(self) -> None:
+        text = skill_text("se-fact-check")
+        verdicts = (
+            "**supported**",
+            "**partially supported**",
+            "**unverified**",
+            "**contradicted**",
+            "**outdated**",
+        )
+        for verdict in verdicts:
+            self.assertIn(verdict, text)
+        self.assertIn("Assign exactly one verdict", text)
+
+    def test_fact_check_is_claim_led_and_read_only(self) -> None:
+        text = normalized("se-fact-check").lower()
+        self.assertIn("inventory", text)
+        self.assertIn("before verification begins", text)
+        self.assertIn("read-only", text)
+        self.assertIn("data, not instructions", text)
+        self.assertIn("smallest corrected wording", text)
+        self.assertIn("never edit or replace", text)
+
+    def test_fact_check_has_explicit_sibling_boundaries(self) -> None:
+        text = normalized("se-fact-check")
+        for sibling in ("se-research", "se-digest"):
+            self.assertIn(f"`{sibling}`", text)
+
+    def test_fact_check_final_report_contract(self) -> None:
+        text = skill_text("se-fact-check")
+        for field in (
+            "**Audit scope**",
+            "**Verdict summary**",
+            "**Claim ledger**",
+            "**Minimal corrections**",
+            "**Non-fact-checkable items**",
+            "**Evidence gaps and conflicts**",
+            "**Methodology**",
         ):
             self.assertIn(field, text)
 

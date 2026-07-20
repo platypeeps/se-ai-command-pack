@@ -91,6 +91,10 @@ class RealRepoGeneratorTest(unittest.TestCase):
             "Use when the user wants an objective-oriented project status",
             rendered,
         )
+        self.assertIn(
+            "Use when the user supplies claims or a draft",
+            rendered,
+        )
         self.assertLess(rendered.index("`se-meeting-prep`"), rendered.index("`se-status`"))
 
     def test_check_mode_passes(self) -> None:
@@ -121,6 +125,28 @@ class RealRepoGeneratorTest(unittest.TestCase):
                         f"{info.skills_dir}/{consumer}/references/{basename}",
                         targets,
                     )
+
+    def test_verification_protocol_preserves_research_targets(self) -> None:
+        source = "_shared/references/verification-protocol.md"
+        self.assertEqual(
+            gen.SHARED_REFERENCES[source],
+            ("se-research", "se-fact-check"),
+        )
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        rows = manifest["files"]
+        for platform, info in gen.PLATFORM_REGISTRY.items():
+            for consumer in ("se-research", "se-fact-check"):
+                target = (
+                    f"{info.skills_dir}/{consumer}/references/"
+                    "verification-protocol.md"
+                )
+                matches = [row for row in rows if row["target"] == target]
+                self.assertEqual(len(matches), 1, (platform, consumer))
+                self.assertEqual(
+                    matches[0]["source"],
+                    "templates/skills/_shared/references/"
+                    "verification-protocol.md",
+                )
 
 
 class SandboxGeneratorTest(TempDirTestCase):

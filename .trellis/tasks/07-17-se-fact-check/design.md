@@ -45,7 +45,9 @@ both `se-research` and `se-fact-check` as consumers. The generator already fans
 a shared reference basename into each consumer's `references/` directory, so
 the installed `se-research` path remains stable while `se-fact-check` gains the
 same protocol. Register both source standards and verification protocol for the
-new skill.
+new skill. Generalize only the protocol's research-brief-specific introductory
+wording so the shared source truth accurately covers both research reports and
+claim audits; keep its claim ladder, passes, and failure behavior unchanged.
 
 ## Boundaries And Non-Goals
 
@@ -68,7 +70,8 @@ new skill.
 - `manifest.json` — regenerated skill/reference fan-out.
 - `tests/test_skills.py` — verdict, safety, protocol, and boundary pins.
 - `tests/test_generate.py` — shared-reference source/target stability coverage.
-- `README.md`, `docs/SE_AI_COMMAND_PACK.md`, `CHANGELOG.md`, and manifest version.
+- `README.md`, generator/manifest identity, `docs/SE_AI_COMMAND_PACK.md`,
+  `CHANGELOG.md`, and manifest version `0.5.0`.
 
 ## Risks And Edge Cases
 

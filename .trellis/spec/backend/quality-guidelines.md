@@ -367,6 +367,111 @@ remain visible, and unknown ownership is preserved.
 
 ---
 
+## Scenario: Claim Audit Evidence And Verdict Boundary
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing a skill that audits supplied claims, drafts,
+  transcripts, or artifacts and assigns evidence-based verdicts.
+- Why: claim auditing can lose original locators, force opinion into binary
+  truth labels, inflate weak evidence, rewrite beyond the evidence, or break
+  installed reference paths when verification rules become shared.
+
+### 2. Signatures
+
+```text
+input=<artifact or link>
+claims=<explicit claim subset>
+scope=material|all
+as_of=<audit date>
+format=ledger|memo
+```
+
+Each audited claim retains an ID, original wording, original locator, exactly
+one verdict, rationale, evidence links or locators, source dates, and confidence.
+
+### 3. Contracts
+
+- Inventory requested inputs before searching. Split compound statements into
+  atomic claims without losing exact wording or the original locator.
+- Use exactly five mutually exclusive verdicts: supported, partially supported,
+  unverified, contradicted, and outdated.
+- Opinion, rhetoric, value judgment, and prediction remain visible outside the
+  factual verdict totals; audit their checkable premises separately when useful.
+- Apply the shared source standards and verification protocol. Prefer primary
+  evidence, trace to origin, corroborate load-bearing claims, preserve credible
+  conflicts, and date every mutable claim against the explicit as-of date.
+- Absence of evidence is not contradiction without an authoritative
+  completeness boundary. Inaccessible content is never inferred from snippets.
+- Corrected wording is limited to the smallest evidence-matched change for a
+  partially supported, contradicted, or outdated claim.
+- Claim audits are read-only. A verdict never grants authority to edit,
+  replace, publish, contact, or enforce.
+- Moving a skill-owned reference to shared canonical ownership must preserve
+  every existing installed target and add a regression for its new consumers.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Neither input nor explicit claims are supplied | Ask before reading or searching. |
+| One sentence contains several assertions | Split into atomic claims and retain one original locator. |
+| Material evidence is inaccessible | Name the gap; never infer its contents. |
+| Evidence supports only a narrower statement | Use partially supported and offer minimal qualified wording. |
+| Stronger current evidence conflicts | Use contradicted and show the decisive dated evidence. |
+| Earlier evidence held but current evidence changed | Use outdated against the explicit as-of date. |
+| Available evidence cannot establish the claim | Use unverified; do not upgrade uncertainty through tone. |
+| Item is opinion, rhetoric, or prediction | Classify it outside factual verdict totals. |
+| User asks to rewrite or publish | Require a separate request and relevant action authority. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: preserve each original claim and locator, inspect primary and contrary
+  evidence, assign one calibrated verdict, cite dated sources, and offer only a
+  minimal correction where required.
+- Base: evidence is incomplete, so the ledger records unverified with the
+  inaccessible source and the evidence that would resolve it.
+- Bad: label an opinion false, infer a paywalled source, call missing evidence a
+  contradiction, silently rewrite the draft, or break an existing installed
+  reference path during a canonical-source move.
+
+### 6. Tests Required
+
+- Pin all five verdicts, exactly-one-verdict wording, claim inventory before
+  search, atomic locators, non-fact-checkable categories, minimal correction,
+  prompt-injection resistance, and read-only authority.
+- Pin explicit sibling boundaries from open research and corpus synthesis.
+- Pin every required final-report field and both shared reference citations.
+- When a reference source moves, assert the canonical shared source plus every
+  old and new installed target across supported platforms.
+- Run focused skill/generator tests, `make generate`, `make check`, and the
+  release payload/version gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+The paragraph is false. I rewrote it and published the correction; the
+paywalled source probably agrees.
+```
+
+The claims were not split, no evidence or locator is traceable, inaccessible
+content was invented, and auditing was treated as action authority.
+
+#### Correct
+
+```text
+C-03 at paragraph 4 is partially supported: the primary source supports the
+narrower dated statement, while the broader quantity is unverified. Suggested
+minimal correction: replace only that quantity; no source file was changed.
+```
+
+The original claim remains traceable, evidence strength controls the verdict,
+the correction is bounded, and execution stays separate.
+
+---
+
 ## Scenario: Pack Lifecycle CLI Changes
 
 ### 1. Scope / Trigger

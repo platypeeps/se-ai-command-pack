@@ -3,7 +3,7 @@
   "name": "se-fact-check",
   "title": "Implement se-fact-check",
   "description": "Add a claim-audit workflow that classifies supplied claims as supported, partially supported, unverified, contradicted, or outdated using the pack's source and verification standards.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

@@ -1,13 +1,13 @@
 # Verification protocol
 
-How claims earn their way into a research brief. Source quality and
-independence are defined in `source-standards.md`; this file defines the
-process that applies them.
+How claims earn their way into an evidence-backed report or claim audit. Source
+quality and independence are defined in `source-standards.md`; this file defines
+the process that applies them.
 
 ## Claim ladder
 
 1. Classify every extracted claim:
-   - **load-bearing** — the brief's conclusion changes if this claim is
+   - **load-bearing** — the report's conclusion changes if this claim is
      wrong;
    - **contextual** — background and color.
 2. Load-bearing claims require two independent sources, at least one of
