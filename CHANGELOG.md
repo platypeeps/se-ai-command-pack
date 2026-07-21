@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.16.0 - 2026-07-21
+
+- Add `se-diagram`, a read-only Create workflow for evidence-traceable visual
+  specifications and conservative Mermaid diagrams.
+- Build an authoritative element-and-relationship ledger, select the smallest
+  fitting visual form, and preserve cycles, concurrency, conditions, boundaries,
+  temporal state, inference, conflicts, and dense-view cross-references.
+- Provide a tool-neutral fallback and linear accessibility description, fan
+  source standards into every installed copy, and add focused contract tests.
+
 ## 0.15.0 - 2026-07-21
 
 - Add `se-compare`, a read-only Understand workflow for neutral comparison of

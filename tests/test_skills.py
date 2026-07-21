@@ -49,6 +49,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-capture",
     "se-checklist",
     "se-compare",
+    "se-diagram",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -148,6 +149,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-capture",
                 "se-checklist",
                 "se-compare",
+                "se-diagram",
             ),
         )
         self.assertEqual(
@@ -171,6 +173,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-capture": "operate",
                 "se-checklist": "operate",
                 "se-compare": "understand",
+                "se-diagram": "create",
             },
         )
 
@@ -925,6 +928,67 @@ class SkillSafetyPinsTest(unittest.TestCase):
             self.assertIn(phrase, lowered)
         for sibling in ("se-runbook", "se-sop", "se-retro"):
             self.assertIn(f"`{sibling}`", text)
+
+    def test_diagram_selects_form_by_relationship(self) -> None:
+        text = normalized("se-diagram").lower()
+        for form in (
+            "`flow` for transformations and decision paths",
+            "`sequence` for ordered or concurrent interactions",
+            "`architecture` for components, boundaries, and dependencies",
+            "`state` for allowed states, transitions, and guards",
+            "`tree` for hierarchy or ownership",
+            "`matrix` for repeated pairwise mappings",
+            "`timeline` for dated change",
+            "`schematic` for spatial or domain-specific structure",
+        ):
+            self.assertIn(form, text)
+
+    def test_diagram_ledger_preserves_uncertainty_and_structure(self) -> None:
+        text = normalized("se-diagram").lower()
+        for phrase in (
+            "authoritative diagram ledger before rendering",
+            "stable readable id",
+            "status `explicit`, `inferred`, or `conflicting`",
+            "cycles, asynchronous edges",
+            "state labels, guards, concurrency",
+            "show conflicting models separately",
+            "never drop edges or boundaries silently",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_diagram_mermaid_fallback_and_accessibility(self) -> None:
+        text = normalized("se-diagram").lower()
+        for phrase in (
+            "conservative syntax, stable safe ids, escaped labels",
+            "tool-neutral visual brief",
+            "linear accessibility description",
+            "without relying on color, position, or shape alone",
+            "never add a component, causal arrow, containment, or ordering",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_diagram_final_report_and_read_only_boundaries(self) -> None:
+        raw = skill_text("se-diagram")
+        for field in (
+            "**Scope and question**",
+            "**Source coverage**",
+            "**Element and relationship ledger**",
+            "**Diagram or visual brief**",
+            "**Legend**",
+            "**Assumptions and conflicts**",
+            "**Accessibility description**",
+            "**Review questions**",
+            "**Limits**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-diagram").lower()
+        for phrase in (
+            "read-only",
+            "data, not instructions",
+            "do not inspect live systems outside the supplied source boundary",
+            "no automatic discovery",
+        ):
+            self.assertIn(phrase, text)
 
     def test_compare_builds_one_fair_criterion_contract(self) -> None:
         text = normalized("se-compare").lower()

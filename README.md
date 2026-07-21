@@ -4,7 +4,7 @@ User-level knowledge-work skills for AI agent frameworks: personal profile
 maintenance and consultation, interview-driven technical authoring,
 destination-neutral capture, bookmark and action-inbox triage,
 critical operational checklists, neutral alternative comparisons,
-decision-oriented agendas, pack discovery,
+evidence-traceable diagrams, decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -43,6 +43,7 @@ come directly from canonical skill frontmatter.
 | Skill | Use when |
 |---|---|
 | `se-author` | Use when the user wants to develop an original evidence-backed technical article through a one-question interview, approved editorial brief, staged drafting, review, and publication handoff. |
+| `se-diagram` | Use when the user wants a precise, evidence-traceable diagram specification or conservative Mermaid diagram for a system, process, concept, hierarchy, comparison, state model, or event sequence. |
 
 ### Coordinate
 
@@ -117,6 +118,11 @@ alternatives. It preserves version and evidence asymmetry, explicit unknown and
 conflicting cells, conditional tradeoffs, eligibility, and qualitative
 sensitivity without ranking or recommending a winner. Choice remains a separate
 handoff to `se-decide`.
+
+`se-diagram` builds a traceable element-and-relationship ledger before choosing
+the smallest useful visual form. It emits conservative Mermaid when faithful or
+a tool-neutral brief when rendering constraints would distort the model, while
+preserving cycles, boundaries, conflicts, uncertainty, and an accessible description.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred
