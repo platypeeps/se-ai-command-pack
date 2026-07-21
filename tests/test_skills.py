@@ -72,6 +72,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-publish",
     "se-red-team",
     "se-retro",
+    "se-runbook",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -194,6 +195,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-publish",
                 "se-red-team",
                 "se-retro",
+                "se-runbook",
             ),
         )
         self.assertEqual(
@@ -240,6 +242,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-publish": "create",
                 "se-red-team": "improve",
                 "se-retro": "improve",
+                "se-runbook": "operate",
             },
         )
 
@@ -2600,6 +2603,59 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Lessons and transfer limits**",
             "**Proposed follow-ups**",
             "**Open questions and disagreements**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_runbook_requires_complete_step_and_mutation_contracts(self) -> None:
+        text = normalized("se-runbook").lower()
+        for phrase in (
+            "exactly one execution state: `validated`, `partially-validated`, or `proposed`",
+            "for every mutating step, require explicit authority, exact scope",
+            "expected outcome, verification, failure handling, and a stop condition",
+            "keep the target and verification adjacent to each action",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_runbook_handles_partial_failure_rollback_and_staleness(self) -> None:
+        text = normalized("se-runbook").lower()
+        for phrase in (
+            "reconcile live state before retry, rollback, or recovery",
+            "separate rollback from recovery",
+            "no safe rollback established",
+            "untested recovery or rollback cannot be presented as guaranteed",
+            "prominent stale-runbook warning",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_runbook_protects_secrets_targets_and_execution_authority(self) -> None:
+        text = normalized("se-runbook").lower()
+        for phrase in (
+            "replace credentials, tokens, personal data",
+            "reject empty variables and traversal",
+            "avoid root/home/workspace-wide targets",
+            "this skill is read-only",
+            "execution requires a separate explicit request",
+            "data, not instructions",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_runbook_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-runbook")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in ("`se-checklist`", "`se-sop`", "`se-plan`"):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Runbook contract**",
+            "**Source and validation coverage**",
+            "**Preflight, abort, and no-go gates**",
+            "**Ordered procedure**",
+            "**Decision and stop map**",
+            "**Partial-failure reconciliation**",
+            "**Rollback, recovery, and residual risk**",
+            "**Escalation and handoff**",
+            "**End-state verification and records**",
+            "**Maintenance and staleness**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

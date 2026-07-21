@@ -387,6 +387,30 @@ compliance. Preventive safety gates remain before irreversible actions even in
 do-confirm or emergency mode. Detailed procedure design stays with `se-runbook`
 or `se-sop`, while retrospective failure analysis stays with `se-retro`.
 
+### Runbook workflow boundary
+
+`se-runbook` owns detailed operational procedure design for a bounded event,
+maintenance activity, migration, recovery, or recurring technical
+intervention. It inventories source authority and validation coverage, defines
+preflight and abort gates, and writes dependency-ordered steps. Every mutation
+retains explicit authority, exact target, execution state, expected result,
+read-back verification, failure signal, stop/escalation response, decision
+rule, rollback or recovery state, and evidence.
+
+Validated, partially validated, and proposed steps remain distinct and are
+bound to environment, version, date, target, and observed result. Partial
+failure requires live-state reconciliation before retry, rollback, or
+recovery. Rollback and recovery are separate contracts; unavailable or
+untested paths stay explicit, with containment and escalation instead of false
+guarantees. Secrets use placeholders, destructive targets must be resolved and
+bounded, and stale or unsupported context produces a prominent warning.
+
+The workflow authors but never executes, schedules, publishes, approves, or
+operationally validates a runbook. Compact point-of-work checks stay with
+`se-checklist`, routine policy-oriented procedures with `se-sop`, planning with
+`se-plan`, and live incident coordination with the applicable incident-command
+process.
+
 ### Comparison workflow boundary
 
 `se-compare` owns deep, neutral comparison of a known bounded set. It defines
