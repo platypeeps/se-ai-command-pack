@@ -363,7 +363,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
         examples = (
             SKILLS_ROOT / "se-help" / "references" / "examples.md"
         ).read_text(encoding="utf-8")
-        named = set(re.findall(r"`\$?(se-[a-z0-9-]+)`", examples))
+        named = set(re.findall(r"\bse-[a-z0-9-]+\b", examples))
         self.assertTrue(named)
         self.assertEqual(named - set(SKILL_NAMES), set())
 
