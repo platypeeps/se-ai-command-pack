@@ -25,7 +25,8 @@ process. User-facing install/update/remove instructions live in the
 
 - **Shipped skills** are the `se-*` entries under `templates/skills/`. They are
   grouped by primary outcome family in the README but retain flat canonical and
-  installed paths.
+  installed paths. The current bundle includes report-first technical editing
+  with `se-technical-editor`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -152,6 +153,24 @@ a smaller provisional list or a source request rather than generic padding.
 The selected candidate is only a `se-author` or `se-paper` handoff; drafting,
 continuous monitoring, editorial-calendar maintenance, and publication remain
 separate workflows.
+
+### Technical-editor workflow boundary
+
+`se-technical-editor` owns rigorous review of an existing technical draft. It
+runs technical correctness, evidence and citations, hidden assumptions, code and
+examples, novelty and originality, skeptical-reader objections, structure,
+reader comprehension, confidentiality, title and opening, and voice consistency
+passes separately. Every finding has a stable location,
+severity, class, rationale, confidence, impact, and recommended action; fluent
+prose, unexecuted code, and adjacent citations never become validation by tone.
+
+The complete editorial report precedes changes to material claims, structure,
+citations, or voice. Report mode is read-only, while edit mode applies only the
+explicitly approved finding IDs or bounded instructions and returns a substantive
+change ledger. The supplied draft's representative voice outranks profile
+preferences, confidential material stays out of broader searches, and topic
+discovery, original authorship, primary research, fact checking, red teaming,
+and publication remain separate capability handoffs.
 
 ### Bookmark-triage workflow boundary
 

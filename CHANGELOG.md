@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.20.0 - 2026-07-21
+
+- Add `se-technical-editor`, an Improve workflow that reviews an existing
+  technical draft through eleven distinct, evidence-located editorial passes.
+- Separate factual defects, high-confidence improvements, editorial choices,
+  and optional style preferences; preserve explicit claim, citation, and code
+  validation states instead of treating fluent prose as correct.
+- Require a report before substantive rewriting, preserve representative draft
+  voice and firsthand claims, apply only approved edits, fan source/profile
+  references into installed copies, and add focused safety and approval tests.
+
 ## 0.19.0 - 2026-07-21
 
 - Add `se-topic-radar`, a read-only Create workflow for ranking technical

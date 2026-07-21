@@ -82,6 +82,7 @@ DEFAULT_MANIFEST_HEADER = {
         "auditable extreme distillation, "
         "rubric-driven evaluations, "
         "evidence-backed editorial opportunity ranking, "
+        "report-first technical editing, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "
