@@ -1671,3 +1671,41 @@ Added and validated the read-only se-publish adaptation workflow, archived its T
 ### Next Steps
 
 - None - task complete
+
+
+## Session 45: Ship se-red-team
+
+**Date**: 2026-07-21
+**Task**: Ship se-red-team
+**Branch**: `codex/se-red-team`
+
+### Summary
+
+Added and validated se-red-team, archived its task, and reconciled the roadmap.
+
+### Main Changes
+
+- Added the steelman-first se-red-team workflow with evidence-class, sensitive-detail, reversal, closure, and no-findings contracts.
+- Registered source-reference fan-out and regenerated release 0.37.0 surfaces with focused tests.
+- Archived the task and reconciled the parent roadmap to 37 of 49 children complete.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ef073a60240a383a3ee640d6ac1e70335d2b0638` | feat: add se-red-team skill |
+
+### Testing
+
+- [OK] make check (367 tests; Ruff, mypy, generation, and release gates green)
+- [OK] review full check and isolated six-target install dry-run
+- [OK] GitHub CI and Copilot review round 1 completed with no comments or threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
