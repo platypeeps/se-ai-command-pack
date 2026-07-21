@@ -5,7 +5,7 @@ maintenance and consultation, interview-driven technical authoring,
 destination-neutral capture, bookmark and action-inbox triage,
 critical operational checklists, neutral alternative comparisons,
 evidence-traceable diagrams, auditable extreme distillation,
-decision-oriented agendas, pack discovery,
+rubric-driven evaluations, decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -66,6 +66,12 @@ come directly from canonical skill frontmatter.
 | `se-bookmark-triage` | Use when the user wants to deduplicate and triage a bounded collection of saved links, videos, pages, or notes into a small evidence-labeled attention queue without mutating the source collection. |
 | `se-capture` | Use when the user wants one URL, file, pasted passage, connected record, or bounded thread normalized into a destination-neutral knowledge artifact with provenance and no implicit external write. |
 | `se-checklist` | Use when the user wants a short read-do or do-confirm checklist derived from bounded authoritative sources, with observable pass conditions, failure responses, and no execution or certification. |
+
+### Improve
+
+| Skill | Use when |
+|---|---|
+| `se-evaluate` | Use when the user wants one defined subject assessed against an explicit rubric with criterion-level evidence, uncertainty, sensitivity, deficiencies, and prioritized improvements. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -132,6 +138,13 @@ and output size, preserves load-bearing attribution and disagreement, and
 returns a smallest-safe result plus an auditable loss ledger when 10% would be
 unsafe. The 80/10 goal remains a disclosed prioritization heuristic, not a
 semantic-retention guarantee.
+
+`se-evaluate` audits a rubric before assessing one defined subject. It maps
+every judgment to criterion-level evidence, keeps failure separate from missing
+or non-evaluable evidence, uses numbers only when scales and aggregation are
+meaningful, and exposes weight or threshold sensitivity plus the highest-value
+subject, rubric, and evidence improvements. It does not certify, score people,
+or make the final decision.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred

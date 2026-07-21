@@ -41,7 +41,8 @@ criteria, constraints, evidence, tradeoffs, confidence, and reversibility.
 Candidate discovery stays with `se-scan`, open evidence gathering with
 `se-research`, supplied-corpus synthesis with `se-digest`, neutral comparison
 with the separately delivered `se-compare`, extreme purpose-bound compression
-with `se-distill`, and post-decision execution
+with `se-distill`, single-subject rubric assessment with `se-evaluate`, and
+post-decision execution
 planning with `se-plan`. The skill remains read-only; acting on a recommendation
 always requires a separate request and the relevant action capability.
 
@@ -223,6 +224,25 @@ the workflow returns the smallest safe artifact, actual ratio, reason, and
 smallest relaxation rather than falsely claiming success. A loss ledger and
 consult-the-source list make omissions reviewable. Normal useful-length corpus
 synthesis stays with `se-digest`; external research requires separate approval.
+
+### Evaluation workflow boundary
+
+`se-evaluate` owns rubric-driven assessment of one defined artifact, process,
+product, proposal, or outcome. It audits criterion relevance, observability,
+independence, proxy risk, scale, threshold, weight provenance, and evidence
+requirements before applying the frame. Every accepted criterion retains its
+evidence, coverage, confidence, strength, deficiency, improvement, and exactly
+one state: met, partially met, failed, missing evidence, not evaluable, or not
+applicable.
+
+Qualitative evidence remains qualitative. Numeric results require anchored
+scales, justified aggregation, compatible units, and adequate evidence; weight
+or threshold sensitivity and reversals remain visible. Missing evidence never
+becomes failure, and incompatible comparators stay separately bounded.
+`se-compare` owns neutral multi-option comparison, `se-decide` owns choice, and
+`se-red-team` owns adversarial review. Evaluation remains read-only and does
+not assess personnel, certify, publish, execute improvements, or make the final
+decision.
 
 ### Action-inbox workflow boundary
 

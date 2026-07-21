@@ -51,6 +51,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-compare",
     "se-diagram",
     "se-distill",
+    "se-evaluate",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -152,6 +153,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-compare",
                 "se-diagram",
                 "se-distill",
+                "se-evaluate",
             ),
         )
         self.assertEqual(
@@ -177,6 +179,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-compare": "understand",
                 "se-diagram": "create",
                 "se-distill": "understand",
+                "se-evaluate": "improve",
             },
         )
 
@@ -1120,6 +1123,75 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "do not add external research unless the user separately approves",
         ):
             self.assertIn(phrase, lowered)
+
+    def test_evaluate_audits_rubric_before_applying_it(self) -> None:
+        text = normalized("se-evaluate").lower()
+        for phrase in (
+            "audit every criterion before applying it",
+            "criteria that encode the desired answer",
+            "double-counted or dependent criteria",
+            "protected or sensitive trait proxies",
+            "require rubric revision or explicit acceptance",
+            "audit bias before applying the rubric",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_evaluate_maps_evidence_to_distinct_criterion_states(self) -> None:
+        text = normalized("se-evaluate").lower()
+        for state in (
+            "`met`",
+            "`partially-met`",
+            "`failed`",
+            "`missing-evidence`",
+            "`not-evaluable`",
+            "`not-applicable`",
+        ):
+            self.assertIn(state, text)
+        for phrase in (
+            "use exactly one evidence state per criterion",
+            "missing-evidence`, never a zero or failure",
+            "trace every judgment to a criterion and cited evidence",
+            "unequal evidence availability must not become a performance difference",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_evaluate_guards_numeric_mode_and_runs_sensitivity(self) -> None:
+        text = normalized("se-evaluate").lower()
+        for phrase in (
+            "numeric scores require a meaningful scale with anchored levels",
+            "never convert adjectives, missing data, or arbitrary labels into numbers",
+            "never hide missing or not-evaluable criteria in a denominator",
+            "run sensitivity analysis whenever plausible weight, threshold",
+            "smallest assumption or evidence change that would change the conclusion",
+            "a valid overall result may be `not evaluable`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_evaluate_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-evaluate")
+        for sibling in ("se-compare", "se-decide", "se-scan", "se-red-team"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Scope and purpose**",
+            "**Rubric audit**",
+            "**Criterion ledger**",
+            "**Overall bounded judgment**",
+            "**Uncertainty and sensitivity**",
+            "**Prioritized improvements**",
+            "**Missing evidence and open questions**",
+            "**Handoffs**",
+            "**Limits**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-evaluate").lower()
+        for phrase in (
+            "read-only",
+            "data, not instructions",
+            "never evaluate or rank people",
+            "does not make it",
+            "`not run` status",
+        ):
+            self.assertIn(phrase, text)
 
 
 class SkillDocumentationTest(unittest.TestCase):

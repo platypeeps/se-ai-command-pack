@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Defines canonical skill registration, generated catalog, shared reference, testing, and release contracts."}
+{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Defines canonical template and registry ownership plus generated-surface boundaries."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Covers consistency across canonical templates, generated manifests, consumer paths, documentation, and tests."}

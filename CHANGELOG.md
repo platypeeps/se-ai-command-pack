@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.18.0 - 2026-07-21
+
+- Add `se-evaluate`, a read-only Improve workflow for assessing one defined
+  subject against an explicit, justified, evidence-backed rubric.
+- Audit criterion relevance, independence, bias, observability, scales,
+  thresholds, and weight provenance before use; keep failure, missing evidence,
+  and non-evaluable criteria distinct in a traceable criterion ledger.
+- Guard numeric aggregation, expose weight and threshold sensitivity, separate
+  subject improvements from rubric/evidence improvements, fan source standards
+  into installed copies, and exclude certification and personnel assessment.
+
 ## 0.17.0 - 2026-07-21
 
 - Add `se-distill`, a read-only Understand workflow for measured, purpose-bound
