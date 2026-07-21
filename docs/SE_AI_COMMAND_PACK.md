@@ -178,6 +178,21 @@ compliance. Preventive safety gates remain before irreversible actions even in
 do-confirm or emergency mode. Detailed procedure design stays with `se-runbook`
 or `se-sop`, while retrospective failure analysis stays with `se-retro`.
 
+### Comparison workflow boundary
+
+`se-compare` owns deep, neutral comparison of a known bounded set. It defines
+one criterion contract before filling cells, tests whether scopes and versions
+are comparable, and records each cell as known, unknown, not-public,
+not-applicable, conflicting, or not-comparable with dated evidence and
+confidence. Missing evidence and richer documentation never become a negative
+or positive product judgment by implication.
+
+The workflow reports contextual strengths, weaknesses, constraints, tradeoffs,
+evidence asymmetry, and qualitative sensitivity without scores, hidden weights,
+an overall rank, or a recommendation. `se-scan` owns open candidate discovery,
+`se-evaluate` owns rubric-based judgment, and `se-decide` owns user-weighted
+choice. Any requested decision receives a neutral handoff rather than a hidden winner.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.15.0 - 2026-07-21
+
+- Add `se-compare`, a read-only Understand workflow for neutral comparison of
+  known alternatives on one explicit, auditable frame.
+- Preserve six evidence-cell states, version and source asymmetry, conflicts,
+  constraint eligibility, qualitative sensitivity, and frame-dependent
+  dominance without penalizing missing data or inventing an aggregate winner.
+- Document the scan/evaluate/decide boundaries, fan source standards into every
+  installed copy, and add focused neutrality, evidence, and generation tests.
+
 ## 0.14.0 - 2026-07-21
 
 - Add `se-checklist`, a read-only workflow that derives short read-do or
