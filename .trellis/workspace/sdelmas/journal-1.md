@@ -1132,3 +1132,42 @@ Implemented and released the read-only se-feedback workflow with traceable atomi
 ### Next Steps
 
 - Task complete; housekeeping may merge PR #38.
+
+
+## Session 31: Ship se-handoff
+
+**Date**: 2026-07-21
+**Task**: Ship se-handoff
+**Branch**: `codex/se-handoff`
+
+### Summary
+
+Implemented and released the read-only se-handoff workflow for compact, evidence-backed continuity packets with explicit state, locator, privacy, and authority boundaries.
+
+### Main Changes
+
+- Added the canonical se-handoff skill under Coordinate with source-standard fan-out across installed platforms.
+- Separated verified facts, recorded decisions, assumptions, conflicts, and open questions at an explicit as-of cutoff.
+- Pinned continuation-critical locators, sensitive-value omission, executable-first-action structure, sibling boundaries, and read-only safety in focused tests.
+- Released pack version 0.23.0 and refreshed generated catalogs, manifest targets, operator guidance, repository map, and knowledge copy.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b51f397f9e9f9f275fe59c1c75a3a43d577e911a` | feat: add se-handoff skill |
+
+### Testing
+
+- [OK] Full repository check passed with 289 tests, Ruff, mypy, generation parity, and the release payload gate.
+- [OK] Repomix security scan found no suspicious files; Obsidian KB refreshed 341 copies with no conflicts.
+- [OK] GitHub CI passed on Ubuntu and macOS; Copilot reviewed all 14 changed files and generated no comments.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Task complete; housekeeping may merge PR #39.

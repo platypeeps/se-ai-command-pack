@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.23.0 - 2026-07-21
+
+- Add `se-handoff`, a read-only Coordinate workflow that reconstructs a compact
+  continuity packet for another person, team, tool, or AI session.
+- Separate verified facts, recorded decisions, assumptions, unresolved
+  questions, and stale or contradictory state while preserving only
+  continuation-critical identifiers, paths, errors, versions, commits, tasks,
+  and safe commands.
+- Make the first next action independently executable, retain prerequisites and
+  authority boundaries, omit sensitive values without hiding material gaps,
+  fan source standards into installed copies, and add focused safety and
+  generation tests.
+
 ## 0.22.0 - 2026-07-21
 
 - Add `se-feedback`, a read-only Improve workflow for synthesizing supplied
