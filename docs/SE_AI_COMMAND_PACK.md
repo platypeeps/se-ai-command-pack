@@ -432,6 +432,23 @@ data is optional, read-only, and limited to presentation preferences. Deck-file
 creation, rendering, rehearsal, delivery, and publication belong to separate
 presentation or publishing capabilities.
 
+### Proposal workflow boundary
+
+`se-proposal` owns interview-led development of a decision-ready case for a
+bounded intervention. It identifies the actual decision authority and required
+evidence, classifies material claims as observed evidence, estimate, assumption,
+or advocacy, and requires explicit approval of a proposal brief before full
+drafting. Estimates retain methods, ranges, time bases, and sensitivity rather
+than acquiring certainty from persuasive prose.
+
+The proposal applies common criteria to the preferred intervention, credible
+alternatives, and a do-nothing baseline. Conflicting stakeholder criteria,
+weak evidence, rejected framing, authority gaps, and rescoping conditions stay
+visible. Profile data can shape voice only; it cannot establish relationships,
+motives, facts, authority, or commitments. An accepted proposal may hand its
+approved outcome and constraints to `se-plan`, but approval, negotiation, task
+creation, implementation planning, and execution remain separate workflows.
+
 ### Distillation workflow boundary
 
 `se-distill` owns purpose-bound extreme compression of a supplied corpus to an

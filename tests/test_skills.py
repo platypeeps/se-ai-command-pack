@@ -68,6 +68,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-postmortem",
     "se-premortem",
     "se-presentation",
+    "se-proposal",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -186,6 +187,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-postmortem",
                 "se-premortem",
                 "se-presentation",
+                "se-proposal",
             ),
         )
         self.assertEqual(
@@ -228,6 +230,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-postmortem": "improve",
                 "se-premortem": "improve",
                 "se-presentation": "create",
+                "se-proposal": "create",
             },
         )
 
@@ -2355,6 +2358,59 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Citation and visual integrity**",
             "**Accessibility review**",
             "**Production handoff**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_proposal_gates_authority_interview_and_brief_approval(self) -> None:
+        text = normalized("se-proposal").lower()
+        for phrase in (
+            "audience interest is not decision authority",
+            "interview one question per turn",
+            "require explicit approval of this brief before drafting the full proposal",
+            "silence, workspace presence, or prior interest is not approval",
+            "weak evidence requires a smaller claim, not stronger prose",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_proposal_preserves_claim_and_estimate_classes(self) -> None:
+        text = normalized("se-proposal").lower()
+        for phrase in (
+            "`observed evidence`, `estimate`, `assumption`, or `advocacy`",
+            "record the method, inputs, range, time basis, sensitivity",
+            "precise-looking numbers do not create evidence",
+            "do not present estimates as observations",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_proposal_compares_real_alternatives_and_rejected_framing(self) -> None:
+        text = normalized("se-proposal").lower()
+        for phrase in (
+            "at least one credible alternative plus a do-nothing baseline",
+            "do not weaken an alternative",
+            "when stakeholders optimize for incompatible outcomes",
+            "triggers interview or rescoping, not cosmetic rewriting",
+            "acceptance of the document does not approve the intervention",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_proposal_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-proposal")
+        self.assertIn("references/source-standards.md", raw)
+        self.assertIn("references/personal-profile-contract.md", raw)
+        for sibling in ("`se-decide`", "`se-red-team`", "`se-plan`"):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Proposal contract**",
+            "**Interview and stakeholder record**",
+            "**Evidence and claim ledger**",
+            "**Approved proposal brief**",
+            "**Decision-ready proposal**",
+            "**Alternatives and do-nothing analysis**",
+            "**Investment and benefit basis**",
+            "**Risks, objections, and rejection conditions**",
+            "**Commitment and approval ledger**",
+            "**Planning handoff**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)
