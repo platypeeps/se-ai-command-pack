@@ -683,3 +683,42 @@ Implemented and validated se-ask-me as the first read-only consumer of the share
 ### Next Steps
 
 - None - task complete
+
+
+## Session 19: Add technical authoring workflow
+
+**Date**: 2026-07-21
+**Task**: Add technical authoring workflow
+**Branch**: `codex/se-author`
+
+### Summary
+
+Implemented se-author as a one-question-at-a-time, brief-approved technical authoring workflow; addressed Copilot terminology feedback; and prepared PR #26 for merge with green local and remote gates.
+
+### Main Changes
+
+- Added one-question interview, topic qualification, and explicit editorial-brief approval gates.
+- Defined a portable resumable workspace, evidence separation, ordered drafting passes, and confidentiality/integrity review.
+- Released version 0.11.0 across registry, manifest, documentation, generated catalogs, and tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ad7bb300a0e3efb534ae9737ea509de3345f5f76` | feat: add technical authoring workflow |
+
+### Testing
+
+- [OK] 53 focused skill tests and 49 focused generator tests passed
+- [OK] make check passed 228 tests plus Ruff, mypy, generation, and release gates
+- [OK] deterministic full check, install audit, Obsidian freshness, and Repomix security scan passed
+- [OK] PR CI passed and Copilot's second review generated no new comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
