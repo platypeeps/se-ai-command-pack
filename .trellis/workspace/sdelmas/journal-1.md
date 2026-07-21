@@ -380,3 +380,41 @@ Refreshed the installed SD command pack to 0.24.3, published PR #16, passed dete
 ### Next Steps
 
 - None - task complete
+
+
+## Session 11: Refresh SD AI command pack to 0.24.8
+
+**Date**: 2026-07-20
+**Task**: Refresh SD AI command pack to 0.24.8
+**Branch**: `codex/update-sd-ai-command-pack-0-24-8`
+
+### Summary
+
+Refreshed the consumer-installed SD AI command pack from 0.24.3 to the verified upstream 0.24.8 release and prepared PR #17 for merge.
+
+### Main Changes
+
+- Installed the vouched 0.24.8 payload for Claude, Gemini, GitHub, and OpenCode.
+- Added Copilot guidance for intentionally absent source-only pack files and documentation.
+- Included upstream terminal-reconciliation diagnostics and shipped-evidence validation fixes.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7d212ba` | chore: update sd-ai-command-pack to 0.24.8 |
+
+### Testing
+
+- [OK] Install audit passed for 151 targets.
+- [OK] make check passed 189 tests, Ruff, mypy, generated-surface validation, and release-payload gate.
+- [OK] PR full-check and all GitHub checks passed; Copilot reviewed all six files with no comments.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
