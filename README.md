@@ -3,7 +3,8 @@
 User-level knowledge-work skills for AI agent frameworks: personal profile
 maintenance and consultation, interview-driven technical authoring,
 destination-neutral capture, bookmark and action-inbox triage,
-critical operational checklists, decision-oriented agendas, pack discovery,
+critical operational checklists, neutral alternative comparisons,
+decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -29,6 +30,7 @@ come directly from canonical skill frontmatter.
 | `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
 | `se-fact-check` | Use when the user supplies claims or a draft and wants a claim-by-claim evidence audit with supported, partially supported, unverified, contradicted, or outdated verdicts. |
 | `se-ask-me` | Use when the user wants a profile-grounded prediction, aligned recommendation, reflection, or outward-safe draft without treating prior behavior as identity or authority. |
+| `se-compare` | Use when the user wants a neutral, evidence-aware comparison of known alternatives on one fair frame without ranking them or recommending a winner. |
 
 ### Decide
 
@@ -109,6 +111,12 @@ failure history into the smallest dependency-ordered set of checks that prevent
 a named failure or prove completion. Every item has an observable pass state,
 evidence rule, failure response, and source basis. It never executes the work,
 replaces a full procedure, or claims certification.
+
+`se-compare` applies one fair, source-aware frame to a known set of
+alternatives. It preserves version and evidence asymmetry, explicit unknown and
+conflicting cells, conditional tradeoffs, eligibility, and qualitative
+sensitivity without ranking or recommending a winner. Choice remains a separate
+handoff to `se-decide`.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred

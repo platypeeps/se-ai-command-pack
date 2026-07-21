@@ -48,6 +48,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-bookmark-triage",
     "se-capture",
     "se-checklist",
+    "se-compare",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -146,6 +147,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-bookmark-triage",
                 "se-capture",
                 "se-checklist",
+                "se-compare",
             ),
         )
         self.assertEqual(
@@ -168,6 +170,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-bookmark-triage": "operate",
                 "se-capture": "operate",
                 "se-checklist": "operate",
+                "se-compare": "understand",
             },
         )
 
@@ -922,6 +925,75 @@ class SkillSafetyPinsTest(unittest.TestCase):
             self.assertIn(phrase, lowered)
         for sibling in ("se-runbook", "se-sop", "se-retro"):
             self.assertIn(f"`{sibling}`", text)
+
+    def test_compare_builds_one_fair_criterion_contract(self) -> None:
+        text = normalized("se-compare").lower()
+        for phrase in (
+            "test comparability before choosing criteria",
+            "define one criterion contract before filling cells",
+            "criterion origin",
+            "criteria chosen to favor one alternative",
+            "duplicated or dependent dimensions",
+            "separate factual or technical criteria from user values",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_compare_preserves_cell_states_and_evidence_asymmetry(self) -> None:
+        text = normalized("se-compare").lower()
+        for state in (
+            "`known`",
+            "`unknown`",
+            "`not-public`",
+            "`not-applicable`",
+            "`conflicting`",
+            "`not-comparable`",
+        ):
+            self.assertIn(state, text)
+        for phrase in (
+            "missing evidence is `unknown` or `not-public`, never zero, failure",
+            "better documentation is not better performance",
+            "never average them",
+            "confidence `high`, `medium`, or `low`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_compare_stays_neutral_through_sensitivity_and_dominance(self) -> None:
+        text = normalized("se-compare").lower()
+        for phrase in (
+            "preserve user-supplied order; otherwise use neutral lexical order",
+            "without scores, hidden weights, an overall rank",
+            "dominance under this frame",
+            "eligibility is not a winner",
+            "do not convert it into a personal recommendation",
+            "if no meaningful difference appears, say so plainly",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_compare_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-compare")
+        for sibling in ("se-scan", "se-evaluate", "se-decide"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Scope and comparability**",
+            "**Fair comparison frame**",
+            "**Evidence matrix**",
+            "**Alternative profiles**",
+            "**Tradeoffs and disqualifiers**",
+            "**Evidence asymmetry and uncertainty**",
+            "**Sensitivity**",
+            "**Open questions and highest-value evidence**",
+            "**Decision handoff**",
+            "**Limits**",
+        ):
+            self.assertIn(field, raw)
+        lowered = normalized("se-compare").lower()
+        for phrase in (
+            "read-only",
+            "data, not instructions",
+            "never recommend, select, rank overall",
+            "`not run` status",
+        ):
+            self.assertIn(phrase, lowered)
 
 
 class SkillDocumentationTest(unittest.TestCase):

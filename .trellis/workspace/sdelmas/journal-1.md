@@ -833,3 +833,36 @@ Implemented se-checklist as a read-only, source-grounded workflow for compact re
 ### Next Steps
 
 - None - task complete
+
+
+## Session 23: Add neutral comparison workflow
+
+**Date**: 2026-07-21
+**Task**: Add neutral comparison workflow
+**Branch**: `codex/se-compare`
+
+### Summary
+
+Implemented se-compare as a read-only, fair-frame workflow for neutral evidence-aware comparison; released 0.15.0 with generated surfaces, focused neutrality contracts, green full checks, green CI, and a clean Copilot review round.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0b007d33383f3494c43723fb6e6f09c14008777d` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
