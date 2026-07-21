@@ -27,7 +27,7 @@ process. User-facing install/update/remove instructions live in the
   grouped by primary outcome family in the README but retain flat canonical and
   installed paths. The current bundle includes report-first technical editing
   with `se-technical-editor` and audience-calibrated explanation with
-  `se-explain`.
+  `se-explain`, plus traceable feedback synthesis with `se-feedback`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -188,6 +188,20 @@ claims require supplied or verified sources. Follow-ups deepen only the
 requested layer using a compact established-so-far context; curricula, study
 artifacts, mastery assessment, open research, fact checking, and publication
 remain separate workflows.
+
+### Feedback workflow boundary
+
+`se-feedback` owns read-only synthesis of supplied reviews, comments,
+interviews, and conversations. It preserves atomic wording and locators before
+clustering by root concern, keeps raw mentions distinct from deduplicated reach,
+and links every theme and provisional disposition back to individual evidence.
+
+Contradictory audiences are segmented rather than averaged, repetition never
+becomes proof, and isolated safety, security, correctness, legal, or
+accessibility findings remain visible by consequence. The supported
+dispositions are accept, reject, clarify, test, defer, and already-addressed;
+replying, resolving threads, editing artifacts, assigning work, scheduling, and
+publishing remain separate authorized actions.
 
 ### Bookmark-triage workflow boundary
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.22.0 - 2026-07-21
+
+- Add `se-feedback`, a read-only Improve workflow for synthesizing supplied
+  reviews, comments, interviews, and conversations without losing atomic evidence.
+- Preserve source locators, duplicates, contradictory audiences, minority
+  findings, and isolated high-severity concerns; distinguish observed problems,
+  interpretations, proposed solutions, raw mentions, and deduplicated reach.
+- Add six explicit response dispositions with evidence, validation, and change
+  conditions; fan source standards into installed copies and add focused
+  traceability, aggregation-safety, injection, and generation tests.
+
 ## 0.21.0 - 2026-07-21
 
 - Add `se-explain`, a read-only Understand workflow for explaining one bounded

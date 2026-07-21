@@ -55,6 +55,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-topic-radar",
     "se-technical-editor",
     "se-explain",
+    "se-feedback",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -160,6 +161,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-topic-radar",
                 "se-technical-editor",
                 "se-explain",
+                "se-feedback",
             ),
         )
         self.assertEqual(
@@ -189,6 +191,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-topic-radar": "create",
                 "se-technical-editor": "improve",
                 "se-explain": "understand",
+                "se-feedback": "improve",
             },
         )
 
@@ -1417,6 +1420,73 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "correct earlier simplifications",
             "does not claim to assess mastery",
             "status `not run`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_feedback_preserves_atomic_evidence_before_clustering(self) -> None:
+        text = normalized("se-feedback").lower()
+        for phrase in (
+            "normalize feedback into atomic entries before clustering",
+            "stable feedback id, source id, exact wording or lossless excerpt, original locator",
+            "split compound comments without losing their shared source and locator",
+            "each theme must point back to its atomic feedback ids",
+            "cluster by root concern and affected outcome, not shared vocabulary alone",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_feedback_handles_duplicates_conflicts_and_severity(self) -> None:
+        text = normalized("se-feedback").lower()
+        for phrase in (
+            "keep every atomic evidence record",
+            "raw mention count and deduplicated source or audience reach",
+            "repetition is a signal of reach, not proof",
+            "segment conflicting audience needs rather than averaging them",
+            "elevate an isolated safety, security, correctness, legal, or accessibility concern",
+            "frequency is one",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_feedback_uses_explicit_evidence_backed_dispositions(self) -> None:
+        text = normalized("se-feedback").lower()
+        for disposition in (
+            "`accept`",
+            "`reject`",
+            "`clarify`",
+            "`test`",
+            "`defer`",
+            "`already-addressed`",
+        ):
+            self.assertIn(disposition, text)
+        for phrase in (
+            "exactly one provisional disposition",
+            "validation action, and condition that would change the disposition",
+            "use `already-addressed` only when dated artifact or change evidence shows",
+            "use `reject` for an evidenced mismatch or harmful proposal",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_feedback_read_only_safety_and_final_report_contract(self) -> None:
+        raw = skill_text("se-feedback")
+        for sibling in ("se-technical-editor", "se-fact-check"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Scope and source coverage**",
+            "**Atomic feedback ledger**",
+            "**Theme map**",
+            "**Contradictions, minority views, and severe exceptions**",
+            "**Disposition ledger**",
+            "**Unresolved feedback**",
+            "**Decision-ready summary**",
+            "**Actions and limits**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-feedback").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "never reply to contributors, resolve review threads, modify the reviewed artifact",
+            "never invent sources, comments, locators, authors, roles, dates, audiences",
+            "all `not run`",
         ):
             self.assertIn(phrase, text)
 

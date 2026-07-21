@@ -84,6 +84,7 @@ DEFAULT_MANIFEST_HEADER = {
         "evidence-backed editorial opportunity ranking, "
         "report-first technical editing, "
         "audience-calibrated explanations, "
+        "traceable feedback synthesis, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "
