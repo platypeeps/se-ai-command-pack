@@ -5,7 +5,8 @@ maintenance and consultation, interview-driven technical authoring,
 destination-neutral capture, bookmark and action-inbox triage,
 critical operational checklists, neutral alternative comparisons,
 evidence-traceable diagrams, auditable extreme distillation,
-rubric-driven evaluations, decision-oriented agendas, pack discovery,
+rubric-driven evaluations, evidence-backed editorial opportunity ranking,
+decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -46,6 +47,7 @@ come directly from canonical skill frontmatter.
 |---|---|
 | `se-author` | Use when the user wants to develop an original evidence-backed technical article through a one-question interview, approved editorial brief, staged drafting, review, and publication handoff. |
 | `se-diagram` | Use when the user wants a precise, evidence-traceable diagram specification or conservative Mermaid diagram for a system, process, concept, hierarchy, comparison, state model, or event sequence. |
+| `se-topic-radar` | Use when the user wants ten ranked technical writing opportunities grounded in authorized personal activity, current developments, prior coverage, evidence readiness, novelty, and effort. |
 
 ### Coordinate
 
@@ -100,6 +102,13 @@ one-question-at-a-time interview, an explicitly approved editorial brief,
 claim-specific evidence work, ordered drafting passes, and resumable workspace
 checkpoints. It preserves user testimony separately from assistant framing and
 returns a publication package without publishing or writing to a destination.
+
+`se-topic-radar` ranks technical writing opportunities from explicitly
+authorized personal activity, dated external developments, and prior-content
+coverage. It traces every component score, keeps private evidence out of
+outward-facing rationales, penalizes duplicate angles, and returns exactly ten
+only when the evidence supports ten materially distinct candidates. Selection
+hands off to `se-author` or `se-paper`; it does not draft or publish.
 
 `se-bookmark-triage` turns a bounded saved-item collection into a small,
 evidence-labeled attention queue. It preserves original locators, keeps

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.19.0 - 2026-07-21
+
+- Add `se-topic-radar`, a read-only Create workflow for ranking technical
+  writing opportunities from authorized personal activity, current external
+  developments, and prior-content coverage.
+- Separate personal and external evidence, require outward-safe authority
+  claims, visibly penalize duplicates, and condition the exact-ten result on
+  adequate evidence rather than padding with generic trends.
+- Add anchored component scoring, uncertainty and sensitivity reporting,
+  profile/source-standard fan-out, author/paper handoffs, generated surfaces,
+  and focused privacy, recency, novelty, and coverage contracts.
+
 ## 0.18.0 - 2026-07-21
 
 - Add `se-evaluate`, a read-only Improve workflow for assessing one defined
