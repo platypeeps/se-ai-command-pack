@@ -69,6 +69,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-premortem",
     "se-presentation",
     "se-proposal",
+    "se-publish",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -188,6 +189,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-premortem",
                 "se-presentation",
                 "se-proposal",
+                "se-publish",
             ),
         )
         self.assertEqual(
@@ -231,6 +233,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-premortem": "improve",
                 "se-presentation": "create",
                 "se-proposal": "create",
+                "se-publish": "create",
             },
         )
 
@@ -2411,6 +2414,71 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Risks, objections, and rejection conditions**",
             "**Commitment and approval ledger**",
             "**Planning handoff**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_publish_preserves_source_approval_and_claim_fidelity(self) -> None:
+        text = normalized("se-publish").lower()
+        for phrase in (
+            "an already approved source artifact is required",
+            "build a source ledger before adaptation",
+            "every load-bearing claim",
+            "evidence wins when brevity, persuasion, or destination style conflicts",
+            "unsupported promotional claims cannot be introduced during transformation",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_publish_applies_destination_and_adaptation_contracts(self) -> None:
+        text = normalized("se-publish").lower()
+        for phrase in (
+            "apply the destination contract",
+            "**slack message**",
+            "**slack canvas**",
+            "**notion page**",
+            "**memo**",
+            "**announcement**",
+            "**briefing**",
+            "**youtube outline**",
+            "maintain an adaptation ledger",
+            "`unchanged`, `compressed`, `reordered`, `retitled`, `terminology-changed`",
+            "if a tight limit cannot be met without changing meaning or safety",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_publish_bounds_profile_audience_and_write_authority(self) -> None:
+        raw = skill_text("se-publish")
+        self.assertIn("references/source-standards.md", raw)
+        self.assertIn("references/personal-profile-contract.md", raw)
+        text = normalized("se-publish").lower()
+        for phrase in (
+            "a broader audience, public channel, incompatible objective",
+            "profile use is optional, read-only, and preference-only",
+            "this skill is read-only",
+            "a request to send or publish does not execute here",
+            "only after a fresh preview",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_publish_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-publish")
+        for sibling in (
+            "`se-digest`",
+            "`se-author`",
+            "`se-presentation`",
+            "`se-knowledge-capture`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Publication contract**",
+            "**Source coverage and claim ledger**",
+            "**Audience and destination fit**",
+            "**Destination draft and preview**",
+            "**Adaptation and omission ledger**",
+            "**Citation integrity**",
+            "**Sensitivity and accessibility review**",
+            "**Open approvals and conflicts**",
+            "**Connector-ready handoff**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

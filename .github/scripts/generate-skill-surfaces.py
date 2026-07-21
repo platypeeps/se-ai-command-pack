@@ -98,6 +98,7 @@ DEFAULT_MANIFEST_HEADER = {
         "pre-execution failure stress tests, "
         "source-grounded presentation blueprints, "
         "decision-ready proposal development, "
+        "source-faithful destination adaptation, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

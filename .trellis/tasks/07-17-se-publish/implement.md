@@ -19,6 +19,15 @@
 Document destination contracts, adaptation disclosure, citation/sensitivity checks,
 profile scopes, preview requirements, and connector-specific write handoff.
 
+## Rollback Points
+
+- Before registration: remove the canonical `se-publish` template and focused
+  tests if the contract cannot preserve source meaning across destinations.
+- Before generation: revert the registry/reference additions and release
+  metadata together; do not hand-edit generated manifest or catalog rows.
+- Before shipping: require `make generate` idempotence, focused tests, the full
+  repository gate, install fan-out audit, and a clean diff.
+
 ## Review Notes
 
 Compare drafts to source load-bearing claims and ensure no adaptation broadens
