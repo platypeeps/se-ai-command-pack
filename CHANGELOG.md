@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.0 - 2026-07-21
+
+- Add `se-author`, an interview-driven technical-article workflow that
+  qualifies themes, asks one high-value question per turn, preserves user
+  testimony, and requires an approved editorial brief before broad research or drafting.
+- Define portable resumable artifacts for brief, interview, evidence, outline,
+  draft, and review state; keep thesis changes approval-gated and run ordered
+  skeleton, substance, voice, compression, comprehension, and integrity passes.
+- Fan source standards into every installed target, document capability-based
+  sibling handoffs and the no-publication boundary, and add focused authorship,
+  resume, generation, and safety coverage.
+
 ## 0.10.0 - 2026-07-21
 
 - Add `se-ask-me`, a read-only consumer of `se-personal-profile/v1` that keeps

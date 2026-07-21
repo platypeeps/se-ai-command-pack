@@ -115,6 +115,24 @@ or turn a recommendation or draft into permission to act. High-stakes questions
 still require current authoritative evidence and the appropriate workflow;
 profile alignment cannot replace professional guidance.
 
+### Authoring workflow boundary
+
+`se-author` owns interactive development of an original technical article. A
+supplied theme or ten provisional/topic-radar opportunities converge on topic
+qualification, then a one-question-at-a-time interview captures the user's
+thesis, experience, examples, objections, and judgments separately from
+assistant hypotheses and generated prose. Broad research and drafting wait for
+an explicitly approved editorial brief; material thesis changes return to that
+approval checkpoint.
+
+The portable workspace may be files or equivalent host-managed state and keeps
+brief, interview, claim/evidence ledger, outline, draft, and review artifacts
+resumable without prescribing a storage product. Drafting proceeds through
+skeleton, substance, voice, compression, reader-comprehension, and integrity
+passes. Research, fact-check, distillation, technical-editing, paper, topic,
+and publishing skills remain capability handoffs rather than hard dependencies.
+The final package is not published and no destination is written.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,

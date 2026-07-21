@@ -95,8 +95,8 @@ class RealRepoGeneratorTest(unittest.TestCase):
     def test_readme_catalog_uses_family_order_and_frontmatter(self) -> None:
         rendered = gen.regenerated_readme_text()
         self.assertLess(rendered.index("### Understand"), rendered.index("### Decide"))
-        self.assertLess(rendered.index("### Decide"), rendered.index("### Coordinate"))
-        self.assertNotIn("### Create", rendered)
+        self.assertLess(rendered.index("### Decide"), rendered.index("### Create"))
+        self.assertLess(rendered.index("### Create"), rendered.index("### Coordinate"))
         self.assertIn("### Operate", rendered)
         self.assertNotIn("### Improve", rendered)
         self.assertIn(
@@ -212,6 +212,23 @@ class RealRepoGeneratorTest(unittest.TestCase):
                     f"{info.skills_dir}/se-ask-me/references/{basename}",
                     targets,
                 )
+
+    def test_author_installs_source_standards(self) -> None:
+        expected_sources = {"_shared/references/source-standards.md"}
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-author" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        targets = {row["target"] for row in manifest["files"]}
+        for info in gen.PLATFORM_REGISTRY.values():
+            self.assertIn(
+                f"{info.skills_dir}/se-author/references/source-standards.md",
+                targets,
+            )
 
     def test_action_inbox_installs_source_standards(self) -> None:
         expected_sources = {"_shared/references/source-standards.md"}

@@ -1,7 +1,8 @@
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: personal profile
-maintenance and consultation, action-inbox triage, decision-oriented agendas, pack discovery,
+maintenance and consultation, interview-driven technical authoring,
+action-inbox triage, decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -33,6 +34,12 @@ come directly from canonical skill frontmatter.
 | Skill | Use when |
 |---|---|
 | `se-decide` | Use when the user wants a defensible recommendation between known options using explicit criteria, constraints, evidence, tradeoffs, and uncertainty. |
+
+### Create
+
+| Skill | Use when |
+|---|---|
+| `se-author` | Use when the user wants to develop an original evidence-backed technical article through a one-question interview, approved editorial brief, staged drafting, review, and publication handoff. |
 
 ### Coordinate
 
@@ -72,6 +79,12 @@ prediction, aligned advice, reflection, and outward-facing drafts distinct;
 current context outranks historical patterns, uncertain or conflicting evidence
 stays visible, and outward drafts use only eligible `outward-safe` assertions.
 It never treats the profile as identity, consent, authority, or permission to act.
+
+`se-author` develops original technical articles through topic qualification, a
+one-question-at-a-time interview, an explicitly approved editorial brief,
+claim-specific evidence work, ordered drafting passes, and resumable workspace
+checkpoints. It preserves user testimony separately from assistant framing and
+returns a publication package without publishing or writing to a destination.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred

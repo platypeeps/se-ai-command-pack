@@ -3,7 +3,7 @@
   "name": "se-author",
   "title": "Implement se-author",
   "description": "Add an interview-driven authoring workflow for technical articles that discovers or sharpens a topic, captures original thinking, builds an evidence ledger, drafts in stages, and hands off a publication package.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
