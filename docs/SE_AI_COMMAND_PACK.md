@@ -99,6 +99,18 @@ or authorization for recurring ingestion. Other skills are read-only consumers;
 when they adopt the contract they use `profile=auto|off|<locator>` plus optional
 `audience=`, and ordinary consumption never writes back.
 
+### Action-inbox workflow boundary
+
+`se-action-inbox` owns cross-source identification, classification,
+deduplication, and review ranking of actionable statements. Assigned and
+committed items remain distinct from requests, proposals, and opt-in inferred
+possibilities; lifecycle state is tracked separately, and resolved items stay
+visible with their exclusion evidence. It preserves unknown owners and dates,
+conflicting values, every source locator, and incomplete coverage. Complete
+thread reconstruction stays with `se-thread-digest`, whole-document synthesis
+with `se-digest`, and execution planning with `se-plan`. The skill never
+creates tasks, reminders, or replies without a separate authorized operation.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):

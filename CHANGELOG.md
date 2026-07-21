@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.0 - 2026-07-21
+
+- Add `se-action-inbox`, a read-only cross-source triage workflow that keeps
+  assignments and commitments separate from requests, proposals, and opt-in
+  inferred possibilities.
+- Preserve every source locator and conflicting owner, date, or lifecycle
+  value during deduplication; keep resolved items visible and rank active work
+  with transparent evidence and judgment.
+- Register the skill under Coordinate, fan source standards into every
+  installed copy, document sibling-workflow and mutation boundaries, and add
+  focused safety, provenance, report-contract, and generated-target tests.
+
 ## 0.7.0 - 2026-07-21
 
 - Add `se-profile`, the sole consent-driven maintenance workflow for a

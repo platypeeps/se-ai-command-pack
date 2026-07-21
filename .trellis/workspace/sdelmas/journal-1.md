@@ -566,3 +566,42 @@ Added and reviewed the consent-driven personal profile workflow and portable v1 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 16: Implement se-action-inbox
+
+**Date**: 2026-07-21
+**Task**: Implement se-action-inbox
+**Branch**: `codex/se-action-inbox`
+
+### Summary
+
+Added and reviewed a read-only cross-source action inbox with explicit provenance and authority boundaries.
+
+### Main Changes
+
+- Added se-action-inbox with separate action-class and lifecycle-state contracts, evidence-preserving deduplication, and transparent ranking.
+- Registered and generated all platform payloads, source-standard fan-out, documentation, release metadata, and repository knowledge surfaces for version 0.8.0.
+- Published PR #23; Copilot reviewed all changed files on the exact feature head and generated no comments.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c959335bea4e7189777399e6cc7433664ffa2304` | feat: add action inbox workflow |
+| `7b9202f` | chore(task): archive se-action-inbox |
+
+### Testing
+
+- [OK] make check: 213 tests, Ruff, mypy, generation drift, Repomix, and release payload gate passed.
+- [OK] SD PR full-check passed after refreshing the ignored Obsidian KB mirror.
+- [OK] GitHub CI passed all six executed checks; Copilot round 1 found no comments or review threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

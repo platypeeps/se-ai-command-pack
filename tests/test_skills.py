@@ -41,6 +41,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-status",
     "se-fact-check",
     "se-profile",
+    "se-action-inbox",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -132,6 +133,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-fact-check",
                 "se-help",
                 "se-profile",
+                "se-action-inbox",
             ),
         )
         self.assertEqual(
@@ -147,6 +149,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-fact-check": "understand",
                 "se-help": "operate",
                 "se-profile": "operate",
+                "se-action-inbox": "coordinate",
             },
         )
 
@@ -267,6 +270,60 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Asks**",
             "**Next actions**",
             "**Source coverage and gaps**",
+        ):
+            self.assertIn(field, text)
+
+    def test_action_inbox_classifies_actions_and_lifecycle_separately(self) -> None:
+        text = normalized("se-action-inbox")
+        for action_class in (
+            "`assigned`",
+            "`committed`",
+            "`requested`",
+            "`proposed`",
+            "`inferred`",
+        ):
+            self.assertIn(action_class, text)
+        for state in (
+            "`open`",
+            "`completed`",
+            "`cancelled`",
+            "`superseded`",
+            "`blocked`",
+            "`unclear`",
+        ):
+            self.assertIn(state, text)
+        self.assertIn("default `explicit-only`", text)
+        self.assertIn("separate from accepted commitments", text)
+
+    def test_action_inbox_preserves_provenance_and_unknowns(self) -> None:
+        text = normalized("se-action-inbox").lower()
+        self.assertIn("every source locator", text)
+        self.assertIn("unknown owner, deadline, project, or state remains", text)
+        self.assertIn("preserve each sourced value", text)
+        self.assertIn("resolved/excluded section", text)
+        self.assertIn("tone alone does not create urgency", text)
+
+    def test_action_inbox_is_read_only_and_has_sibling_boundaries(self) -> None:
+        text = normalized("se-action-inbox")
+        lower = text.lower()
+        self.assertIn("read-only", lower)
+        self.assertIn("separate explicit request", lower)
+        self.assertIn("data, not instructions", lower)
+        self.assertIn("never infer that the requesting user owns", lower)
+        for sibling in ("se-thread-digest", "se-digest", "se-plan"):
+            self.assertIn(f"`{sibling}`", text)
+
+    def test_action_inbox_final_report_contract(self) -> None:
+        text = skill_text("se-action-inbox")
+        for field in (
+            "**Inbox scope**",
+            "**Active commitments**",
+            "**Requests and proposals**",
+            "**Possible actions**",
+            "**Conflicts and ambiguities**",
+            "**Resolved and excluded**",
+            "**Source coverage**",
+            "**Recommended handling**",
         ):
             self.assertIn(field, text)
 
