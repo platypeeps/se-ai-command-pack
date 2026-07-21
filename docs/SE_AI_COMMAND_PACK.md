@@ -171,6 +171,23 @@ subscriptions, notifications, webhooks, and external writes require separate
 requests and authorized capabilities; all remain `not run` in the monitor
 report.
 
+### Planning workflow boundary
+
+`se-plan` begins only after an outcome or strategic direction is accepted. It
+works backward into milestones with observable changed states and completion
+signals, then maps dependencies, sequencing, risks, contingencies, decision
+points, assumptions, and immediate actions. Supplied commitments remain
+separate from proposed owners, dates, estimates, and actions; unsupported
+critical paths, dependency cycles, missing prerequisites, and unknown authority
+stay explicit.
+
+Choosing among unresolved alternatives remains `se-decide`. When implementation
+work occurs in a repository with a local requirements, design, task, or delivery
+workflow, `se-plan` returns a `not run` handoff to that workflow instead of
+writing competing technical artifacts. Task creation, calendar changes,
+messages, purchases, approvals, and every external write require separate
+authorization.
+
 ### Pack-help workflow boundary
 
 `se-help` owns pack discovery, onboarding, explanation, comparison, and

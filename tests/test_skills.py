@@ -64,6 +64,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-meeting-follow-through",
     "se-monitor",
     "se-paper",
+    "se-plan",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -178,6 +179,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-meeting-follow-through",
                 "se-monitor",
                 "se-paper",
+                "se-plan",
             ),
         )
         self.assertEqual(
@@ -216,6 +218,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-meeting-follow-through": "coordinate",
                 "se-monitor": "understand",
                 "se-paper": "create",
+                "se-plan": "decide",
             },
         )
 
@@ -2113,6 +2116,67 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Reproducibility and ethics inventory**",
             "**Venue adaptation and gaps**",
             "**Submission handoff**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_plan_requires_accepted_observable_outcome(self) -> None:
+        text = normalized("se-plan").lower()
+        for phrase in (
+            "confirm the goal is accepted, bounded, and observable",
+            "desired changed state and completion evidence",
+            "route the decision to `se-decide`",
+            "a vague aspiration, missing outcome, or unknown governing constraint",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_plan_builds_outcome_milestones_and_dependencies(self) -> None:
+        text = normalized("se-plan").lower()
+        for phrase in (
+            "work backward from the outcome into outcome-based milestones",
+            "observable completion signal",
+            "activities without an observable result are supporting work, not milestones",
+            "surface missing prerequisites",
+            "dependency cycles",
+            "name a critical path only when sourced timing and dependencies support one",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_plan_preserves_commitment_and_authority_boundaries(self) -> None:
+        text = normalized("se-plan").lower()
+        for phrase in (
+            "separate verified constraints and accepted commitments from assumptions, estimates, and planning proposals",
+            "use `unassigned` and `unscheduled`",
+            "unknown authority remains unknown",
+            "first action must be possible under current authority and information",
+            "never invent owners, dates, deadlines, estimates, budgets, capacity, commitments, approvals, dependencies, or a critical path",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_plan_is_read_only_and_defers_local_development(self) -> None:
+        raw = skill_text("se-plan")
+        self.assertIn("`se-decide`", raw)
+        text = normalized("se-plan").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "local development workflow",
+            "do not write parallel technical planning artifacts",
+            "every task, calendar, message, purchase, approval, or external write marked `not run`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_plan_final_report_contract(self) -> None:
+        raw = skill_text("se-plan")
+        for field in (
+            "**Planning contract**",
+            "**Assumptions and missing information**",
+            "**Milestones**",
+            "**Dependencies and sequence**",
+            "**Risks, blockers, and contingencies**",
+            "**Decision points**",
+            "**Immediate next actions**",
+            "**Commitment ledger**",
+            "**Execution boundary**",
         ):
             self.assertIn(field, raw)
 
