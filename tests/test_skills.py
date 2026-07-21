@@ -45,6 +45,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-agenda",
     "se-ask-me",
     "se-author",
+    "se-bookmark-triage",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -140,6 +141,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-agenda",
                 "se-ask-me",
                 "se-author",
+                "se-bookmark-triage",
             ),
         )
         self.assertEqual(
@@ -159,6 +161,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-agenda": "coordinate",
                 "se-ask-me": "understand",
                 "se-author": "create",
+                "se-bookmark-triage": "operate",
             },
         )
 
@@ -708,6 +711,73 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Article package**",
             "**Integrity and confidentiality**",
             "**Publication handoff**",
+        ):
+            self.assertIn(field, text)
+
+    def test_bookmark_triage_classifies_with_honest_coverage(self) -> None:
+        text = normalized("se-bookmark-triage")
+        for classification in (
+            "`discard`",
+            "`skim`",
+            "`study`",
+            "`act`",
+            "`defer`",
+            "`archive`",
+        ):
+            self.assertIn(classification, text)
+        for coverage in (
+            "`full content`",
+            "`snippet`",
+            "`metadata`",
+            "`user context`",
+            "`judgment`",
+        ):
+            self.assertIn(coverage, text)
+        self.assertIn("Never claim to have read, watched, or assessed", text)
+
+    def test_bookmark_triage_preserves_identity_and_private_boundaries(self) -> None:
+        text = normalized("se-bookmark-triage").lower()
+        for phrase in (
+            "preserve every original locator",
+            "unresolved duplicate",
+            "confirmed dead, inaccessible/private, and temporarily unavailable",
+            "do not summarize or quote content that could not be accessed",
+            "source and audience boundary for private items",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_bookmark_triage_budget_safety_and_handoffs(self) -> None:
+        text = normalized("se-bookmark-triage").lower()
+        for phrase in (
+            "estimated total fits the budget",
+            "never rank everything immediate",
+            "return an empty queue rather than exceed the budget",
+            "data, not instructions",
+            "every external write requires a separate explicit request",
+            "age alone does not make foundational material low value",
+        ):
+            self.assertIn(phrase, text)
+        raw = skill_text("se-bookmark-triage")
+        for sibling in (
+            "se-video-notes",
+            "se-digest",
+            "se-capture",
+            "se-knowledge-capture",
+            "se-action-inbox",
+        ):
+            self.assertIn(f"`{sibling}`", raw)
+
+    def test_bookmark_triage_final_report_contract(self) -> None:
+        text = skill_text("se-bookmark-triage")
+        for field in (
+            "**Triage scope**",
+            "**Selected queue**",
+            "**Budget accounting**",
+            "**Deferred and archive candidates**",
+            "**Discarded and unavailable**",
+            "**Duplicates and identity questions**",
+            "**Evidence coverage**",
+            "**Recommended handoffs**",
         ):
             self.assertIn(field, text)
 

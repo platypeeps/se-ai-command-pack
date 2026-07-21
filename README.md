@@ -2,7 +2,7 @@
 
 User-level knowledge-work skills for AI agent frameworks: personal profile
 maintenance and consultation, interview-driven technical authoring,
-action-inbox triage, decision-oriented agendas, pack discovery,
+bookmark and action-inbox triage, decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -57,6 +57,7 @@ come directly from canonical skill frontmatter.
 |---|---|
 | `se-help` | Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow. |
 | `se-profile` | Use when the user wants to create, inspect, correct, review, import, export, or forget a consent-driven personal operating profile with traceable assertions. |
+| `se-bookmark-triage` | Use when the user wants to deduplicate and triage a bounded collection of saved links, videos, pages, or notes into a small evidence-labeled attention queue without mutating the source collection. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -85,6 +86,13 @@ one-question-at-a-time interview, an explicitly approved editorial brief,
 claim-specific evidence work, ordered drafting passes, and resumable workspace
 checkpoints. It preserves user testimony separately from assistant framing and
 returns a publication package without publishing or writing to a destination.
+
+`se-bookmark-triage` turns a bounded saved-item collection into a small,
+evidence-labeled attention queue. It preserves original locators, keeps
+uncertain duplicates separate, distinguishes full-content review from snippets
+or metadata, and fits selected work to a disclosed time budget. It never
+mutates the source collection; deep viewing, durable capture, knowledge
+capture, and action extraction remain separate handoffs.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred

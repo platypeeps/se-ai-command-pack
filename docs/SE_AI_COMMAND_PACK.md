@@ -133,6 +133,21 @@ passes. Research, fact-check, distillation, technical-editing, paper, topic,
 and publishing skills remain capability handoffs rather than hard dependencies.
 The final package is not published and no destination is written.
 
+### Bookmark-triage workflow boundary
+
+`se-bookmark-triage` owns bounded inventory, conservative identity
+normalization, classification, attention ranking, and time-budget selection for
+saved links, videos, pages, messages, and notes. Each retained item reports a
+reason, recommended attention level, confidence, original locators, and whether
+the decision rests on full content, a snippet, metadata, user context, or
+judgment. Dead, inaccessible, private, and unresolved duplicate items remain
+explicit; sparse metadata never becomes a claim that content was read or watched.
+
+The workflow is read-only and never deletes, archives, marks read, reorders, or
+tags a source collection. `se-video-notes`, `se-digest`, `se-capture`,
+`se-knowledge-capture`, and `se-action-inbox` remain optional capability
+handoffs that require separate invocation and authority.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,
