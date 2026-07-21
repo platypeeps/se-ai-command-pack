@@ -56,6 +56,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-technical-editor",
     "se-explain",
     "se-feedback",
+    "se-handoff",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -162,6 +163,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-technical-editor",
                 "se-explain",
                 "se-feedback",
+                "se-handoff",
             ),
         )
         self.assertEqual(
@@ -192,6 +194,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-technical-editor": "improve",
                 "se-explain": "understand",
                 "se-feedback": "improve",
+                "se-handoff": "coordinate",
             },
         )
 
@@ -1489,6 +1492,58 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "all `not run`",
         ):
             self.assertIn(phrase, text)
+
+    def test_handoff_reconstructs_dated_state_without_inventing_context(self) -> None:
+        text = normalized("se-handoff").lower()
+        for phrase in (
+            "state the as-of cutoff",
+            "verified fact, recorded decision, assumption, or unresolved question",
+            "current, stale, unavailable, or contradictory",
+            "identify the authoritative source only when the evidence establishes one",
+            "never invent missing state to make the packet look complete",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_handoff_preserves_only_load_bearing_operational_detail(self) -> None:
+        text = normalized("se-handoff").lower()
+        for phrase in (
+            "preserve exact identifiers, paths, urls, error strings, versions, commits, task references, and commands",
+            "only when they are necessary to continue safely",
+            "the first next action must be independently executable",
+            "name every prerequisite, stop condition, and required authority",
+            "shorter than the source context",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_handoff_minimizes_sensitive_data_and_never_acts(self) -> None:
+        text = normalized("se-handoff").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "omit the value and note the omission",
+            "irrelevant private or confidential material",
+            "never send, publish, assign, activate, execute, or mutate",
+            "proposed, not authorized actions",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_handoff_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-handoff")
+        for sibling in ("se-digest", "se-status"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Handoff contract**",
+            "**Objective and scope**",
+            "**Verified current state**",
+            "**Completed work**",
+            "**Decisions and rationale**",
+            "**Evidence and continuation-critical locators**",
+            "**Assumptions and risks**",
+            "**Open questions**",
+            "**Ordered next actions**",
+            "**Source coverage, omissions, and limits**",
+        ):
+            self.assertIn(field, raw)
 
 
 class SkillDocumentationTest(unittest.TestCase):

@@ -27,7 +27,8 @@ process. User-facing install/update/remove instructions live in the
   grouped by primary outcome family in the README but retain flat canonical and
   installed paths. The current bundle includes report-first technical editing
   with `se-technical-editor` and audience-calibrated explanation with
-  `se-explain`, plus traceable feedback synthesis with `se-feedback`.
+  `se-explain`, traceable feedback synthesis with `se-feedback`, and compact
+  evidence-backed continuity packets with `se-handoff`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -57,6 +58,18 @@ unavailable, or contradictory inputs. Topic recency stays with `se-brief`,
 supplied-corpus synthesis with `se-digest`, recommendations with `se-decide`,
 and external baseline monitoring with `se-monitor`. The skill is read-only: it
 does not update project systems or send the resulting report.
+
+### Handoff workflow boundary
+
+`se-handoff` owns compact transfer of a defined objective to another person,
+team, tool, or AI session. It reconstructs dated current state from the smallest
+sufficient authoritative sources; separates verified facts, recorded decisions,
+assumptions, and unresolved questions; preserves only continuation-critical
+locators; and makes the first proposed next action independently executable.
+Arbitrary corpus synthesis stays with `se-digest`, while stakeholder progress
+reporting stays with `se-status`. The workflow omits secret values and unrelated
+private material, remains read-only, and never sends the packet or authorizes its
+next actions.
 
 ### Claim-audit workflow boundary
 

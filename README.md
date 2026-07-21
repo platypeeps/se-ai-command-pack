@@ -60,6 +60,7 @@ come directly from canonical skill frontmatter.
 | `se-status` | Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions. |
 | `se-action-inbox` | Use when the user wants a reviewable, cross-source inbox of explicit commitments and opt-in possible actions without creating tasks or sending replies. |
 | `se-agenda` | Use when the user wants a decision-oriented, timeboxed meeting agenda with explicit outcomes, roles, evidence, preparation, and parking-lot rules. |
+| `se-handoff` | Use when the user wants a compact, evidence-backed continuity packet that lets another person, team, or AI session safely resume a defined objective. |
 
 ### Operate
 
