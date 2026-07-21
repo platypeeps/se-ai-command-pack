@@ -1351,6 +1351,31 @@ class SkillSafetyPinsTest(unittest.TestCase):
 
 
 class SkillDocumentationTest(unittest.TestCase):
+    def test_technical_editor_docs_use_canonical_pass_names(self) -> None:
+        readme = " ".join(
+            (PACK_ROOT / "README.md").read_text(encoding="utf-8").split()
+        )
+        operator = " ".join(
+            (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        for phrase in (
+            "technical correctness",
+            "evidence and citations",
+            "hidden assumptions",
+            "code and examples",
+            "novelty and originality",
+            "skeptical-reader objections",
+            "structure",
+            "reader comprehension",
+            "confidentiality",
+            "title and opening",
+            "voice consistency",
+        ):
+            self.assertIn(phrase, readme)
+            self.assertIn(phrase, operator)
+
     def test_readme_lists_every_skill(self) -> None:
         readme = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
         for name in SKILL_NAMES:

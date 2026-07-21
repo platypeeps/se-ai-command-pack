@@ -157,9 +157,10 @@ separate workflows.
 ### Technical-editor workflow boundary
 
 `se-technical-editor` owns rigorous review of an existing technical draft. It
-runs correctness, evidence and citation, hidden-assumption, code and example,
-novelty, skeptical-reader, structure, comprehension, confidentiality, title and
-opening, and voice passes separately. Every finding has a stable location,
+runs technical correctness, evidence and citations, hidden assumptions, code and
+examples, novelty and originality, skeptical-reader objections, structure,
+reader comprehension, confidentiality, title and opening, and voice consistency
+passes separately. Every finding has a stable location,
 severity, class, rationale, confidence, impact, and recommended action; fluent
 prose, unexecuted code, and adjacent citations never become validation by tone.
 

@@ -113,8 +113,10 @@ only when the evidence supports ten materially distinct candidates. Selection
 hands off to `se-author` or `se-paper`; it does not draft or publish.
 
 `se-technical-editor` reviews an existing technical draft through separate
-correctness, citation, assumption, code, novelty, skeptical-reader, structure,
-comprehension, confidentiality, opening, and voice passes. It reports located
+technical correctness, evidence and citations, hidden assumptions, code and
+examples, novelty and originality, skeptical-reader objections, structure,
+reader comprehension, confidentiality, title and opening, and voice consistency
+passes. It reports located
 findings before substantive rewriting, preserves representative author language
 and evidence states, and applies only explicitly approved edits without publishing.
 

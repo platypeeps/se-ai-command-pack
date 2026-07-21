@@ -2479,9 +2479,10 @@ separate workflows.
 ### Technical-editor workflow boundary
 
 `se-technical-editor` owns rigorous review of an existing technical draft. It
-runs correctness, evidence and citation, hidden-assumption, code and example,
-novelty, skeptical-reader, structure, comprehension, confidentiality, title and
-opening, and voice passes separately. Every finding has a stable location,
+runs technical correctness, evidence and citations, hidden assumptions, code and
+examples, novelty and originality, skeptical-reader objections, structure,
+reader comprehension, confidentiality, title and opening, and voice consistency
+passes separately. Every finding has a stable location,
 severity, class, rationale, confidence, impact, and recommended action; fluent
 prose, unexecuted code, and adjacent citations never become validation by tone.
 
@@ -8197,6 +8198,11 @@ raw = skill_text("se-technical-editor")
 ⋮----
 class SkillDocumentationTest(unittest.TestCase)
 ⋮----
+def test_technical_editor_docs_use_canonical_pass_names(self) -> None
+⋮----
+readme = " ".join(
+operator = " ".join(
+⋮----
 def test_readme_lists_every_skill(self) -> None
 ⋮----
 readme = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
@@ -10449,8 +10455,10 @@ only when the evidence supports ten materially distinct candidates. Selection
 hands off to `se-author` or `se-paper`; it does not draft or publish.
 
 `se-technical-editor` reviews an existing technical draft through separate
-correctness, citation, assumption, code, novelty, skeptical-reader, structure,
-comprehension, confidentiality, opening, and voice passes. It reports located
+technical correctness, evidence and citations, hidden assumptions, code and
+examples, novelty and originality, skeptical-reader objections, structure,
+reader comprehension, confidentiality, title and opening, and voice consistency
+passes. It reports located
 findings before substantive rewriting, preserves representative author language
 and evidence states, and applies only explicitly approved edits without publishing.
 
