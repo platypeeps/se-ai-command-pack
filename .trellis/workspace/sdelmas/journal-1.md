@@ -1747,3 +1747,41 @@ Added and validated se-retro, archived its task, and reconciled the roadmap.
 ### Next Steps
 
 - None - task complete
+
+
+## Session 47: Ship se-runbook
+
+**Date**: 2026-07-21
+**Task**: Ship se-runbook
+**Branch**: `codex/se-runbook`
+
+### Summary
+
+Added and validated se-runbook, archived its task, and reconciled the roadmap.
+
+### Main Changes
+
+- Added the safe operational se-runbook workflow with authority, exact-target, step-state, verification, partial-failure, rollback/recovery, secret, destructive-target, and staleness contracts.
+- Registered source-reference fan-out and regenerated release 0.39.0 surfaces with focused tests.
+- Archived the task and reconciled the parent roadmap to 39 of 49 children complete.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `57d038e90c4566d26b4c76b80c53bed041e16106` | feat: add se-runbook skill |
+
+### Testing
+
+- [OK] make check (377 tests; Ruff, mypy, generation, and release gates green)
+- [OK] deterministic full check, install audit, 344-copy KB freshness, and isolated six-target se-runbook install
+- [OK] GitHub CI and Copilot review round 1 completed with no comments or threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
