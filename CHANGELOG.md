@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.9.0 - 2026-07-21
+
+- Add `se-agenda`, a read-only meeting-design workflow that turns a purpose and
+  observable outcome into a feasible sequence of decisions, alignment,
+  evidence, known roles, completion signals, and explicit timeboxes.
+- Verify the complete meeting budget, move broadcast information and
+  preparation asynchronous when practical, and surface missing authority or
+  critical inputs as blocked-meeting conditions.
+- Register the skill under Coordinate, fan source standards into every
+  installed copy, document sibling-workflow and scheduling boundaries, and add
+  focused outcome, authority, time-budget, safety, and generated-target tests.
+
 ## 0.8.0 - 2026-07-21
 
 - Add `se-action-inbox`, a read-only cross-source triage workflow that keeps

@@ -111,6 +111,19 @@ thread reconstruction stays with `se-thread-digest`, whole-document synthesis
 with `se-digest`, and execution planning with `se-plan`. The skill never
 creates tasks, reminders, or replies without a separate authorized operation.
 
+### Agenda workflow boundary
+
+`se-agenda` owns meeting operating design: purpose, observable outcome,
+preconditions, evidence, ordered modes, known roles, timeboxes, completion
+signals, pre-read, and parking-lot rules. The complete budget, including
+opening and close, cannot exceed the supplied duration. Missing decision
+authority or critical preparation remains a blocked-meeting condition, and
+information-only work is tested for asynchronous handling. Participant research
+stays with `se-meeting-prep`, project reporting with `se-status`, option analysis
+with `se-decide`, and outcome reconciliation with
+`se-meeting-follow-through`. Scheduling, invitations, messaging, notes, and
+follow-up execution require separate authorized workflows.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):

@@ -1,10 +1,10 @@
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: personal profile
-maintenance, action-inbox triage, pack discovery, deep research, claim
-fact-checking, decision support, project-status reporting, daily briefs,
-meeting prep, landscape scans, and document digests — installed once per
-machine, centrally managed from this repository.
+maintenance, action-inbox triage, decision-oriented agendas, pack discovery,
+deep research, claim fact-checking, decision support, project-status reporting,
+daily briefs, meeting prep, landscape scans, and document digests — installed
+once per machine, centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -41,6 +41,7 @@ come directly from canonical skill frontmatter.
 | `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
 | `se-status` | Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions. |
 | `se-action-inbox` | Use when the user wants a reviewable, cross-source inbox of explicit commitments and opt-in possible actions without creating tasks or sending replies. |
+| `se-agenda` | Use when the user wants a decision-oriented, timeboxed meeting agenda with explicit outcomes, roles, evidence, preparation, and parking-lot rules. |
 
 ### Operate
 
@@ -71,6 +72,13 @@ possibilities separate. It preserves every locator and conflicting value,
 suppresses resolved items visibly, and ranks active work with evidence-backed
 reasons. The workflow is read-only: task creation, reminders, replies, and
 handoff to `se-plan` require a separate request.
+
+`se-agenda` designs a meeting around an observable outcome, known authority,
+required evidence, and a verified time budget. It moves broadcast status and
+preparation out of synchronous time when practical, keeps missing decision
+roles visible, and can recommend an asynchronous alternative, split, cancel,
+or reschedule. Scheduling, invitations, delivery, notes, and follow-through
+remain separate operations.
 
 ## What gets installed where
 
