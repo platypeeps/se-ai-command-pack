@@ -451,6 +451,24 @@ becomes failure, and incompatible comparators stay separately bounded.
 not assess personnel, certify, publish, execute improvements, or make the final
 decision.
 
+### Postmortem workflow boundary
+
+`se-postmortem` owns formal corrective analysis after an incident or failed
+outcome is stable enough to review. It inventories source coverage and
+conflicts, reconstructs an evidence-linked timeline, separates impact from
+mechanism, and examines detection, response, recovery, decision context, and
+safeguards. Observation, interpretation, contributing factor, root cause, and
+counterfactual remain distinct; a root-cause claim requires a defensible causal
+mechanism, and inadequate evidence yields an explicit no-root-cause result.
+
+Blameless analysis focuses on system conditions and controls without erasing
+impact, accountable decisions, or control ownership. Human error is never a
+terminal cause. Corrective actions must map to findings or control gaps and
+name observable verification, approved or proposed commitment state, expected
+risk reduction, and residual risk. Active incident response, discipline,
+legal conclusions, task assignment, publication, and action execution remain
+separate workflows. Lighter cross-domain reflection stays with `se-retro`.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,
