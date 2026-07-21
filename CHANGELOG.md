@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.26.0 - 2026-07-21
+
+- Add `se-learn`, a read-only Understand workflow that turns a capability goal,
+  diagnosed baseline, constraints, and observable mastery signals into an
+  adaptive learning path.
+- Separate self-report from demonstrated ability, map prerequisites, and give
+  every stage measurable outcomes, worked examples, retrieval, application,
+  transfer, checkpoints, and spaced review.
+- Adapt from explicit evidence states without silently lowering the goal,
+  expose time and resource tradeoffs honestly, fan source standards into
+  installed copies, and add focused contract and generation tests.
+
 ## 0.25.0 - 2026-07-21
 
 - Add `se-knowledge-gap`, a read-only Understand workflow for auditing a

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.25.0",
+  "version": "0.26.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, destination-neutral capture, critical checklists, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
+  "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, destination-neutral capture, critical checklists, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
     {
       "platform": "agents",
@@ -1703,6 +1703,60 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-knowledge-gap/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-learn/SKILL.md",
+      "target": ".config/agents/skills/se-learn/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-learn/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-learn/SKILL.md",
+      "target": ".claude/skills/se-learn/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-learn/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-learn/SKILL.md",
+      "target": ".codex/skills/se-learn/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-learn/references/source-standards.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     }
