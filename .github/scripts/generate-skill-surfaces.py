@@ -92,6 +92,7 @@ DEFAULT_MANIFEST_HEADER = {
         "source-traceable literature maps, "
         "evidence-linked meeting follow-through, "
         "portable baseline monitoring, "
+        "methodologically gated research papers, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

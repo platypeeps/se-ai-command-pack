@@ -239,6 +239,26 @@ passes. Research, fact-check, distillation, technical-editing, paper, topic,
 and publishing skills remain capability handoffs rather than hard dependencies.
 The final package is not published and no destination is written.
 
+### Research-paper workflow boundary
+
+`se-paper` owns gated development of a research paper from question refinement
+through a venue-aware, submission-ready draft. It requires a one-question
+interview, feasibility and ethics review, and explicit approval of a research
+brief before full literature work, analysis, outlining, or drafting. Literature
+coverage is bounded by dated databases/sources, queries, selection rules,
+screening, deduplication, access gaps, and a stopping condition.
+
+Every literature work, dataset, experiment, code artifact, quotation, citation,
+exclusion, transformation, analytical decision, and unavailable component keeps
+stable provenance. Method, results, interpretation, discussion, and conclusions
+remain separate; contradictory, negative, null, and inconclusive findings cannot
+be rewritten to fit a preferred narrative. Profile use is framing-only, and
+venue requirements are dated rather than inferred as timeless. General
+technical articles stay with `se-author`, field maps with `se-literature-map`,
+open evidence work with `se-research`, and claim audits with `se-fact-check`.
+Submission, publication, data collection, experiment execution, ethics approval,
+and peer review remain separate actions marked `not run`.
+
 ### Topic-radar workflow boundary
 
 `se-topic-radar` owns bounded discovery and ranking of technical writing

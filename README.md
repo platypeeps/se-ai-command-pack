@@ -8,7 +8,8 @@ evidence-traceable diagrams, auditable extreme distillation,
 rubric-driven evaluations, evidence-backed editorial opportunity ranking,
 report-first technical editing,
 decision-oriented agendas, evidence-linked meeting follow-through,
-portable baseline monitoring, pack discovery,
+portable baseline monitoring, methodologically gated research papers,
+pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -55,6 +56,7 @@ come directly from canonical skill frontmatter.
 | `se-author` | Use when the user wants to develop an original evidence-backed technical article through a one-question interview, approved editorial brief, staged drafting, review, and publication handoff. |
 | `se-diagram` | Use when the user wants a precise, evidence-traceable diagram specification or conservative Mermaid diagram for a system, process, concept, hierarchy, comparison, state model, or event sequence. |
 | `se-topic-radar` | Use when the user wants ten ranked technical writing opportunities grounded in authorized personal activity, current developments, prior coverage, evidence readiness, novelty, and effort. |
+| `se-paper` | Use when the user wants to develop a credible research paper through question refinement, an approved research brief, explicit literature and methodology protocols, traceable evidence, reproducibility, and venue-aware review. |
 
 ### Coordinate
 
@@ -114,6 +116,13 @@ one-question-at-a-time interview, an explicitly approved editorial brief,
 claim-specific evidence work, ordered drafting passes, and resumable workspace
 checkpoints. It preserves user testimony separately from assistant framing and
 returns a publication package without publishing or writing to a destination.
+
+`se-paper` develops a research question through a one-question interview,
+feasibility and ethics gates, an explicitly approved research brief, a dated
+literature-search protocol, traceable method and evidence decisions, disciplined
+drafting, validity review, and a reproducibility inventory. It preserves
+negative and null findings and returns a venue-aware package without submitting,
+publishing, claiming approval, or fabricating execution.
 
 `se-topic-radar` ranks technical writing opportunities from explicitly
 authorized personal activity, dated external developments, and prior-content
