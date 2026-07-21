@@ -1329,3 +1329,43 @@ Added and reviewed a source-traceable literature-mapping workflow and released i
 ### Next Steps
 
 - Merge PR #43 through sd-housekeeping, then checkpoint the ranked backlog loop.
+
+
+## Session 36: Implement se-meeting-follow-through
+
+**Date**: 2026-07-21
+**Task**: Implement se-meeting-follow-through
+**Branch**: `codex/se-meeting-follow-through`
+
+### Summary
+
+Added and reviewed an evidence-linked post-meeting reconciliation workflow and released it in pack version 0.28.0.
+
+### Main Changes
+
+- Added se-meeting-follow-through with record coverage, expected-versus-actual outcome states, atomic decision/proposal/commitment/action distinctions, conflict handling, and audience-sensitive drafts.
+- Registered the Coordinate-family skill, fanned source standards into installed copies, and regenerated manifest, catalog, README, operator docs, release metadata, and repository map surfaces.
+- Added focused contract and generation tests; cleared Trellis context seeds and tightened the exact record-state phrase pin after deterministic and Copilot review.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f96f50d` | feat: add se-meeting-follow-through skill |
+| `83fd00c` | chore: clear task context seeds |
+| `d2827f0` | fix: tighten meeting record phrase pin |
+
+### Testing
+
+- [OK] deterministic PR full check — 318 tests, Ruff, mypy, generation parity, install audit, KB freshness, and release gate passed
+- [OK] make repomix — repository map refreshed with no suspicious files
+- [OK] GitHub CI — all required jobs passed at the final reviewed head
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #44 through sd-housekeeping, then continue the ranked backlog loop.

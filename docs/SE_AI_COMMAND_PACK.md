@@ -32,7 +32,8 @@ process. User-facing install/update/remove instructions live in the
   Obsidian/Notion publishing with `se-knowledge-capture` and bounded
   knowledge-system auditing with `se-knowledge-gap`, plus adaptive
   mastery-oriented paths with `se-learn` and source-traceable field mapping
-  with `se-literature-map`.
+  with `se-literature-map`, plus evidence-linked post-meeting reconciliation
+  with `se-meeting-follow-through`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -137,6 +138,20 @@ recency, and current evidentiary support distinct. Deeper answer synthesis stays
 with `se-research`, while paper development stays with `se-paper` when that
 separate capability is available. The map is read-only, makes no bibliometric
 completeness claim, and never infers full-text conclusions from metadata.
+
+### Meeting-follow-through workflow boundary
+
+`se-meeting-follow-through` owns post-meeting reconciliation between supplied
+intent and the available meeting record. It inventories notes and transcript
+coverage, classifies expected outcomes as achieved, changed, deferred,
+unaddressed, or unclear, and preserves decisions, proposals, commitments,
+candidate actions, disputes, owners, dates, and source locators as distinct
+evidence states. Missing prep disables expected-versus-actual conclusions;
+conflicting or sensitive records stay visible without widening disclosure.
+Preparation remains with `se-meeting-prep`, agenda design with `se-agenda`,
+generic conversation synthesis with `se-thread-digest`, and durable publishing
+with `se-knowledge-capture`. Recaps and handoffs are drafts only: task creation,
+calendar changes, messages, and system updates require separate authorization.
 
 ### Pack-help workflow boundary
 

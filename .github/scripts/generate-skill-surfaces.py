@@ -90,6 +90,7 @@ DEFAULT_MANIFEST_HEADER = {
         "bounded knowledge-system audits, "
         "adaptive mastery learning paths, "
         "source-traceable literature maps, "
+        "evidence-linked meeting follow-through, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "
