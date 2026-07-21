@@ -14,6 +14,7 @@ content in the registry, and generate the manifest from canonical templates.
 
 ```text
 install.py                  # CLI parsing and lifecycle orchestration
+package.json                # private, dependency-free local review-gate wrapper
 installer/                  # installer domain modules
   registry.py               # platforms, skill families, paths, and policy constants
   manifest.py               # manifest parsing and path-safety validation
@@ -40,6 +41,9 @@ tests/                      # unittest modules mirroring installer concerns
 - Treat canonical skill frontmatter and `installer/registry.py` as sources of
   truth. Run `make generate` to update `manifest.json`, the marker-bounded
   README catalog, and the bundled `se-help` catalog from one parsed model.
+- Keep root `package.json` limited to dependency-free wrappers for shared SD
+  tooling. Python and Make remain the repository's implementation and quality
+  interfaces; do not add a package lockfile.
 - Add focused modules when a lifecycle concern has its own data flow. For
   example, `installer/management.py` owns status and update rather than adding
   Git subprocess details to `install.py`.

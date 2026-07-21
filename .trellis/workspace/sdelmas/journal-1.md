@@ -454,3 +454,41 @@ Added the read-only se-help skill and generated bundled catalog, strengthened ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 13: Configure repository project check
+
+**Date**: 2026-07-20
+**Task**: Configure repository project check
+**Branch**: `codex/configure-project-check`
+
+### Summary
+
+Configured the deterministic PR review gate to run make check before the shared pack full-check, added focused contract tests and specs, refreshed Repomix, and completed Copilot review for PR #19.
+
+### Main Changes
+
+- Added private, dependency-free `check` and `check:full` package scripts that expose the repository's canonical checks to the deterministic PR review selector.
+- Added focused contract tests and Trellis specs for exact command composition, recursion prevention, dependency absence, and Prism/Gito isolation.
+- Regenerated the checked-in Repomix map with the repository-owned target.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b52b5cb` | chore: configure repository project check |
+
+### Testing
+
+- [OK] `npm run check:full`
+- [OK] `.venv/bin/python -m unittest discover -s tests -p 'test_project_check.py' -v`
+- [OK] `bash scripts/sd-ai-command-pack-toolchain.sh doctor`
+- [OK] `make repomix`
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
