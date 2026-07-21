@@ -24,6 +24,15 @@ profile use, and the handoff to deck-production tooling.
 Confirm every slide advances the stated outcome and all speaker/visual claims are
 traceable or clearly proposed.
 
+## Rollback Points
+
+- Revert the canonical skill, registry rows, tests, docs, generated surfaces,
+  changelog entry, and version bump as one unit if the contract cannot pass.
+- Do not retain generated manifest or catalog rows after removing the canonical
+  registry entry; regenerate from the reverted sources.
+- Keep deck-file creation and presentation tooling out of this rollback because
+  this task does not add either capability.
+
 ## Follow-Ups
 
 Deck-file generation and rehearsal assistance remain separate capabilities.

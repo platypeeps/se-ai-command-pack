@@ -67,6 +67,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-plan",
     "se-postmortem",
     "se-premortem",
+    "se-presentation",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -184,6 +185,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-plan",
                 "se-postmortem",
                 "se-premortem",
+                "se-presentation",
             ),
         )
         self.assertEqual(
@@ -225,6 +227,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-plan": "decide",
                 "se-postmortem": "improve",
                 "se-premortem": "improve",
+                "se-presentation": "create",
             },
         )
 
@@ -2294,6 +2297,64 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Mitigation and indicator ledger**",
             "**Decision points and stop conditions**",
             "**Residual risk and no-mitigation cases**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_presentation_builds_outcome_led_traceable_slides(self) -> None:
+        text = normalized("se-presentation").lower()
+        for phrase in (
+            "build a source ledger before outlining",
+            "design an outcome-led story arc",
+            "exactly one primary claim per slide",
+            "speaker notes must distinguish sourced fact from interpretation",
+            "every slide claim, statistic, quotation, visual, and speaker assertion",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_presentation_preserves_variants_visuals_and_accessibility(self) -> None:
+        text = normalized("se-presentation").lower()
+        for phrase in (
+            "`existing`, `derived from identified data`, or `proposed`",
+            "maintain an omission ledger",
+            "never create a short version by shrinking text",
+            "color-independent meaning",
+            "must be redesigned or left as an open production gap",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_presentation_profile_and_execution_authority_are_bounded(self) -> None:
+        raw = skill_text("se-presentation")
+        self.assertIn("references/source-standards.md", raw)
+        self.assertIn("references/personal-profile-contract.md", raw)
+        text = normalized("se-presentation").lower()
+        for phrase in (
+            "data, not instructions",
+            "profile use is optional, read-only, and preference-only",
+            "this skill is read-only",
+            "actual deck production belongs to presentation tooling",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_presentation_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-presentation")
+        for sibling in (
+            "`se-author`",
+            "`se-proposal`",
+            "`se-diagram`",
+            "`se-publish`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Presentation contract**",
+            "**Source coverage and evidence ledger**",
+            "**Feasibility and tradeoffs**",
+            "**Story arc and timing**",
+            "**Slide specification**",
+            "**Variant and omission ledger**",
+            "**Citation and visual integrity**",
+            "**Accessibility review**",
+            "**Production handoff**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

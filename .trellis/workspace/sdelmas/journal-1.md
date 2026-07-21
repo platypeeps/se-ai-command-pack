@@ -1559,3 +1559,39 @@ Implemented and validated the canonical se-premortem skill, generated installati
 ### Next Steps
 
 - None - task complete
+
+
+## Session 42: Ship se-presentation
+
+**Date**: 2026-07-21
+**Task**: Ship se-presentation
+**Branch**: `codex/se-presentation`
+
+### Summary
+
+Implemented and validated the canonical se-presentation planning skill, reference fan-out, generated surfaces, documentation, tests, and release metadata.
+
+### Main Changes
+
+- Added an outcome-led, source-traceable presentation blueprint with one-claim slides, visual states, variants, and accessibility review.
+- Registered and documented se-presentation across generated pack surfaces and release 0.34.0.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9cbeb6b` | feat: add se-presentation skill |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh
+- [OK] Copilot reviewed all 15 changed files with no comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
