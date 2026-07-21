@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0 - 2026-07-20
+
+- Add `se-help`, a read-only discovery and routing skill that lists families,
+  explains and compares skills, recommends the smallest-fit workflow, and
+  returns a copy-ready prompt without executing it.
+- Generate a versioned bundled skill catalog from the same registry family
+  metadata and canonical frontmatter model as the README, then fan that shared
+  reference into every installed `se-help` copy.
+- Distinguish bundled ownership from current availability, external and unknown
+  capabilities, and version mismatch states while preserving a separate-request
+  execution boundary.
+
 ## 0.5.0 - 2026-07-20
 
 - Add `se-fact-check`, a read-only claim audit with supported, partially

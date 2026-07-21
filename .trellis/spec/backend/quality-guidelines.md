@@ -78,7 +78,7 @@ boundary users exercise.
 ### 1. Scope / Trigger
 
 - Trigger: adding, retiring, reordering, or reclassifying a shipped skill, or
-  changing the marker-bounded README skill catalog.
+  changing either generated skill catalog.
 - Why: family metadata crosses the registry, canonical frontmatter, generator,
   README, tests, and manifest-order compatibility even though it does not alter
   installed paths or the manifest schema.
@@ -87,14 +87,17 @@ boundary users exercise.
 
 ```text
 FAMILY_LABELS: dict[str, str]
+FAMILY_DESCRIPTIONS: dict[str, str]
 SKILLS: tuple[SkillInfo, ...]
 SKILL_NAMES = tuple(skill.name for skill in SKILLS)
 make generate
 python .github/scripts/generate-skill-surfaces.py --check
 <!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
+templates/skills/_shared/references/skill-catalog.md
 ```
 
-`FAMILY_LABELS` order is public catalog order. `SKILLS` order remains canonical
+`FAMILY_LABELS` order is public catalog order. `FAMILY_DESCRIPTIONS` must have
+the same keys in the same order. `SKILLS` order remains canonical
 manifest/install order, and grouping must not reorder generated manifest rows.
 
 ### 3. Contracts
@@ -102,15 +105,18 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - Every `SkillInfo.name` is non-empty, unique, `se-` prefixed, and backed by a
   flat `templates/skills/<name>/SKILL.md` directory.
 - Every skill has exactly one family from Understand, Decide, Create,
-  Coordinate, Operate, or Improve. Empty families remain valid and are omitted
-  from the rendered catalog.
+  Coordinate, Operate, or Improve. Empty families remain valid: the compact
+  README catalog omits them, while the bundled help catalog renders every
+  family with its canonical outcome description.
 - `SKILL_NAMES` is derived for compatibility; no consumer owns a second skill
   list.
 - The catalog description comes from the already validated frontmatter parse.
   Markdown table pipes are escaped deterministically; descriptions are not
   duplicated in registry code.
-- Generation computes and validates both manifest and README results before
-  writing either. README content outside one ordered marker pair is preserved.
+- Generation computes and validates manifest, README, and bundled help-catalog
+  results before writing any of them. A later write failure rolls earlier
+  surfaces back to their committed state. README content outside one ordered
+  marker pair is preserved.
 - Family-only metadata and catalog changes do not require a release bump when
   `manifest.json` and shipped payload bytes remain unchanged.
 
@@ -118,12 +124,13 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 
 | Condition | Required behavior |
 |---|---|
-| Empty skill name or family | Raise a registry `RuntimeError` before generation. |
+| Empty skill name, family, or family description | Raise a registry `RuntimeError` before generation. |
+| Family-description keys or order differ from family labels | Raise a registry `RuntimeError` before generation. |
 | Unknown family | Raise a registry `RuntimeError` naming the skill and family. |
 | Duplicate skill name, including cross-family membership | Raise a registry `RuntimeError`; never choose one row implicitly. |
 | Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
-| Manifest or README catalog drifts | `--check` reports each drifted surface and exits nonzero. |
+| Manifest, README, or bundled help catalog drifts | `--check` reports each drifted surface and exits nonzero. |
 | Family metadata changes but payload does not | Manifest and changelog stay unchanged; release gate passes without a bump. |
 
 ### 5. Good/Base/Bad Cases
@@ -137,11 +144,13 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 
 ### 6. Tests Required
 
-- Registry tests pin family order, all valid identifiers, derived name order,
-  prefix rules, and rejection of empty, unknown, or duplicate membership.
-- Generator tests pin grouping, empty-family omission, frontmatter sourcing,
-  pipe escaping, marker validation, independent drift reporting, and patched
-  temporary README paths.
+- Registry tests pin family and description order, all valid identifiers,
+  derived name order, prefix rules, and rejection of empty, unknown, or
+  duplicate membership.
+- Generator tests pin README grouping, all-family bundled-help output,
+  frontmatter sourcing, version identity, pipe escaping, marker validation,
+  independent drift reporting, coordinated rollback, and patched temporary
+  output paths.
 - `make generate` twice, `make check`, `git diff --check`, and explicit empty
   diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
 

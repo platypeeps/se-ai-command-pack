@@ -24,6 +24,8 @@ installer/                  # installer domain modules
 templates/skills/           # canonical shipped skill sources
 manifest.json               # generated payload inventory and release version
 README.md                   # generated family-grouped catalog inside markers
+templates/skills/_shared/references/skill-catalog.md
+                            # generated bundled catalog installed with se-help
 scripts/                    # generation and release-validation tools
 tests/                      # unittest modules mirroring installer concerns
 ```
@@ -35,9 +37,9 @@ tests/                      # unittest modules mirroring installer concerns
 - Put stable pack declarations in `installer/registry.py`; `SKILLS` owns each
   skill's single family and `SKILL_NAMES` is derived for compatibility. Do not
   duplicate platform, skill, or family lists in scripts or tests.
-- Treat `templates/skills/` and `installer/registry.py` as sources of truth.
-  Run `make generate` to update `manifest.json` and the marker-bounded README
-  catalog from canonical skill frontmatter.
+- Treat canonical skill frontmatter and `installer/registry.py` as sources of
+  truth. Run `make generate` to update `manifest.json`, the marker-bounded
+  README catalog, and the bundled `se-help` catalog from one parsed model.
 - Add focused modules when a lifecycle concern has its own data flow. For
   example, `installer/management.py` owns status and update rather than adding
   Git subprocess details to `install.py`.
@@ -66,8 +68,9 @@ tests/                      # unittest modules mirroring installer concerns
 ## Avoid
 
 - Do not hand-edit generated `manifest.json` rows.
-- Do not hand-edit generated README catalog rows or move skills into family
-  subdirectories; taxonomy is metadata and installed paths remain flat.
+- Do not hand-edit generated README or `se-help` catalog rows, or move skills
+  into family subdirectories; taxonomy is metadata and installed paths remain
+  flat.
 - Do not add platform-specific copies of skill content; generate fan-out from
   the registry and canonical templates.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI

@@ -11,11 +11,12 @@ process. User-facing install/update/remove instructions live in the
 |---|---|
 | `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional `references/*.md`). The only place skills are edited. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
+| `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
 | `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
 | `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |
-| `.github/scripts/generate-skill-surfaces.py` | Validates skills, regenerates the manifest and README catalog; `--check` gates drift in both. |
+| `.github/scripts/generate-skill-surfaces.py` | Validates skills and atomically coordinates the manifest, README catalog, and bundled help catalog; `--check` gates drift in all three. |
 | `.github/scripts/check-release-payload.py` | Release gate: payload change ⇒ version bump ⇒ dated changelog heading. |
 | `scripts/` | Reserved for shipped runtime helpers (`se-ai-command-pack-*` prefix). Empty in v0.1. |
 
@@ -62,6 +63,18 @@ unless the request explicitly asks to audit claims. Both `se-research` and
 `se-fact-check` consume the shared `verification-protocol.md`; the canonical
 source lives under `_shared/references/` while installed paths remain local to
 each skill. The audit is read-only and offers only minimal corrected wording.
+
+### Pack-help workflow boundary
+
+`se-help` owns pack discovery, onboarding, explanation, comparison, and
+intent-to-skill routing. Its installed `references/skill-catalog.md` is generated
+from registry family metadata, the manifest version, and canonical skill
+frontmatter; roadmap tasks and third-party host capabilities are never catalog
+inputs. Bundled ownership and current-session availability remain separate
+observations. Help reports observed version mismatches through
+`python3 install.py status --user` and the documented update flow without
+guessing their cause. It remains read-only and ends with a copy-ready
+user-scoped invocation that requires a separate request before execution.
 
 ## Manifest schema
 
@@ -123,8 +136,9 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
    `installer/registry.py`. Choose exactly one of Understand, Decide, Create,
    Coordinate, Operate, or Improve. Registry order remains manifest order;
    `SKILL_NAMES` is derived and must not be edited separately.
-4. `make generate` to update both the manifest and the marker-bounded README
-   catalog, then run `make check`. Never hand-edit catalog rows.
+4. `make generate` to update the manifest, marker-bounded README catalog, and
+   generated bundled help catalog, then run `make check`. Never hand-edit
+   generated catalog rows.
 5. Bump the version + changelog when the shipped payload changes (the release
    gate enforces this). Family/catalog metadata alone does not require a bump
    when `manifest.json` remains byte-for-byte unchanged.

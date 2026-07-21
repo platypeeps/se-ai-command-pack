@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 import unittest
 from unittest import mock
 
@@ -9,6 +10,7 @@ import yaml
 from install_test_support import PACK_ROOT
 
 from installer.registry import (
+    FAMILY_DESCRIPTIONS,
     FAMILY_LABELS,
     SHARED_REFERENCES,
     SKILL_NAMES,
@@ -110,6 +112,10 @@ class SkillFamilyRegistryTest(unittest.TestCase):
             ],
         )
 
+    def test_family_descriptions_match_family_order(self) -> None:
+        self.assertEqual(tuple(FAMILY_DESCRIPTIONS), tuple(FAMILY_LABELS))
+        self.assertTrue(all(value.strip() for value in FAMILY_DESCRIPTIONS.values()))
+
     def test_skill_names_are_derived_without_reordering(self) -> None:
         self.assertEqual(SKILL_NAMES, tuple(skill.name for skill in SKILLS))
         self.assertEqual(
@@ -123,6 +129,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-decide",
                 "se-status",
                 "se-fact-check",
+                "se-help",
             ),
         )
         self.assertEqual(
@@ -136,6 +143,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-decide": "decide",
                 "se-status": "coordinate",
                 "se-fact-check": "understand",
+                "se-help": "operate",
             },
         )
 
@@ -303,6 +311,61 @@ class SkillSafetyPinsTest(unittest.TestCase):
         text = normalized("se-meeting-prep")
         self.assertIn("sensitive personal data", text)
         self.assertIn("stop and ask", text)
+
+    def test_help_modes_and_shared_response_envelope(self) -> None:
+        text = skill_text("se-help")
+        normalized_text = normalized("se-help")
+        for mode in ("list", "explain", "compare", "recommend", "examples", "tour"):
+            self.assertIn(mode, normalized_text)
+        fields = (
+            "**Pack and availability**",
+            "**Answer**",
+            "**Why it fits**",
+            "**Required context**",
+            "**Expected output**",
+            "**Side effects and boundaries**",
+            "**Related skills**",
+            "**Next invocation**",
+        )
+        positions = [text.index(field) for field in fields]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_help_preserves_availability_and_version_boundaries(self) -> None:
+        text = normalized("se-help").lower()
+        for label in (
+            "available now",
+            "included in the installed pack but not discoverable now",
+            "source/package-local only",
+            "external",
+            "unknown",
+        ):
+            self.assertIn(label, text)
+        self.assertIn("bundled catalog version", text)
+        self.assertIn("installed pack version", text)
+        self.assertIn("python3 install.py status --user", text)
+        self.assertIn("do not guess", text)
+
+    def test_help_routes_without_execution(self) -> None:
+        text = normalized("se-help").lower()
+        self.assertIn("read-only", text)
+        self.assertIn("smallest-fit", text)
+        self.assertIn("at most one clarifying question", text)
+        self.assertIn("at most three skills", text)
+        self.assertIn("separate explicit request", text)
+        self.assertIn("never execute", text)
+        self.assertIn("platform-native invocation", text)
+        self.assertNotIn("/sd:", text)
+
+    def test_help_references_and_examples_use_registered_skills(self) -> None:
+        text = skill_text("se-help")
+        self.assertIn("references/skill-catalog.md", text)
+        self.assertIn("references/examples.md", text)
+        examples = (
+            SKILLS_ROOT / "se-help" / "references" / "examples.md"
+        ).read_text(encoding="utf-8")
+        named = set(re.findall(r"\bse-[a-z0-9-]+\b", examples))
+        self.assertTrue(named)
+        self.assertEqual(named - set(SKILL_NAMES), set())
 
 
 class SkillDocumentationTest(unittest.TestCase):
