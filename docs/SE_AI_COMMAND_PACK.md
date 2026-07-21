@@ -128,7 +128,7 @@ approval checkpoint.
 The portable workspace may be files or equivalent host-managed state and keeps
 brief, interview, claim/evidence ledger, outline, draft, and review artifacts
 resumable without prescribing a storage product. Drafting proceeds through
-skeleton, substance, voice, compression, reader-comprehension, and integrity
+skeleton, substance, voice, compression, reader comprehension, and integrity
 passes. Research, fact-check, distillation, technical-editing, paper, topic,
 and publishing skills remain capability handoffs rather than hard dependencies.
 The final package is not published and no destination is written.
