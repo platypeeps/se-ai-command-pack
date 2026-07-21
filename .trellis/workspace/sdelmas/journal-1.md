@@ -938,3 +938,41 @@ Implemented and released se-distill as an auditable purpose-bound extreme-compre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 26: Ship se-evaluate
+
+**Date**: 2026-07-21
+**Task**: Ship se-evaluate
+**Branch**: `codex/se-evaluate`
+
+### Summary
+
+Implemented and released se-evaluate as a rubric-driven, evidence-traceable single-subject assessment workflow and prepared PR #33 for merge.
+
+### Main Changes
+
+- Added se-evaluate with a pre-application rubric audit, six evidence states, guarded qualitative and numeric modes, comparator compatibility, and sensitivity analysis.
+- Registered the Improve-family skill, fanned in source standards, and updated generated catalogs, manifests, docs, and version 0.18.0.
+- Kept the workflow read-only with explicit personnel, certification, decision, publication, and execution boundaries.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `35f8577433df06113feba792e0a281567d003156` | feat: add se-evaluate skill |
+
+### Testing
+
+- [OK] 81 focused skill tests and 56 focused generator tests passed.
+- [OK] 263 full unit tests, Ruff, mypy, generation parity, release gate, and install audit passed.
+- [OK] Repository review gate, Repomix security scan, Obsidian KB freshness, CI, and Copilot review passed.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
