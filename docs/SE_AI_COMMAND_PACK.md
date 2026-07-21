@@ -99,6 +99,22 @@ or authorization for recurring ingestion. Other skills are read-only consumers;
 when they adopt the contract they use `profile=auto|off|<locator>` plus optional
 `audience=`, and ordinary consumption never writes back.
 
+### Profile-consultation workflow boundary
+
+`se-ask-me` is a read-only consumer of `se-personal-profile/v1`. It separates
+profile facts from evidence-based prediction, value-aligned advice, reflective
+pattern inspection, and outward-safe drafting. Current explicit context
+outranks older profile evidence; proposed, contested, retired, stale,
+conflicting, or context-mismatched assertions remain counterevidence rather
+than silent persona inputs. Predictions use qualitative confidence without
+fabricated probabilities, and outward drafts use only confirmed
+`outward-safe` assertions from the applicable single overlay.
+
+The skill does not diagnose, authenticate, impersonate, maintain the profile,
+or turn a recommendation or draft into permission to act. High-stakes questions
+still require current authoritative evidence and the appropriate workflow;
+profile alignment cannot replace professional guidance.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,

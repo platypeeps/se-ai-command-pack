@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.10.0 - 2026-07-21
+
+- Add `se-ask-me`, a read-only consumer of `se-personal-profile/v1` that keeps
+  profile facts, prediction, aligned advice, reflection, and outward-safe
+  drafting distinct.
+- Apply current-context precedence, relevant confirmed-evidence filtering,
+  single-overlay selection, visibility constraints, qualitative confidence,
+  counterevidence, high-stakes limits, and explicit non-identity/non-consent
+  boundaries.
+- Fan the personal-profile contract and source standards into every installed
+  `se-ask-me` target and add focused mode, safety, report-contract, and
+  generated-target tests.
+
 ## 0.9.0 - 2026-07-21
 
 - Add `se-agenda`, a read-only meeting-design workflow that turns a purpose and
