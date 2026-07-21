@@ -2,7 +2,8 @@
 
 User-level knowledge-work skills for AI agent frameworks: personal profile
 maintenance and consultation, interview-driven technical authoring,
-bookmark and action-inbox triage, decision-oriented agendas, pack discovery,
+destination-neutral capture, bookmark and action-inbox triage,
+decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -58,6 +59,7 @@ come directly from canonical skill frontmatter.
 | `se-help` | Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow. |
 | `se-profile` | Use when the user wants to create, inspect, correct, review, import, export, or forget a consent-driven personal operating profile with traceable assertions. |
 | `se-bookmark-triage` | Use when the user wants to deduplicate and triage a bounded collection of saved links, videos, pages, or notes into a small evidence-labeled attention queue without mutating the source collection. |
+| `se-capture` | Use when the user wants one URL, file, pasted passage, connected record, or bounded thread normalized into a destination-neutral knowledge artifact with provenance and no implicit external write. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -93,6 +95,13 @@ uncertain duplicates separate, distinguishes full-content review from snippets
 or metadata, and fits selected work to a disclosed time budget. It never
 mutates the source collection; deep viewing, durable capture, knowledge
 capture, and action extraction remain separate handoffs.
+
+`se-capture` normalizes one URL, file, pasted passage, connected record, or
+bounded thread into a destination-neutral Markdown artifact. It records actual
+retrieval coverage, separates source/user/derived metadata, uses a reproducible
+deduplication basis, and preserves source-stated claims without upgrading them
+to verified facts. Publication and every suggested downstream workflow remain
+separate, not-yet-run operations.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred

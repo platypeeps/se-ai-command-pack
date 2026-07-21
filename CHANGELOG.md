@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.13.0 - 2026-07-21
+
+- Add `se-capture`, a read-only destination-neutral workflow that normalizes
+  one URL, file, pasted passage, connected record, or bounded thread into a
+  stable Markdown knowledge artifact.
+- Preserve retrieval state and coverage, source/user/derived metadata,
+  reproducible deduplication identity, traceable claims, decisions, candidate
+  actions, unknowns, and graceful partial output without invented fields.
+- Register the skill under Operate, fan source standards into every installed
+  copy, document downstream boundaries, and add focused safety, provenance,
+  artifact-contract, and generated-target tests.
+
 ## 0.12.0 - 2026-07-21
 
 - Add `se-bookmark-triage`, a read-only saved-item workflow that conservatively

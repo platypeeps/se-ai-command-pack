@@ -761,3 +761,42 @@ Implemented se-bookmark-triage as a read-only, evidence-labeled saved-item atten
 ### Next Steps
 
 - None - task complete
+
+
+## Session 21: Add destination-neutral capture workflow
+
+**Date**: 2026-07-21
+**Task**: Add destination-neutral capture workflow
+**Branch**: `codex/se-capture`
+
+### Summary
+
+Implemented se-capture as a read-only, provenance-preserving normalization workflow and prepared PR #28 for merge with green local, CI, and Copilot review gates.
+
+### Main Changes
+
+- Added a stable one-unit Markdown capture contract across URL, file, pasted-text, connected-record, and bounded-thread inputs.
+- Preserved retrieval coverage, source/user/derived metadata, reproducible dedupe identity, claim and action labels, unknowns, and not-yet-run handoffs.
+- Released version 0.13.0 across registry, manifest, documentation, generated catalogs, and focused tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bfb6f9f3592dfe0b46d51f58af04bf76a740a555` | feat: add capture workflow |
+
+### Testing
+
+- [OK] 61 focused skill tests and 51 focused generator tests passed
+- [OK] make check passed 238 tests plus Ruff, mypy, generation, and release gates
+- [OK] deterministic full check, install audit, Obsidian freshness, and Repomix security scan passed
+- [OK] PR CI passed and Copilot generated no comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
