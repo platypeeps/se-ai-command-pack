@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills for research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
+  "description": "Install user-level knowledge-work skills for personal profiles, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
     {
       "platform": "agents",
@@ -569,6 +569,87 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/skill-catalog.md",
       "target": ".codex/skills/se-help/references/skill-catalog.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-profile/SKILL.md",
+      "target": ".config/agents/skills/se-profile/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-profile/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/personal-profile-contract.md",
+      "target": ".config/agents/skills/se-profile/references/personal-profile-contract.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-profile/SKILL.md",
+      "target": ".claude/skills/se-profile/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-profile/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/personal-profile-contract.md",
+      "target": ".claude/skills/se-profile/references/personal-profile-contract.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-profile/SKILL.md",
+      "target": ".codex/skills/se-profile/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-profile/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/personal-profile-contract.md",
+      "target": ".codex/skills/se-profile/references/personal-profile-contract.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     }

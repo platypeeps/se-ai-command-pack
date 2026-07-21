@@ -1,9 +1,10 @@
 # SE AI Command Pack
 
-User-level knowledge-work skills for AI agent frameworks: pack discovery, deep
-research, claim fact-checking, decision support, project-status reporting, daily
-briefs, meeting prep, landscape scans, and document digests — installed once
-per machine, centrally managed from this repository.
+User-level knowledge-work skills for AI agent frameworks: personal profile
+maintenance, pack discovery, deep research, claim fact-checking, decision
+support, project-status reporting, daily briefs, meeting prep, landscape scans,
+and document digests — installed once per machine, centrally managed from this
+repository.
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -45,12 +46,23 @@ come directly from canonical skill frontmatter.
 | Skill | Use when |
 |---|---|
 | `se-help` | Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow. |
+| `se-profile` | Use when the user wants to create, inspect, correct, review, import, export, or forget a consent-driven personal operating profile with traceable assertions. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
 `source-standards.md` reference (source tiers, independence, dating,
 confidence vocabulary) is installed into each consumer's `references/`
 directory.
+
+`se-profile` maintains a private, portable `se-personal-profile/v1` Markdown
+artifact from explicit input and bounded user-authorized sources. The public
+pack contains the schema and workflow only: profile content, locators,
+credentials, and destination configuration remain private. Obsidian is the
+preferred user-selected destination, with an explicit user-selected Notion
+fallback; the skill implements no connector and never silently mirrors both.
+Every mutation previews the change, preserves user-owned content, writes, reads
+back, and verifies stable IDs. Any other skill that adopts the contract is a
+read-only consumer and must never write back merely because it used the profile.
 
 ## What gets installed where
 

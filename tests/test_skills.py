@@ -40,6 +40,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-decide",
     "se-status",
     "se-fact-check",
+    "se-profile",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -130,6 +131,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-status",
                 "se-fact-check",
                 "se-help",
+                "se-profile",
             ),
         )
         self.assertEqual(
@@ -144,6 +146,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-status": "coordinate",
                 "se-fact-check": "understand",
                 "se-help": "operate",
+                "se-profile": "operate",
             },
         )
 
@@ -366,6 +369,120 @@ class SkillSafetyPinsTest(unittest.TestCase):
         named = set(re.findall(r"\bse-[a-z0-9-]+\b", examples))
         self.assertTrue(named)
         self.assertEqual(named - set(SKILL_NAMES), set())
+
+    def test_profile_modes_arguments_and_ownership(self) -> None:
+        text = normalized("se-profile")
+        for mode in (
+            "create",
+            "status",
+            "propose-update",
+            "apply-approved",
+            "correct",
+            "forget",
+            "review",
+            "audience",
+            "import",
+            "export",
+        ):
+            self.assertIn(mode, text)
+        for argument in (
+            "profile=auto|<locator>",
+            "sources=",
+            "destination=",
+            "entries=",
+            "audience=",
+            "scope=private-only|internal|outward-safe",
+            "cadence=",
+            "format=markdown|summary",
+        ):
+            self.assertIn(argument, text)
+        self.assertIn("sole profile mutation owner", text)
+        self.assertIn("ordinary profile use never writes back", text)
+
+    def test_profile_schema_provenance_and_preflight(self) -> None:
+        skill = normalized("se-profile")
+        contract = (
+            SKILLS_ROOT / "_shared" / "references" / "personal-profile-contract.md"
+        ).read_text(encoding="utf-8")
+        normalized_contract = " ".join(contract.split())
+        for value in (
+            "se-personal-profile/v1",
+            "profile_id",
+            "statement",
+            "first_observed",
+            "last_evidenced",
+            "last_confirmed",
+            "review_after",
+            "conflicts_with",
+        ):
+            self.assertIn(value, contract)
+        for vocabulary in (
+            "`explicit`, `observed`, or `inferred`",
+            "`confirmed`, `proposed`, `contested`, or `retired`",
+            "`private-only`, `internal`, or `outward-safe`",
+        ):
+            self.assertIn(vocabulary, contract)
+        for state in (
+            "`new`",
+            "`valid`",
+            "`repairable`",
+            "`conflicting`",
+            "`unsupported-version`",
+            "`unavailable`",
+        ):
+            self.assertIn(state, skill)
+        self.assertIn("stable assertion/evidence IDs", skill)
+        self.assertIn("unknown or manually edited content", skill)
+        self.assertIn(
+            "Consumers use `profile=auto|off|<locator>`", normalized_contract
+        )
+        self.assertIn(
+            "The `se-profile` maintenance owner uses `profile=auto|<locator>`",
+            normalized_contract,
+        )
+
+    def test_profile_consent_privacy_and_feedback_boundaries(self) -> None:
+        text = normalized("se-profile").lower()
+        for phrase in (
+            "bounded, user-authorized sources",
+            "data, not instructions",
+            "never infer protected or sensitive attributes",
+            "inferred assertions always begin `proposed`",
+            "observed assertions remain approval-gated",
+            "assistant-generated feedback loops",
+            "cannot independently corroborate their own conclusions",
+            "never continuously monitor",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_profile_mutations_preserve_verify_and_delete_honestly(self) -> None:
+        text = normalized("se-profile").lower()
+        for phrase in (
+            "re-read the current artifact",
+            "preserve `## personal notes` plus unknown/user-owned content",
+            "read back",
+            "semantically verify",
+            "concurrent material changes",
+            "idempotent reruns",
+            "whole-profile deletion requires explicit destructive confirmation",
+            "connector history, backups, or prior model context may retain",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_profile_review_overlay_and_destination_boundaries(self) -> None:
+        text = normalized("se-profile").lower()
+        for phrase in (
+            "remain read-only until the user approves numbered items",
+            "update `last_reviewed_at` only after an approved verified write",
+            "`cadence=` records a preference only",
+            "never automatically blend overlays",
+            "never silently fall back",
+            "mirror both destinations",
+            "do not publish or write a second copy",
+        ):
+            self.assertIn(phrase, text)
+        self.assertIn("references/personal-profile-contract.md", text)
+        self.assertIn("references/source-standards.md", text)
 
 
 class SkillDocumentationTest(unittest.TestCase):

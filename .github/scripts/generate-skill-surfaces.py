@@ -74,9 +74,9 @@ DEFAULT_MANIFEST_HEADER = {
     "version": "0.1.0",
     "license": "MIT",
     "description": (
-        "Install user-level knowledge-work skills for research, fact checks, "
-        "decisions, status reports, discovery, briefs, meeting prep, scans, "
-        "and digests into agent skill directories."
+        "Install user-level knowledge-work skills for personal profiles, "
+        "research, fact checks, decisions, status reports, discovery, briefs, "
+        "meeting prep, scans, and digests into agent skill directories."
     ),
 }
 HEADER_FIELDS = tuple(DEFAULT_MANIFEST_HEADER)

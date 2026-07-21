@@ -172,6 +172,26 @@ class RealRepoGeneratorTest(unittest.TestCase):
         }
         self.assertEqual(actual_sources, expected_sources)
 
+    def test_profile_installs_its_contract_and_source_standards(self) -> None:
+        expected_sources = {
+            "_shared/references/personal-profile-contract.md",
+            "_shared/references/source-standards.md",
+        }
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-profile" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        rows = manifest["files"]
+        for platform, info in gen.PLATFORM_REGISTRY.items():
+            for basename in ("personal-profile-contract.md", "source-standards.md"):
+                target = f"{info.skills_dir}/se-profile/references/{basename}"
+                matches = [row for row in rows if row["target"] == target]
+                self.assertEqual(len(matches), 1, (platform, target))
+
     def test_verification_protocol_preserves_research_targets(self) -> None:
         source = "_shared/references/verification-protocol.md"
         self.assertEqual(
