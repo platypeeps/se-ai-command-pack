@@ -1289,3 +1289,43 @@ Added and reviewed an adaptive, evidence-driven learning-path workflow and relea
 ### Next Steps
 
 - Merge PR #42 through sd-housekeeping, then continue the ranked backlog loop.
+
+
+## Session 35: Implement se-literature-map
+
+**Date**: 2026-07-21
+**Task**: Implement se-literature-map
+**Branch**: `codex/se-literature-map`
+
+### Summary
+
+Added and reviewed a source-traceable literature-mapping workflow and released it in pack version 0.27.0.
+
+### Main Changes
+
+- Added se-literature-map with auditable search coverage, work identity and access states, source-traceable clusters, verified relationship types, dispute maps, and purpose-specific reading sequences.
+- Registered the Understand-family skill, fanned source and verification references into installed copies, and regenerated manifest, catalog, README, and repository-map surfaces.
+- Added focused contract and generation tests; addressed Copilot feedback by accepting structured languages= boundaries.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3e4fd5b` | feat: add se-literature-map skill |
+| `4e40a7d` | fix: accept literature-map language boundaries |
+
+### Testing
+
+- [OK] make check — 312 tests, Ruff, mypy, generated-surface parity, install smoke, and release payload gate passed
+- [OK] make repomix — repository map refreshed with no suspicious files
+- [OK] python3 scripts/sd-ai-command-pack-update-spec-kb.py — 341 knowledge copies refreshed with no conflicts
+- [OK] GitHub CI — all required jobs passed at 4e40a7d
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #43 through sd-housekeeping, then checkpoint the ranked backlog loop.
