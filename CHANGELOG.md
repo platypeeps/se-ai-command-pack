@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.21.0 - 2026-07-21
+
+- Add `se-explain`, a read-only Understand workflow for explaining one bounded
+  topic at an explicit audience, purpose, prior-knowledge level, and depth.
+- Correct false premises before building on them, preserve the minimum accurate
+  mechanism, distinguish facts from examples and simplifications, and require
+  every analogy to expose its mapping and failure boundary.
+- Support progressive follow-ups without replaying the full explanation, route
+  mutable or disputed claims to verified evidence, fan source standards into
+  installed copies, and add focused audience, safety, and generation tests.
+
 ## 0.20.0 - 2026-07-21
 
 - Add `se-technical-editor`, an Improve workflow that reviews an existing

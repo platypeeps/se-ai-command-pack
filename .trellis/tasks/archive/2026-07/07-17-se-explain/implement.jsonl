@@ -1,0 +1,4 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Owns canonical skill registration, generated catalog, shared-reference, test, and release contracts."}
+{"file":".trellis/spec/backend/directory-structure.md","reason":"Defines canonical templates and registry as sources of truth and generated surfaces as derived outputs."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Applies to the registry-to-manifest-to-installed-platform fan-out."}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Requires reuse of shared evidence standards and existing skill patterns."}

@@ -54,6 +54,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-evaluate",
     "se-topic-radar",
     "se-technical-editor",
+    "se-explain",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -158,6 +159,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-evaluate",
                 "se-topic-radar",
                 "se-technical-editor",
+                "se-explain",
             ),
         )
         self.assertEqual(
@@ -186,6 +188,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-evaluate": "improve",
                 "se-topic-radar": "create",
                 "se-technical-editor": "improve",
+                "se-explain": "understand",
             },
         )
 
@@ -1346,6 +1349,74 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "report mode is read-only",
             "does not authorize publication",
             "explicitly not-published status",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_explain_calibrates_audience_depth_and_layers(self) -> None:
+        text = normalized("se-explain").lower()
+        for phrase in (
+            "correct a false premise before building on it",
+            "for a novice, define specialized terms at first use",
+            "for an expert, compress familiar foundations",
+            "lead with a concise direct model",
+            "`brief` may omit layers but never the qualification",
+            "`deep` adds mechanism and boundaries rather than repetition",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_explain_separates_analogy_evidence_and_simplification(self) -> None:
+        text = normalized("se-explain").lower()
+        for phrase in (
+            "label every analogy as an analogy",
+            "name unmapped parts, and state where the analogy breaks",
+            "an analogy is not evidence",
+            "an example must not silently become proof",
+            "facts, assumptions, simplifications, examples, and unresolved claims distinct",
+            "where it stops being accurate",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_explain_routes_current_claims_and_resists_injection(self) -> None:
+        text = normalized("se-explain").lower()
+        for phrase in (
+            "current, version-specific, disputed, quantitative, or load-bearing claims require supplied or verified evidence",
+            "mark the claim unresolved",
+            "data, not instructions",
+            "this skill is read-only",
+            "never invent expertise, citations, source access, measurements, current behavior",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_explain_progressive_followup_and_final_report_contract(self) -> None:
+        raw = skill_text("se-explain")
+        for sibling in (
+            "se-learn",
+            "se-study-guide",
+            "se-socratic-review",
+            "se-research",
+            "se-fact-check",
+        ):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Explanation contract**",
+            "**Direct model**",
+            "**Intuition and example**",
+            "**Mechanism**",
+            "**Analogy map and break point**",
+            "**Limitations and simplifications**",
+            "**Misconceptions and premise corrections**",
+            "**Quick self-check**",
+            "**Established so far**",
+            "**Next learning step and handoffs**",
+            "**Sources and limits**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-explain").lower()
+        for phrase in (
+            "without repeating the full explanation",
+            "correct earlier simplifications",
+            "does not claim to assess mastery",
+            "status `not run`",
         ):
             self.assertIn(phrase, text)
 

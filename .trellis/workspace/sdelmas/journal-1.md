@@ -1054,3 +1054,43 @@ Implemented and released se-technical-editor 0.20.0 as a report-first technical 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 29: Ship se-explain
+
+**Date**: 2026-07-21
+**Task**: Ship se-explain
+**Branch**: `codex/se-explain`
+
+### Summary
+
+Implemented, reviewed, and prepared the audience-calibrated se-explain workflow for merge.
+
+### Main Changes
+
+- Added se-explain with audience, depth, false-premise, analogy, evidence, and progressive-follow-up contracts.
+- Registered source-standard fan-out, generated platform surfaces, operator docs, release 0.21.0 metadata, and the refreshed repository map.
+- Clarified the external publication boundary from Copilot review feedback.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1e1d515` | feat: add se-explain skill |
+| `e3d026c` | fix: clarify explain publication boundary |
+
+### Testing
+
+- [OK] make check: 279 tests, Ruff, mypy, generation parity, and release gate passed
+- [OK] deterministic PR full-check passed with Prism and Gito disabled
+- [OK] CI passed on Python 3.10 and 3.13 across Ubuntu and macOS; lint and release gates passed
+- [OK] Repomix security scan, 151-target install audit, and 341-copy KB refresh passed
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
