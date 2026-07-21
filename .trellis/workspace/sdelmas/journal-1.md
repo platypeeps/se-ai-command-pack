@@ -526,3 +526,43 @@ Reconciled the 49-child SE skill roadmap, published PR #20, fixed Copilot's repr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 15: Implement se-profile
+
+**Date**: 2026-07-21
+**Task**: Implement se-profile
+**Branch**: `codex/se-profile`
+
+### Summary
+
+Added and reviewed the consent-driven personal profile workflow and portable v1 contract.
+
+### Main Changes
+
+- Added the consent-gated se-profile maintenance workflow and se-personal-profile/v1 shared contract.
+- Registered and generated all platform payloads, documentation, release metadata, and repository knowledge surfaces for version 0.7.0.
+- Addressed two Copilot review findings by separating consumer and maintainer locator contracts and clarifying destination prohibitions.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c4166809673354de558d6203faf2cfbbe7b1cbdf` | feat: add personal profile workflow |
+| `6a75eb3d00c4d76e7ebff6bfed1a9ed1291d19a7` | chore: ground profile task context |
+| `68831ff91029a22900010d36e84f7ded3c462ed0` | fix: clarify profile consumer boundaries |
+
+### Testing
+
+- [OK] make check: 208 tests, Ruff, mypy, generation drift, and release payload gate passed.
+- [OK] SD PR full-check passed with install audit, Obsidian KB freshness, and review preflight.
+- [OK] GitHub CI passed all six executed checks; Copilot round 2 found no new comments.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
