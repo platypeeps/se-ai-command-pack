@@ -59,6 +59,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-handoff",
     "se-knowledge-capture",
     "se-knowledge-gap",
+    "se-learn",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -168,6 +169,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-handoff",
                 "se-knowledge-capture",
                 "se-knowledge-gap",
+                "se-learn",
             ),
         )
         self.assertEqual(
@@ -201,6 +203,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-handoff": "coordinate",
                 "se-knowledge-capture": "operate",
                 "se-knowledge-gap": "understand",
+                "se-learn": "understand",
             },
         )
 
@@ -1692,6 +1695,96 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "unavailable",
             "never rewrite source material",
             "never expand into unlimited research",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_learn_defines_mastery_and_diagnoses_baseline_evidence(self) -> None:
+        text = normalized("se-learn").lower()
+        for phrase in (
+            "capability goal",
+            "observable mastery signals",
+            "self-reported familiarity",
+            "demonstrated ability",
+            "representative explanation, application, or transfer task",
+            "diagnostic opt-out",
+            "weaker baseline",
+            "never infer ability from title, role, credentials, or confidence",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_learn_sequences_complete_stages_and_spaced_review(self) -> None:
+        text = normalized("se-learn").lower()
+        for phrase in (
+            "dependency map",
+            "measurable learning outcome",
+            "worked example",
+            "retrieval practice",
+            "application exercise",
+            "transfer or project task",
+            "checkpoint",
+            "spaced review",
+            "prerequisite",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_learn_adapts_from_exact_checkpoint_states_without_lowering_goal(self) -> None:
+        raw = skill_text("se-learn")
+        for state in (
+            "**secure**",
+            "**partial**",
+            "**misconception**",
+            "**procedure-without-understanding**",
+            "**not demonstrated**",
+        ):
+            self.assertIn(state, raw)
+        text = normalized("se-learn").lower()
+        for phrase in (
+            "revisit a prerequisite",
+            "change representation",
+            "add retrieval or application practice",
+            "increase difficulty",
+            "early mastery",
+            "never silently lower",
+            "explicit approval",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_learn_handles_time_and_resource_limits_honestly(self) -> None:
+        text = normalized("se-learn").lower()
+        for phrase in (
+            "reduce scope, extend the horizon, or label a foundation-only path",
+            "workload assumptions",
+            "inaccessible materials",
+            "equivalent capability requirements",
+            "never invent access",
+            "does not guarantee mastery by a date",
+            "never issue a grade or credential",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_learn_safety_handoffs_and_final_report_contract(self) -> None:
+        raw = skill_text("se-learn")
+        for sibling in ("se-explain", "se-study-guide", "se-socratic-review"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Goal and mastery contract**",
+            "**Baseline evidence**",
+            "**Dependency map**",
+            "**Staged learning path**",
+            "**Session and review rhythm**",
+            "**Checkpoint and adaptation rules**",
+            "**Resource gaps and alternatives**",
+            "**Next session and handoffs**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-learn").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "not run",
+            "unavailable",
+            "never enroll, purchase, schedule",
+            "never claim mastery",
         ):
             self.assertIn(phrase, text)
 

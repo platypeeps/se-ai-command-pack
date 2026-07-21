@@ -30,7 +30,8 @@ process. User-facing install/update/remove instructions live in the
   `se-explain`, traceable feedback synthesis with `se-feedback`, and compact
   evidence-backed continuity packets with `se-handoff`, plus preview-first
   Obsidian/Notion publishing with `se-knowledge-capture` and bounded
-  knowledge-system auditing with `se-knowledge-gap`.
+  knowledge-system auditing with `se-knowledge-gap`, plus adaptive
+  mastery-oriented paths with `se-learn`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -110,6 +111,19 @@ dates and authority signals. Individual claim verdicts stay with
 with an explicit documentation task, and continuous freshness checking with
 `se-monitor` when that separate capability is available. The audit remains
 read-only and reports every proposed follow-up as not run.
+
+### Adaptive-learning workflow boundary
+
+`se-learn` owns the path from a stated capability goal and diagnosed baseline
+to ordered prerequisite stages, observable outcomes, practice, transfer,
+checkpoints, and spaced review. It distinguishes self-report from demonstrated
+ability, adapts from explicit evidence states, and exposes workload, horizon,
+scope, and material-access tradeoffs without guaranteeing mastery or silently
+lowering the goal. One-concept clarification stays with `se-explain`, durable
+source-derived review artifacts with `se-study-guide`, and adaptive mastery
+probing with `se-socratic-review`; unavailable siblings remain honest proposed
+handoffs. The workflow is read-only and never enrolls, purchases, schedules,
+grades, or credentials.
 
 ### Pack-help workflow boundary
 

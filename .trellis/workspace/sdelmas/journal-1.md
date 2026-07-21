@@ -1250,3 +1250,42 @@ Added and reviewed a bounded, provenance-preserving knowledge-system audit workf
 ### Next Steps
 
 - Merge PR #41 through sd-housekeeping, then continue the ranked backlog loop.
+
+
+## Session 34: Implement se-learn
+
+**Date**: 2026-07-21
+**Task**: Implement se-learn
+**Branch**: `codex/se-learn`
+
+### Summary
+
+Added and reviewed an adaptive, evidence-driven learning-path workflow and released it in pack version 0.26.0.
+
+### Main Changes
+
+- Added se-learn with observable mastery signals, baseline diagnostics, prerequisite mapping, complete learning stages, checkpoint states, and explicit adaptation rules.
+- Registered the Understand-family skill, fanned shared source standards into installed copies, and regenerated manifest, catalog, README, and repository-map surfaces.
+- Added focused contract and generation tests while preserving time, access, credentialing, and unavailable-sibling boundaries.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `15a44f7` | feat: add se-learn skill |
+
+### Testing
+
+- [OK] make check — 306 tests, Ruff, mypy, generated-surface parity, install smoke, and release payload gate passed
+- [OK] make repomix — repository map refreshed with no suspicious files
+- [OK] python3 scripts/sd-ai-command-pack-update-spec-kb.py — 341 knowledge copies refreshed with no conflicts
+- [OK] GitHub CI — all required jobs passed at 15a44f7
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #42 through sd-housekeeping, then continue the ranked backlog loop.
