@@ -14,7 +14,7 @@ behind a separately reviewed portable contract and explicit user consent.
 
 ## Current State
 
-- 34 of 49 children are completed and archived; the remaining 15 are in
+- 35 of 49 children are completed and archived; the remaining 14 are in
   planning with complete PRD, design, implementation, and context artifacts.
 - The foundation and portable profile slice are complete, including
   `personal-profile-contract`, `se-profile`, and the read-only `se-ask-me`
