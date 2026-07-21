@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 30
+- **Total Sessions**: 31
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1132 | Active |
+| `journal-1.md` | ~1171 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 31 | 2026-07-21 | Ship se-handoff | `b51f397f9e9f9f275fe59c1c75a3a43d577e911a` | `codex/se-handoff` |
 | 30 | 2026-07-21 | Ship se-feedback | `0c2acfc8f48d1dabcd8edea2a08a445eb867052f` | `codex/se-feedback` |
 | 29 | 2026-07-21 | Ship se-explain | `1e1d515`, `e3d026c` | `codex/se-explain` |
 | 28 | 2026-07-21 | Implement se-technical-editor | `daf7e87aa789e42af4755ae130093ca40765398d`, `b52f146b804004afef8a855ef752ac7be5a7f6e7`, `ae5f9d063254b2d630b01788150ef6ec7b35379a`, `27271555e2be729882a3f15f50e4e4acb2117a0d` | `codex/se-technical-editor` |
