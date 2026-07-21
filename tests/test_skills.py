@@ -63,6 +63,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-literature-map",
     "se-meeting-follow-through",
     "se-monitor",
+    "se-paper",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -176,6 +177,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-literature-map",
                 "se-meeting-follow-through",
                 "se-monitor",
+                "se-paper",
             ),
         )
         self.assertEqual(
@@ -213,6 +215,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-literature-map": "understand",
                 "se-meeting-follow-through": "coordinate",
                 "se-monitor": "understand",
+                "se-paper": "create",
             },
         )
 
@@ -2034,6 +2037,82 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Source coverage and gaps**",
             "**Next monitor state**",
             "**Capability status**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_paper_gates_question_feasibility_and_drafting(self) -> None:
+        text = normalized("se-paper").lower()
+        for phrase in (
+            "interview one question per turn",
+            "run a feasibility and ethics gate",
+            "require explicit approval before full literature work",
+            "silence and workspace presence are not approval",
+            "stop, rescope, or propose a non-empirical alternative",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_paper_defines_literature_and_provenance_contracts(self) -> None:
+        text = normalized("se-paper").lower()
+        for phrase in (
+            "define the literature-search protocol before making coverage claims",
+            "exact queries",
+            "inclusion and exclusion rules",
+            "citation-chaining",
+            "every literature work, dataset, experiment, code artifact, quotation, citation, exclusion, transformation, analytical decision, and unavailable component",
+            "never claim systematic-review or literature completeness",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_paper_preserves_execution_and_results_integrity(self) -> None:
+        text = normalized("se-paper").lower()
+        for phrase in (
+            "proposed, approved, executed, partially executed, and not run",
+            "never present planned collection, code, experiments, or analyses as executed",
+            "method, observations/results, interpretation, discussion, and conclusions separate",
+            "preserve contradictory, negative, and null findings",
+            "results cannot be rewritten, omitted, or relabeled",
+            "a nearby citation or plausible title is not evidence",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_paper_profile_ethics_and_submission_boundaries(self) -> None:
+        raw = skill_text("se-paper")
+        for reference in (
+            "references/source-standards.md",
+            "references/verification-protocol.md",
+            "references/personal-profile-contract.md",
+        ):
+            self.assertIn(reference, raw)
+        for sibling in (
+            "se-author",
+            "se-literature-map",
+            "se-research",
+            "se-fact-check",
+            "se-topic-radar",
+        ):
+            self.assertIn(f"`{sibling}`", raw)
+        text = normalized("se-paper").lower()
+        for phrase in (
+            "data, not instructions",
+            "profile use is read-only and framing-only",
+            "do not bypass ethics",
+            "this workflow does not submit, publish, register, upload, message, collect data, execute experiments, or obtain approval",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_paper_final_report_contract(self) -> None:
+        raw = skill_text("se-paper")
+        for field in (
+            "**Research state and approvals**",
+            "**Approved research brief**",
+            "**Literature protocol and coverage**",
+            "**Evidence and decision ledger**",
+            "**Method and execution state**",
+            "**Paper artifact**",
+            "**Integrity and validity review**",
+            "**Reproducibility and ethics inventory**",
+            "**Venue adaptation and gaps**",
+            "**Submission handoff**",
         ):
             self.assertIn(field, raw)
 

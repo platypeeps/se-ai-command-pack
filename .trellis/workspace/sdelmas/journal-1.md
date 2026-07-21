@@ -1408,3 +1408,41 @@ Added and validated a portable, read-only baseline monitoring workflow and relea
 ### Next Steps
 
 - Merge PR #45 through sd-housekeeping, then continue the ranked backlog loop; Copilot substantive review was unavailable because its quota was exhausted.
+
+
+## Session 38: Implement se-paper
+
+**Date**: 2026-07-21
+**Task**: Implement se-paper
+**Branch**: `codex/se-paper`
+
+### Summary
+
+Added and reviewed a gated, provenance-preserving research-paper workflow and released it in pack version 0.30.0.
+
+### Main Changes
+
+- Added se-paper with question refinement, one-question interviews, feasibility and ethics gates, explicit research-brief approval, literature protocol, venue-aware drafting, and submission boundaries.
+- Added stable provenance and execution-state contracts for literature, data, code, citations, exclusions, transformations, analytical decisions, results integrity, validity, and reproducibility.
+- Registered the Create-family skill, fanned source, verification, and profile references into installed copies, regenerated release surfaces, cleared context seeds, and added focused contract and generation tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d800a31` | feat: add se-paper skill |
+
+### Testing
+
+- [OK] deterministic PR full check — 330 tests, Ruff, mypy, generation parity, 151-target install audit, KB freshness, and release gate passed
+- [OK] make repomix — repository map refreshed with no suspicious files
+- [OK] GitHub CI and Copilot — all required jobs passed and round 1 reviewed 14 files with no comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #46 through sd-housekeeping, then continue the ranked backlog loop.

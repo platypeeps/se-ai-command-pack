@@ -311,6 +311,32 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 targets,
             )
 
+    def test_paper_installs_profile_source_and_verification_references(self) -> None:
+        expected_sources = {
+            "_shared/references/personal-profile-contract.md",
+            "_shared/references/source-standards.md",
+            "_shared/references/verification-protocol.md",
+        }
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-paper" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        targets = {row["target"] for row in manifest["files"]}
+        for info in gen.PLATFORM_REGISTRY.values():
+            for basename in (
+                "personal-profile-contract.md",
+                "source-standards.md",
+                "verification-protocol.md",
+            ):
+                self.assertIn(
+                    f"{info.skills_dir}/se-paper/references/{basename}",
+                    targets,
+                )
+
     def test_feedback_installs_source_standards(self) -> None:
         expected_sources = {"_shared/references/source-standards.md"}
         actual_sources = {
@@ -596,7 +622,7 @@ class RealRepoGeneratorTest(unittest.TestCase):
         source = "_shared/references/verification-protocol.md"
         self.assertEqual(
             gen.SHARED_REFERENCES[source],
-            ("se-research", "se-fact-check", "se-literature-map"),
+            ("se-research", "se-fact-check", "se-literature-map", "se-paper"),
         )
         manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
         rows = manifest["files"]
@@ -605,6 +631,7 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 "se-research",
                 "se-fact-check",
                 "se-literature-map",
+                "se-paper",
             ):
                 target = (
                     f"{info.skills_dir}/{consumer}/references/"

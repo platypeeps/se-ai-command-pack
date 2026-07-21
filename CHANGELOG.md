@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.30.0 - 2026-07-21
+
+- Add `se-paper`, a gated Create workflow from research-question refinement and
+  approved brief through literature protocol, method, analysis, venue-aware
+  drafting, integrity review, and submission handoff.
+- Preserve provenance for literature, data, code, quotations, citations,
+  exclusions, transformations, and analytical decisions; keep method, results,
+  interpretation, discussion, and conclusions distinct and retain null,
+  negative, inconclusive, and contradictory findings.
+- Require feasibility, ethics, validity, reproducibility, profile-use, and
+  coverage boundaries; fan source, verification, and profile references into
+  installed copies and add focused contract and generation tests.
+
 ## 0.29.0 - 2026-07-21
 
 - Add `se-monitor`, a read-only Understand workflow that creates an explicit
