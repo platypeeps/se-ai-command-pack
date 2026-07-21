@@ -976,3 +976,40 @@ Implemented and released se-evaluate as a rubric-driven, evidence-traceable sing
 ### Next Steps
 
 - None - task complete
+
+
+## Session 27: Implement se-topic-radar
+
+**Date**: 2026-07-21
+**Task**: Implement se-topic-radar
+**Branch**: `codex/se-topic-radar-bookkeeping`
+
+### Summary
+
+Implemented and released se-topic-radar 0.19.0, including evidence-qualified exact-ten ranking, profile-aware scoring, duplicate penalties, and safe se-author/se-paper handoffs.
+
+### Main Changes
+
+- Added the read-only se-topic-radar Create skill and registered its generated platform surfaces.
+- Added anchored scoring, evidence adequacy, duplicate handling, privacy, sensitivity, and breaking-news safeguards.
+- Updated pack documentation, release metadata, generated catalog/map, and coverage tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `285db8ebd3c15d5ea25abdca73a93e7cbbbf3159` | feat: add se-topic-radar skill |
+
+### Testing
+
+- [OK] 268 tests passed
+- [OK] Ruff, mypy, generation parity, release gate, install audit, Repomix security, and KB freshness passed
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

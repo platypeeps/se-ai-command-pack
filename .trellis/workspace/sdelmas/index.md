@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 26
+- **Total Sessions**: 27
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~976 | Active |
+| `journal-1.md` | ~1014 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 27 | 2026-07-21 | Implement se-topic-radar | `285db8ebd3c15d5ea25abdca73a93e7cbbbf3159` | `codex/se-topic-radar-bookkeeping` |
 | 26 | 2026-07-21 | Ship se-evaluate | `35f8577433df06113feba792e0a281567d003156` | `codex/se-evaluate` |
 | 25 | 2026-07-21 | Ship se-distill | `2e7806f4535481d17ed544517c14f1b10977663d`, `f14e07c556899c104e40cad1526f3dbc4c429392` | `codex/se-distill` |
 | 24 | 2026-07-21 | Add diagram specification workflow | `2b8cf5f39f2ddf3e6f7af84edc219243ccc035c2` | `codex/se-diagram` |
