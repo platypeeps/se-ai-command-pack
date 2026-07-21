@@ -418,3 +418,39 @@ Refreshed the consumer-installed SD AI command pack from 0.24.3 to the verified 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 12: Implement and review se-help discovery
+
+**Date**: 2026-07-20
+**Task**: Implement and review se-help discovery
+**Branch**: `codex/se-help`
+
+### Summary
+
+Added the read-only se-help skill and generated bundled catalog, strengthened generation contracts and tests, addressed two Copilot findings, and completed a clean four-round review loop.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f9486fa` | (see git log) |
+| `a1d69e4` | (see git log) |
+| `830ef9b` | (see git log) |
+| `4b5e98e` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
