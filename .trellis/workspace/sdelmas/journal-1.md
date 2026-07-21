@@ -1369,3 +1369,42 @@ Added and reviewed an evidence-linked post-meeting reconciliation workflow and r
 ### Next Steps
 
 - Merge PR #44 through sd-housekeeping, then continue the ranked backlog loop.
+
+
+## Session 37: Implement se-monitor
+
+**Date**: 2026-07-21
+**Task**: Implement se-monitor
+**Branch**: `codex/se-monitor`
+
+### Summary
+
+Added and validated a portable, read-only baseline monitoring workflow and released it in pack version 0.29.0.
+
+### Main Changes
+
+- Added se-monitor with explicit first-baseline and delta modes, exact change states, semantic-key matching, threshold handling, source-gap preservation, and capability-neutral read-only boundaries.
+- Added the minimized se-monitor-state/v1 interchange schema with deterministic missing, malformed, stale, and newer-version handling plus data-minimization rules.
+- Registered the Understand-family skill, fanned source standards into installed copies, regenerated manifest/catalog/README/repository-map surfaces, and added focused contract and generation tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c896902` | feat: add se-monitor skill |
+| `3c5213e` | chore: clear task context seeds |
+
+### Testing
+
+- [OK] deterministic PR full check — 324 tests, Ruff, mypy, generation parity, 151-target install audit, KB freshness, and release gate passed
+- [OK] make repomix — repository map refreshed with no suspicious files
+- [OK] GitHub CI — all required jobs passed at the final reviewed head
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #45 through sd-housekeeping, then continue the ranked backlog loop; Copilot substantive review was unavailable because its quota was exhausted.

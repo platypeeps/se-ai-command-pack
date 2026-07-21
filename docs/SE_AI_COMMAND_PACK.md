@@ -153,6 +153,24 @@ generic conversation synthesis with `se-thread-digest`, and durable publishing
 with `se-knowledge-capture`. Recaps and handoffs are drafts only: task creation,
 calendar changes, messages, and system updates require separate authorization.
 
+### Monitor workflow boundary
+
+`se-monitor` owns read-only, baseline-to-current comparison for one bounded
+subject and watch set. A first run creates an explicit baseline without claiming
+a delta; later runs validate `se-monitor-state/v1`, match stable semantic keys,
+apply materiality rules, and classify facts as new, changed, resolved,
+unchanged, or unverifiable. Source-only wording, layout, locator, and coverage
+changes remain separate from changes in the watched subject, and unavailable
+sources never become evidence of resolution.
+
+The versioned state block is an output/input interchange artifact, not an
+implicit file or connected record. Broad current-topic catch-up stays with
+`se-brief`, objective-oriented project reporting with `se-status`, and one-time
+deep investigation with `se-research`. Persistence, recurring schedules,
+subscriptions, notifications, webhooks, and external writes require separate
+requests and authorized capabilities; all remain `not run` in the monitor
+report.
+
 ### Pack-help workflow boundary
 
 `se-help` owns pack discovery, onboarding, explanation, comparison, and

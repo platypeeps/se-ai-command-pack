@@ -7,7 +7,8 @@ critical operational checklists, neutral alternative comparisons,
 evidence-traceable diagrams, auditable extreme distillation,
 rubric-driven evaluations, evidence-backed editorial opportunity ranking,
 report-first technical editing,
-decision-oriented agendas, evidence-linked meeting follow-through, pack discovery,
+decision-oriented agendas, evidence-linked meeting follow-through,
+portable baseline monitoring, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -39,6 +40,7 @@ come directly from canonical skill frontmatter.
 | `se-knowledge-gap` | Use when the user wants a bounded, cross-source audit of missing, inaccessible, stale, conflicting, unsupported, duplicated, or unresolved knowledge. |
 | `se-learn` | Use when the user wants an adaptive, mastery-oriented learning path from a stated capability goal, diagnosed baseline, constraints, and observable evidence. |
 | `se-literature-map` | Use when the user wants a source-traceable map of a field's schools, methods, works, relationships, disputes, gaps, and reading paths without a flattened narrative review. |
+| `se-monitor` | Use when the user wants a dated, source-traceable comparison of a watched subject against an explicit baseline, with meaningful deltas and a portable next-state artifact. |
 
 ### Decide
 
@@ -119,6 +121,12 @@ coverage. It traces every component score, keeps private evidence out of
 outward-facing rationales, penalizes duplicate angles, and returns exactly ten
 only when the evidence supports ten materially distinct candidates. Selection
 hands off to `se-author` or `se-paper`; it does not draft or publish.
+
+`se-monitor` compares one bounded watched subject with an explicit portable
+baseline. It reports dated semantic changes, compresses unchanged items,
+preserves unverifiable gaps, and returns a minimized `se-monitor-state/v1`
+artifact for an authorized user or host capability to retain. The workflow does
+not persist state, schedule recurrence, subscribe, notify, or write externally.
 
 `se-technical-editor` reviews an existing technical draft through separate
 technical correctness, evidence and citations, hidden assumptions, code and

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.29.0 - 2026-07-21
+
+- Add `se-monitor`, a read-only Understand workflow that creates an explicit
+  first baseline or reports meaningful, dated deltas against portable prior
+  state without depending on a scheduler or persistence product.
+- Classify watched items as new, changed, resolved, unchanged, or unverifiable;
+  match stable semantic keys, separate source-only changes, compress unchanged
+  items, and preserve stale, malformed, inaccessible, or unsupported state.
+- Ship the minimized `se-monitor-state/v1` interchange contract, fan source
+  standards into installed copies, document sibling and automation boundaries,
+  and add focused contract and generation tests.
+
 ## 0.28.0 - 2026-07-21
 
 - Add `se-meeting-follow-through`, a read-only Coordinate workflow that turns
