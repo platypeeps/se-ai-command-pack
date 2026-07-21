@@ -97,6 +97,7 @@ DEFAULT_MANIFEST_HEADER = {
         "evidence-linked blameless postmortems, "
         "pre-execution failure stress tests, "
         "source-grounded presentation blueprints, "
+        "decision-ready proposal development, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

@@ -60,6 +60,7 @@ come directly from canonical skill frontmatter.
 | `se-topic-radar` | Use when the user wants ten ranked technical writing opportunities grounded in authorized personal activity, current developments, prior coverage, evidence readiness, novelty, and effort. |
 | `se-paper` | Use when the user wants to develop a credible research paper through question refinement, an approved research brief, explicit literature and methodology protocols, traceable evidence, reproducibility, and venue-aware review. |
 | `se-presentation` | Use when the user wants to turn an approved source artifact into an audience-specific story arc and source-traceable slide specification before using presentation tooling. |
+| `se-proposal` | Use when the user wants to develop an evidence-backed, decision-ready proposal with transparent alternatives, investment, risks, success criteria, and an explicit ask. |
 
 ### Coordinate
 
@@ -206,6 +207,12 @@ arc and timed, one-claim-per-slide specification. It keeps claims, citations,
 visual states, speaker notes, variants, omissions, and accessibility traceable,
 then hands the accepted blueprint to presentation tooling without creating or
 publishing a deck itself.
+
+`se-proposal` develops a decision-ready case through a one-question interview
+and explicitly approved proposal brief. It keeps observed evidence, estimates,
+assumptions, and advocacy distinct; compares credible alternatives including do
+nothing; exposes authority, stakeholder, investment, and rejection gaps; and
+hands an accepted outcome to `se-plan` without implying approval or execution.
 
 `se-distill` compresses a supplied corpus to an explicit information budget
 using a traceable importance map and invariant audit. It reports measured input

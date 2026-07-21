@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.35.0 - 2026-07-21
+
+- Add `se-proposal`, a read-only Create workflow for interview-led,
+  decision-ready technical, operational, and business proposals.
+- Gate full drafting on an approved proposal brief and preserve observed
+  evidence, estimates, assumptions, and advocacy as distinct claim classes.
+- Require real alternatives plus a do-nothing baseline, explicit authority and
+  ask, estimate methods/ranges, rejection conditions, and a non-executing
+  `se-plan` handoff; fan source/profile references and add focused tests.
+
 ## 0.34.0 - 2026-07-21
 
 - Add `se-presentation`, a read-only Create workflow that turns an approved

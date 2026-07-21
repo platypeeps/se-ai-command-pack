@@ -24,6 +24,15 @@ do-nothing baseline, profile constraints, and accepted-proposal handoff.
 Verify material claims are classified and sourced, and persuasive framing never
 silently converts assumptions into evidence.
 
+## Rollback Points
+
+- Revert the canonical skill, registry rows, tests, docs, generated surfaces,
+  changelog entry, and version bump as one unit if the contract cannot pass.
+- Regenerate the manifest and catalogs after reverting registry or template
+  sources; never leave orphaned generated proposal targets.
+- Keep negotiation, approval, task creation, and implementation planning out of
+  the rollback because this task does not add those capabilities.
+
 ## Follow-Ups
 
 Negotiation, approval, task creation, and implementation planning remain separate workflows.
