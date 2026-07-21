@@ -6664,7 +6664,8 @@ reading, searching, or editing.
 - `target=` — optional publication target and its format or editorial rules.
 - `depth=full|focused` — default `full`; focused mode requires `passes=`.
 - `passes=` — comma-separated subset of `correctness,citations,assumptions,code,
-  novelty,skeptic,structure,comprehension,confidentiality,opening,voice`.
+  novelty,skeptical-reader-objections,structure,comprehension,confidentiality,
+  opening,voice`.
 - `mode=report|edit` — default `report`; `edit` applies only the changes
   explicitly authorized by the request or a later approval.
 - `edits=` — finding IDs, categories, or bounded instructions authorized for

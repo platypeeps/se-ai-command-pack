@@ -1264,6 +1264,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "code and examples",
             "novelty and originality",
             "skeptical-reader objections",
+            "skeptical-reader-objections",
             "reader comprehension",
             "title and opening",
             "record `not run` for every omitted pass",
