@@ -9,7 +9,8 @@ rubric-driven evaluations, evidence-backed editorial opportunity ranking,
 report-first technical editing,
 decision-oriented agendas, evidence-linked meeting follow-through,
 portable baseline monitoring, methodologically gated research papers,
-outcome-based execution planning, pack discovery,
+outcome-based execution planning, evidence-linked blameless postmortems,
+pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -89,6 +90,7 @@ come directly from canonical skill frontmatter.
 | `se-evaluate` | Use when the user wants one defined subject assessed against an explicit rubric with criterion-level evidence, uncertainty, sensitivity, deficiencies, and prioritized improvements. |
 | `se-technical-editor` | Use when the user wants an existing technical draft reviewed through evidence-located correctness, citation, code, structure, comprehension, confidentiality, and voice passes before approved revisions are applied. |
 | `se-feedback` | Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions. |
+| `se-postmortem` | Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -143,6 +145,13 @@ risks, decision points, and immediate authorized actions. It keeps commitments
 separate from proposed owners, dates, and estimates, exposes cycles and missing
 prerequisites, and hands repository implementation planning to the local
 development workflow without creating tasks or competing technical artifacts.
+
+`se-postmortem` reconstructs a stable incident or failed outcome from a bounded
+source inventory and evidence-linked timeline. It keeps observations,
+interpretations, contributing factors, root causes, and counterfactuals
+distinct; examines detection, response, recovery, and safeguard behavior; and
+returns verifiable corrective-action proposals without assigning blame,
+inventing commitments, coordinating response, or executing changes.
 
 `se-technical-editor` reviews an existing technical draft through separate
 technical correctness, evidence and citations, hidden assumptions, code and

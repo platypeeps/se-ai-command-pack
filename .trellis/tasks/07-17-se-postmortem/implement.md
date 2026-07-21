@@ -24,6 +24,12 @@ verification schema, sensitivity handling, and distinction from `se-retro`.
 Trace impact, timeline, causes, and actions to evidence and confirm root-cause
 language is withheld when causal support is inadequate.
 
+## Rollback Points
+
+Keep the canonical skill, registry entry, tests, documentation, release metadata,
+and generated surfaces in one commit so the feature can be reverted without
+leaving an installed target or catalog entry behind.
+
 ## Follow-Ups
 
 Incident response and action execution remain separate workflows.

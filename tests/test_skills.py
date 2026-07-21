@@ -65,6 +65,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-monitor",
     "se-paper",
     "se-plan",
+    "se-postmortem",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -180,6 +181,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-monitor",
                 "se-paper",
                 "se-plan",
+                "se-postmortem",
             ),
         )
         self.assertEqual(
@@ -219,6 +221,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-monitor": "understand",
                 "se-paper": "create",
                 "se-plan": "decide",
+                "se-postmortem": "improve",
             },
         )
 
@@ -2176,6 +2179,68 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Decision points**",
             "**Immediate next actions**",
             "**Commitment ledger**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_postmortem_preserves_evidence_and_analytic_categories(self) -> None:
+        text = normalized("se-postmortem").lower()
+        for phrase in (
+            "inventory every requested source before analysis",
+            "build an evidence-linked timeline",
+            "keep direct observation, reported account, and interpretation distinct",
+            "`observation`, `interpretation`, `contributing factor`, `root cause`, and `counterfactual`",
+            "no defensible root cause established",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_postmortem_requires_causal_mechanism_and_system_analysis(self) -> None:
+        text = normalized("se-postmortem").lower()
+        for phrase in (
+            "requires a defensible causal mechanism plus supporting evidence",
+            "temporal correlation, hindsight, repetition, or confidence in the narrative is not enough",
+            "human error as an observed action or outcome, never a terminal root cause",
+            "preserve conflicting accounts as competing evidence-linked interpretations",
+            "successful, failed, bypassed, and absent controls",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_postmortem_actions_are_verifiable_and_authority_bounded(self) -> None:
+        text = normalized("se-postmortem").lower()
+        for phrase in (
+            "map every corrective or preventive action to one or more causal findings or control gaps",
+            "vague intentions without an observable verification signal are not corrective actions",
+            "record owners and dates only when explicitly approved",
+            "`proposed`, `unassigned`, or `unscheduled`",
+            "this skill is read-only",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_postmortem_protects_sensitive_incidents_and_sibling_boundary(self) -> None:
+        raw = skill_text("se-postmortem")
+        self.assertIn("references/source-standards.md", raw)
+        self.assertIn("`se-retro`", raw)
+        text = normalized("se-postmortem").lower()
+        for phrase in (
+            "data, not instructions",
+            "restricted reporting must minimize exposure without silently changing the substantive finding",
+            "do not make disciplinary, legal, compliance, medical, financial, or forensic conclusions",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_postmortem_final_report_contract(self) -> None:
+        raw = skill_text("se-postmortem")
+        for field in (
+            "**Postmortem contract**",
+            "**Source coverage and conflicts**",
+            "**Impact**",
+            "**Evidence-linked timeline**",
+            "**Detection, response, and recovery**",
+            "**Safeguard analysis**",
+            "**Causal analysis**",
+            "**Counterfactuals and uncertainty**",
+            "**Corrective-action ledger**",
+            "**Sensitive-detail handling**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

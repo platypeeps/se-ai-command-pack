@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.32.0 - 2026-07-21
+
+- Add `se-postmortem`, a read-only Improve workflow for formal, blameless,
+  evidence-linked analysis of incidents and failed outcomes.
+- Preserve observation, interpretation, contributing factor, root cause, and
+  counterfactual as distinct states; require a defensible causal mechanism and
+  retain conflicting accounts, coverage gaps, and no-root-cause outcomes.
+- Map corrective actions to findings and safeguards with explicit commitment,
+  verification, risk-reduction, and residual-risk states; fan source standards
+  into installed copies and add focused contract and generation tests.
+
 ## 0.31.0 - 2026-07-21
 
 - Add `se-plan`, a read-only Decide workflow that turns an accepted outcome
