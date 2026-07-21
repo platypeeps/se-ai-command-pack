@@ -100,6 +100,7 @@ DEFAULT_MANIFEST_HEADER = {
         "decision-ready proposal development, "
         "source-faithful destination adaptation, "
         "constructive adversarial reviews, "
+        "evidence-led general retrospectives, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

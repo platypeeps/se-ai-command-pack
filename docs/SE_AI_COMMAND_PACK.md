@@ -521,6 +521,29 @@ Claim verification remains with `se-fact-check`, rubric assessment with
 causal analysis with `se-postmortem`. Probing, approval, remediation, disclosure,
 task creation, and other external action require separate authority.
 
+### Retrospective workflow boundary
+
+`se-retro` owns general evidence-led reflection after a project, research
+effort, meeting, launch, or operational period. It inventories source coverage
+and builds a factual timeline before comparing intended with actual outcomes.
+Verified facts, attributed participant perspectives, and assistant inference
+remain distinct; disagreements and evidence gaps stay visible rather than
+being collapsed into a convenient consensus.
+
+The workflow examines multiple contributing conditions across decisions,
+process, information, environment, dependencies, incentives, and chance.
+Root-cause language requires evidence for a causal mechanism; otherwise the
+result names contributing factors and explicit uncertainty. Lessons retain
+their transfer limits, and follow-ups remain proposed, unassigned, and
+unscheduled unless an owner or date was supplied or approved.
+
+Software-delivery debugging streams, incidents, CI or review gate misses, and
+pull-request workflow retros route to `sd-retro` when that specialized skill is
+available. Formal incident causal and safeguard analysis remains with
+`se-postmortem`. `se-retro` never records a journal entry, creates or assigns a
+task, contacts participants, publishes a report, changes systems, or executes a
+follow-up.
+
 ### Premortem workflow boundary
 
 `se-premortem` owns prospective stress-testing after an objective and plan are

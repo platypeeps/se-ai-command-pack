@@ -97,6 +97,7 @@ come directly from canonical skill frontmatter.
 | `se-postmortem` | Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions. |
 | `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
 | `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
+| `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -228,6 +229,15 @@ before testing its assumptions, contrary evidence, incentives, misuse, failure
 modes, security/privacy boundaries, strongest counterargument, and reversal
 conditions. Findings retain evidence and uncertainty classes, sensitive detail
 is minimized, and strong artifacts may return an honest no-findings result.
+
+`se-retro` reviews a completed project, research effort, meeting, launch, or
+operational period by inventorying evidence and reconstructing a factual
+timeline before interpreting outcomes or contributing conditions. It keeps
+verified facts, attributed participant perspectives, and assistant inference
+distinct; preserves disagreement and uncertainty; and returns lessons plus a
+small set of proposed follow-ups without recording, assigning, or creating
+work. Software-delivery debugging and gate retros route conditionally to the
+specialized `sd-retro` workflow when it is available.
 
 `se-distill` compresses a supplied corpus to an explicit information budget
 using a traceable importance map and invariant audit. It reports measured input

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.38.0 - 2026-07-21
+
+- Add `se-retro`, a read-only Improve workflow for evidence-led,
+  non-blaming retrospectives across projects, research, meetings, launches,
+  and operational periods.
+- Establish source coverage and a factual timeline before comparing expected
+  with actual outcomes or interpreting contributing conditions.
+- Keep facts, participant perspectives, and assistant inference distinct;
+  route software-delivery retros conditionally to `sd-retro`; and preserve
+  proposed follow-ups as unassigned, unscheduled non-commitments by default.
+
 ## 0.37.0 - 2026-07-21
 
 - Add `se-red-team`, a read-only Improve workflow for constructive adversarial

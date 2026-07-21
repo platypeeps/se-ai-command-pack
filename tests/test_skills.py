@@ -71,6 +71,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-proposal",
     "se-publish",
     "se-red-team",
+    "se-retro",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -192,6 +193,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-proposal",
                 "se-publish",
                 "se-red-team",
+                "se-retro",
             ),
         )
         self.assertEqual(
@@ -237,6 +239,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-proposal": "create",
                 "se-publish": "create",
                 "se-red-team": "improve",
+                "se-retro": "improve",
             },
         )
 
@@ -2541,6 +2544,62 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Responses and closure evidence**",
             "**No-findings and residual-risk statement**",
             "**Decision handoff**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_retro_orders_evidence_before_analysis_and_separates_claims(self) -> None:
+        text = normalized("se-retro").lower()
+        self.assertLess(
+            text.index("inventory the evidence before analysis"),
+            text.index("compare intended and actual outcomes only after the timeline"),
+        )
+        for phrase in (
+            "build a factual timeline before interpreting causes",
+            "verified fact",
+            "participant perspective",
+            "assistant inference",
+            "preserve conflicting perspectives as attributed accounts",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_retro_is_non_blaming_and_bounded_under_uncertainty(self) -> None:
+        text = normalized("se-retro").lower()
+        for phrase in (
+            "focus on systems and observable choices, not personal blame",
+            "no defensible root cause was established",
+            "do not identify an individual as the cause or infer intent",
+            "do not promote correlation, chronology, hindsight",
+            "proposed follow-ups are not commitments",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_retro_routes_delivery_work_conditionally_and_remains_read_only(self) -> None:
+        raw = skill_text("se-retro")
+        self.assertIn("references/source-standards.md", raw)
+        text = normalized("se-retro").lower()
+        for phrase in (
+            "route to `sd-retro` if that specialized workflow is available",
+            "if it is unavailable, continue here",
+            "this skill is read-only",
+            "does not record a journal entry",
+            "does not record a journal entry, create or assign tasks",
+            "requires a separate explicit request",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_retro_final_report_contract(self) -> None:
+        raw = skill_text("se-retro")
+        for field in (
+            "**Retrospective contract**",
+            "**Evidence coverage and limits**",
+            "**Factual timeline**",
+            "**Expected versus actual**",
+            "**What worked and what limited harm**",
+            "**Contributing conditions**",
+            "**Lessons and transfer limits**",
+            "**Proposed follow-ups**",
+            "**Open questions and disagreements**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)
