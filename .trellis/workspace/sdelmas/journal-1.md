@@ -454,3 +454,36 @@ Added the read-only se-help skill and generated bundled catalog, strengthened ge
 ### Next Steps
 
 - None - task complete
+
+
+## Session 13: Configure repository project check
+
+**Date**: 2026-07-20
+**Task**: Configure repository project check
+**Branch**: `codex/configure-project-check`
+
+### Summary
+
+Configured the deterministic PR review gate to run make check before the shared pack full-check, added focused contract tests and specs, refreshed Repomix, and completed Copilot review for PR #19.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b52b5cb` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
