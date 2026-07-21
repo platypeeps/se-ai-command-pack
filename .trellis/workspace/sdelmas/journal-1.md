@@ -1709,3 +1709,41 @@ Added and validated se-red-team, archived its task, and reconciled the roadmap.
 ### Next Steps
 
 - None - task complete
+
+
+## Session 46: Ship se-retro
+
+**Date**: 2026-07-21
+**Task**: Ship se-retro
+**Branch**: `codex/se-retro`
+
+### Summary
+
+Added and validated se-retro, archived its task, and reconciled the roadmap.
+
+### Main Changes
+
+- Added the evidence-first se-retro workflow with factual timeline, claim-class, non-blaming, uncertainty, conditional sd-retro routing, and proposed-follow-up contracts.
+- Registered source-reference fan-out and regenerated release 0.38.0 surfaces with focused contract tests.
+- Archived the task, closed the plan-and-coordinate cohort, and reconciled the parent roadmap to 38 of 49 children complete.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0580a73e5cb9737e0d9928386eeb33963fc52b83` | feat: add se-retro skill |
+
+### Testing
+
+- [OK] make check (372 tests; Ruff, mypy, generation, and release gates green)
+- [OK] deterministic full check, 151-target audit, 344-copy KB freshness, and isolated six-target se-retro install
+- [OK] GitHub CI and Copilot review round 1 completed with no comments or threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
