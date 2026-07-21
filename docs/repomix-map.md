@@ -105,6 +105,7 @@ tests/
   test_install_core.py
   test_install.py
   test_management.py
+  test_project_check.py
   test_provenance.py
   test_release_gate.py
   test_remove.py
@@ -118,6 +119,7 @@ install.py
 LICENSE
 Makefile
 manifest.json
+package.json
 pyproject.toml
 README.md
 repomix.config.json
@@ -647,6 +649,7 @@ content in the registry, and generate the manifest from canonical templates.
 
 ```text
 install.py                  # CLI parsing and lifecycle orchestration
+package.json                # private, dependency-free local review-gate wrapper
 installer/                  # installer domain modules
   registry.py               # platforms, skill families, paths, and policy constants
   manifest.py               # manifest parsing and path-safety validation
@@ -673,6 +676,9 @@ tests/                      # unittest modules mirroring installer concerns
 - Treat canonical skill frontmatter and `installer/registry.py` as sources of
   truth. Run `make generate` to update `manifest.json`, the marker-bounded
   README catalog, and the bundled `se-help` catalog from one parsed model.
+- Keep root `package.json` limited to dependency-free wrappers for shared SD
+  tooling. Python and Make remain the repository's implementation and quality
+  interfaces; do not add a package lockfile.
 - Add focused modules when a lifecycle concern has its own data flow. For
   example, `installer/management.py` owns status and update rather than adding
   Git subprocess details to `install.py`.
@@ -1536,6 +1542,92 @@ make repomix
 ```
 
 The repository-owned command pins the tool and applies the curated exclusions.
+
+## Scenario: Repository-Owned PR Full Check
+
+### 1. Scope / Trigger
+
+- Trigger: configuring or changing the repository-owned project check selected
+  by the deterministic `sd-review-pr` local gate.
+
+### 2. Signatures
+
+```text
+package.json scripts.check = "make check"
+package.json scripts.check:full =
+  "npm run check && bash scripts/sd-ai-command-pack-full-check.sh"
+bash scripts/sd-ai-command-pack-review-full-check.sh
+bash scripts/sd-ai-command-pack-toolchain.sh doctor
+```
+
+### 3. Contracts
+
+- The package `check` script is the sole package-level owner of `make check`.
+- `check:full` runs the project check first and the shared pack full-check
+  second, joined by `&&` so either failure remains blocking.
+- The review selector invokes `check:full` with Prism and Gito disabled; the
+  shared gate continues to own all other pack-wide checks.
+- Root package metadata stays private and dependency-free. It exists only to
+  expose scripts and must not produce a package lockfile.
+- `check:full` must not call the review selector, `sd-review-pr`, or a platform
+  adapter because those paths recurse into selection.
+- Toolchain doctor reports `package:check` as a candidate but does not execute
+  it; execution belongs to the review selector.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| `check:full` is missing or invalid | The review selector uses its documented fallback. |
+| The configured package runner is unavailable | Exit `127` with an actionable error. |
+| `make check` fails | Stop before the shared pack full-check. |
+| The shared pack full-check fails | Propagate its nonzero exit. |
+| The wrapper contains a forbidden recursive command | Reject it with exit `2`. |
+| The Repomix map is stale | `make check` exits nonzero before remote review. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: `check:full` composes the canonical project check and shared pack gate.
+- Base: contributors continue to run `make check` directly.
+- Bad: `check:full` calls the review helper, skips the shared gate, declares
+  dependencies, or duplicates the Make target in multiple package scripts.
+
+### 6. Tests Required
+
+- Parse `package.json` and assert the exact private, dependency-free script
+  contract and absence of supported package lockfiles.
+- Run the review selector with a stub package runner and assert it requests
+  `run check:full` with Prism and Gito disabled.
+- Run the focused configuration test, `npm run check`, toolchain doctor,
+  `make repomix`, the Obsidian KB refresh, `npm run check:full`, and
+  `git diff --check`.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```json
+{
+  "scripts": {
+    "check:full": "bash scripts/sd-ai-command-pack-review-full-check.sh"
+  }
+}
+```
+
+#### Correct
+
+```json
+{
+  "private": true,
+  "scripts": {
+    "check": "make check",
+    "check:full": "npm run check && bash scripts/sd-ai-command-pack-full-check.sh"
+  }
+}
+```
+
+The correct wrapper preserves the repository's canonical check and the shared
+pack gate without creating a recursive review path.
 ````
 
 ## File: .trellis/spec/guides/code-reuse-thinking-guide.md
@@ -4956,6 +5048,25 @@ def test_update_applies_with_fresh_process_after_ff_only_pull(self) -> None
     def test_update_refuses_dirty_checkout(self, run_git: mock.Mock) -> None
 ````
 
+## File: tests/test_project_check.py
+````python
+ROOT = Path(__file__).resolve().parents[1]
+PACKAGE_JSON = ROOT / "package.json"
+REVIEW_FULL_CHECK = ROOT / "scripts" / "sd-ai-command-pack-review-full-check.sh"
+⋮----
+class ProjectCheckConfigurationTest(unittest.TestCase)
+⋮----
+def test_package_json_owns_dependency_free_full_check_wrapper(self) -> None
+⋮----
+payload = json.loads(PACKAGE_JSON.read_text(encoding="utf-8"))
+⋮----
+runner = Path(temp_dir) / "package-runner"
+⋮----
+env = os.environ.copy()
+⋮----
+result = subprocess.run(
+````
+
 ## File: tests/test_provenance.py
 ````python
 """Unit tests for install receipts: provenance content and coverage."""
@@ -6449,6 +6560,17 @@ check: test lint release-check
       "install": "if-anchor-exists"
     }
   ]
+}
+````
+
+## File: package.json
+````json
+{
+  "private": true,
+  "scripts": {
+    "check": "make check",
+    "check:full": "npm run check && bash scripts/sd-ai-command-pack-full-check.sh"
+  }
 }
 ````
 
