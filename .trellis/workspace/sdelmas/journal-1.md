@@ -800,3 +800,36 @@ Implemented se-capture as a read-only, provenance-preserving normalization workf
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: Add critical checklist workflow
+
+**Date**: 2026-07-21
+**Task**: Add critical checklist workflow
+**Branch**: `codex/se-checklist`
+
+### Summary
+
+Implemented se-checklist as a read-only, source-grounded workflow for compact read-do and do-confirm checklists; released 0.14.0 with generated surfaces, focused contracts, green full checks, green CI, and a clean Copilot review round.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2671eafb0e4414cf09b9e193c21f97239d7f3de1` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

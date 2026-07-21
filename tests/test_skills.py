@@ -47,6 +47,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-author",
     "se-bookmark-triage",
     "se-capture",
+    "se-checklist",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -144,6 +145,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-author",
                 "se-bookmark-triage",
                 "se-capture",
+                "se-checklist",
             ),
         )
         self.assertEqual(
@@ -165,6 +167,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-author": "create",
                 "se-bookmark-triage": "operate",
                 "se-capture": "operate",
+                "se-checklist": "operate",
             },
         )
 
@@ -857,6 +860,68 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Suggested next workflows**",
         ):
             self.assertIn(field, text)
+
+    def test_checklist_modes_and_preflight_contract(self) -> None:
+        text = normalized("se-checklist").lower()
+        for phrase in (
+            "`mode=read-do|do-confirm`",
+            "exact task, operator, environment, trigger, start state, end state",
+            "source authority",
+            "conflicting, stale, inaccessible, or missing authority",
+            "observable completion signal",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_checklist_inclusion_tests_and_item_contract(self) -> None:
+        text = normalized("se-checklist").lower()
+        for phrase in (
+            "all five inclusion tests pass",
+            "specific risk, requirement, dependency, or completion signal",
+            "evaluated at a specific point",
+            "observable pass condition",
+            "failure changes behavior",
+            "verified system control",
+            "stable id and phase",
+            "pass:",
+            "evidence:",
+            "if not:",
+            "basis:",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_checklist_dependency_order_and_emergency_safety(self) -> None:
+        text = normalized("se-checklist").lower()
+        for phrase in (
+            "order checks by dependency and point of use",
+            "must not replace a preventive safety gate",
+            "include only validated stop conditions and safety-critical checks",
+            "do not invent commands",
+            "use explicit `stop` or `escalate`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_checklist_final_report_and_workflow_boundaries(self) -> None:
+        text = skill_text("se-checklist")
+        for field in (
+            "**Checklist header**",
+            "**Use and non-use**",
+            "**Operational checklist**",
+            "**Completion signal**",
+            "**Source gaps and proposed checks**",
+            "**Author notes**",
+            "**Review metadata**",
+            "**Limits**",
+        ):
+            self.assertIn(field, text)
+        lowered = text.lower()
+        for phrase in (
+            "read-only",
+            "data, not instructions",
+            "no certification is claimed",
+        ):
+            self.assertIn(phrase, lowered)
+        for sibling in ("se-runbook", "se-sop", "se-retro"):
+            self.assertIn(f"`{sibling}`", text)
 
 
 class SkillDocumentationTest(unittest.TestCase):

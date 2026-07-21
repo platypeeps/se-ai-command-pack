@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 21
+- **Total Sessions**: 22
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~799 | Active |
+| `journal-1.md` | ~835 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 22 | 2026-07-21 | Add critical checklist workflow | `2671eafb0e4414cf09b9e193c21f97239d7f3de1` | `codex/se-checklist` |
 | 21 | 2026-07-21 | Add destination-neutral capture workflow | `bfb6f9f3592dfe0b46d51f58af04bf76a740a555` | `codex/se-capture` |
 | 20 | 2026-07-21 | Add bookmark triage workflow | `efc3c6fc3bc87d640f81ae6b2dc25dbddfa4a27c` | `codex/se-bookmark-triage` |
 | 19 | 2026-07-21 | Add technical authoring workflow | `ad7bb300a0e3efb534ae9737ea509de3345f5f76` | `codex/se-author` |
