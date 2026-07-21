@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.37.0 - 2026-07-21
+
+- Add `se-red-team`, a read-only Improve workflow for constructive adversarial
+  review of proposals, decisions, articles, conclusions, and plans.
+- Steelman before critique and keep demonstrated defects, plausible risks,
+  speculative cases, and value disagreements as distinct evidence classes.
+- Require relevant-lane coverage, strongest counterarguments, reversal and
+  closure evidence, sensitive-detail minimization, honest no-findings results,
+  source-reference fan-out, and focused contract tests.
+
 ## 0.36.0 - 2026-07-21
 
 - Add `se-publish`, a read-only Create workflow that adapts an approved source

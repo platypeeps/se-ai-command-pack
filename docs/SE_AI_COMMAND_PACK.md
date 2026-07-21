@@ -502,6 +502,25 @@ becomes failure, and incompatible comparators stay separately bounded.
 not assess personnel, certify, publish, execute improvements, or make the final
 decision.
 
+### Red-team workflow boundary
+
+`se-red-team` owns constructive adversarial review of a settled proposal,
+decision, article, conclusion, plan, or similar artifact. It confirms the
+authorized frame, steelmans the artifact, inventories evidence and value
+premises, then tests only relevant lanes across assumptions, contrary evidence,
+incentives, misuse/abuse, failures, security/privacy, strongest counterarguments,
+and reversal conditions.
+
+Every finding has exactly one class: demonstrated defect, plausible risk,
+speculative case, or value disagreement. Severity cannot outrun evidence and
+consequence; adversaries, vulnerabilities, motives, and exploitability are not
+invented. Sensitive defensive detail is minimized, strong artifacts may return
+an honest no-material-findings result, and closure evidence stays explicit.
+Claim verification remains with `se-fact-check`, rubric assessment with
+`se-evaluate`, plan failure discovery with `se-premortem`, and after-action
+causal analysis with `se-postmortem`. Probing, approval, remediation, disclosure,
+task creation, and other external action require separate authority.
+
 ### Premortem workflow boundary
 
 `se-premortem` owns prospective stress-testing after an objective and plan are

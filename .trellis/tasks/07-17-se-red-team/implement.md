@@ -19,6 +19,15 @@
 Document steelman-first behavior, finding classes, severity/evidence schema,
 sensitive-detail rules, closure evidence, and fact-check/evaluate boundaries.
 
+## Rollback Points
+
+- Before registration: remove the canonical template and focused tests if the
+  contract cannot keep speculative security cases distinct from known defects.
+- Before generation: revert registry/reference and release metadata together;
+  never hand-edit generated manifest or catalog rows.
+- Before shipping: require idempotent generation, focused tests, full checks,
+  install fan-out audit, and a clean diff.
+
 ## Review Notes
 
 Confirm demonstrated defects have evidence and plausible/speculative cases never

@@ -70,6 +70,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-presentation",
     "se-proposal",
     "se-publish",
+    "se-red-team",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -190,6 +191,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-presentation",
                 "se-proposal",
                 "se-publish",
+                "se-red-team",
             ),
         )
         self.assertEqual(
@@ -234,6 +236,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-presentation": "create",
                 "se-proposal": "create",
                 "se-publish": "create",
+                "se-red-team": "improve",
             },
         )
 
@@ -2479,6 +2482,65 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Sensitivity and accessibility review**",
             "**Open approvals and conflicts**",
             "**Connector-ready handoff**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_red_team_steelmans_and_covers_relevant_lanes(self) -> None:
+        text = normalized("se-red-team").lower()
+        for phrase in (
+            "steelman the artifact first",
+            "select only relevant adversarial lanes and disclose coverage",
+            "scenarios are tests or hypotheses, not event predictions",
+            "strongest counterargument, not a convenient weak version",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_red_team_preserves_finding_classes_and_evidence(self) -> None:
+        text = normalized("se-red-team").lower()
+        for phrase in (
+            "assign exactly one finding class",
+            "`demonstrated-defect`",
+            "`plausible-risk`",
+            "`speculative-case`",
+            "`value-disagreement`",
+            "severity cannot outrun the demonstrated consequence and evidence",
+            "do not invent adversaries, motives, vulnerabilities",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_red_team_minimizes_sensitive_detail_and_accepts_no_findings(self) -> None:
+        text = normalized("se-red-team").lower()
+        for phrase in (
+            "minimize sensitive security and privacy detail",
+            "omit secrets, live targets, weaponized sequences",
+            "no-material-findings result",
+            "never manufacture criticism",
+            "this skill is read-only",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_red_team_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-red-team")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in (
+            "`se-fact-check`",
+            "`se-evaluate`",
+            "`se-premortem`",
+            "`se-postmortem`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Red-team contract**",
+            "**Steelman and success model**",
+            "**Evidence and assertion ledger**",
+            "**Adversarial coverage map**",
+            "**Classified finding register**",
+            "**Counterargument and reversal analysis**",
+            "**Security and privacy handling**",
+            "**Responses and closure evidence**",
+            "**No-findings and residual-risk statement**",
+            "**Decision handoff**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)
