@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 14
-- **Last Active**: 2026-07-20
+- **Total Sessions**: 15
+- **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~528 | Active |
+| `journal-1.md` | ~566 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 15 | 2026-07-21 | Implement se-profile | `c4166809673354de558d6203faf2cfbbe7b1cbdf`, `6a75eb3d00c4d76e7ebff6bfed1a9ed1291d19a7`, `68831ff91029a22900010d36e84f7ded3c462ed0` | `codex/se-profile` |
 | 14 | 2026-07-20 | Reconcile SE skill roadmap | `122d4bb`, `fa298a1` | `codex/reconcile-se-skill-roadmap` |
 | 13 | 2026-07-20 | Configure repository project check | `b52b5cb` | `codex/configure-project-check` |
 | 12 | 2026-07-20 | Implement and review se-help discovery | `f9486fa`, `a1d69e4`, `830ef9b`, `4b5e98e` | `codex/se-help` |
