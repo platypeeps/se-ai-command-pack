@@ -34,8 +34,8 @@ gathering or structuring evidence.
 - `use_case=` — the scenario the comparison must illuminate; required;
 - `criteria=` — shared axes; when absent, propose and label a provisional frame
   before filling any comparison cell;
-- `constraints=` — hard eligibility conditions, reported as pass, fail, or
-  unknown without becoming an overall recommendation;
+- `constraints=` — hard eligibility conditions, reported as `eligible`,
+  `ineligible`, or `unknown` without becoming an overall recommendation;
 - `evidence=` — bounded supplied sources, prior artifacts, connected records,
   or source hints for each alternative;
 - `window=` — feature, version, tier, configuration, date, or policy boundary;
