@@ -148,6 +148,22 @@ tags a source collection. `se-video-notes`, `se-digest`, `se-capture`,
 `se-knowledge-capture`, and `se-action-inbox` remain optional capability
 handoffs that require separate invocation and authority.
 
+### Capture workflow boundary
+
+`se-capture` owns destination-neutral normalization of one logical intake unit:
+a URL, file, pasted passage, connected record, or bounded thread. Its stable
+Markdown contract records supplied and canonical locators, retrieval state and
+coverage, source/user/derived metadata, a reproducible deduplication basis,
+summary, claims, decisions, candidate actions, entities, topics, resources,
+unknowns, limitations, and optional not-yet-run handoffs. Complete, partial,
+metadata-only, and unavailable inputs all use the same honest contract.
+
+Capture does not synthesize an independent corpus, deeply process video,
+fact-check source assertions, accept extracted actions as commitments, or
+publish to any destination. Those remain separate `se-digest`,
+`se-video-notes`, `se-fact-check`, `se-action-inbox`, and
+`se-knowledge-capture` capabilities requiring their own invocation and authority.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
+  "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, destination-neutral capture, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
     {
       "platform": "agents",
@@ -947,6 +947,60 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-bookmark-triage/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-capture/SKILL.md",
+      "target": ".config/agents/skills/se-capture/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-capture/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-capture/SKILL.md",
+      "target": ".claude/skills/se-capture/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-capture/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-capture/SKILL.md",
+      "target": ".codex/skills/se-capture/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-capture/references/source-standards.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     }

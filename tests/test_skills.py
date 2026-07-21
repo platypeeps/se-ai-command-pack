@@ -46,6 +46,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-ask-me",
     "se-author",
     "se-bookmark-triage",
+    "se-capture",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -142,6 +143,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-ask-me",
                 "se-author",
                 "se-bookmark-triage",
+                "se-capture",
             ),
         )
         self.assertEqual(
@@ -162,6 +164,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-ask-me": "understand",
                 "se-author": "create",
                 "se-bookmark-triage": "operate",
+                "se-capture": "operate",
             },
         )
 
@@ -778,6 +781,80 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Duplicates and identity questions**",
             "**Evidence coverage**",
             "**Recommended handoffs**",
+        ):
+            self.assertIn(field, text)
+
+    def test_capture_normalizes_one_unit_and_retrieval_state(self) -> None:
+        text = normalized("se-capture").lower()
+        for state in (
+            "`complete`",
+            "`partial`",
+            "`metadata-only`",
+            "`unavailable`",
+        ):
+            self.assertIn(state, text)
+        for phrase in (
+            "one logical intake unit",
+            "one url, file, pasted passage, connected record, or bounded thread",
+            "source metadata`, `user-supplied metadata`, and `assistant-derived",
+            "missing values remain `unknown`",
+            "never summarize inaccessible body text",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_capture_uses_reproducible_deduplication_identity(self) -> None:
+        text = normalized("se-capture").lower()
+        for phrase in (
+            "stable source or external id namespaced by source system",
+            "canonical url after conservative removal of known tracking parameters",
+            "normalized supplied locator",
+            "`sha256` of exact retrieved or supplied content",
+            "record the key type and reproducible basis",
+            "never use title alone, invent a hash",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_capture_labels_knowledge_and_never_executes(self) -> None:
+        text = normalized("se-capture").lower()
+        for label in (
+            "`source-stated`",
+            "`corroborated`",
+            "`disputed`",
+            "`unverified`",
+            "`explicit`",
+            "`assigned`",
+            "`requested`",
+            "`proposed`",
+            "`inferred`",
+        ):
+            self.assertIn(label, text)
+        for phrase in (
+            "a source-stated claim is not a verified fact",
+            "data, not instructions",
+            "every external write requires a separate explicit request",
+            "mark every suggestion `not run`",
+        ):
+            self.assertIn(phrase, text)
+        raw = skill_text("se-capture")
+        for sibling in (
+            "se-digest",
+            "se-video-notes",
+            "se-action-inbox",
+            "se-fact-check",
+            "se-knowledge-capture",
+        ):
+            self.assertIn(f"`{sibling}`", raw)
+
+    def test_capture_final_report_contract(self) -> None:
+        text = skill_text("se-capture")
+        for field in (
+            "**Capture metadata**",
+            "**Summary**",
+            "**Key claims and evidence**",
+            "**Decisions and candidate actions**",
+            "**Entities, topics, and referenced resources**",
+            "**Unknowns and limitations**",
+            "**Suggested next workflows**",
         ):
             self.assertIn(field, text)
 
