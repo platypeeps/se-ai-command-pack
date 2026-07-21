@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.27.0 - 2026-07-21
+
+- Add `se-literature-map`, a read-only Understand workflow that maps a field's
+  source-traceable schools, methods, works, relationships, disputes, gaps, and
+  open questions without flattening them into one narrative review.
+- Disclose databases, queries, terminology, inclusion rules, access limits, and
+  stopping conditions; keep influence, methodological strength, current
+  evidence, and recency as separate dimensions.
+- Verify an exact relationship vocabulary, preserve competing schools and
+  abstract-only limitations, generate purpose-specific reading paths, fan
+  source and verification references into installed copies, and add focused
+  contract and generation tests.
+
 ## 0.26.0 - 2026-07-21
 
 - Add `se-learn`, a read-only Understand workflow that turns a capability goal,

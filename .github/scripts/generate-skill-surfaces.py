@@ -89,6 +89,7 @@ DEFAULT_MANIFEST_HEADER = {
         "preview-first knowledge publishing, "
         "bounded knowledge-system audits, "
         "adaptive mastery learning paths, "
+        "source-traceable literature maps, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

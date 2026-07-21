@@ -38,6 +38,7 @@ come directly from canonical skill frontmatter.
 | `se-explain` | Use when the user wants one complex topic explained accurately for a stated audience, purpose, prior-knowledge level, and depth, with explicit analogy and limitation boundaries. |
 | `se-knowledge-gap` | Use when the user wants a bounded, cross-source audit of missing, inaccessible, stale, conflicting, unsupported, duplicated, or unresolved knowledge. |
 | `se-learn` | Use when the user wants an adaptive, mastery-oriented learning path from a stated capability goal, diagnosed baseline, constraints, and observable evidence. |
+| `se-literature-map` | Use when the user wants a source-traceable map of a field's schools, methods, works, relationships, disputes, gaps, and reading paths without a flattened narrative review. |
 
 ### Decide
 

@@ -31,7 +31,8 @@ process. User-facing install/update/remove instructions live in the
   evidence-backed continuity packets with `se-handoff`, plus preview-first
   Obsidian/Notion publishing with `se-knowledge-capture` and bounded
   knowledge-system auditing with `se-knowledge-gap`, plus adaptive
-  mastery-oriented paths with `se-learn`.
+  mastery-oriented paths with `se-learn` and source-traceable field mapping
+  with `se-literature-map`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -124,6 +125,18 @@ source-derived review artifacts with `se-study-guide`, and adaptive mastery
 probing with `se-socratic-review`; unavailable siblings remain honest proposed
 handoffs. The workflow is read-only and never enrolls, purchases, schedules,
 grades, or credentials.
+
+### Literature-map workflow boundary
+
+`se-literature-map` owns a source-traceable map of a bounded field or research
+question: search protocol, work inventory, schools, methods, cluster bases,
+direct relationships, disputes, gaps, and a purpose-specific reading sequence.
+It discloses missing databases and abstract-only access, treats cluster
+boundaries as interpretive, and keeps prominence, methodological strength,
+recency, and current evidentiary support distinct. Deeper answer synthesis stays
+with `se-research`, while paper development stays with `se-paper` when that
+separate capability is available. The map is read-only, makes no bibliometric
+completeness claim, and never infers full-text conclusions from metadata.
 
 ### Pack-help workflow boundary
 

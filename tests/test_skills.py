@@ -60,6 +60,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-knowledge-capture",
     "se-knowledge-gap",
     "se-learn",
+    "se-literature-map",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -170,6 +171,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-knowledge-capture",
                 "se-knowledge-gap",
                 "se-learn",
+                "se-literature-map",
             ),
         )
         self.assertEqual(
@@ -204,6 +206,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-knowledge-capture": "operate",
                 "se-knowledge-gap": "understand",
                 "se-learn": "understand",
+                "se-literature-map": "understand",
             },
         )
 
@@ -1785,6 +1788,97 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "unavailable",
             "never enroll, purchase, schedule",
             "never claim mastery",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_literature_map_defines_search_protocol_and_coverage_boundary(self) -> None:
+        text = normalized("se-literature-map").lower()
+        for phrase in (
+            "databases and sources",
+            "queries and query synonyms",
+            "date range",
+            "disciplines",
+            "source types",
+            "languages",
+            "`languages=`",
+            "inclusion and exclusion rules",
+            "stopping condition",
+            "never claim exhaustive coverage",
+            "missing databases",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_literature_map_inventories_work_identity_access_and_method(self) -> None:
+        text = normalized("se-literature-map").lower()
+        for phrase in (
+            "doi or stable locator",
+            "title, authors, date, venue or type",
+            "access state",
+            "method, contribution, evidence base, and source quality",
+            "abstract-only",
+            "secondary description",
+            "never infer full-text conclusions from metadata",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_literature_map_uses_exact_verified_relationship_vocabulary(self) -> None:
+        raw = skill_text("se-literature-map")
+        for relationship in (
+            "**builds-on**",
+            "**critiques**",
+            "**replicates**",
+            "**contradicts**",
+            "**applies**",
+            "**independent-parallel**",
+        ):
+            self.assertIn(relationship, raw)
+        text = normalized("se-literature-map").lower()
+        for phrase in (
+            "source locator and confidence",
+            "verify the relationship",
+            "never infer intellectual influence solely from co-occurrence, citation count, or memory",
+            "citation mismatch",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_literature_map_preserves_clusters_disputes_and_evidence_distinctions(self) -> None:
+        text = normalized("se-literature-map").lower()
+        for phrase in (
+            "question, theory or school, method, evidence base, or response relationship",
+            "overlapping membership",
+            "interpretive judgment",
+            "influence or prominence",
+            "methodological strength",
+            "current evidentiary support",
+            "recent work",
+            "agreements, disputes, gaps, and open questions",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_literature_map_safety_handoffs_and_final_report_contract(self) -> None:
+        raw = skill_text("se-literature-map")
+        for sibling in ("se-research", "se-paper"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Scope and search protocol**",
+            "**Coverage and access limits**",
+            "**Work inventory**",
+            "**Cluster and method map**",
+            "**Relationship ledger**",
+            "**Agreement, dispute, and gap map**",
+            "**Purpose-specific reading sequence**",
+            "**Handoffs and limits**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-literature-map").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "not run",
+            "unavailable",
+            "never invent a citation",
+            "never write the paper",
+            "preserve competing schools",
         ):
             self.assertIn(phrase, text)
 
