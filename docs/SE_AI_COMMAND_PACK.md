@@ -193,6 +193,20 @@ an overall rank, or a recommendation. `se-scan` owns open candidate discovery,
 `se-evaluate` owns rubric-based judgment, and `se-decide` owns user-weighted
 choice. Any requested decision receives a neutral handoff rather than a hidden winner.
 
+### Diagram workflow boundary
+
+`se-diagram` owns read-only structural modeling from bounded source truth. It
+creates a stable evidence ledger before selecting flow, sequence, architecture,
+state, tree, matrix, timeline, or schematic form. Every element and relationship
+retains a source locator or an explicit inference/conflict label; cycles,
+conditions, asynchronous edges, boundaries, and temporal state remain visible.
+
+Mermaid is an optional conservative rendering, not the source of truth. Dense
+models split into cross-referenced views, and unsupported syntax, spatial
+meaning, or accessibility needs trigger a tool-neutral visual brief. The skill
+does not discover live architecture, invent causal structure, create branded or
+raster artwork, mutate documentation, or publish the result.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,

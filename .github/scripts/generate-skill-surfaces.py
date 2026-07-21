@@ -78,6 +78,7 @@ DEFAULT_MANIFEST_HEADER = {
         "consultation, technical authoring, destination-neutral capture, "
         "critical checklists, "
         "neutral comparisons, "
+        "evidence-traceable diagrams, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

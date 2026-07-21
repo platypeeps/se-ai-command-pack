@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 23
+- **Total Sessions**: 24
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~868 | Active |
+| `journal-1.md` | ~901 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 24 | 2026-07-21 | Add diagram specification workflow | `2b8cf5f39f2ddf3e6f7af84edc219243ccc035c2` | `codex/se-diagram` |
 | 23 | 2026-07-21 | Add neutral comparison workflow | `0b007d33383f3494c43723fb6e6f09c14008777d` | `codex/se-compare` |
 | 22 | 2026-07-21 | Add critical checklist workflow | `2671eafb0e4414cf09b9e193c21f97239d7f3de1` | `codex/se-checklist` |
 | 21 | 2026-07-21 | Add destination-neutral capture workflow | `bfb6f9f3592dfe0b46d51f58af04bf76a740a555` | `codex/se-capture` |

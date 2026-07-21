@@ -866,3 +866,36 @@ Implemented se-compare as a read-only, fair-frame workflow for neutral evidence-
 ### Next Steps
 
 - None - task complete
+
+
+## Session 24: Add diagram specification workflow
+
+**Date**: 2026-07-21
+**Task**: Add diagram specification workflow
+**Branch**: `codex/se-diagram`
+
+### Summary
+
+Implemented se-diagram as a read-only, evidence-ledger workflow for faithful Mermaid diagrams or tool-neutral visual briefs; released 0.16.0 with accessibility, conflict, density, and no-invention contracts plus green local, CI, and Copilot review gates.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2b8cf5f39f2ddf3e6f7af84edc219243ccc035c2` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
