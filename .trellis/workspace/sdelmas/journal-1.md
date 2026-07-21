@@ -468,17 +468,22 @@ Configured the deterministic PR review gate to run make check before the shared 
 
 ### Main Changes
 
-- Detailed change bullets were not supplied; see the summary above.
+- Added private, dependency-free `check` and `check:full` package scripts that expose the repository's canonical checks to the deterministic PR review selector.
+- Added focused contract tests and Trellis specs for exact command composition, recursion prevention, dependency absence, and Prism/Gito isolation.
+- Regenerated the checked-in Repomix map with the repository-owned target.
 
 ### Git Commits
 
 | Hash | Message |
 |------|---------|
-| `b52b5cb` | (see git log) |
+| `b52b5cb` | chore: configure repository project check |
 
 ### Testing
 
-- Validation was not recorded for this session.
+- [OK] `npm run check:full`
+- [OK] `.venv/bin/python -m unittest discover -s tests -p 'test_project_check.py' -v`
+- [OK] `bash scripts/sd-ai-command-pack-toolchain.sh doctor`
+- [OK] `make repomix`
 
 ### Status
 
