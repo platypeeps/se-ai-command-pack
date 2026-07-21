@@ -82,6 +82,20 @@ after that ownership and write boundary is pinned.
 - Confirm cadence does not schedule or authorize recurring ingestion and that
   consumer use never writes back.
 
+## Rollback Points
+
+- Before registration, the new skill and shared contract are isolated template
+  files; remove them together if the contract cannot satisfy the synthetic
+  schema and privacy tests.
+- After registration but before release metadata, revert the registry rows and
+  regenerate instead of hand-editing `manifest.json`, README catalog content,
+  or installed payloads.
+- After the version/changelog decision, roll back the complete cohesive change;
+  do not leave an orphan shared reference, partially registered skill, or
+  published schema without its safety pins.
+- A connector outage or unsupported destination is runtime unavailability, not
+  a reason to weaken approval or read-back requirements during rollback.
+
 ## Follow-Ups
 
 - Implement `se-ask-me` as the first read-only consumer after the profile

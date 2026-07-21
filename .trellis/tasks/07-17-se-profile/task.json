@@ -3,7 +3,7 @@
   "name": "se-profile",
   "title": "Implement se-profile",
   "description": "Add a consent-driven workflow that creates and maintains a provenance-backed personal operating profile from explicit conversation input and authorized Obsidian, Notion, Slack, document, and URL sources.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

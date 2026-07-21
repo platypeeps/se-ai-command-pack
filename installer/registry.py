@@ -74,7 +74,7 @@ FAMILY_DESCRIPTIONS: dict[str, str] = {
     "decide": "Compare evidence and choose a defensible direction.",
     "create": "Turn source material and intent into a polished artifact.",
     "coordinate": "Align people, plans, status, and handoffs.",
-    "operate": "Discover and operate the SE skill pack itself.",
+    "operate": "Manage durable user context and operate the SE skill pack.",
     "improve": "Reflect, learn, and strengthen future work.",
 }
 
@@ -90,6 +90,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-status", family="coordinate"),
     SkillInfo(name="se-fact-check", family="understand"),
     SkillInfo(name="se-help", family="operate"),
+    SkillInfo(name="se-profile", family="operate"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 
@@ -106,12 +107,14 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-decide",
         "se-status",
         "se-fact-check",
+        "se-profile",
     ),
     "_shared/references/verification-protocol.md": (
         "se-research",
         "se-fact-check",
     ),
     "_shared/references/skill-catalog.md": ("se-help",),
+    "_shared/references/personal-profile-contract.md": ("se-profile",),
 }
 
 ALWAYS_INSTALL = "always"

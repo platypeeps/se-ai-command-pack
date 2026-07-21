@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.0 - 2026-07-21
+
+- Add `se-profile`, the sole consent-driven maintenance workflow for a
+  user-owned personal operating profile, with create, status, proposal,
+  approval, correction, forgetting, review, audience, import, and export modes.
+- Publish the portable `se-personal-profile/v1` Markdown contract with stable
+  provenance, sparse audience overlays, bounded-source consent, sensitive-trait
+  exclusions, correction and deletion semantics, and read-only consumer rules.
+- Fan the profile contract and source standards into each installed skill copy,
+  document the private-locator and connector boundaries, and add focused safety,
+  persistence, review, and generated-target tests.
+
 ## 0.6.0 - 2026-07-20
 
 - Add `se-help`, a read-only discovery and routing skill that lists families,

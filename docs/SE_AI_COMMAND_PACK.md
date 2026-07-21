@@ -12,6 +12,7 @@ process. User-facing install/update/remove instructions live in the
 | `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional `references/*.md`). The only place skills are edited. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
 | `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
+| `templates/skills/_shared/references/personal-profile-contract.md` | Portable `se-personal-profile/v1` schema and privacy/consumer contract fanned into profile workflows. |
 | `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
@@ -75,6 +76,28 @@ observations. Help reports observed version mismatches through
 `python3 install.py status --user` and the documented update flow without
 guessing their cause. It remains read-only and ends with a copy-ready
 user-scoped invocation that requires a separate request before execution.
+
+### Personal-profile workflow boundary
+
+`se-profile` is the sole mutation owner for a user-owned
+`se-personal-profile/v1` Markdown artifact. It uses explicit current input and
+bounded user-authorized sources, preserves stable assertion/evidence IDs and
+unknown user content, previews every mutation, and verifies destination writes
+by semantic read-back. Inferred assertions always begin proposed, observed
+assertions remain approval-gated, and sensitive or protected traits are never
+inferred. Corrections preserve superseded evidence; forgetting reports the
+verified deletion boundary without claiming erasure from connector history or
+backups.
+
+The public pack stores no profile, locator, source inventory, identity,
+credential, vault/workspace/channel name, or destination configuration.
+Obsidian is the preferred user-selected destination, with an explicit
+user-selected Notion fallback; no connector implementation or silent dual-copy
+sync is included. Audience overlays store sparse differences and cannot weaken
+boundaries or visibility. Review cadence is a preference only, not a scheduler
+or authorization for recurring ingestion. Other skills are read-only consumers;
+when they adopt the contract they use `profile=auto|off|<locator>` plus optional
+`audience=`, and ordinary consumption never writes back.
 
 ## Manifest schema
 

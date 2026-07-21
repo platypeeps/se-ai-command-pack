@@ -1,7 +1,7 @@
 # Source standards
 
-Shared quality bar for every research-family skill in this pack. Apply it
-whenever a claim, number, or quote enters a report.
+Shared quality bar for every skill in this pack that evaluates external
+evidence. Apply it whenever a claim, number, or quote enters an artifact.
 
 ## Source tiers
 
