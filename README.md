@@ -91,6 +91,7 @@ come directly from canonical skill frontmatter.
 | `se-technical-editor` | Use when the user wants an existing technical draft reviewed through evidence-located correctness, citation, code, structure, comprehension, confidentiality, and voice passes before approved revisions are applied. |
 | `se-feedback` | Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions. |
 | `se-postmortem` | Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions. |
+| `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -145,6 +146,13 @@ risks, decision points, and immediate authorized actions. It keeps commitments
 separate from proposed owners, dates, and estimates, exposes cycles and missing
 prerequisites, and hands repository implementation planning to the local
 development workflow without creating tasks or competing technical artifacts.
+
+`se-premortem` stress-tests an accepted plan before execution by defining the
+failed state, developing evidence-labeled failure modes, preserving correlated
+and catastrophic-tail risks, and mapping prevention and contingencies to
+observable leading indicators. It exposes no-mitigation cases, decision points,
+stop conditions, and residual risk without predicting failure, inventing
+precision, approving the plan, assigning work, or executing controls.
 
 `se-postmortem` reconstructs a stable incident or failed outcome from a bounded
 source inventory and evidence-linked timeline. It keeps observations,

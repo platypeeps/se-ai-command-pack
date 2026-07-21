@@ -1523,3 +1523,39 @@ Added and released an evidence-linked, blameless postmortem workflow with explic
 ### Next Steps
 
 - None - task complete
+
+
+## Session 41: Ship se-premortem
+
+**Date**: 2026-07-21
+**Task**: Ship se-premortem
+**Branch**: `codex/se-premortem`
+
+### Summary
+
+Implemented and validated the canonical se-premortem skill, generated installation surfaces, documentation, and release metadata.
+
+### Main Changes
+
+- Added the read-only se-premortem workflow with evidence, correlated-failure, mitigation, and stop-condition contracts.
+- Registered and documented se-premortem across generated pack surfaces and release 0.33.0.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9c68c8b` | feat: add se-premortem skill |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh
+- [OK] Copilot reviewed all 18 changed files with no comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

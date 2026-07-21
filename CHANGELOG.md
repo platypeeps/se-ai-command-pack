@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.33.0 - 2026-07-21
+
+- Add `se-premortem`, a read-only Improve workflow for stress-testing accepted
+  plans before execution through evidence-labeled failure scenarios.
+- Preserve common-cause, correlated, cascading, and catastrophic-tail risks;
+  rank likelihood, impact, detectability, and evidence confidence with ordinal
+  reasoning rather than fake precision or composite arithmetic.
+- Map prevention and contingencies to named failure modes and observable leading
+  indicators, retain no-mitigation and residual-risk cases, fan source standards
+  into installed copies, and add focused contract and generation tests.
+
 ## 0.32.0 - 2026-07-21
 
 - Add `se-postmortem`, a read-only Improve workflow for formal, blameless,

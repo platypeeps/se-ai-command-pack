@@ -14,7 +14,7 @@ independently planned children spanning Understand, Decide, Create, Coordinate,
 Operate, and Improve.
 
 The parent metadata is the source of truth for membership and completion. At
-this reconciliation point, six children are completed and archived, 43 remain
+this reconciliation point, 32 children are completed and archived, 17 remain
 in planning, and every linked child has a PRD, design, implementation plan, and
 planning/check context files. The parent remains a coordination and integration
 envelope; it does not implement product behavior directly.
@@ -44,13 +44,13 @@ envelope; it does not implement product behavior directly.
 | Delivery cohort | Children | State |
 | --- | --- | --- |
 | Foundation | `skill-family-taxonomy`, `se-decide`, `se-status`, `se-fact-check`, `se-help`, `personal-profile-contract` | 6 completed |
-| Personal context boundary | `se-profile`, `se-ask-me`, `personal-worklog-profile` | 3 planning |
-| Plan and coordinate | `se-plan`, `se-handoff`, `se-monitor`, `se-retro` | 4 planning |
-| Capture and knowledge operations | `se-capture`, `se-video-notes`, `se-thread-digest`, `se-knowledge-capture`, `se-watchlist`, `se-weekly-review`, `se-action-inbox`, `se-knowledge-gap`, `se-publish`, `se-meeting-follow-through`, `se-bookmark-triage` | 11 planning |
-| Understand and learn | `se-distill`, `se-explain`, `se-literature-map`, `se-compare`, `se-learn`, `se-study-guide`, `se-socratic-review` | 7 planning |
-| Create and communicate | `se-author`, `se-topic-radar`, `se-technical-editor`, `se-paper`, `se-proposal`, `se-tutorial`, `se-presentation`, `se-diagram` | 8 planning |
-| Coordinate and operate | `se-stakeholder-map`, `se-feedback`, `se-agenda`, `se-runbook`, `se-sop`, `se-checklist` | 6 planning |
-| Improve and assure | `se-premortem`, `se-evaluate`, `se-red-team`, `se-postmortem` | 4 planning |
+| Personal context boundary | `se-profile`, `se-ask-me`, `personal-worklog-profile` | 2 completed, 1 planning |
+| Plan and coordinate | `se-plan`, `se-handoff`, `se-monitor`, `se-retro` | 3 completed, 1 planning |
+| Capture and knowledge operations | `se-capture`, `se-video-notes`, `se-thread-digest`, `se-knowledge-capture`, `se-watchlist`, `se-weekly-review`, `se-action-inbox`, `se-knowledge-gap`, `se-publish`, `se-meeting-follow-through`, `se-bookmark-triage` | 6 completed, 5 planning |
+| Understand and learn | `se-distill`, `se-explain`, `se-literature-map`, `se-compare`, `se-learn`, `se-study-guide`, `se-socratic-review` | 5 completed, 2 planning |
+| Create and communicate | `se-author`, `se-topic-radar`, `se-technical-editor`, `se-paper`, `se-proposal`, `se-tutorial`, `se-presentation`, `se-diagram` | 5 completed, 3 planning |
+| Coordinate and operate | `se-stakeholder-map`, `se-feedback`, `se-agenda`, `se-runbook`, `se-sop`, `se-checklist` | 3 completed, 3 planning |
+| Improve and assure | `se-premortem`, `se-evaluate`, `se-red-team`, `se-postmortem` | 2 completed, 2 planning |
 
 These cohorts organize delivery and review. The family assigned to a shipped
 skill remains owned by the taxonomy source of truth and the child's accepted

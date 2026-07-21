@@ -24,6 +24,12 @@ indicator contract, residual risk, and non-approval boundary.
 Ensure speculative cases remain labeled and every mitigation has a named failure
 mode plus an observable indicator.
 
+## Rollback Points
+
+Keep the canonical skill, registry entry, tests, documentation, release metadata,
+and generated surfaces in one commit so the feature can be reverted without
+leaving an installed target or catalog entry behind.
+
 ## Follow-Ups
 
 Security threat modeling and execution governance remain separate workflows.
