@@ -14,7 +14,7 @@ independently planned children spanning Understand, Decide, Create, Coordinate,
 Operate, and Improve.
 
 The parent metadata is the source of truth for membership and completion. At
-this reconciliation point, 35 children are completed and archived, 14 remain
+this reconciliation point, 36 children are completed and archived, 13 remain
 in planning, and every linked child has a PRD, design, implementation plan, and
 planning/check context files. The parent remains a coordination and integration
 envelope; it does not implement product behavior directly.
@@ -46,7 +46,7 @@ envelope; it does not implement product behavior directly.
 | Foundation | `skill-family-taxonomy`, `se-decide`, `se-status`, `se-fact-check`, `se-help`, `personal-profile-contract` | 6 completed |
 | Personal context boundary | `se-profile`, `se-ask-me`, `personal-worklog-profile` | 2 completed, 1 planning |
 | Plan and coordinate | `se-plan`, `se-handoff`, `se-monitor`, `se-retro` | 3 completed, 1 planning |
-| Capture and knowledge operations | `se-capture`, `se-video-notes`, `se-thread-digest`, `se-knowledge-capture`, `se-watchlist`, `se-weekly-review`, `se-action-inbox`, `se-knowledge-gap`, `se-publish`, `se-meeting-follow-through`, `se-bookmark-triage` | 6 completed, 5 planning |
+| Capture and knowledge operations | `se-capture`, `se-video-notes`, `se-thread-digest`, `se-knowledge-capture`, `se-watchlist`, `se-weekly-review`, `se-action-inbox`, `se-knowledge-gap`, `se-publish`, `se-meeting-follow-through`, `se-bookmark-triage` | 7 completed, 4 planning |
 | Understand and learn | `se-distill`, `se-explain`, `se-literature-map`, `se-compare`, `se-learn`, `se-study-guide`, `se-socratic-review` | 5 completed, 2 planning |
 | Create and communicate | `se-author`, `se-topic-radar`, `se-technical-editor`, `se-paper`, `se-proposal`, `se-tutorial`, `se-presentation`, `se-diagram` | 7 completed, 1 planning |
 | Coordinate and operate | `se-stakeholder-map`, `se-feedback`, `se-agenda`, `se-runbook`, `se-sop`, `se-checklist` | 3 completed, 3 planning |
