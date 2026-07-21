@@ -3,7 +3,7 @@
 User-level knowledge-work skills for AI agent frameworks: personal profile
 maintenance and consultation, interview-driven technical authoring,
 destination-neutral capture, bookmark and action-inbox triage,
-decision-oriented agendas, pack discovery,
+critical operational checklists, decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -60,6 +60,7 @@ come directly from canonical skill frontmatter.
 | `se-profile` | Use when the user wants to create, inspect, correct, review, import, export, or forget a consent-driven personal operating profile with traceable assertions. |
 | `se-bookmark-triage` | Use when the user wants to deduplicate and triage a bounded collection of saved links, videos, pages, or notes into a small evidence-labeled attention queue without mutating the source collection. |
 | `se-capture` | Use when the user wants one URL, file, pasted passage, connected record, or bounded thread normalized into a destination-neutral knowledge artifact with provenance and no implicit external write. |
+| `se-checklist` | Use when the user wants a short read-do or do-confirm checklist derived from bounded authoritative sources, with observable pass conditions, failure responses, and no execution or certification. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -102,6 +103,12 @@ retrieval coverage, separates source/user/derived metadata, uses a reproducible
 deduplication basis, and preserves source-stated claims without upgrading them
 to verified facts. Publication and every suggested downstream workflow remain
 separate, not-yet-run operations.
+
+`se-checklist` distills bounded authoritative procedures, policies, plans, or
+failure history into the smallest dependency-ordered set of checks that prevent
+a named failure or prove completion. Every item has an observable pass state,
+evidence rule, failure response, and source basis. It never executes the work,
+replaces a full procedure, or claims certification.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred

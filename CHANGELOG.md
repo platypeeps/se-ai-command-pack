@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.14.0 - 2026-07-21
+
+- Add `se-checklist`, a read-only workflow that derives short read-do or
+  do-confirm checklists from bounded authoritative sources.
+- Require every retained check to map to a material risk, requirement,
+  dependency, or completion signal with an observable pass state, evidence
+  rule, failure response, and traceable source basis.
+- Preserve preventive safety gates, dependency order, emergency stop behavior,
+  source gaps, and rejected-candidate rationale; register the skill under
+  Operate and add focused behavior and generated-target coverage.
+
 ## 0.13.0 - 2026-07-21
 
 - Add `se-capture`, a read-only destination-neutral workflow that normalizes

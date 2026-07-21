@@ -164,6 +164,20 @@ publish to any destination. Those remain separate `se-digest`,
 `se-video-notes`, `se-fact-check`, `se-action-inbox`, and
 `se-knowledge-capture` capabilities requiring their own invocation and authority.
 
+### Checklist workflow boundary
+
+`se-checklist` owns concise, dependency-ordered read-do and do-confirm checks
+derived from bounded authoritative policies, procedures, plans, and failure
+history. Each retained item must map to a named risk, requirement, dependency,
+or completion signal; be observable at a specific point; define required
+evidence; and change behavior when it fails. Source gaps, proposed checks, and
+rejected reminders remain visible outside the operational checklist.
+
+The workflow does not execute work, replace a full procedure, or certify
+compliance. Preventive safety gates remain before irreversible actions even in
+do-confirm or emergency mode. Detailed procedure design stays with `se-runbook`
+or `se-sop`, while retrospective failure analysis stays with `se-retro`.
+
 ### Action-inbox workflow boundary
 
 `se-action-inbox` owns cross-source identification, classification,
