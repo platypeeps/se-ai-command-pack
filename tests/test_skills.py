@@ -58,6 +58,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-feedback",
     "se-handoff",
     "se-knowledge-capture",
+    "se-knowledge-gap",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -166,6 +167,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-feedback",
                 "se-handoff",
                 "se-knowledge-capture",
+                "se-knowledge-gap",
             ),
         )
         self.assertEqual(
@@ -198,6 +200,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-feedback": "improve",
                 "se-handoff": "coordinate",
                 "se-knowledge-capture": "operate",
+                "se-knowledge-gap": "understand",
             },
         )
 
@@ -1606,6 +1609,89 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "partial write failure",
             "never claim persistence without verified read-back",
             "portable preview",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_knowledge_gap_requires_bounded_scope_and_source_inventory(self) -> None:
+        text = normalized("se-knowledge-gap").lower()
+        for phrase in (
+            "topic or question",
+            "intended decision or audience",
+            "source inventory",
+            "freshness threshold",
+            "`exclude=`",
+            "connector, container, query, date range, permissions, pagination, and truncation",
+            "claim and decision map",
+            "before classifying gaps",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_knowledge_gap_distinguishes_absence_from_access_and_normalizes_terms(self) -> None:
+        text = normalized("se-knowledge-gap").lower()
+        for phrase in (
+            "terminology and alias query map",
+            "not found",
+            "does not exist",
+            "access-gap",
+            "missing",
+            "sufficient and justified coverage",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_knowledge_gap_uses_exact_finding_taxonomy_and_preserves_conflicts(self) -> None:
+        text = skill_text("se-knowledge-gap")
+        for finding in (
+            "**missing**",
+            "**access-gap**",
+            "**stale**",
+            "**conflicting**",
+            "**unsupported**",
+            "**duplicate-authority**",
+            "**unresolved**",
+        ):
+            self.assertIn(finding, text)
+        normalized_text = normalized("se-knowledge-gap").lower()
+        self.assertIn("preserve both positions, dates, and authority signals", normalized_text)
+        self.assertIn("duplicate authority is not automatically wrong", normalized_text)
+
+    def test_knowledge_gap_prioritizes_qualitatively_without_fake_precision(self) -> None:
+        text = normalized("se-knowledge-gap").lower()
+        for phrase in (
+            "decision impact",
+            "urgency",
+            "blocking or dependency effect",
+            "confidence",
+            "closure effort",
+            "qualitative",
+            "never invent numeric precision",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_knowledge_gap_safety_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-knowledge-gap")
+        for sibling in ("se-fact-check", "se-research", "se-monitor"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Audit contract**",
+            "**Coverage and access ledger**",
+            "**Terminology and query map**",
+            "**Claim and decision map**",
+            "**Prioritized findings**",
+            "**Closure plan**",
+            "**Follow-up workflow status**",
+            "**Limits and unresolved coverage**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-knowledge-gap").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "minimize sensitive",
+            "preserve audience and source boundaries",
+            "not run",
+            "unavailable",
+            "never rewrite source material",
+            "never expand into unlimited research",
         ):
             self.assertIn(phrase, text)
 

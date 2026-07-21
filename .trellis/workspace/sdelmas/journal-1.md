@@ -1210,3 +1210,43 @@ Implemented and released the preview-first se-knowledge-capture workflow for dup
 ### Next Steps
 
 - Task complete; housekeeping may merge PR #40.
+
+
+## Session 33: Implement se-knowledge-gap
+
+**Date**: 2026-07-21
+**Task**: Implement se-knowledge-gap
+**Branch**: `codex/se-knowledge-gap`
+
+### Summary
+
+Added and reviewed a bounded, provenance-preserving knowledge-system audit workflow and released it in pack version 0.25.0.
+
+### Main Changes
+
+- Added the se-knowledge-gap skill with explicit coverage, access, terminology, claim, decision, finding, prioritization, and closure contracts.
+- Registered the Understand-family skill, fanned shared source standards into installed copies, and regenerated manifest, catalog, README, and repository-map surfaces.
+- Added focused contract and generation tests; addressed Copilot feedback by accepting structured exclude= boundaries.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `efdc085` | feat: add se-knowledge-gap skill |
+| `041fc43` | fix: accept explicit knowledge-gap exclusions |
+
+### Testing
+
+- [OK] make check — 300 tests, Ruff, mypy, generated-surface parity, install smoke, and release payload gate passed
+- [OK] make repomix — repository map refreshed with no suspicious files
+- [OK] python3 scripts/sd-ai-command-pack-update-spec-kb.py — 341 knowledge copies refreshed with no conflicts
+- [OK] GitHub CI — all required jobs passed at 041fc43
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #41 through sd-housekeeping, then continue the ranked backlog loop.
