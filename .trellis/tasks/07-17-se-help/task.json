@@ -3,7 +3,7 @@
   "name": "se-help",
   "title": "Implement se-help",
   "description": "Add a discoverability and routing skill that lists skill families and installed skills, explains their boundaries, recommends the right workflow, and provides copy-ready examples without silently executing another skill.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

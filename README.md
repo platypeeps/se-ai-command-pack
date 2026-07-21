@@ -1,9 +1,9 @@
 # SE AI Command Pack
 
-User-level knowledge-work skills for AI agent frameworks: deep research, claim
-fact-checking, decision support, project-status reporting, daily briefs, meeting
-prep, landscape scans, and document digests — installed once per machine,
-centrally managed from this repository.
+User-level knowledge-work skills for AI agent frameworks: pack discovery, deep
+research, claim fact-checking, decision support, project-status reporting, daily
+briefs, meeting prep, landscape scans, and document digests — installed once
+per machine, centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -39,6 +39,12 @@ come directly from canonical skill frontmatter.
 | `se-brief` | Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update. |
 | `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
 | `se-status` | Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions. |
+
+### Operate
+
+| Skill | Use when |
+|---|---|
+| `se-help` | Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -119,8 +125,9 @@ directories are pruned.
 - `templates/skills/<name>/` holds the canonical skill definitions — the
   only place skills are edited.
 - `installer/registry.py` declares platforms, ordered skill-family metadata,
-  and shared-reference fan-out; `make generate` regenerates `manifest.json`
-  and this README's grouped catalog from the registry and skill frontmatter.
+  outcome descriptions, and shared-reference fan-out; `make generate`
+  regenerates `manifest.json`, this README's grouped catalog, and the versioned
+  `se-help` catalog from one frontmatter parse.
 - `install.py` owns the pack lifecycle and applies the manifest to your home directory (or `--root`
   elsewhere) and writes receipts under `~/.se-ai-command-pack/`:
   - `manifest.json` — copy of the installed manifest (version lookup);
@@ -135,7 +142,8 @@ directories are pruned.
 1. Edit or add skills under `templates/skills/` (see
    [docs/SE_AI_COMMAND_PACK.md](docs/SE_AI_COMMAND_PACK.md) for the
    add-a-skill checklist).
-2. `make generate` to refresh the manifest and README catalog.
+2. `make generate` to refresh the manifest, README catalog, and bundled
+   `se-help` catalog reference.
 3. For shipped payload changes, bump `version` in `manifest.json` and add the
    matching `CHANGELOG.md` heading. Metadata-only catalog changes do not need a
    release bump when generated payload bytes stay unchanged.

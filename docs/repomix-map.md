@@ -76,6 +76,7 @@ templates/
   skills/
     _shared/
       references/
+        skill-catalog.md
         source-standards.md
         verification-protocol.md
     se-brief/
@@ -85,6 +86,10 @@ templates/
     se-digest/
       SKILL.md
     se-fact-check/
+      SKILL.md
+    se-help/
+      references/
+        examples.md
       SKILL.md
     se-meeting-prep/
       SKILL.md
@@ -251,15 +256,16 @@ pushed = run_git(repo, "push", "origin", tag)
 ## File: .github/scripts/generate-skill-surfaces.py
 ````python
 #!/usr/bin/env python3
-"""Generate the committed manifest rows and README skill catalog.
+"""Generate the committed manifest rows and skill catalog surfaces.
 
 `installer/registry.py` (SKILLS, PLATFORM_REGISTRY, SHARED_REFERENCES) and
 canonical skill frontmatter are the sources of truth. The generator validates
-every canonical skill, regenerates manifest.json's files array, and replaces
-the marker-bounded README catalog with family-grouped frontmatter descriptions.
-Manifest header fields and README content outside the markers are preserved.
+every canonical skill, regenerates manifest.json's files array, replaces the
+marker-bounded README catalog, and writes the bundled help catalog from the
+same family metadata and frontmatter descriptions. Manifest header fields and
+README content outside the markers are preserved.
 
---check regenerates to memory and fails when either committed surface drifts.
+--check regenerates to memory and fails when any committed surface drifts.
 """
 ⋮----
 PACK_ROOT = Path(__file__).resolve().parents[2]
@@ -271,6 +277,9 @@ MANIFEST_PATH = ROOT / "manifest.json"
 README_PATH = ROOT / "README.md"
 SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
 SHARED_DIR_NAME = "_shared"
+HELP_CATALOG_SOURCE = "_shared/references/skill-catalog.md"
+HELP_CATALOG_PATH = SKILLS_ROOT / HELP_CATALOG_SOURCE
+GENERATED_SHARED_REFERENCES = frozenset({HELP_CATALOG_SOURCE})
 README_CATALOG_START = "<!-- SE_SKILL_CATALOG:START -->"
 README_CATALOG_END = "<!-- SE_SKILL_CATALOG:END -->"
 ⋮----
@@ -403,9 +412,25 @@ family_skills: list[SkillInfo] = [
 ⋮----
 description = metadata[skill.name]["description"]
 ⋮----
-def read_readme_text() -> str
+def _manifest_version(manifest_text: str) -> str
+⋮----
+manifest = json.loads(manifest_text)
+⋮----
+version = manifest.get("version") if isinstance(manifest, dict) else None
+⋮----
+lines = [
+⋮----
+description = FAMILY_DESCRIPTIONS[family]
+⋮----
+family_skills = [skill for skill in SKILLS if skill.family == family]
+⋮----
+skill_description = metadata[skill.name]["description"]
 ⋮----
 metadata = validate_skills()
+⋮----
+manifest_text = regenerated_manifest_text()
+⋮----
+def read_readme_text() -> str
 ⋮----
 current = read_readme_text()
 ⋮----
@@ -429,8 +454,10 @@ args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 regenerated_manifest = regenerated_manifest_text()
 committed_readme = read_readme_text()
 regenerated_readme = regenerated_readme_text(metadata, committed_readme)
+regenerated_help_catalog = regenerated_help_catalog_text(
 ⋮----
 committed_manifest = (
+committed_help_catalog = (
 ⋮----
 drifted = False
 ⋮----
@@ -630,6 +657,8 @@ installer/                  # installer domain modules
 templates/skills/           # canonical shipped skill sources
 manifest.json               # generated payload inventory and release version
 README.md                   # generated family-grouped catalog inside markers
+templates/skills/_shared/references/skill-catalog.md
+                            # generated bundled catalog installed with se-help
 scripts/                    # generation and release-validation tools
 tests/                      # unittest modules mirroring installer concerns
 ```
@@ -641,9 +670,9 @@ tests/                      # unittest modules mirroring installer concerns
 - Put stable pack declarations in `installer/registry.py`; `SKILLS` owns each
   skill's single family and `SKILL_NAMES` is derived for compatibility. Do not
   duplicate platform, skill, or family lists in scripts or tests.
-- Treat `templates/skills/` and `installer/registry.py` as sources of truth.
-  Run `make generate` to update `manifest.json` and the marker-bounded README
-  catalog from canonical skill frontmatter.
+- Treat canonical skill frontmatter and `installer/registry.py` as sources of
+  truth. Run `make generate` to update `manifest.json`, the marker-bounded
+  README catalog, and the bundled `se-help` catalog from one parsed model.
 - Add focused modules when a lifecycle concern has its own data flow. For
   example, `installer/management.py` owns status and update rather than adding
   Git subprocess details to `install.py`.
@@ -672,8 +701,9 @@ tests/                      # unittest modules mirroring installer concerns
 ## Avoid
 
 - Do not hand-edit generated `manifest.json` rows.
-- Do not hand-edit generated README catalog rows or move skills into family
-  subdirectories; taxonomy is metadata and installed paths remain flat.
+- Do not hand-edit generated README or `se-help` catalog rows, or move skills
+  into family subdirectories; taxonomy is metadata and installed paths remain
+  flat.
 - Do not add platform-specific copies of skill content; generate fan-out from
   the registry and canonical templates.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI
@@ -939,7 +969,7 @@ boundary users exercise.
 ### 1. Scope / Trigger
 
 - Trigger: adding, retiring, reordering, or reclassifying a shipped skill, or
-  changing the marker-bounded README skill catalog.
+  changing either generated skill catalog.
 - Why: family metadata crosses the registry, canonical frontmatter, generator,
   README, tests, and manifest-order compatibility even though it does not alter
   installed paths or the manifest schema.
@@ -948,14 +978,17 @@ boundary users exercise.
 
 ```text
 FAMILY_LABELS: dict[str, str]
+FAMILY_DESCRIPTIONS: dict[str, str]
 SKILLS: tuple[SkillInfo, ...]
 SKILL_NAMES = tuple(skill.name for skill in SKILLS)
 make generate
 python .github/scripts/generate-skill-surfaces.py --check
 <!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
+templates/skills/_shared/references/skill-catalog.md
 ```
 
-`FAMILY_LABELS` order is public catalog order. `SKILLS` order remains canonical
+`FAMILY_LABELS` order is public catalog order. `FAMILY_DESCRIPTIONS` must have
+the same keys in the same order. `SKILLS` order remains canonical
 manifest/install order, and grouping must not reorder generated manifest rows.
 
 ### 3. Contracts
@@ -963,15 +996,18 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - Every `SkillInfo.name` is non-empty, unique, `se-` prefixed, and backed by a
   flat `templates/skills/<name>/SKILL.md` directory.
 - Every skill has exactly one family from Understand, Decide, Create,
-  Coordinate, Operate, or Improve. Empty families remain valid and are omitted
-  from the rendered catalog.
+  Coordinate, Operate, or Improve. Empty families remain valid: the compact
+  README catalog omits them, while the bundled help catalog renders every
+  family with its canonical outcome description.
 - `SKILL_NAMES` is derived for compatibility; no consumer owns a second skill
   list.
 - The catalog description comes from the already validated frontmatter parse.
   Markdown table pipes are escaped deterministically; descriptions are not
   duplicated in registry code.
-- Generation computes and validates both manifest and README results before
-  writing either. README content outside one ordered marker pair is preserved.
+- Generation computes and validates manifest, README, and bundled help-catalog
+  results before writing any of them. A later write failure rolls earlier
+  surfaces back to their committed state. README content outside one ordered
+  marker pair is preserved.
 - Family-only metadata and catalog changes do not require a release bump when
   `manifest.json` and shipped payload bytes remain unchanged.
 
@@ -979,12 +1015,13 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 
 | Condition | Required behavior |
 |---|---|
-| Empty skill name or family | Raise a registry `RuntimeError` before generation. |
+| Empty skill name, family, or family description | Raise a registry `RuntimeError` before generation. |
+| Family-description keys or order differ from family labels | Raise a registry `RuntimeError` before generation. |
 | Unknown family | Raise a registry `RuntimeError` naming the skill and family. |
 | Duplicate skill name, including cross-family membership | Raise a registry `RuntimeError`; never choose one row implicitly. |
 | Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
-| Manifest or README catalog drifts | `--check` reports each drifted surface and exits nonzero. |
+| Manifest, README, or bundled help catalog drifts | `--check` reports each drifted surface and exits nonzero. |
 | Family metadata changes but payload does not | Manifest and changelog stay unchanged; release gate passes without a bump. |
 
 ### 5. Good/Base/Bad Cases
@@ -998,11 +1035,13 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 
 ### 6. Tests Required
 
-- Registry tests pin family order, all valid identifiers, derived name order,
-  prefix rules, and rejection of empty, unknown, or duplicate membership.
-- Generator tests pin grouping, empty-family omission, frontmatter sourcing,
-  pipe escaping, marker validation, independent drift reporting, and patched
-  temporary README paths.
+- Registry tests pin family and description order, all valid identifiers,
+  derived name order, prefix rules, and rejection of empty, unknown, or
+  duplicate membership.
+- Generator tests pin README grouping, all-family bundled-help output,
+  frontmatter sourcing, version identity, pipe escaping, marker validation,
+  independent drift reporting, coordinated rollback, and patched temporary
+  output paths.
 - `make generate` twice, `make check`, `git diff --check`, and explicit empty
   diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
 
@@ -2173,11 +2212,12 @@ process. User-facing install/update/remove instructions live in the
 |---|---|
 | `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional `references/*.md`). The only place skills are edited. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
+| `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
 | `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
 | `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |
-| `.github/scripts/generate-skill-surfaces.py` | Validates skills, regenerates the manifest and README catalog; `--check` gates drift in both. |
+| `.github/scripts/generate-skill-surfaces.py` | Validates skills and atomically coordinates the manifest, README catalog, and bundled help catalog; `--check` gates drift in all three. |
 | `.github/scripts/check-release-payload.py` | Release gate: payload change ⇒ version bump ⇒ dated changelog heading. |
 | `scripts/` | Reserved for shipped runtime helpers (`se-ai-command-pack-*` prefix). Empty in v0.1. |
 
@@ -2224,6 +2264,18 @@ unless the request explicitly asks to audit claims. Both `se-research` and
 `se-fact-check` consume the shared `verification-protocol.md`; the canonical
 source lives under `_shared/references/` while installed paths remain local to
 each skill. The audit is read-only and offers only minimal corrected wording.
+
+### Pack-help workflow boundary
+
+`se-help` owns pack discovery, onboarding, explanation, comparison, and
+intent-to-skill routing. Its installed `references/skill-catalog.md` is generated
+from registry family metadata, the manifest version, and canonical skill
+frontmatter; roadmap tasks and third-party host capabilities are never catalog
+inputs. Bundled ownership and current-session availability remain separate
+observations. Help reports observed version mismatches through
+`python3 install.py status --user` and the documented update flow without
+guessing their cause. It remains read-only and ends with a copy-ready
+user-scoped invocation that requires a separate request before execution.
 
 ## Manifest schema
 
@@ -2285,8 +2337,9 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
    `installer/registry.py`. Choose exactly one of Understand, Decide, Create,
    Coordinate, Operate, or Improve. Registry order remains manifest order;
    `SKILL_NAMES` is derived and must not be edited separately.
-4. `make generate` to update both the manifest and the marker-bounded README
-   catalog, then run `make check`. Never hand-edit catalog rows.
+4. `make generate` to update the manifest, marker-bounded README catalog, and
+   generated bundled help catalog, then run `make check`. Never hand-edit
+   generated catalog rows.
 5. Bump the version + changelog when the shipped payload changes (the release
    gate enforces this). Family/catalog metadata alone does not require a bump
    when `manifest.json` remains byte-for-byte unchanged.
@@ -2736,6 +2789,8 @@ PLATFORMS = tuple(sorted(PLATFORM_REGISTRY))
 # catalog order; declared families with zero registered skills remain valid but
 # are omitted from the catalog.
 FAMILY_LABELS: dict[str, str] = {
+⋮----
+FAMILY_DESCRIPTIONS: dict[str, str] = {
 ⋮----
 # Canonical skill registry. Row order remains the manifest/install order;
 # catalog display groups these rows through FAMILY_LABELS without moving paths.
@@ -3219,6 +3274,65 @@ cd "$repo_root"
 mkdir -p "$npm_cache"
 export NPM_CONFIG_CACHE="$npm_cache"
 exec npx --yes "repomix@${repomix_version}" --config repomix.config.json
+````
+
+## File: templates/skills/_shared/references/skill-catalog.md
+````markdown
+<!-- Generated by .github/scripts/generate-skill-surfaces.py; do not edit. -->
+# SE Skill Catalog
+
+Bundled pack version: `0.6.0`
+
+This catalog describes skills bundled with this release. Current session availability must be reconciled separately by `se-help`.
+
+## Understand
+
+Gather, verify, and synthesize information.
+
+| Skill | Use when |
+|---|---|
+| `se-research` | Use when the user asks for deep, multi-source research on a question or topic and wants a verified, source-graded written brief rather than a quick answer. |
+| `se-scan` | Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria. |
+| `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
+| `se-fact-check` | Use when the user supplies claims or a draft and wants a claim-by-claim evidence audit with supported, partially supported, unverified, contradicted, or outdated verdicts. |
+
+## Decide
+
+Compare evidence and choose a defensible direction.
+
+| Skill | Use when |
+|---|---|
+| `se-decide` | Use when the user wants a defensible recommendation between known options using explicit criteria, constraints, evidence, tradeoffs, and uncertainty. |
+
+## Create
+
+Turn source material and intent into a polished artifact.
+
+No bundled skills in this release.
+
+## Coordinate
+
+Align people, plans, status, and handoffs.
+
+| Skill | Use when |
+|---|---|
+| `se-brief` | Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update. |
+| `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
+| `se-status` | Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions. |
+
+## Operate
+
+Discover and operate the SE skill pack itself.
+
+| Skill | Use when |
+|---|---|
+| `se-help` | Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow. |
+
+## Improve
+
+Reflect, learn, and strengthen future work.
+
+No bundled skills in this release.
 ````
 
 ## File: templates/skills/_shared/references/source-standards.md
@@ -3705,6 +3819,191 @@ reading or searching.
   disconfirmation performed under the shared verification protocol.
 ````
 
+## File: templates/skills/se-help/references/examples.md
+````markdown
+# SE Help Examples
+
+Use these examples to demonstrate routing and handoffs. The generated catalog,
+not this file, remains authoritative for bundled skill ownership.
+
+## Family prompts
+
+- **Understand**: `$se-help goal="Audit the factual claims in this draft and preserve their original locations."` routes to `$se-fact-check`.
+- **Decide**: `$se-help goal="Recommend one of these three known vendors using our constraints and evidence."` routes to `$se-decide`.
+- **Create**: `$se-help family=create` explains that this release has no bundled Create skill and does not invent one.
+- **Coordinate**: `$se-help goal="Report project outcomes, blockers, risks, decisions, and next actions since Friday."` routes to `$se-status`.
+- **Operate**: `$se-help mode=tour` introduces the pack and its current availability labels.
+- **Improve**: `$se-help family=improve` explains that this release has no bundled Improve skill and offers no planned capability as shipped.
+
+## Common comparisons
+
+- `$se-help mode=compare skills=se-research,se-digest` distinguishes open evidence gathering from supplied-corpus synthesis.
+- `$se-help mode=compare skills=se-brief,se-status` distinguishes topic updates from objective-oriented project reporting.
+- `$se-help mode=compare skills=se-scan,se-decide` distinguishes candidate discovery from choosing among known options.
+
+## Workflow handoffs
+
+### Evidence to decision
+
+1. `$se-research` produces a sourced evidence brief.
+2. `$se-decide` consumes that brief plus known options, criteria, and constraints to produce a recommendation.
+
+### Corpus to decision
+
+1. `$se-digest` produces a decision-ready synthesis with disagreements surfaced.
+2. `$se-decide` consumes the synthesis and explicit alternatives to produce a recommendation.
+
+### Meeting preparation to status
+
+1. `$se-meeting-prep` produces a dossier, talking points, and questions.
+2. After the meeting, `$se-status` consumes recorded outcomes and project sources to produce an objective-oriented update.
+
+Each handoff is a separate request. Help recommends the sequence but never runs
+either stage.
+
+## Ambiguous and unavailable requests
+
+- "Help me understand this" is ambiguous between `$se-research`, `$se-digest`, and `$se-fact-check`; ask one question about whether the user wants new evidence, synthesis of supplied material, or a claim audit.
+- An unknown or externally provided skill is labeled external or unknown, never bundled merely because its name resembles `$se-help`.
+- A bundled skill missing from the current capability inventory is labeled included in the installed pack but not discoverable now; report observed versions and use the native status/update path without guessing the cause.
+````
+
+## File: templates/skills/se-help/SKILL.md
+````markdown
+---
+name: se-help
+description: Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow.
+---
+
+# SE Help
+
+Discover and operate the SE skill pack without executing another skill. Use the
+generated bundled catalog as the ownership source, reconcile it with the
+current session when capability inventory is available, and recommend the one
+smallest-fit workflow for the user's outcome.
+
+## When to use
+
+Use this skill to list skill families or bundled skills, explain a skill,
+compare adjacent skills, recommend a skill or short workflow, show examples,
+or give a new-user tour. Do not use roadmap tasks, documentation mentions, an
+`se-` prefix, or third-party capabilities as proof that a skill is bundled or
+available now.
+
+This skill is strictly read-only. A help request may recommend an invocation,
+but it must never execute, install, update, enable, remove, or otherwise invoke
+the recommended workflow. Execution requires a separate explicit request.
+
+## Arguments
+
+Natural-language requests are preferred. These optional keys make a request
+more precise:
+
+- `mode=list|explain|compare|recommend|examples|tour`
+- `family=<family>` for list or examples filtering
+- `skill=<name>` for one explanation
+- `skills=<name,name,...>` for comparison
+- `goal=<desired outcome>` for recommendation
+- `detail=compact|standard`
+
+Infer an unambiguous mode. With a goal, default to `recommend`; without a goal,
+default to `tour`. Unknown argument names are an error: stop and identify the
+unsupported names without continuing.
+
+Accept a missing `se-` prefix, a common term, or a minor misspelling only when
+it produces exactly one catalog match. Otherwise show the closest valid
+choices and keep the request non-executing.
+
+## Workflow
+
+1. Read `references/skill-catalog.md` for the bundled catalog version,
+   canonical family order, family outcomes, skill ownership, family membership,
+   and frontmatter descriptions. Read `references/examples.md` only for
+   examples, tours, comparisons, and workflow handoffs.
+2. When an install root is observable, read its
+   `.se-ai-command-pack/manifest.json` receipt and compare the installed pack
+   version with the bundled catalog version. On mismatch, report both observed
+   versions and point to `python3 install.py status --user` plus the documented
+   update flow. Do not guess whether installation, refresh, host discovery, or
+   session reload caused the mismatch. Missing optional metadata does not make
+   help fail.
+3. When the host exposes a current capability inventory, reconcile catalog
+   ownership and current discovery using these exact labels:
+   - **available now** - bundled and exposed in this session;
+   - **included in the installed pack but not discoverable now** - bundled but
+     not exposed by the current host;
+   - **source/package-local only** - use only when canonical registry metadata
+     explicitly marks the capability as intentionally not installed;
+   - **external** - exposed by the host but not owned by this pack; and
+   - **unknown** - present in neither the bundled catalog nor current inventory.
+4. Resolve the mode:
+   - `list`: show all six families in canonical order, or one filtered family,
+     with compact availability labels.
+   - `explain`: show purpose, trigger, prerequisites, inputs, expected output,
+     meaningful side effects, non-goals, adjacent skills, and examples. Inspect
+     the canonical skill body when available; otherwise disclose that the
+     explanation is limited to catalog metadata and curated examples.
+   - `compare`: use one matrix for outcome, input, output, depth or time horizon,
+     prerequisites, mutation boundary, and distinguishing signal. End with a
+     concrete selection rule.
+   - `recommend`: extract the outcome, supplied material, desired artifact,
+     recency or depth, and requested mutation. Choose the smallest-fit available
+     skill and explain why. Ask at most one clarifying question, and only when
+     its answer would change the route.
+   - `examples`: show task-oriented prompts from the requested family or
+     outcome without claiming empty families have bundled skills.
+   - `tour`: introduce the families, show common "I want to..." routes, explain
+     availability, and finish with one useful starter prompt.
+5. Recommend one skill by default. Use a chain only when each stage produces a
+   distinct handoff artifact and one skill cannot own the full outcome. Keep the
+   default chain to at most three skills, name every handoff, and challenge any
+   stage that merely showcases the pack.
+6. Finish with one copy-ready platform-native invocation that uses the user's
+   real context. Where a host supports direct skill notation, use forms such as
+   `$se-digest`; otherwise use a natural-language request naming the skill.
+
+## Safety rules
+
+- Remain read-only and never execute another skill in the same help request.
+- Treat the generated catalog as bundled ownership, not proof of current
+  availability. Treat the current inventory as availability, not pack
+  ownership.
+- Do not present planned, external, unknown, or source-only capabilities as
+  installed skills.
+- Do not install, refresh, update, enable, remove, message, publish, schedule,
+  or mutate an external system.
+- Do not expose hidden reasoning. Give only a brief fit explanation and the
+  observable selection rule.
+- Prefer one smallest-fit skill. Do not create a multi-skill chain unless the
+  handoff artifacts make the stages independently useful.
+- Keep SE invocations on the user-scoped skill surface. Do not emit
+  project-local delivery commands or imply that family names are command
+  namespaces.
+
+## Final report
+
+Use the applicable fields below in this order. `detail=compact` may collapse
+empty or low-value fields, but it must preserve their meaning. Every successful
+response ends with the next invocation; errors instead name the unsupported or
+ambiguous input and the valid choices.
+
+- **Pack and availability**: pack identity, bundled catalog version, observed
+  installed pack version when readable, and the availability basis.
+- **Answer**: the requested list, explanation, comparison, recommendation,
+  examples, or tour.
+- **Why it fits**: the public selection rule, material assumption, or
+  distinguishing signal.
+- **Required context**: inputs, prerequisites, and any one decisive missing
+  item.
+- **Expected output**: the artifact or handoff the selected workflow produces.
+- **Side effects and boundaries**: meaningful mutation behavior, read-only
+  status, and important non-goals.
+- **Related skills**: closest alternative, adjacent skills, or lifecycle
+  neighbors when material.
+- **Next invocation**: one copy-ready platform-native invocation for a separate
+  request; do not execute it.
+````
+
 ## File: templates/skills/se-meeting-prep/SKILL.md
 ````markdown
 ---
@@ -4151,6 +4450,17 @@ def test_readme_catalog_matches_generated(self) -> None
 ⋮----
 committed = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
 ⋮----
+def test_help_catalog_matches_generated(self) -> None
+⋮----
+committed = gen.HELP_CATALOG_PATH.read_text(encoding="utf-8")
+⋮----
+def test_help_catalog_uses_version_family_order_and_frontmatter(self) -> None
+⋮----
+rendered = gen.regenerated_help_catalog_text()
+manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+⋮----
+headings = [f"## {label}" for label in gen.FAMILY_LABELS.values()]
+⋮----
 def test_readme_catalog_uses_family_order_and_frontmatter(self) -> None
 ⋮----
 rendered = gen.regenerated_readme_text()
@@ -4159,7 +4469,6 @@ def test_check_mode_passes(self) -> None
 ⋮----
 def test_rows_cover_every_skill_and_platform(self) -> None
 ⋮----
-manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
 rows = manifest["files"]
 ⋮----
 target = f"{info.skills_dir}/{name}/SKILL.md"
@@ -4170,6 +4479,12 @@ def test_shared_reference_fanned_into_consumers(self) -> None
 targets = {row["target"] for row in manifest["files"]}
 ⋮----
 basename = Path(source).name
+⋮----
+def test_help_catalog_reference_fans_into_help_only(self) -> None
+⋮----
+source = "_shared/references/skill-catalog.md"
+⋮----
+target = f"{info.skills_dir}/se-help/references/skill-catalog.md"
 ⋮----
 def test_fact_check_installs_all_cited_shared_references(self) -> None
 ⋮----
@@ -4249,6 +4564,8 @@ def test_catalog_groups_skills_and_escapes_pipes(self) -> None
 ⋮----
 first = VALID_SKILL.format(name="se-test").replace(
 ⋮----
+def test_help_catalog_groups_all_families_and_escapes_pipes(self) -> None
+⋮----
 def test_catalog_requires_exactly_one_marker_pair(self) -> None
 ⋮----
 def test_missing_readme_fails_cleanly_before_manifest_write(self) -> None
@@ -4268,11 +4585,19 @@ atomic_write_text = gen.atomic_write_text
 ⋮----
 def fail_manifest(path: Path, content: str) -> None
 ⋮----
+def test_help_catalog_write_failure_rolls_back_readme(self) -> None
+⋮----
+def fail_help_catalog(path: Path, content: str) -> None
+⋮----
 def test_check_detects_drift(self) -> None
 ⋮----
 def test_check_detects_readme_catalog_drift(self) -> None
 ⋮----
 committed = self.readme_path.read_text(encoding="utf-8")
+⋮----
+def test_check_detects_help_catalog_drift(self) -> None
+⋮----
+committed = self.help_catalog_path.read_text(encoding="utf-8")
 ⋮----
 def test_header_and_static_rows_preserved(self) -> None
 ⋮----
@@ -4958,6 +5283,8 @@ class SkillFamilyRegistryTest(unittest.TestCase)
 ⋮----
 def test_family_labels_have_stable_outcome_order(self) -> None
 ⋮----
+def test_family_descriptions_match_family_order(self) -> None
+⋮----
 def test_skill_names_are_derived_without_reordering(self) -> None
 ⋮----
 names = tuple(skill.name for skill in skills)
@@ -5024,6 +5351,25 @@ def test_fact_check_final_report_contract(self) -> None
 def test_meeting_prep_excludes_sensitive_data(self) -> None
 ⋮----
 text = normalized("se-meeting-prep")
+⋮----
+def test_help_modes_and_shared_response_envelope(self) -> None
+⋮----
+text = skill_text("se-help")
+normalized_text = normalized("se-help")
+⋮----
+fields = (
+positions = [text.index(field) for field in fields]
+⋮----
+def test_help_preserves_availability_and_version_boundaries(self) -> None
+⋮----
+text = normalized("se-help").lower()
+⋮----
+def test_help_routes_without_execution(self) -> None
+⋮----
+def test_help_references_and_examples_use_registered_skills(self) -> None
+⋮----
+examples = (
+named = set(re.findall(r"`\$?(se-[a-z0-9-]+)`", examples))
 ⋮----
 class SkillDocumentationTest(unittest.TestCase)
 ⋮----
@@ -5275,6 +5621,18 @@ Managed by Trellis. Edits outside this block are preserved; edits inside may be 
 ````markdown
 # Changelog
 
+## 0.6.0 - 2026-07-20
+
+- Add `se-help`, a read-only discovery and routing skill that lists families,
+  explains and compares skills, recommends the smallest-fit workflow, and
+  returns a copy-ready prompt without executing it.
+- Generate a versioned bundled skill catalog from the same registry family
+  metadata and canonical frontmatter model as the README, then fan that shared
+  reference into every installed `se-help` copy.
+- Distinguish bundled ownership from current availability, external and unknown
+  capabilities, and version mismatch states while preserving a separate-request
+  execution boundary.
+
 ## 0.5.0 - 2026-07-20
 
 - Add `se-fact-check`, a read-only claim audit with supported, partially
@@ -5519,9 +5877,9 @@ check: test lint release-check
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills (research, fact checks, decisions, status reports, briefs, meeting prep, scans, digests) into agent skill directories.",
+  "description": "Install user-level knowledge-work skills for research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
     {
       "platform": "agents",
@@ -6008,6 +6366,87 @@ check: test lint release-check
       "target": ".codex/skills/se-fact-check/references/verification-protocol.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/SKILL.md",
+      "target": ".config/agents/skills/se-help/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/references/examples.md",
+      "target": ".config/agents/skills/se-help/references/examples.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/skill-catalog.md",
+      "target": ".config/agents/skills/se-help/references/skill-catalog.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/SKILL.md",
+      "target": ".claude/skills/se-help/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/references/examples.md",
+      "target": ".claude/skills/se-help/references/examples.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/skill-catalog.md",
+      "target": ".claude/skills/se-help/references/skill-catalog.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/SKILL.md",
+      "target": ".codex/skills/se-help/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/references/examples.md",
+      "target": ".codex/skills/se-help/references/examples.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/skill-catalog.md",
+      "target": ".codex/skills/se-help/references/skill-catalog.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
     }
   ]
 }
@@ -6037,10 +6476,10 @@ warn_unused_ignores = true
 ````markdown
 # SE AI Command Pack
 
-User-level knowledge-work skills for AI agent frameworks: deep research, claim
-fact-checking, decision support, project-status reporting, daily briefs, meeting
-prep, landscape scans, and document digests — installed once per machine,
-centrally managed from this repository.
+User-level knowledge-work skills for AI agent frameworks: pack discovery, deep
+research, claim fact-checking, decision support, project-status reporting, daily
+briefs, meeting prep, landscape scans, and document digests — installed once
+per machine, centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -6076,6 +6515,12 @@ come directly from canonical skill frontmatter.
 | `se-brief` | Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update. |
 | `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
 | `se-status` | Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions. |
+
+### Operate
+
+| Skill | Use when |
+|---|---|
+| `se-help` | Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -6156,8 +6601,9 @@ directories are pruned.
 - `templates/skills/<name>/` holds the canonical skill definitions — the
   only place skills are edited.
 - `installer/registry.py` declares platforms, ordered skill-family metadata,
-  and shared-reference fan-out; `make generate` regenerates `manifest.json`
-  and this README's grouped catalog from the registry and skill frontmatter.
+  outcome descriptions, and shared-reference fan-out; `make generate`
+  regenerates `manifest.json`, this README's grouped catalog, and the versioned
+  `se-help` catalog from one frontmatter parse.
 - `install.py` owns the pack lifecycle and applies the manifest to your home directory (or `--root`
   elsewhere) and writes receipts under `~/.se-ai-command-pack/`:
   - `manifest.json` — copy of the installed manifest (version lookup);
@@ -6172,7 +6618,8 @@ directories are pruned.
 1. Edit or add skills under `templates/skills/` (see
    [docs/SE_AI_COMMAND_PACK.md](docs/SE_AI_COMMAND_PACK.md) for the
    add-a-skill checklist).
-2. `make generate` to refresh the manifest and README catalog.
+2. `make generate` to refresh the manifest, README catalog, and bundled
+   `se-help` catalog reference.
 3. For shipped payload changes, bump `version` in `manifest.json` and add the
    matching `CHANGELOG.md` heading. Metadata-only catalog changes do not need a
    release bump when generated payload bytes stay unchanged.

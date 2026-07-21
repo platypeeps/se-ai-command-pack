@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills (research, fact checks, decisions, status reports, briefs, meeting prep, scans, digests) into agent skill directories.",
+  "description": "Install user-level knowledge-work skills for research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
     {
       "platform": "agents",
@@ -488,6 +488,87 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".codex/skills/se-fact-check/references/verification-protocol.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/SKILL.md",
+      "target": ".config/agents/skills/se-help/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/references/examples.md",
+      "target": ".config/agents/skills/se-help/references/examples.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/skill-catalog.md",
+      "target": ".config/agents/skills/se-help/references/skill-catalog.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/SKILL.md",
+      "target": ".claude/skills/se-help/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/references/examples.md",
+      "target": ".claude/skills/se-help/references/examples.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/skill-catalog.md",
+      "target": ".claude/skills/se-help/references/skill-catalog.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/SKILL.md",
+      "target": ".codex/skills/se-help/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-help/references/examples.md",
+      "target": ".codex/skills/se-help/references/examples.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/skill-catalog.md",
+      "target": ".codex/skills/se-help/references/skill-catalog.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     }

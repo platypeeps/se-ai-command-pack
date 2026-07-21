@@ -72,12 +72,32 @@ class RealRepoGeneratorTest(unittest.TestCase):
         committed = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
         self.assertEqual(committed, gen.regenerated_readme_text())
 
+    def test_help_catalog_matches_generated(self) -> None:
+        committed = gen.HELP_CATALOG_PATH.read_text(encoding="utf-8")
+        self.assertEqual(committed, gen.regenerated_help_catalog_text())
+
+    def test_help_catalog_uses_version_family_order_and_frontmatter(self) -> None:
+        rendered = gen.regenerated_help_catalog_text()
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        self.assertIn(f"Bundled pack version: `{manifest['version']}`", rendered)
+        headings = [f"## {label}" for label in gen.FAMILY_LABELS.values()]
+        for earlier, later in zip(headings, headings[1:], strict=False):
+            self.assertLess(rendered.index(earlier), rendered.index(later))
+        for family, description in gen.FAMILY_DESCRIPTIONS.items():
+            self.assertIn(gen.FAMILY_LABELS[family], rendered)
+            self.assertIn(description, rendered)
+        self.assertIn(
+            "Use when the user asks for deep, multi-source research",
+            rendered,
+        )
+        self.assertIn("`se-help`", rendered)
+
     def test_readme_catalog_uses_family_order_and_frontmatter(self) -> None:
         rendered = gen.regenerated_readme_text()
         self.assertLess(rendered.index("### Understand"), rendered.index("### Decide"))
         self.assertLess(rendered.index("### Decide"), rendered.index("### Coordinate"))
         self.assertNotIn("### Create", rendered)
-        self.assertNotIn("### Operate", rendered)
+        self.assertIn("### Operate", rendered)
         self.assertNotIn("### Improve", rendered)
         self.assertIn(
             "Use when the user asks for deep, multi-source research",
@@ -126,6 +146,20 @@ class RealRepoGeneratorTest(unittest.TestCase):
                         targets,
                     )
 
+    def test_help_catalog_reference_fans_into_help_only(self) -> None:
+        source = "_shared/references/skill-catalog.md"
+        self.assertEqual(gen.SHARED_REFERENCES[source], ("se-help",))
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        rows = manifest["files"]
+        for platform, info in gen.PLATFORM_REGISTRY.items():
+            target = f"{info.skills_dir}/se-help/references/skill-catalog.md"
+            matches = [row for row in rows if row["target"] == target]
+            self.assertEqual(len(matches), 1, (platform, target))
+            self.assertEqual(
+                matches[0]["source"],
+                "templates/skills/_shared/references/skill-catalog.md",
+            )
+
     def test_fact_check_installs_all_cited_shared_references(self) -> None:
         expected_sources = {
             "_shared/references/source-standards.md",
@@ -170,6 +204,7 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.skills_root.mkdir(parents=True)
         self.manifest_path = self.base / "manifest.json"
         self.readme_path = self.base / "README.md"
+        self.help_catalog_path = self.base / "skill-catalog.md"
         self.readme_path.write_text(
             "# Fixture\n\n## Skills\n\n"
             "<!-- SE_SKILL_CATALOG:START -->\n"
@@ -190,10 +225,23 @@ class SandboxGeneratorTest(TempDirTestCase):
             mock.patch.object(gen, "README_PATH", self.readme_path)
         )
         stack.enter_context(
+            mock.patch.object(gen, "HELP_CATALOG_PATH", self.help_catalog_path)
+        )
+        stack.enter_context(
             mock.patch.object(
                 gen,
                 "FAMILY_LABELS",
                 {"understand": "Understand", "decide": "Decide"},
+            )
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen,
+                "FAMILY_DESCRIPTIONS",
+                {
+                    "understand": "Understand fixture outcomes.",
+                    "decide": "Decide fixture outcomes.",
+                },
             )
         )
         stack.enter_context(
@@ -341,6 +389,10 @@ class SandboxGeneratorTest(TempDirTestCase):
         for info in gen.PLATFORM_REGISTRY.values():
             self.assertIn(f"{info.skills_dir}/se-test/SKILL.md", targets)
         self.assertIn("### Understand", self.readme_path.read_text(encoding="utf-8"))
+        self.assertIn(
+            "Bundled pack version: `0.1.0`",
+            self.help_catalog_path.read_text(encoding="utf-8"),
+        )
 
     def test_catalog_groups_skills_and_escapes_pipes(self) -> None:
         first = VALID_SKILL.format(name="se-test").replace(
@@ -361,6 +413,17 @@ class SandboxGeneratorTest(TempDirTestCase):
         ):
             rendered = gen.regenerated_readme_text()
         self.assertLess(rendered.index("### Understand"), rendered.index("### Decide"))
+        self.assertIn("end \\| to end.", rendered)
+
+    def test_help_catalog_groups_all_families_and_escapes_pipes(self) -> None:
+        first = VALID_SKILL.format(name="se-test").replace(
+            "end to end.", "end | to end."
+        )
+        self.write_skill(text=first)
+        rendered = gen.regenerated_help_catalog_text()
+        self.assertLess(rendered.index("## Understand"), rendered.index("## Decide"))
+        self.assertIn("Understand fixture outcomes.", rendered)
+        self.assertIn("No bundled skills in this release.", rendered)
         self.assertIn("end \\| to end.", rendered)
 
     def test_catalog_requires_exactly_one_marker_pair(self) -> None:
@@ -420,6 +483,27 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.assertEqual(
             self.readme_path.read_text(encoding="utf-8"), committed_readme
         )
+        self.assertFalse(self.help_catalog_path.exists())
+        self.assertFalse(self.manifest_path.exists())
+
+    def test_help_catalog_write_failure_rolls_back_readme(self) -> None:
+        self.write_skill()
+        committed_readme = self.readme_path.read_text(encoding="utf-8")
+        atomic_write_text = gen.atomic_write_text
+
+        def fail_help_catalog(path: Path, content: str) -> None:
+            if path == self.help_catalog_path:
+                raise SystemExit(f"error: cannot write {path}: read-only fixture")
+            atomic_write_text(path, content)
+
+        with mock.patch.object(
+            gen, "atomic_write_text", side_effect=fail_help_catalog
+        ):
+            self.assertEqual(gen.main([]), 1)
+        self.assertEqual(
+            self.readme_path.read_text(encoding="utf-8"), committed_readme
+        )
+        self.assertFalse(self.help_catalog_path.exists())
         self.assertFalse(self.manifest_path.exists())
 
     def test_check_detects_drift(self) -> None:
@@ -438,6 +522,16 @@ class SandboxGeneratorTest(TempDirTestCase):
         committed = self.readme_path.read_text(encoding="utf-8")
         self.readme_path.write_text(
             committed.replace("### Understand", "### Drifted"),
+            encoding="utf-8",
+        )
+        self.assertEqual(gen.main(["--check"]), 1)
+
+    def test_check_detects_help_catalog_drift(self) -> None:
+        self.write_skill()
+        self.assertEqual(gen.main([]), 0)
+        committed = self.help_catalog_path.read_text(encoding="utf-8")
+        self.help_catalog_path.write_text(
+            committed.replace("## Understand", "## Drifted"),
             encoding="utf-8",
         )
         self.assertEqual(gen.main(["--check"]), 1)

@@ -69,6 +69,15 @@ FAMILY_LABELS: dict[str, str] = {
     "improve": "Improve",
 }
 
+FAMILY_DESCRIPTIONS: dict[str, str] = {
+    "understand": "Gather, verify, and synthesize information.",
+    "decide": "Compare evidence and choose a defensible direction.",
+    "create": "Turn source material and intent into a polished artifact.",
+    "coordinate": "Align people, plans, status, and handoffs.",
+    "operate": "Discover and operate the SE skill pack itself.",
+    "improve": "Reflect, learn, and strengthen future work.",
+}
+
 # Canonical skill registry. Row order remains the manifest/install order;
 # catalog display groups these rows through FAMILY_LABELS without moving paths.
 SKILLS: tuple[SkillInfo, ...] = (
@@ -80,6 +89,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-decide", family="decide"),
     SkillInfo(name="se-status", family="coordinate"),
     SkillInfo(name="se-fact-check", family="understand"),
+    SkillInfo(name="se-help", family="operate"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 
@@ -101,6 +111,7 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-research",
         "se-fact-check",
     ),
+    "_shared/references/skill-catalog.md": ("se-help",),
 }
 
 ALWAYS_INSTALL = "always"
@@ -132,6 +143,13 @@ SKILL_PREFIX = "se-"
 
 
 def validate_registry() -> None:
+    if tuple(FAMILY_DESCRIPTIONS) != tuple(FAMILY_LABELS):
+        raise RuntimeError(
+            "FAMILY_DESCRIPTIONS must match FAMILY_LABELS without reordering"
+        )
+    for family, description in FAMILY_DESCRIPTIONS.items():
+        if not description.strip():
+            raise RuntimeError(f"family {family} has an empty description")
     for platform, info in PLATFORM_REGISTRY.items():
         for field_name, value in (
             ("skills_dir", info.skills_dir),
@@ -186,6 +204,7 @@ validate_registry()
 __all__ = [
     "ALWAYS_INSTALL",
     "ENV_PREFIX",
+    "FAMILY_DESCRIPTIONS",
     "FAMILY_LABELS",
     "FORCE_PRESERVED_TARGETS",
     "IF_ANCHOR_EXISTS",
