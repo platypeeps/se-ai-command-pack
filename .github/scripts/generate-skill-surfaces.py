@@ -86,6 +86,7 @@ DEFAULT_MANIFEST_HEADER = {
         "audience-calibrated explanations, "
         "traceable feedback synthesis, "
         "evidence-backed context handoffs, "
+        "preview-first knowledge publishing, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "
