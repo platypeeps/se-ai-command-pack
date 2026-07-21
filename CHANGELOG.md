@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.12.0 - 2026-07-21
+
+- Add `se-bookmark-triage`, a read-only saved-item workflow that conservatively
+  deduplicates bounded bookmark collections and classifies items as discard,
+  skim, study, act, defer, or archive.
+- Label every decision by available evidence coverage, preserve original
+  locators and uncertain duplicate boundaries, and handle dead, inaccessible,
+  sparse, private, stale, and injection-bearing inputs honestly.
+- Select a feasible queue under an optional attention budget, register the
+  skill under Operate, fan source standards into every installed copy, and add
+  focused behavior and generated-target coverage.
+
 ## 0.11.0 - 2026-07-21
 
 - Add `se-author`, an interview-driven technical-article workflow that

@@ -722,3 +722,42 @@ Implemented se-author as a one-question-at-a-time, brief-approved technical auth
 ### Next Steps
 
 - None - task complete
+
+
+## Session 20: Add bookmark triage workflow
+
+**Date**: 2026-07-21
+**Task**: Add bookmark triage workflow
+**Branch**: `codex/se-bookmark-triage`
+
+### Summary
+
+Implemented se-bookmark-triage as a read-only, evidence-labeled saved-item attention workflow and prepared PR #27 for merge with green local, CI, and Copilot review gates.
+
+### Main Changes
+
+- Added bounded saved-item inventory, conservative identity normalization, six explicit classifications, and honest evidence-coverage labels.
+- Defined feasible time-budget selection, zero-fit behavior, private and unavailable item handling, injection resistance, and read-only handoff boundaries.
+- Released version 0.12.0 across registry, manifest, documentation, generated catalogs, and focused tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `efc3c6fc3bc87d640f81ae6b2dc25dbddfa4a27c` | feat: add bookmark triage workflow |
+
+### Testing
+
+- [OK] 57 focused skill tests and 50 focused generator tests passed
+- [OK] make check passed 233 tests plus Ruff, mypy, generation, and release gates
+- [OK] deterministic full check, install audit, Obsidian freshness, and Repomix security scan passed
+- [OK] PR CI passed and Copilot generated no comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
