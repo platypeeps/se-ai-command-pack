@@ -26,7 +26,8 @@ process. User-facing install/update/remove instructions live in the
 - **Shipped skills** are the `se-*` entries under `templates/skills/`. They are
   grouped by primary outcome family in the README but retain flat canonical and
   installed paths. The current bundle includes report-first technical editing
-  with `se-technical-editor`.
+  with `se-technical-editor` and audience-calibrated explanation with
+  `se-explain`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -171,6 +172,22 @@ change ledger. The supplied draft's representative voice outranks profile
 preferences, confidential material stays out of broader searches, and topic
 discovery, original authorship, primary research, fact checking, red teaming,
 and publication remain separate capability handoffs.
+
+### Explain workflow boundary
+
+`se-explain` owns one audience-calibrated concept or mechanism at progressive
+depth. It corrects false premises before building on them, leads with the
+smallest accurate model, and selects only the intuition, example, mechanism,
+limitations, misconceptions, self-check, and next step needed for the stated
+purpose. Novice explanations retain necessary mechanism; expert explanations
+compress familiar foundations without hiding ambiguity.
+
+Analogies are labeled, mapped to the real mechanism, and paired with the point
+where they break. Examples never become evidence, and current or disputed
+claims require supplied or verified sources. Follow-ups deepen only the
+requested layer using a compact established-so-far context; curricula, study
+artifacts, mastery assessment, open research, fact checking, and publication
+remain separate workflows.
 
 ### Bookmark-triage workflow boundary
 
