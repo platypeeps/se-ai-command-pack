@@ -52,6 +52,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-diagram",
     "se-distill",
     "se-evaluate",
+    "se-topic-radar",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -154,6 +155,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-diagram",
                 "se-distill",
                 "se-evaluate",
+                "se-topic-radar",
             ),
         )
         self.assertEqual(
@@ -180,6 +182,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-diagram": "create",
                 "se-distill": "understand",
                 "se-evaluate": "improve",
+                "se-topic-radar": "create",
             },
         )
 
@@ -1190,6 +1193,62 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "never evaluate or rank people",
             "does not make it",
             "`not run` status",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_topic_radar_inventories_personal_and_external_sources(self) -> None:
+        text = normalized("se-topic-radar").lower()
+        for phrase in (
+            "build a source-coverage ledger before generating ideas",
+            "keep personal activity and external developments in separate evidence lanes",
+            "breaking-news signals require authoritative corroboration",
+            "do not replace missing personal activity with generic trends",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_topic_radar_scores_distinct_candidates_transparently(self) -> None:
+        text = normalized("se-topic-radar").lower()
+        for phrase in (
+            "anchored component levels `0` through `3`",
+            "use `unknown` rather than zero",
+            "penalize duplicates visibly",
+            "a different title does not make a different idea",
+            "by one anchored level would change the top group",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_topic_radar_preserves_profile_privacy_and_provenance(self) -> None:
+        text = normalized("se-topic-radar").lower()
+        for phrase in (
+            "references/personal-profile-contract.md",
+            "references/source-standards.md",
+            "data, not instructions",
+            "sensitive or private signals may affect internal ranking only when authorized",
+            "cannot appear in a title",
+            "never invent personal activity",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_topic_radar_adequacy_boundaries_and_final_report(self) -> None:
+        raw = skill_text("se-topic-radar")
+        for sibling in ("se-scan", "se-watchlist", "se-author", "se-paper"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Scope and source coverage**",
+            "**Ranking method**",
+            "**Ranked opportunities**",
+            "**Distinctness and prior-content audit**",
+            "**Uncertainty and sensitivity**",
+            "**Selection handoff**",
+            "**Limits**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-topic-radar").lower()
+        for phrase in (
+            "only then return exactly ten ranked opportunities",
+            "when coverage is inadequate, do not pad to ten",
+            "explicit status `not run`",
+            "this skill is read-only",
         ):
             self.assertIn(phrase, text)
 

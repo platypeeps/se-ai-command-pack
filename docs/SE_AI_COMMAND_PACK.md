@@ -135,6 +135,24 @@ passes. Research, fact-check, distillation, technical-editing, paper, topic,
 and publishing skills remain capability handoffs rather than hard dependencies.
 The final package is not published and no destination is written.
 
+### Topic-radar workflow boundary
+
+`se-topic-radar` owns bounded discovery and ranking of technical writing
+opportunities when no theme has been selected. It inventories authorized
+personal sources, external developments, and prior content separately; traces
+audience value, personal authority, originality, timing, evidence readiness,
+novelty risk, and effort to evidence; and keeps private-only profile or work
+signals out of outward-facing rationales. Breaking-news claims require dated
+authoritative corroboration or a provisional label.
+
+Exactly ten candidates is an evidence-adequacy outcome, not a formatting rule.
+Weak personal coverage, stale current sources, incomplete prior-content
+inventory, unsafe private activity, or too few distinct supported angles yields
+a smaller provisional list or a source request rather than generic padding.
+The selected candidate is only a `se-author` or `se-paper` handoff; drafting,
+continuous monitoring, editorial-calendar maintenance, and publication remain
+separate workflows.
+
 ### Bookmark-triage workflow boundary
 
 `se-bookmark-triage` owns bounded inventory, conservative identity
