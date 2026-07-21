@@ -6742,6 +6742,8 @@ reading sources.
   repositories, or connected search surfaces. Required.
 - `fresh_after=` — freshness threshold as a date or a justified relative age.
   Required; separate this policy boundary from source publication dates.
+- `exclude=` — optional containers, date ranges, source classes, or topics that
+  are explicitly outside the authorized audit boundary.
 - `as_of=` — audit cutoff. Default to the current date and state the default.
 
 ## Workflow

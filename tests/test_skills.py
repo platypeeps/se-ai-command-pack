@@ -1619,6 +1619,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "intended decision or audience",
             "source inventory",
             "freshness threshold",
+            "`exclude=`",
             "connector, container, query, date range, permissions, pagination, and truncation",
             "claim and decision map",
             "before classifying gaps",
