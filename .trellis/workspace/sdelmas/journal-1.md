@@ -1013,3 +1013,44 @@ Implemented and released se-topic-radar 0.19.0, including evidence-qualified exa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 28: Implement se-technical-editor
+
+**Date**: 2026-07-21
+**Task**: Implement se-technical-editor
+**Branch**: `codex/se-technical-editor`
+
+### Summary
+
+Implemented and released se-technical-editor 0.20.0 as a report-first technical draft review workflow with eleven canonical passes, evidence-located findings, explicit validation states, voice and confidentiality safeguards, and approval-gated revisions.
+
+### Main Changes
+
+- Added the canonical Improve-family technical-editor skill and generated platform surfaces.
+- Added eleven distinct review passes, explicit finding and validation contracts, confidentiality triage, voice preservation, and approval-gated edit mode.
+- Normalized public pass tokens and documentation names after four bounded Copilot review rounds, with regression coverage across skill and docs.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `daf7e87aa789e42af4755ae130093ca40765398d` | feat: add se-technical-editor skill |
+| `b52f146b804004afef8a855ef752ac7be5a7f6e7` | fix: align technical editor pass name |
+| `ae5f9d063254b2d630b01788150ef6ec7b35379a` | fix: normalize technical editor pass tokens |
+| `27271555e2be729882a3f15f50e4e4acb2117a0d` | fix: align technical editor documentation |
+
+### Testing
+
+- [OK] 274 tests passed
+- [OK] Ruff, mypy, generation parity, release gate, install audit, Repomix security, and KB freshness passed
+- [OK] Four Copilot review rounds completed; four actionable threads fixed and resolved; final review produced no new comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
