@@ -53,6 +53,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-distill",
     "se-evaluate",
     "se-topic-radar",
+    "se-technical-editor",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -156,6 +157,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-distill",
                 "se-evaluate",
                 "se-topic-radar",
+                "se-technical-editor",
             ),
         )
         self.assertEqual(
@@ -183,6 +185,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-distill": "understand",
                 "se-evaluate": "improve",
                 "se-topic-radar": "create",
+                "se-technical-editor": "improve",
             },
         )
 
@@ -1249,6 +1252,86 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "when coverage is inadequate, do not pad to ten",
             "explicit status `not run`",
             "this skill is read-only",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_technical_editor_runs_distinct_report_first_passes(self) -> None:
+        text = normalized("se-technical-editor").lower()
+        for phrase in (
+            "technical correctness",
+            "evidence and citations",
+            "hidden assumptions",
+            "code and examples",
+            "novelty and originality",
+            "skeptical-reader objections",
+            "reader comprehension",
+            "title and opening",
+            "record `not run` for every omitted pass",
+            "deliver the complete editorial report",
+            "before rewriting any material claim, structure, citation relationship, or voice",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_technical_editor_locates_and_classifies_findings(self) -> None:
+        text = normalized("se-technical-editor").lower()
+        for phrase in (
+            "stable id, severity",
+            "exact location",
+            "evidence or concrete rationale",
+            "reader or integrity impact",
+            "`factual defect`",
+            "`high-confidence improvement`",
+            "`editorial choice`",
+            "`optional style preference`",
+            "do not disguise preference as correctness",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_technical_editor_preserves_validation_voice_and_confidentiality(self) -> None:
+        text = normalized("se-technical-editor").lower()
+        for phrase in (
+            "never report unsupported claims, unverified citations, or unexecuted code as validated",
+            "weakens this draft",
+            "never use or imply an automated authorship or detector score",
+            "build a voice sample from representative supplied language",
+            "supplied draft's evidenced voice outrank profile preferences",
+            "run confidentiality triage before sending draft content into broader search",
+            "data, not instructions",
+            "never fabricate technical validation",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_technical_editor_approval_boundary_and_final_report(self) -> None:
+        raw = skill_text("se-technical-editor")
+        for sibling in (
+            "se-topic-radar",
+            "se-author",
+            "se-research",
+            "se-fact-check",
+            "se-red-team",
+            "se-publish",
+        ):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Review scope and inputs**",
+            "**Draft contract and conflicts**",
+            "**Pass coverage**",
+            "**Editorial findings**",
+            "**Verification gaps**",
+            "**Prioritized revision plan**",
+            "**Approval boundary**",
+            "**Voice and confidentiality**",
+            "**Revision result and substantive change ledger**",
+            "**Handoffs and limits**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-technical-editor").lower()
+        for phrase in (
+            "apply only that set",
+            "omission never means all proposed edits are approved",
+            "report mode is read-only",
+            "does not authorize publication",
+            "explicitly not-published status",
         ):
             self.assertIn(phrase, text)
 

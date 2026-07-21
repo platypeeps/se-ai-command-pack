@@ -6,6 +6,7 @@ destination-neutral capture, bookmark and action-inbox triage,
 critical operational checklists, neutral alternative comparisons,
 evidence-traceable diagrams, auditable extreme distillation,
 rubric-driven evaluations, evidence-backed editorial opportunity ranking,
+report-first technical editing,
 decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
@@ -74,6 +75,7 @@ come directly from canonical skill frontmatter.
 | Skill | Use when |
 |---|---|
 | `se-evaluate` | Use when the user wants one defined subject assessed against an explicit rubric with criterion-level evidence, uncertainty, sensitivity, deficiencies, and prioritized improvements. |
+| `se-technical-editor` | Use when the user wants an existing technical draft reviewed through evidence-located correctness, citation, code, structure, comprehension, confidentiality, and voice passes before approved revisions are applied. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -109,6 +111,12 @@ coverage. It traces every component score, keeps private evidence out of
 outward-facing rationales, penalizes duplicate angles, and returns exactly ten
 only when the evidence supports ten materially distinct candidates. Selection
 hands off to `se-author` or `se-paper`; it does not draft or publish.
+
+`se-technical-editor` reviews an existing technical draft through separate
+correctness, citation, assumption, code, novelty, skeptical-reader, structure,
+comprehension, confidentiality, opening, and voice passes. It reports located
+findings before substantive rewriting, preserves representative author language
+and evidence states, and applies only explicitly approved edits without publishing.
 
 `se-bookmark-triage` turns a bounded saved-item collection into a small,
 evidence-labeled attention queue. It preserves original locators, keeps
