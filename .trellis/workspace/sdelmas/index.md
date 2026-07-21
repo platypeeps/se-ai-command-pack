@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 13
+- **Total Sessions**: 14
 - **Last Active**: 2026-07-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~489 | Active |
+| `journal-1.md` | ~528 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 14 | 2026-07-20 | Reconcile SE skill roadmap | `122d4bb`, `fa298a1` | `codex/reconcile-se-skill-roadmap` |
 | 13 | 2026-07-20 | Configure repository project check | `b52b5cb` | `codex/configure-project-check` |
 | 12 | 2026-07-20 | Implement and review se-help discovery | `f9486fa`, `a1d69e4`, `830ef9b`, `4b5e98e` | `codex/se-help` |
 | 11 | 2026-07-20 | Refresh SD AI command pack to 0.24.8 | `7d212ba` | `codex/update-sd-ai-command-pack-0-24-8` |
