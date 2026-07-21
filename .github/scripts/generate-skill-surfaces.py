@@ -80,6 +80,7 @@ DEFAULT_MANIFEST_HEADER = {
         "neutral comparisons, "
         "evidence-traceable diagrams, "
         "auditable extreme distillation, "
+        "rubric-driven evaluations, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

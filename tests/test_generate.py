@@ -98,7 +98,8 @@ class RealRepoGeneratorTest(unittest.TestCase):
         self.assertLess(rendered.index("### Decide"), rendered.index("### Create"))
         self.assertLess(rendered.index("### Create"), rendered.index("### Coordinate"))
         self.assertIn("### Operate", rendered)
-        self.assertNotIn("### Improve", rendered)
+        self.assertLess(rendered.index("### Operate"), rendered.index("### Improve"))
+        self.assertIn("`se-evaluate`", rendered)
         self.assertIn(
             "Use when the user asks for deep, multi-source research",
             rendered,
@@ -348,6 +349,23 @@ class RealRepoGeneratorTest(unittest.TestCase):
         for info in gen.PLATFORM_REGISTRY.values():
             self.assertIn(
                 f"{info.skills_dir}/se-distill/references/source-standards.md",
+                targets,
+            )
+
+    def test_evaluate_installs_source_standards(self) -> None:
+        expected_sources = {"_shared/references/source-standards.md"}
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-evaluate" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        targets = {row["target"] for row in manifest["files"]}
+        for info in gen.PLATFORM_REGISTRY.values():
+            self.assertIn(
+                f"{info.skills_dir}/se-evaluate/references/source-standards.md",
                 targets,
             )
 
