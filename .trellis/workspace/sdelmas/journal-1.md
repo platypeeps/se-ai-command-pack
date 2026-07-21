@@ -1446,3 +1446,41 @@ Added and reviewed a gated, provenance-preserving research-paper workflow and re
 ### Next Steps
 
 - Merge PR #46 through sd-housekeeping, then continue the ranked backlog loop.
+
+
+## Session 39: Implement se-plan
+
+**Date**: 2026-07-21
+**Task**: Implement se-plan
+**Branch**: `codex/se-plan`
+
+### Summary
+
+Added and reviewed a read-only, outcome-based planning workflow and released it in pack version 0.31.0.
+
+### Main Changes
+
+- Added se-plan with accepted-outcome gating, observable milestones, dependencies, risks, decision points, assumptions, and immediately authorized next actions.
+- Preserved commitments separately from proposed owners, dates, estimates, and actions; exposed dependency cycles, missing prerequisites, unsupported critical paths, and unknown authority without false precision.
+- Registered the Decide-family skill, fanned source standards into installed copies, regenerated release surfaces, cleared context seeds, and added focused contract and generation tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `8c3d4770146ad5ebdd13b57d0abe7bd6ecc1fd6a` | feat: add se-plan skill |
+
+### Testing
+
+- [OK] deterministic PR full check — 336 tests, Ruff, mypy, generation parity, 151-target install audit, KB freshness, and release gate passed
+- [OK] make repomix — repository map refreshed with no suspicious files
+- [OK] GitHub CI and Copilot — all required jobs passed and final review completed cleanly
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #47 through sd-housekeeping, then continue the ranked backlog loop.

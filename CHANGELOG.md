@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.31.0 - 2026-07-21
+
+- Add `se-plan`, a read-only Decide workflow that turns an accepted outcome
+  into observable milestones, dependencies, risks, decision points, and
+  immediately authorized next actions.
+- Keep accepted commitments separate from proposed owners, dates, estimates,
+  and actions; surface dependency cycles, unsupported critical paths, unknown
+  authority, assumptions, and missing prerequisites without false precision.
+- Route repository implementation planning to the local development workflow,
+  fan source standards into installed copies, regenerate release surfaces, and
+  add focused planning and generation tests.
+
 ## 0.30.0 - 2026-07-21
 
 - Add `se-paper`, a gated Create workflow from research-question refinement and

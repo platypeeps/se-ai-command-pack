@@ -9,7 +9,7 @@ rubric-driven evaluations, evidence-backed editorial opportunity ranking,
 report-first technical editing,
 decision-oriented agendas, evidence-linked meeting follow-through,
 portable baseline monitoring, methodologically gated research papers,
-pack discovery,
+outcome-based execution planning, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -48,6 +48,7 @@ come directly from canonical skill frontmatter.
 | Skill | Use when |
 |---|---|
 | `se-decide` | Use when the user wants a defensible recommendation between known options using explicit criteria, constraints, evidence, tradeoffs, and uncertainty. |
+| `se-plan` | Use when the user has accepted a goal or decision and wants a bounded, evidence-aware plan with observable milestones, dependencies, risks, decision points, and immediate next actions. |
 
 ### Create
 
@@ -136,6 +137,12 @@ baseline. It reports dated semantic changes, compresses unchanged items,
 preserves unverifiable gaps, and returns a minimized `se-monitor-state/v1`
 artifact for an authorized user or host capability to retain. The workflow does
 not persist state, schedule recurrence, subscribe, notify, or write externally.
+
+`se-plan` turns one accepted outcome into observable milestones, dependencies,
+risks, decision points, and immediate authorized actions. It keeps commitments
+separate from proposed owners, dates, and estimates, exposes cycles and missing
+prerequisites, and hands repository implementation planning to the local
+development workflow without creating tasks or competing technical artifacts.
 
 `se-technical-editor` reviews an existing technical draft through separate
 technical correctness, evidence and citations, hidden assumptions, code and
