@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.28.0 - 2026-07-21
+
+- Add `se-meeting-follow-through`, a read-only Coordinate workflow that turns
+  supplied meeting records into evidence-linked recaps, outcome reconciliation,
+  commitment review, unresolved-item ledgers, and consent-gated follow-up drafts.
+- Keep proposals separate from decisions and candidate actions separate from
+  agreed commitments; preserve unknown owners and dates, conflicting records,
+  partial transcript coverage, and audience-sensitive omissions.
+- Fan source standards into installed copies, document sibling boundaries,
+  update generated catalog and manifest surfaces, and add focused contract and
+  generation tests.
+
 ## 0.27.0 - 2026-07-21
 
 - Add `se-literature-map`, a read-only Understand workflow that maps a field's

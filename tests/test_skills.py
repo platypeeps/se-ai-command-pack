@@ -61,6 +61,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-knowledge-gap",
     "se-learn",
     "se-literature-map",
+    "se-meeting-follow-through",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -172,6 +173,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-knowledge-gap",
                 "se-learn",
                 "se-literature-map",
+                "se-meeting-follow-through",
             ),
         )
         self.assertEqual(
@@ -207,6 +209,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-knowledge-gap": "understand",
                 "se-learn": "understand",
                 "se-literature-map": "understand",
+                "se-meeting-follow-through": "coordinate",
             },
         )
 
@@ -1881,6 +1884,85 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "preserve competing schools",
         ):
             self.assertIn(phrase, text)
+
+    def test_meeting_follow_through_reconciles_expected_and_actual_outcomes(self) -> None:
+        raw = skill_text("se-meeting-follow-through")
+        for state in (
+            "**achieved**",
+            "**changed**",
+            "**deferred**",
+            "**unaddressed**",
+            "**unclear**",
+        ):
+            self.assertIn(state, raw)
+        text = normalized("se-meeting-follow-through").lower()
+        for phrase in (
+            "expected-outcomes ledger",
+            "exactly one",
+            "without prep context",
+            "expected-versus-actual reconciliation is unavailable",
+            "derive only explicitly evidenced actual outcomes",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_meeting_follow_through_separates_decisions_and_commitments(self) -> None:
+        text = normalized("se-meeting-follow-through").lower()
+        for phrase in (
+            "a **decision** requires explicit agreement or an authorized decision",
+            "a **proposal** is discussed or suggested",
+            "a **commitment** requires explicit acceptance by the named owner",
+            "a **candidate action** is useful follow-through",
+            "never promote a proposal into a decision",
+            "suggested owner or date into an agreed commitment",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_meeting_follow_through_preserves_record_gaps_and_sensitivity(self) -> None:
+        text = normalized("se-meeting-follow-through").lower()
+        for phrase in (
+            "complete`, `partial`, `summary-only`, `unavailable`, or `unknown",
+            "never imply complete transcript coverage",
+            "label the item `disputed`",
+            "keep restricted personnel, legal, health, security, or confidential discussion",
+            "minimum safe restricted locator",
+            "preserve missing coverage and conflicts",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_meeting_follow_through_is_read_only_and_routes_siblings(self) -> None:
+        raw = skill_text("se-meeting-follow-through")
+        for sibling in (
+            "se-meeting-prep",
+            "se-agenda",
+            "se-thread-digest",
+            "se-handoff",
+            "se-knowledge-capture",
+        ):
+            self.assertIn(f"`{sibling}`", raw)
+        text = normalized("se-meeting-follow-through").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "separate explicit request",
+            "connector availability does not grant write authority",
+            "all external actions are marked `not run`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_meeting_follow_through_final_report_contract(self) -> None:
+        raw = skill_text("se-meeting-follow-through")
+        for field in (
+            "**Meeting and evidence contract**",
+            "**Expected-versus-actual outcomes**",
+            "**Decision and proposal ledger**",
+            "**Commitment and candidate-action review**",
+            "**Open questions, risks, and disagreements**",
+            "**Audience-safe recap draft**",
+            "**Follow-through drafts**",
+            "**Source coverage and sensitivity limits**",
+            "**Actions and handoffs**",
+        ):
+            self.assertIn(field, raw)
 
 
 class SkillDocumentationTest(unittest.TestCase):

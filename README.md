@@ -7,7 +7,7 @@ critical operational checklists, neutral alternative comparisons,
 evidence-traceable diagrams, auditable extreme distillation,
 rubric-driven evaluations, evidence-backed editorial opportunity ranking,
 report-first technical editing,
-decision-oriented agendas, pack discovery,
+decision-oriented agendas, evidence-linked meeting follow-through, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -64,6 +64,7 @@ come directly from canonical skill frontmatter.
 | `se-action-inbox` | Use when the user wants a reviewable, cross-source inbox of explicit commitments and opt-in possible actions without creating tasks or sending replies. |
 | `se-agenda` | Use when the user wants a decision-oriented, timeboxed meeting agenda with explicit outcomes, roles, evidence, preparation, and parking-lot rules. |
 | `se-handoff` | Use when the user wants a compact, evidence-backed continuity packet that lets another person, team, or AI session safely resume a defined objective. |
+| `se-meeting-follow-through` | Use when the user wants a source-traceable post-meeting package that reconciles intended and actual outcomes, decisions, commitments, unresolved items, and consent-gated follow-through. |
 
 ### Operate
 
