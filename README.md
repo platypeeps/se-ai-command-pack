@@ -77,6 +77,7 @@ come directly from canonical skill frontmatter.
 |---|---|
 | `se-evaluate` | Use when the user wants one defined subject assessed against an explicit rubric with criterion-level evidence, uncertainty, sensitivity, deficiencies, and prioritized improvements. |
 | `se-technical-editor` | Use when the user wants an existing technical draft reviewed through evidence-located correctness, citation, code, structure, comprehension, confidentiality, and voice passes before approved revisions are applied. |
+| `se-feedback` | Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a

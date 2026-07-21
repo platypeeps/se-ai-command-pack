@@ -1094,3 +1094,41 @@ Implemented, reviewed, and prepared the audience-calibrated se-explain workflow 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 30: Ship se-feedback
+
+**Date**: 2026-07-21
+**Task**: Ship se-feedback
+**Branch**: `codex/se-feedback`
+
+### Summary
+
+Implemented and released the read-only se-feedback workflow with traceable atomic evidence, conflict-aware theme synthesis, and evidence-backed dispositions.
+
+### Main Changes
+
+- Added the canonical se-feedback skill and registered generated platform surfaces with shared source standards.
+- Pinned atomic evidence, duplicate reach, conflicting audiences, severe minority findings, six dispositions, and read-only safety in focused tests.
+- Bumped the pack to 0.22.0 and refreshed release documentation, catalogs, manifest targets, and repository map.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0c2acfc8f48d1dabcd8edea2a08a445eb867052f` | feat: add se-feedback skill |
+
+### Testing
+
+- [OK] Deterministic full check passed with 284 tests, Ruff, mypy, generation parity, install audit, and Obsidian KB freshness.
+- [OK] GitHub CI passed on Python 3.10 and 3.13 for Ubuntu and macOS; lint, release-payload, and ci-result were green.
+- [OK] Copilot reviewed all 14 changed files; both lifecycle-timing comments were answered and resolved without code changes.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Task complete; housekeeping may merge PR #38.
