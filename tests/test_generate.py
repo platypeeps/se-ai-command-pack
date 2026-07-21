@@ -377,6 +377,27 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 targets,
             )
 
+    def test_literature_map_installs_source_and_verification_references(self) -> None:
+        expected_sources = {
+            "_shared/references/source-standards.md",
+            "_shared/references/verification-protocol.md",
+        }
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-literature-map" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        targets = {row["target"] for row in manifest["files"]}
+        for info in gen.PLATFORM_REGISTRY.values():
+            for reference in ("source-standards.md", "verification-protocol.md"):
+                self.assertIn(
+                    f"{info.skills_dir}/se-literature-map/references/{reference}",
+                    targets,
+                )
+
     def test_action_inbox_installs_source_standards(self) -> None:
         expected_sources = {"_shared/references/source-standards.md"}
         actual_sources = {
@@ -532,16 +553,20 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 targets,
             )
 
-    def test_verification_protocol_preserves_research_targets(self) -> None:
+    def test_verification_protocol_preserves_registered_targets(self) -> None:
         source = "_shared/references/verification-protocol.md"
         self.assertEqual(
             gen.SHARED_REFERENCES[source],
-            ("se-research", "se-fact-check"),
+            ("se-research", "se-fact-check", "se-literature-map"),
         )
         manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
         rows = manifest["files"]
         for platform, info in gen.PLATFORM_REGISTRY.items():
-            for consumer in ("se-research", "se-fact-check"):
+            for consumer in (
+                "se-research",
+                "se-fact-check",
+                "se-literature-map",
+            ):
                 target = (
                     f"{info.skills_dir}/{consumer}/references/"
                     "verification-protocol.md"
