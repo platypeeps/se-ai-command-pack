@@ -899,3 +899,42 @@ Implemented se-diagram as a read-only, evidence-ledger workflow for faithful Mer
 ### Next Steps
 
 - None - task complete
+
+
+## Session 25: Ship se-distill
+
+**Date**: 2026-07-21
+**Task**: Ship se-distill
+**Branch**: `codex/se-distill`
+
+### Summary
+
+Implemented and released se-distill as an auditable purpose-bound extreme-compression workflow, resolved Copilot terminology feedback, and prepared PR #32 for merge.
+
+### Main Changes
+
+- Added se-distill with measured ratios, a traceable importance map, invariant audit, smallest-safe fallback, and loss ledger.
+- Registered the Understand-family skill, fanned in source standards, and updated generated catalogs, manifests, docs, and version 0.17.0.
+- Aligned must_keep= terminology after Copilot review and resolved both review threads.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2e7806f4535481d17ed544517c14f1b10977663d` | feat: add se-distill skill |
+| `f14e07c556899c104e40cad1526f3dbc4c429392` | fix: align se-distill argument terminology |
+
+### Testing
+
+- [OK] 77 focused skill tests and 55 focused generator tests passed.
+- [OK] 258 full unit tests, Ruff, mypy, generation parity, and release gate passed.
+- [OK] Repository full check, install audit, Repomix security scan, Obsidian KB freshness, CI, and Copilot round 2 passed.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

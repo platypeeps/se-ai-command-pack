@@ -4,7 +4,8 @@ User-level knowledge-work skills for AI agent frameworks: personal profile
 maintenance and consultation, interview-driven technical authoring,
 destination-neutral capture, bookmark and action-inbox triage,
 critical operational checklists, neutral alternative comparisons,
-evidence-traceable diagrams, decision-oriented agendas, pack discovery,
+evidence-traceable diagrams, auditable extreme distillation,
+decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -31,6 +32,7 @@ come directly from canonical skill frontmatter.
 | `se-fact-check` | Use when the user supplies claims or a draft and wants a claim-by-claim evidence audit with supported, partially supported, unverified, contradicted, or outdated verdicts. |
 | `se-ask-me` | Use when the user wants a profile-grounded prediction, aligned recommendation, reflection, or outward-safe draft without treating prior behavior as identity or authority. |
 | `se-compare` | Use when the user wants a neutral, evidence-aware comparison of known alternatives on one fair frame without ranking them or recommending a winner. |
+| `se-distill` | Use when the user wants supplied material compressed to an explicit information budget while preserving decision-critical meaning, attribution, exceptions, and an auditable loss ledger. |
 
 ### Decide
 
@@ -123,6 +125,13 @@ handoff to `se-decide`.
 the smallest useful visual form. It emits conservative Mermaid when faithful or
 a tool-neutral brief when rendering constraints would distort the model, while
 preserving cycles, boundaries, conflicts, uncertainty, and an accessible description.
+
+`se-distill` compresses a supplied corpus to an explicit information budget
+using a traceable importance map and invariant audit. It reports measured input
+and output size, preserves load-bearing attribution and disagreement, and
+returns a smallest-safe result plus an auditable loss ledger when 10% would be
+unsafe. The 80/10 goal remains a disclosed prioritization heuristic, not a
+semantic-retention guarantee.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred
