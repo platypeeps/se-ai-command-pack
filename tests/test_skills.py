@@ -1920,7 +1920,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
     def test_meeting_follow_through_preserves_record_gaps_and_sensitivity(self) -> None:
         text = normalized("se-meeting-follow-through").lower()
         for phrase in (
-            "complete`, `partial`, `summary-only`, `unavailable`, or `unknown",
+            "`complete`, `partial`, `summary-only`, `unavailable`, or `unknown`",
             "never imply complete transcript coverage",
             "label the item `disputed`",
             "keep restricted personnel, legal, health, security, or confidential discussion",
