@@ -449,6 +449,24 @@ motives, facts, authority, or commitments. An accepted proposal may hand its
 approved outcome and constraints to `se-plan`, but approval, negotiation, task
 creation, implementation planning, and execution remain separate workflows.
 
+### Publish workflow boundary
+
+`se-publish` owns read-only adaptation of an already approved artifact into a
+destination-specific draft and exact preview. It supports Slack messages and
+canvases, Notion pages, internal memos, announcements, briefings, and YouTube
+outlines through capability-neutral destination contracts. It inventories
+load-bearing claims, citations, required nuance, audience scope, and sensitive
+material before drafting, then exposes every compression, reordering,
+terminology change, omission, or proposed addition in an adaptation ledger.
+
+Source fidelity, accessibility, and confidentiality outrank channel style or
+tight length limits. `se-digest` owns synthesis of unsettled inputs,
+`se-author` owns original argument development, `se-presentation` owns slide
+story specifications, and `se-knowledge-capture` owns approved durable writes
+to supported knowledge systems. `se-publish` never sends, schedules, posts, or
+creates a destination artifact; a write-capable connector workflow requires a
+separate explicit request, fresh preview, and target/audience revalidation.
+
 ### Distillation workflow boundary
 
 `se-distill` owns purpose-bound extreme compression of a supplied corpus to an

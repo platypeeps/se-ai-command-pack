@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 43
+- **Total Sessions**: 44
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1633 | Active |
+| `journal-1.md` | ~1671 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 44 | 2026-07-21 | Ship se-publish | `05caadee5453f78cc19d8575e72deb9f4a38fdc9` | `codex/se-publish` |
 | 43 | 2026-07-21 | Ship se-proposal | `e08b99beb9d8218442b9a4f986964727a1e304d8` | `codex/se-proposal` |
 | 42 | 2026-07-21 | Ship se-presentation | `9cbeb6b` | `codex/se-presentation` |
 | 41 | 2026-07-21 | Ship se-premortem | `9c68c8b` | `codex/se-premortem` |

@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.36.0 - 2026-07-21
+
+- Add `se-publish`, a read-only Create workflow that adapts an approved source
+  artifact into destination-specific drafts and exact previews.
+- Preserve load-bearing claims, citations, nuance, audience scope, sensitivity,
+  and accessibility through explicit source, adaptation, and omission ledgers.
+- Support Slack, Notion, memo, announcement, briefing, and YouTube-outline
+  contracts while keeping connector writes, sending, scheduling, and media
+  production behind a separate explicit request and fresh preview.
+
 ## 0.35.0 - 2026-07-21
 
 - Add `se-proposal`, a read-only Create workflow for interview-led,
