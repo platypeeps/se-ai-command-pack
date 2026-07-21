@@ -1484,3 +1484,42 @@ Added and reviewed a read-only, outcome-based planning workflow and released it 
 ### Next Steps
 
 - Merge PR #47 through sd-housekeeping, then continue the ranked backlog loop.
+
+
+## Session 40: Implement se-postmortem
+
+**Date**: 2026-07-21
+**Task**: Implement se-postmortem
+**Branch**: `main`
+
+### Summary
+
+Added and released an evidence-linked, blameless postmortem workflow with explicit causal, corrective-action, authority, and verification boundaries.
+
+### Main Changes
+
+- Added se-postmortem as a read-only Improve workflow for formal analysis after an incident or failed outcome is stable.
+- Preserved evidence-linked timelines, impact, safeguard behavior, causal categories, conflicts, uncertainty, and explicit no-root-cause outcomes.
+- Mapped corrective actions to findings and controls with authority, verification, risk-reduction, and residual-risk states; released pack version 0.32.0.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `af637ef` | feat: add se-postmortem skill |
+
+### Testing
+
+- [OK] npm run check:full — 342 tests, Ruff, mypy, generation parity, release gate, review preflight, 151-target install audit, and Obsidian KB freshness passed.
+- [OK] Focused test_skills.py and test_generate.py runs — 146 skill tests and 70 generator tests passed.
+- [OK] make repomix — repository map refreshed; security scan found no suspicious files.
+- [OK] GitHub CI and Copilot — all required jobs passed and 15/15 changed files were reviewed with no comments.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
