@@ -451,6 +451,25 @@ becomes failure, and incompatible comparators stay separately bounded.
 not assess personnel, certify, publish, execute improvements, or make the final
 decision.
 
+### Premortem workflow boundary
+
+`se-premortem` owns prospective stress-testing after an objective and plan are
+accepted but before execution or an irreversible commitment. It defines the
+failed state, inventories plan sufficiency and evidence, develops distinct
+technical, operational, people, dependency, incentive, security, market, and
+external failure modes, and labels each scenario as evidence-supported,
+analogical, or speculative. Scenarios remain hypotheses rather than forecasts.
+
+Likelihood, impact, detectability, and evidence confidence use explained
+ordinal bands without composite arithmetic. Common-cause, correlated, and
+cascading failures remain linked, while low-likelihood catastrophic tails stay
+visible separately. Every prevention and contingency must map to a named mode
+and observable indicator; no-mitigation cases, residual risk, decision points,
+and stop conditions remain explicit. Planning stays with `se-plan`, adversarial
+artifact review with `se-red-team`, and after-outcome analysis with
+`se-postmortem`. Approval, assignments, go/no-go decisions, and execution
+require separate authority.
+
 ### Postmortem workflow boundary
 
 `se-postmortem` owns formal corrective analysis after an incident or failed

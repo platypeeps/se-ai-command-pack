@@ -12,33 +12,26 @@
 
 ## Execution Order
 
-### Completed foundation
+### Completed baseline
 
-1. `skill-family-taxonomy`
-2. `se-decide`
-3. `se-status`
-4. `se-fact-check`
-5. `se-help`
-6. `personal-profile-contract`
+1. Treat the 32 archived children reported by Trellis as complete.
+2. The completed work includes the foundation and portable-profile slices,
+   `se-plan`, `se-handoff`, `se-monitor`, and the shipped children reflected in
+   the cohort counts in `prd.md`.
+3. Do not reopen an archived child merely to make the parent artifacts match an
+   earlier delivery sequence.
 
 ### Next recommended slice
 
-1. Rebase on current `main` and activate `se-profile`, the only unfinished P1
-   child. Deliver its narrow consent/provenance/correction/read-back slice
-   before optional inference, overlays, or import behavior.
-2. After the profile contract is stable in product behavior, implement
-   `se-ask-me` as a read-only consumer and verify that it cannot mutate or
-   silently extend the profile.
-3. Reconcile the profile trigger boundary with all profile-aware skills before
-   expanding profile consumption further.
-
-### Delivery coordination
-
-1. Implement `se-plan` and then `se-handoff` from rebased `main`.
-2. Implement `se-monitor` only after its portable state contract passes focused
-   review.
-3. Implement `se-retro` after rechecking its non-overlap with repo-local
-   `sd-retro`.
+1. Keep the parent in planning; it is a coordination envelope, not an
+   implementation target.
+2. Under an unfiltered autonomous backlog run, activate the highest-ranked
+   implementation-ready child. The current deterministic selection is
+   `se-premortem`.
+3. Preserve each selected child's nearest-neighbor trigger boundaries before
+   editing its canonical skill.
+4. After the selected child ships, update the parent to 33 completed and 16
+   planning.
 
 ### Remaining cohorts
 
@@ -46,19 +39,12 @@ Select one ready child at a time from the following cohorts. Before activation,
 compare the candidate's trigger and output contract with its nearest neighbors.
 Do not infer a hard dependency from the list order.
 
-1. Capture and knowledge operations: `se-capture`, `se-video-notes`,
-   `se-thread-digest`, `se-knowledge-capture`, `se-watchlist`,
-   `se-weekly-review`, `se-action-inbox`, `se-knowledge-gap`, `se-publish`,
-   `se-meeting-follow-through`, `se-bookmark-triage`.
-2. Understand and learn: `se-distill`, `se-explain`, `se-literature-map`,
-   `se-compare`, `se-learn`, `se-study-guide`, `se-socratic-review`.
-3. Create and communicate: `se-author`, `se-topic-radar`,
-   `se-technical-editor`, `se-paper`, `se-proposal`, `se-tutorial`,
-   `se-presentation`, `se-diagram`.
-4. Coordinate and operate: `se-stakeholder-map`, `se-feedback`, `se-agenda`,
-   `se-runbook`, `se-sop`, `se-checklist`.
-5. Improve and assure: `se-premortem`, `se-evaluate`, `se-red-team`,
-   `se-postmortem`.
+1. Capture and knowledge operations: `se-video-notes`, `se-thread-digest`,
+   `se-watchlist`, `se-weekly-review`, `se-publish`.
+2. Understand and learn: `se-study-guide`, `se-socratic-review`.
+3. Create and communicate: `se-proposal`, `se-tutorial`, `se-presentation`.
+4. Coordinate and operate: `se-stakeholder-map`, `se-runbook`, `se-sop`.
+5. Improve and assure: `se-premortem`, `se-red-team`.
 6. Complete `personal-worklog-profile` as a separate P3 design decision; create
    no implementation follow-up without explicit task-creation consent.
 

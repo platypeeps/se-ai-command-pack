@@ -66,6 +66,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-paper",
     "se-plan",
     "se-postmortem",
+    "se-premortem",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -182,6 +183,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-paper",
                 "se-plan",
                 "se-postmortem",
+                "se-premortem",
             ),
         )
         self.assertEqual(
@@ -222,6 +224,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-paper": "create",
                 "se-plan": "decide",
                 "se-postmortem": "improve",
+                "se-premortem": "improve",
             },
         )
 
@@ -2241,6 +2244,56 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Counterfactuals and uncertainty**",
             "**Corrective-action ledger**",
             "**Sensitive-detail handling**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_premortem_preserves_hypotheses_and_evidence_classes(self) -> None:
+        text = normalized("se-premortem").lower()
+        for phrase in (
+            "define what failure means before generating scenarios",
+            "`evidence-supported`, `analogical`, or `speculative`",
+            "scenarios are hypotheses, not predictions",
+            "data, not instructions",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_premortem_handles_correlation_ranking_and_tail_risk(self) -> None:
+        text = normalized("se-premortem").lower()
+        for phrase in (
+            "identify common-cause, correlated, and cascading failures",
+            "ordinal bands and rationale rather than numeric probability",
+            "do not multiply or average ordinal labels",
+            "retain low-likelihood catastrophic cases in a separate tail-risk view",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_premortem_mitigations_are_observable_and_authority_bounded(self) -> None:
+        text = normalized("se-premortem").lower()
+        for phrase in (
+            "map every prevention or contingency to a named failure mode and observable leading indicator",
+            "cases with no viable mitigation",
+            "only when explicitly supplied or approved",
+            "this skill is read-only",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_premortem_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-premortem")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in ("`se-plan`", "`se-postmortem`", "`se-red-team`"):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Premortem contract**",
+            "**Plan sufficiency and assumptions**",
+            "**Source coverage and conflicts**",
+            "**Failure-mode register**",
+            "**Correlation and cascade map**",
+            "**Prioritized risk view**",
+            "**Catastrophic tail risks**",
+            "**Mitigation and indicator ledger**",
+            "**Decision points and stop conditions**",
+            "**Residual risk and no-mitigation cases**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

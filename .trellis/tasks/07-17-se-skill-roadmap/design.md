@@ -14,14 +14,17 @@ behind a separately reviewed portable contract and explicit user consent.
 
 ## Current State
 
-- The foundation cohort is complete: `skill-family-taxonomy`, `se-decide`,
-  `se-status`, `se-fact-check`, `se-help`, and `personal-profile-contract`.
-- The remaining 43 children are in planning and have complete PRD, design,
-  implementation, and context artifacts.
-- `se-profile` is the only unfinished P1 child. Its prerequisite portable
-  `personal-profile-contract` is complete.
-- `personal-worklog-profile` remains a P3 design boundary and does not authorize
-  private settings or paths in the public payload.
+- 32 of 49 children are completed and archived; the remaining 17 are in
+  planning with complete PRD, design, implementation, and context artifacts.
+- The foundation and portable profile slice are complete, including
+  `personal-profile-contract`, `se-profile`, and the read-only `se-ask-me`
+  consumer.
+- `se-plan`, `se-handoff`, and `se-monitor` are complete. `se-retro` is the
+  only unfinished delivery-coordination child and remains a near-term cohort
+  closeout target.
+- The remaining product-skill children are P2. `personal-worklog-profile`
+  remains a separate P3 design boundary and does not authorize private settings
+  or paths in the public payload.
 
 ## Delivery Model
 
@@ -33,20 +36,15 @@ canonical state.
 Use these dependency and ordering rules:
 
 1. Keep the completed taxonomy and shared profile contract as foundations.
-2. Implement `se-profile` next because it is the remaining P1 and its contract
-   prerequisite is complete. Stabilize create, status, correction, provenance,
-   and read-back behavior before adding consumers.
-3. Implement `se-ask-me` after `se-profile` to validate the approved profile as
-   a read-only consumer. It must not infer new profile facts or mutate profile
-   state.
-4. Resume the delivery-coordination sequence with `se-plan`, `se-handoff`,
-   `se-monitor`, and `se-retro`. Review `se-monitor`'s portable state contract
-   before workflow prose depends on it, and preserve the `se-retro`/`sd-retro`
-   routing boundary.
-5. Work through the remaining cohorts in small coherent slices. Cohort order is
+2. Preserve the shipped profile boundary: `se-ask-me` remains a read-only
+   consumer and must not infer new profile facts or mutate profile state.
+3. Keep `se-retro` near the front of the remaining work to close the
+   delivery-coordination sequence, while allowing the live backlog ranker to
+   select another equally prioritized, implementation-ready child first.
+4. Work through the remaining cohorts in small coherent slices. Cohort order is
    a review heuristic, not a hidden dependency; select each next child from live
    priority, readiness, overlap, and user value.
-6. Keep `personal-worklog-profile` as a separate design decision. Any private
+5. Keep `personal-worklog-profile` as a separate design decision. Any private
    automation or public product follow-up needs its own approved task.
 
 Within each remaining cohort, review neighboring contracts together before the
