@@ -1,7 +1,7 @@
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: personal profile
-maintenance, action-inbox triage, decision-oriented agendas, pack discovery,
+maintenance and consultation, action-inbox triage, decision-oriented agendas, pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
 once per machine, centrally managed from this repository.
@@ -26,6 +26,7 @@ come directly from canonical skill frontmatter.
 | `se-scan` | Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria. |
 | `se-digest` | Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced. |
 | `se-fact-check` | Use when the user supplies claims or a draft and wants a claim-by-claim evidence audit with supported, partially supported, unverified, contradicted, or outdated verdicts. |
+| `se-ask-me` | Use when the user wants a profile-grounded prediction, aligned recommendation, reflection, or outward-safe draft without treating prior behavior as identity or authority. |
 
 ### Decide
 
@@ -65,6 +66,12 @@ fallback; the skill implements no connector and never silently mirrors both.
 Every mutation previews the change, preserves user-owned content, writes, reads
 back, and verifies stable IDs. Any other skill that adopts the contract is a
 read-only consumer and must never write back merely because it used the profile.
+
+`se-ask-me` is the first read-only profile consumer. It keeps profile facts,
+prediction, aligned advice, reflection, and outward-facing drafts distinct;
+current context outranks historical patterns, uncertain or conflicting evidence
+stays visible, and outward drafts use only eligible `outward-safe` assertions.
+It never treats the profile as identity, consent, authority, or permission to act.
 
 `se-action-inbox` reconciles explicit assignments and commitments across a
 bounded source set while keeping requests, proposals, and opt-in inferred

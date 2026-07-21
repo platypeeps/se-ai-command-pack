@@ -93,6 +93,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-profile", family="operate"),
     SkillInfo(name="se-action-inbox", family="coordinate"),
     SkillInfo(name="se-agenda", family="coordinate"),
+    SkillInfo(name="se-ask-me", family="understand"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 
@@ -112,13 +113,17 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-profile",
         "se-action-inbox",
         "se-agenda",
+        "se-ask-me",
     ),
     "_shared/references/verification-protocol.md": (
         "se-research",
         "se-fact-check",
     ),
     "_shared/references/skill-catalog.md": ("se-help",),
-    "_shared/references/personal-profile-contract.md": ("se-profile",),
+    "_shared/references/personal-profile-contract.md": (
+        "se-profile",
+        "se-ask-me",
+    ),
 }
 
 ALWAYS_INSTALL = "always"
