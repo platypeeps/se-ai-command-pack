@@ -644,3 +644,42 @@ Added and reviewed a decision-oriented agenda workflow with explicit authority, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 18: Add profile consultation workflow
+
+**Date**: 2026-07-21
+**Task**: Add profile consultation workflow
+**Branch**: `codex/se-ask-me`
+
+### Summary
+
+Implemented and validated se-ask-me as the first read-only consumer of the shared personal-profile contract, then opened PR #25 and completed a clean Copilot review round.
+
+### Main Changes
+
+- Added predict, advise, reflect, and draft consultation modes with current-context precedence, uncertainty, counterevidence, and high-stakes boundaries.
+- Registered se-ask-me under Understand and fanned the personal-profile contract and source standards into all installed targets.
+- Released version 0.10.0 with generated catalogs, manifest targets, documentation, Repomix map, and focused contract tests.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `41df1279f9d91e3cfa0566ecfea32d7d6d659052` | feat: add profile consultation workflow |
+
+### Testing
+
+- [OK] 49 focused skill tests and 48 focused generator tests passed
+- [OK] make check passed 223 tests plus Ruff, mypy, generation parity, and release gate
+- [OK] deterministic PR full-check and Repomix security scan passed
+- [OK] PR #25 CI passed and Copilot reviewed 14/14 files with no comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
