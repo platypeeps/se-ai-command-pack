@@ -3,7 +3,7 @@
   "name": "se-action-inbox",
   "title": "Implement se-action-inbox",
   "description": "Add a cross-source action inbox that extracts, deduplicates, ranks, and clarifies commitments from communication and knowledge systems without silently creating tasks.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

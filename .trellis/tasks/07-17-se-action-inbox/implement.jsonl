@@ -1,1 +1,3 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file":".trellis/spec/backend/directory-structure.md","reason":"Owns canonical skill placement, registry declarations, generated surfaces, and flat install paths."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Owns payload versioning, focused tests, generated-surface parity, and the full validation gate."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Guides consistency across canonical templates, registry metadata, generated platform targets, documentation, and tests."}

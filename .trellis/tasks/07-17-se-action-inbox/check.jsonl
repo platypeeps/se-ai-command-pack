@@ -1,1 +1,3 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Verify registry, template, release metadata, tests, and generated payloads through the repository quality contract."}
+{"file":".trellis/spec/backend/directory-structure.md","reason":"Verify the source-of-truth boundaries and generated flat platform targets remain aligned."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Audit the complete template-to-registry-to-manifest-to-documentation data flow for drift."}

@@ -1,10 +1,10 @@
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: personal profile
-maintenance, pack discovery, deep research, claim fact-checking, decision
-support, project-status reporting, daily briefs, meeting prep, landscape scans,
-and document digests — installed once per machine, centrally managed from this
-repository.
+maintenance, action-inbox triage, pack discovery, deep research, claim
+fact-checking, decision support, project-status reporting, daily briefs,
+meeting prep, landscape scans, and document digests — installed once per
+machine, centrally managed from this repository.
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -40,6 +40,7 @@ come directly from canonical skill frontmatter.
 | `se-brief` | Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update. |
 | `se-meeting-prep` | Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions. |
 | `se-status` | Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions. |
+| `se-action-inbox` | Use when the user wants a reviewable, cross-source inbox of explicit commitments and opt-in possible actions without creating tasks or sending replies. |
 
 ### Operate
 
@@ -63,6 +64,13 @@ fallback; the skill implements no connector and never silently mirrors both.
 Every mutation previews the change, preserves user-owned content, writes, reads
 back, and verifies stable IDs. Any other skill that adopts the contract is a
 read-only consumer and must never write back merely because it used the profile.
+
+`se-action-inbox` reconciles explicit assignments and commitments across a
+bounded source set while keeping requests, proposals, and opt-in inferred
+possibilities separate. It preserves every locator and conflicting value,
+suppresses resolved items visibly, and ranks active work with evidence-backed
+reasons. The workflow is read-only: task creation, reminders, replies, and
+handoff to `se-plan` require a separate request.
 
 ## What gets installed where
 
