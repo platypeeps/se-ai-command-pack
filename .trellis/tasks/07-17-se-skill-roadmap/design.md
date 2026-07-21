@@ -14,14 +14,13 @@ behind a separately reviewed portable contract and explicit user consent.
 
 ## Current State
 
-- 37 of 49 children are completed and archived; the remaining 12 are in
+- 38 of 49 children are completed and archived; the remaining 11 are in
   planning with complete PRD, design, implementation, and context artifacts.
 - The foundation and portable profile slice are complete, including
   `personal-profile-contract`, `se-profile`, and the read-only `se-ask-me`
   consumer.
-- `se-plan`, `se-handoff`, and `se-monitor` are complete. `se-retro` is the
-  only unfinished delivery-coordination child and remains a near-term cohort
-  closeout target.
+- `se-plan`, `se-handoff`, `se-monitor`, and `se-retro` are complete, closing
+  the plan-and-coordinate delivery cohort.
 - The remaining product-skill children are P2. `personal-worklog-profile`
   remains a separate P3 design boundary and does not authorize private settings
   or paths in the public payload.
@@ -38,9 +37,8 @@ Use these dependency and ordering rules:
 1. Keep the completed taxonomy and shared profile contract as foundations.
 2. Preserve the shipped profile boundary: `se-ask-me` remains a read-only
    consumer and must not infer new profile facts or mutate profile state.
-3. Keep `se-retro` near the front of the remaining work to close the
-   delivery-coordination sequence, while allowing the live backlog ranker to
-   select another equally prioritized, implementation-ready child first.
+3. Preserve the completed plan-and-coordinate sequence and select its successor
+   from live priority, readiness, overlap, and user value.
 4. Work through the remaining cohorts in small coherent slices. Cohort order is
    a review heuristic, not a hidden dependency; select each next child from live
    priority, readiness, overlap, and user value.

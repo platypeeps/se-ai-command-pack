@@ -40,6 +40,14 @@
 - Ensure the shipped skill remains useful when `sd-retro` is absent.
 - Keep journal recording and Trellis task creation out of this general skill.
 
+## Rollback Points
+
+- Revert the single feature commit before PR publication if focused or full
+  validation exposes a contract conflict.
+- Before merge, restore the prior release metadata and regenerate the manifest
+  if the skill must be withdrawn without disturbing unrelated mainline work.
+- After merge, use a follow-up revert PR; do not rewrite shared branch history.
+
 ## Follow-Ups
 
 - Consider facilitator templates only after the core evidence-led retro is used
