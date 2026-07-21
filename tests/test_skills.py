@@ -1264,7 +1264,6 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "code and examples",
             "novelty and originality",
             "skeptical-reader objections",
-            "skeptical-reader-objections",
             "reader comprehension",
             "title and opening",
             "record `not run` for every omitted pass",
@@ -1272,6 +1271,20 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "before rewriting any material claim, structure, citation relationship, or voice",
         ):
             self.assertIn(phrase, text)
+        for token in (
+            "technical-correctness",
+            "evidence-and-citations",
+            "hidden-assumptions",
+            "code-and-examples",
+            "novelty-and-originality",
+            "skeptical-reader-objections",
+            "structure",
+            "reader-comprehension",
+            "confidentiality",
+            "title-and-opening",
+            "voice-consistency",
+        ):
+            self.assertIn(f"`{token}`", text)
 
     def test_technical_editor_locates_and_classifies_findings(self) -> None:
         text = normalized("se-technical-editor").lower()

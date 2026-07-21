@@ -6663,9 +6663,11 @@ reading, searching, or editing.
   authoritative sources already associated with the draft.
 - `target=` — optional publication target and its format or editorial rules.
 - `depth=full|focused` — default `full`; focused mode requires `passes=`.
-- `passes=` — comma-separated subset of `correctness,citations,assumptions,code,
-  novelty,skeptical-reader-objections,structure,comprehension,confidentiality,
-  opening,voice`.
+- `passes=` — comma-separated subset of `technical-correctness`,
+  `evidence-and-citations`, `hidden-assumptions`, `code-and-examples`,
+  `novelty-and-originality`, `skeptical-reader-objections`, `structure`,
+  `reader-comprehension`, `confidentiality`, `title-and-opening`, and
+  `voice-consistency`.
 - `mode=report|edit` — default `report`; `edit` applies only the changes
   explicitly authorized by the request or a later approval.
 - `edits=` — finding IDs, categories, or bounded instructions authorized for
