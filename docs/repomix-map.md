@@ -5369,7 +5369,7 @@ def test_help_routes_without_execution(self) -> None
 def test_help_references_and_examples_use_registered_skills(self) -> None
 ⋮----
 examples = (
-named = set(re.findall(r"`\$?(se-[a-z0-9-]+)`", examples))
+named = set(re.findall(r"\bse-[a-z0-9-]+\b", examples))
 ⋮----
 class SkillDocumentationTest(unittest.TestCase)
 ⋮----
