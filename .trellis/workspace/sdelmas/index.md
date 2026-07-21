@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 35
+- **Total Sessions**: 36
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1328 | Active |
+| `journal-1.md` | ~1369 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 36 | 2026-07-21 | Implement se-meeting-follow-through | `f96f50d`, `83fd00c`, `d2827f0` | `codex/se-meeting-follow-through` |
 | 35 | 2026-07-21 | Implement se-literature-map | `3e4fd5b`, `4e40a7d` | `codex/se-literature-map` |
 | 34 | 2026-07-21 | Implement se-learn | `15a44f7` | `codex/se-learn` |
 | 33 | 2026-07-21 | Implement se-knowledge-gap | `efdc085`, `041fc43` | `codex/se-knowledge-gap` |
