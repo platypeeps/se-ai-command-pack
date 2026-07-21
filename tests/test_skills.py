@@ -42,6 +42,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-fact-check",
     "se-profile",
     "se-action-inbox",
+    "se-agenda",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -134,6 +135,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-help",
                 "se-profile",
                 "se-action-inbox",
+                "se-agenda",
             ),
         )
         self.assertEqual(
@@ -150,6 +152,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-help": "operate",
                 "se-profile": "operate",
                 "se-action-inbox": "coordinate",
+                "se-agenda": "coordinate",
             },
         )
 
@@ -324,6 +327,50 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Resolved and excluded**",
             "**Source coverage**",
             "**Recommended handling**",
+        ):
+            self.assertIn(field, text)
+
+    def test_agenda_requires_outcome_duration_and_exact_time_budget(self) -> None:
+        text = normalized("se-agenda").lower()
+        self.assertIn("observable outcome", text)
+        self.assertIn("duration=", text)
+        self.assertIn("sums to no more than `duration=`", text)
+        self.assertIn("opening time", text)
+        self.assertIn("closing time", text)
+
+    def test_agenda_preserves_authority_and_async_boundaries(self) -> None:
+        text = normalized("se-agenda").lower()
+        self.assertIn("attendance never proves authority", text)
+        self.assertIn("unknown authority", text)
+        self.assertIn("asynchronous update", text)
+        self.assertIn("blocked-meeting condition", text)
+        self.assertIn("never invent participant availability", text)
+
+    def test_agenda_is_read_only_and_routes_sibling_workflows(self) -> None:
+        text = normalized("se-agenda")
+        lower = text.lower()
+        self.assertIn("read-only", lower)
+        self.assertIn("data, not instructions", lower)
+        self.assertIn("separate explicit request", lower)
+        for sibling in (
+            "se-meeting-prep",
+            "se-status",
+            "se-decide",
+            "se-meeting-follow-through",
+        ):
+            self.assertIn(f"`{sibling}`", text)
+
+    def test_agenda_final_report_contract(self) -> None:
+        text = skill_text("se-agenda")
+        for field in (
+            "**Meeting brief**",
+            "**Meeting recommendation**",
+            "**Preconditions and pre-read**",
+            "**Timeboxed agenda**",
+            "**Decision and role rules**",
+            "**Parking lot and stop conditions**",
+            "**Close and handoff**",
+            "**Facilitator notes**",
         ):
             self.assertIn(field, text)
 

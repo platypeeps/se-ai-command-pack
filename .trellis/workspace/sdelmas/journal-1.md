@@ -605,3 +605,42 @@ Added and reviewed a read-only cross-source action inbox with explicit provenanc
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: Implement se-agenda
+
+**Date**: 2026-07-21
+**Task**: Implement se-agenda
+**Branch**: `codex/se-agenda`
+
+### Summary
+
+Added and reviewed a decision-oriented agenda workflow with explicit authority, preparation, and time-budget contracts.
+
+### Main Changes
+
+- Added se-agenda with observable outcomes, synchronous-mode classification, per-item completion signals, and verified total timeboxes.
+- Registered and generated all platform payloads, source-standard fan-out, documentation, release metadata, and repository knowledge surfaces for version 0.9.0.
+- Published PR #24; Copilot reviewed all changed files on the exact feature head and generated no comments.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6ab5a75f9b5c81ee2b56138f5202bcdaff7124a7` | feat: add agenda workflow |
+| `57974f0` | chore(task): archive se-agenda |
+
+### Testing
+
+- [OK] make check: 218 tests, Ruff, mypy, generation drift, Repomix, and release payload gate passed.
+- [OK] SD PR full-check passed with install audit, Obsidian KB freshness, and review preflight.
+- [OK] GitHub CI passed all six executed checks; Copilot round 1 found no comments or review threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
