@@ -82,11 +82,13 @@ fallback when Obsidian is unavailable or the user prefers Notion; it preserves
 the same semantic headings and fields and does not require a database. Never
 silently create or synchronize both copies.
 
-Consumers and maintainers use `profile=auto|off|<locator>` plus optional
-`audience=`. `auto` resolves only an attached authorized profile or a private
-host-configured locator; it never searches all personal stores. `off` disables
-profile use for the invocation. Locator details stay private and outside the
-public installer.
+Consumers use `profile=auto|off|<locator>` plus optional `audience=`. `off`
+disables profile use for a consumer invocation. The `se-profile` maintenance
+owner uses `profile=auto|<locator>` because every maintenance operation must
+resolve the exact artifact it will inspect or change. In either surface, `auto`
+resolves only an attached authorized profile or a private host-configured
+locator; it never searches all personal stores. Locator details stay private
+and outside the public installer.
 
 Every mutation follows: resolve exact profile, read current state, validate,
 preserve user-owned and unknown content, preview, obtain required approval,

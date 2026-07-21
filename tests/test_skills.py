@@ -404,6 +404,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
         contract = (
             SKILLS_ROOT / "_shared" / "references" / "personal-profile-contract.md"
         ).read_text(encoding="utf-8")
+        normalized_contract = " ".join(contract.split())
         for value in (
             "se-personal-profile/v1",
             "profile_id",
@@ -432,6 +433,13 @@ class SkillSafetyPinsTest(unittest.TestCase):
             self.assertIn(state, skill)
         self.assertIn("stable assertion/evidence IDs", skill)
         self.assertIn("unknown or manually edited content", skill)
+        self.assertIn(
+            "Consumers use `profile=auto|off|<locator>`", normalized_contract
+        )
+        self.assertIn(
+            "The `se-profile` maintenance owner uses `profile=auto|<locator>`",
+            normalized_contract,
+        )
 
     def test_profile_consent_privacy_and_feedback_boundaries(self) -> None:
         text = normalized("se-profile").lower()

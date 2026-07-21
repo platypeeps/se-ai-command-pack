@@ -3480,11 +3480,13 @@ fallback when Obsidian is unavailable or the user prefers Notion; it preserves
 the same semantic headings and fields and does not require a database. Never
 silently create or synchronize both copies.
 
-Consumers and maintainers use `profile=auto|off|<locator>` plus optional
-`audience=`. `auto` resolves only an attached authorized profile or a private
-host-configured locator; it never searches all personal stores. `off` disables
-profile use for the invocation. Locator details stay private and outside the
-public installer.
+Consumers use `profile=auto|off|<locator>` plus optional `audience=`. `off`
+disables profile use for a consumer invocation. The `se-profile` maintenance
+owner uses `profile=auto|<locator>` because every maintenance operation must
+resolve the exact artifact it will inspect or change. In either surface, `auto`
+resolves only an attached authorized profile or a private host-configured
+locator; it never searches all personal stores. Locator details stay private
+and outside the public installer.
 
 Every mutation follows: resolve exact profile, read current state, validate,
 preserve user-owned and unknown content, preview, obtain required approval,
@@ -4525,9 +4527,9 @@ ambiguous, ask one focused question and do not mutate anything.
    IDs or revision events.
 5. Prefer a user-selected Obsidian Markdown note. If that capability is
    unavailable, offer a user-selected Notion page, or use it when explicitly
-   requested. Never silently fall back, mirror both destinations, embed a
-   locator in public configuration, or weaken approval/read-back rules because
-   a connector is unavailable.
+   requested. Never silently fall back from Obsidian to Notion. Never mirror
+   both destinations, embed a locator in public configuration, or weaken
+   approval/read-back rules because a connector is unavailable.
 
 ## Safety rules
 
@@ -5887,6 +5889,7 @@ def test_profile_schema_provenance_and_preflight(self) -> None
 ⋮----
 skill = normalized("se-profile")
 contract = (
+normalized_contract = " ".join(contract.split())
 ⋮----
 def test_profile_consent_privacy_and_feedback_boundaries(self) -> None
 ⋮----

@@ -126,9 +126,9 @@ ambiguous, ask one focused question and do not mutate anything.
    IDs or revision events.
 5. Prefer a user-selected Obsidian Markdown note. If that capability is
    unavailable, offer a user-selected Notion page, or use it when explicitly
-   requested. Never silently fall back, mirror both destinations, embed a
-   locator in public configuration, or weaken approval/read-back rules because
-   a connector is unavailable.
+   requested. Never silently fall back from Obsidian to Notion. Never mirror
+   both destinations, embed a locator in public configuration, or weaken
+   approval/read-back rules because a connector is unavailable.
 
 ## Safety rules
 
