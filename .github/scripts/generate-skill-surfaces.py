@@ -77,6 +77,7 @@ DEFAULT_MANIFEST_HEADER = {
         "Install user-level knowledge-work skills for personal profiles, "
         "consultation, technical authoring, destination-neutral capture, "
         "critical checklists, "
+        "safe operational runbooks, "
         "neutral comparisons, "
         "evidence-traceable diagrams, "
         "auditable extreme distillation, "

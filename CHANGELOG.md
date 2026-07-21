@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.39.0 - 2026-07-21
+
+- Add `se-runbook`, a read-only Operate workflow for source-traceable,
+  versioned operational procedures with bounded triggers, authority, targets,
+  decision points, verification, and failure handling.
+- Require every mutating step to carry an explicit execution state, expected
+  result, read-back check, stop/escalation response, and evidence locator.
+- Model partial-state reconciliation, rollback and recovery separately;
+  protect secrets and destructive targets; and expose stale, unsupported,
+  proposed, and no-safe-rollback states without executing the procedure.
+
 ## 0.38.0 - 2026-07-21
 
 - Add `se-retro`, a read-only Improve workflow for evidence-led,

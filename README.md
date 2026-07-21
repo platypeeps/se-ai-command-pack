@@ -86,6 +86,7 @@ come directly from canonical skill frontmatter.
 | `se-capture` | Use when the user wants one URL, file, pasted passage, connected record, or bounded thread normalized into a destination-neutral knowledge artifact with provenance and no implicit external write. |
 | `se-checklist` | Use when the user wants a short read-do or do-confirm checklist derived from bounded authoritative sources, with observable pass conditions, failure responses, and no execution or certification. |
 | `se-knowledge-capture` | Use when the user wants a normalized capture safely published to Obsidian or Notion through duplicate-aware preview, preservation, approval, and verified write-back. |
+| `se-runbook` | Use when the user wants a source-traceable operational runbook with bounded authority, ordered steps, verification, failure handling, escalation, rollback, recovery, and maintenance metadata. |
 
 ### Improve
 
@@ -194,6 +195,14 @@ failure history into the smallest dependency-ordered set of checks that prevent
 a named failure or prove completion. Every item has an observable pass state,
 evidence rule, failure response, and source basis. It never executes the work,
 replaces a full procedure, or claims certification.
+
+`se-runbook` turns validated operational knowledge into a versioned procedure
+whose steps keep authority, exact target, action, expected result, read-back
+verification, failure response, decision point, and evidence together. It
+distinguishes validated, partially validated, and proposed steps; reconciles
+partial state before retry or recovery; separates rollback from recovery; and
+warns when the current environment, version, or date is outside validation.
+The workflow authors but never executes the runbook.
 
 `se-compare` applies one fair, source-aware frame to a known set of
 alternatives. It preserves version and evidence asymmetry, explicit unknown and

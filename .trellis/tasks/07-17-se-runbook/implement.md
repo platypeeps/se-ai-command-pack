@@ -24,6 +24,14 @@ claims, validation metadata, stale warnings, and non-execution boundary.
 Confirm every mutation has authority, bounded scope, expected result, verification,
 and failure handling.
 
+## Rollback Points
+
+- Revert the single feature commit before PR publication if focused or full
+  validation exposes a contract conflict.
+- Before merge, restore the prior release metadata and regenerate the manifest
+  if the skill must be withdrawn without disturbing unrelated mainline work.
+- After merge, use a follow-up revert PR; do not rewrite shared branch history.
+
 ## Follow-Ups
 
 Runbook execution and incident-command orchestration remain separate capabilities.
