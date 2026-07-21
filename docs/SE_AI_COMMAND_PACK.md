@@ -416,6 +416,22 @@ meaning, or accessibility needs trigger a tool-neutral visual brief. The skill
 does not discover live architecture, invent causal structure, create branded or
 raster artwork, mutate documentation, or publish the result.
 
+### Presentation workflow boundary
+
+`se-presentation` owns read-only narrative and slide-specification planning
+from an approved source artifact. It inventories load-bearing claims and assets
+before building an outcome-led story arc, then gives every slide one primary
+claim, source IDs, visual intent and status, speaker notes, transition,
+anticipated question, timing budget, and accessible linear alternative.
+
+Short and standard variants reprioritize the same argument through an explicit
+omission ledger; they never shrink text or silently drop evidence. Existing,
+data-derived, and proposed visuals remain distinct, and sparse evidence can
+support a discussion deck without being upgraded into a decision deck. Profile
+data is optional, read-only, and limited to presentation preferences. Deck-file
+creation, rendering, rehearsal, delivery, and publication belong to separate
+presentation or publishing capabilities.
+
 ### Distillation workflow boundary
 
 `se-distill` owns purpose-bound extreme compression of a supplied corpus to an

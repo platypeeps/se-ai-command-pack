@@ -96,6 +96,7 @@ DEFAULT_MANIFEST_HEADER = {
         "outcome-based execution planning, "
         "evidence-linked blameless postmortems, "
         "pre-execution failure stress tests, "
+        "source-grounded presentation blueprints, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

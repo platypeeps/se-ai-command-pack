@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.34.0 - 2026-07-21
+
+- Add `se-presentation`, a read-only Create workflow that turns an approved
+  source artifact into an outcome-led story arc and timed slide specification.
+- Require one primary claim per slide, source-ledger traceability, explicit
+  existing/derived/proposed visual states, and short/standard omission ledgers.
+- Preserve citations, profile authority, accessibility, sensitive-material, and
+  deck-production boundaries; fan source/profile references into installed
+  copies and add focused contract and generation tests.
+
 ## 0.33.0 - 2026-07-21
 
 - Add `se-premortem`, a read-only Improve workflow for stress-testing accepted

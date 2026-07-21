@@ -59,6 +59,7 @@ come directly from canonical skill frontmatter.
 | `se-diagram` | Use when the user wants a precise, evidence-traceable diagram specification or conservative Mermaid diagram for a system, process, concept, hierarchy, comparison, state model, or event sequence. |
 | `se-topic-radar` | Use when the user wants ten ranked technical writing opportunities grounded in authorized personal activity, current developments, prior coverage, evidence readiness, novelty, and effort. |
 | `se-paper` | Use when the user wants to develop a credible research paper through question refinement, an approved research brief, explicit literature and methodology protocols, traceable evidence, reproducibility, and venue-aware review. |
+| `se-presentation` | Use when the user wants to turn an approved source artifact into an audience-specific story arc and source-traceable slide specification before using presentation tooling. |
 
 ### Coordinate
 
@@ -199,6 +200,12 @@ handoff to `se-decide`.
 the smallest useful visual form. It emits conservative Mermaid when faithful or
 a tool-neutral brief when rendering constraints would distort the model, while
 preserving cycles, boundaries, conflicts, uncertainty, and an accessible description.
+
+`se-presentation` turns an approved source artifact into an outcome-led story
+arc and timed, one-claim-per-slide specification. It keeps claims, citations,
+visual states, speaker notes, variants, omissions, and accessibility traceable,
+then hands the accepted blueprint to presentation tooling without creating or
+publishing a deck itself.
 
 `se-distill` compresses a supplied corpus to an explicit information budget
 using a traceable importance map and invariant audit. It reports measured input
