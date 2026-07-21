@@ -3,7 +3,7 @@
 User-level knowledge-work skills for AI agent frameworks: personal profile
 maintenance and consultation, interview-driven technical authoring,
 destination-neutral capture, source-faithful destination adaptation,
-bookmark and action-inbox triage,
+constructive adversarial review, bookmark and action-inbox triage,
 critical operational checklists, neutral alternative comparisons,
 evidence-traceable diagrams, auditable extreme distillation,
 rubric-driven evaluations, evidence-backed editorial opportunity ranking,
@@ -96,6 +96,7 @@ come directly from canonical skill frontmatter.
 | `se-feedback` | Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions. |
 | `se-postmortem` | Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions. |
 | `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
+| `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -221,6 +222,12 @@ canvas, Notion page, memo, announcement, briefing, or YouTube outline. It keeps
 load-bearing claims and citations traceable, records every material adaptation
 and omission, checks audience widening and sensitive content, and returns an
 exact preview plus connector-ready handoff without sending or publishing.
+
+`se-red-team` steelmans a proposal, decision, article, conclusion, or plan
+before testing its assumptions, contrary evidence, incentives, misuse, failure
+modes, security/privacy boundaries, strongest counterargument, and reversal
+conditions. Findings retain evidence and uncertainty classes, sensitive detail
+is minimized, and strong artifacts may return an honest no-findings result.
 
 `se-distill` compresses a supplied corpus to an explicit information budget
 using a traceable importance map and invariant audit. It reports measured input
