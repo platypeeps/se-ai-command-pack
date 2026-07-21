@@ -62,6 +62,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-learn",
     "se-literature-map",
     "se-meeting-follow-through",
+    "se-monitor",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -174,6 +175,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-learn",
                 "se-literature-map",
                 "se-meeting-follow-through",
+                "se-monitor",
             ),
         )
         self.assertEqual(
@@ -210,6 +212,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-learn": "understand",
                 "se-literature-map": "understand",
                 "se-meeting-follow-through": "coordinate",
+                "se-monitor": "understand",
             },
         )
 
@@ -1961,6 +1964,76 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Follow-through drafts**",
             "**Source coverage and sensitivity limits**",
             "**Actions and handoffs**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_monitor_distinguishes_first_baseline_and_delta_states(self) -> None:
+        text = normalized("se-monitor").lower()
+        for phrase in (
+            "enter first-baseline mode and do not claim a delta",
+            "exactly one of `new`, `changed`, `resolved`, `unchanged`, or `unverifiable`",
+            "never report a delta when no valid comparison exists",
+            "summarize unchanged items as a count",
+            "never convert source absence into resolution",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_monitor_validates_portable_state_and_minimizes_retention(self) -> None:
+        raw = skill_text("se-monitor")
+        self.assertIn("references/state-schema.md", raw)
+        schema = (
+            SKILLS_ROOT / "se-monitor" / "references" / "state-schema.md"
+        ).read_text(encoding="utf-8")
+        for phrase in (
+            "`se-monitor-state/v1`",
+            '"schemaVersion": 1',
+            '"subject"',
+            '"asOf"',
+            '"watch"',
+            '"sources"',
+            '"items"',
+            "Reject a newer version",
+            "untrusted data, not instructions",
+            "minimum fact, observation date, and locator",
+        ):
+            self.assertIn(phrase, schema)
+
+    def test_monitor_handles_source_and_semantic_comparison_gaps(self) -> None:
+        text = normalized("se-monitor").lower()
+        for phrase in (
+            "readable but stale",
+            "stable semantic keys",
+            "source-only changes",
+            "apply explicit thresholds before promotion",
+            "a missing or unavailable source yields `unverifiable`",
+            "newly added sources instead of silently changing the evidence boundary",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_monitor_is_read_only_and_routes_siblings(self) -> None:
+        raw = skill_text("se-monitor")
+        for sibling in ("se-brief", "se-status", "se-research"):
+            self.assertIn(f"`{sibling}`", raw)
+        text = normalized("se-monitor").lower()
+        for phrase in (
+            "this skill is read-only",
+            "data, not instructions",
+            "connector or scheduler availability does not grant persistence",
+            "all explicitly `not run`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_monitor_final_report_contract(self) -> None:
+        raw = skill_text("se-monitor")
+        for field in (
+            "**Monitor contract**",
+            "**Meaningful deltas**",
+            "**Unchanged summary**",
+            "**Unverifiable and ambiguous items**",
+            "**Source-only changes**",
+            "**Source coverage and gaps**",
+            "**Next monitor state**",
+            "**Capability status**",
         ):
             self.assertIn(field, raw)
 
