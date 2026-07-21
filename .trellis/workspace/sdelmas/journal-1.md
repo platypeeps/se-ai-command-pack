@@ -1595,3 +1595,41 @@ Implemented and validated the canonical se-presentation planning skill, referenc
 ### Next Steps
 
 - None - task complete
+
+
+## Session 43: Ship se-proposal
+
+**Date**: 2026-07-21
+**Task**: Ship se-proposal
+**Branch**: `codex/se-proposal`
+
+### Summary
+
+Added and validated the read-only se-proposal workflow, archived its Trellis task, and reconciled the 49-child roadmap.
+
+### Main Changes
+
+- Added the canonical se-proposal workflow with authority, approved-brief, claim-class, alternatives, estimate, and se-plan handoff contracts.
+- Registered shared source/profile references and regenerated installer, catalog, manifest, documentation, release, and repository-map surfaces for 0.35.0.
+- Added focused skill and generation contract tests and reconciled the parent roadmap to 35 of 49 children complete.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e08b99beb9d8218442b9a4f986964727a1e304d8` | feat: add se-proposal skill |
+
+### Testing
+
+- [OK] make check (357 tests; Ruff, mypy, generation, and release gates green)
+- [OK] review full check and isolated nine-target install dry-run
+- [OK] GitHub CI and Copilot review round 1 completed with no comments or threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
