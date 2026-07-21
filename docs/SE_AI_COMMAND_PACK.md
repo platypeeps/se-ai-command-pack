@@ -40,7 +40,8 @@ process. User-facing install/update/remove instructions live in the
 criteria, constraints, evidence, tradeoffs, confidence, and reversibility.
 Candidate discovery stays with `se-scan`, open evidence gathering with
 `se-research`, supplied-corpus synthesis with `se-digest`, neutral comparison
-with the separately delivered `se-compare`, and post-decision execution
+with the separately delivered `se-compare`, extreme purpose-bound compression
+with `se-distill`, and post-decision execution
 planning with `se-plan`. The skill remains read-only; acting on a recommendation
 always requires a separate request and the relevant action capability.
 
@@ -206,6 +207,22 @@ models split into cross-referenced views, and unsupported syntax, spatial
 meaning, or accessibility needs trigger a tool-neutral visual brief. The skill
 does not discover live architecture, invent causal structure, create branded or
 raster artwork, mutate documentation, or publish the result.
+
+### Distillation workflow boundary
+
+`se-distill` owns purpose-bound extreme compression of a supplied corpus to an
+explicit word, token, or percentage budget. It measures input and output with
+one disclosed method, builds a source-located importance map before drafting,
+and protects thesis, decisions, constraints, strongest evidence, major risks,
+material conflicts, decision-changing exceptions, and user-designated
+invariants through a final audit.
+
+The default 80/10 goal is a prioritization heuristic, not an objectively
+measured semantic-retention guarantee. When required invariants cannot fit,
+the workflow returns the smallest safe artifact, actual ratio, reason, and
+smallest relaxation rather than falsely claiming success. A loss ledger and
+consult-the-source list make omissions reviewable. Normal useful-length corpus
+synthesis stays with `se-digest`; external research requires separate approval.
 
 ### Action-inbox workflow boundary
 

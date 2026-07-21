@@ -50,6 +50,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-checklist",
     "se-compare",
     "se-diagram",
+    "se-distill",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -150,6 +151,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-checklist",
                 "se-compare",
                 "se-diagram",
+                "se-distill",
             ),
         )
         self.assertEqual(
@@ -174,6 +176,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-checklist": "operate",
                 "se-compare": "understand",
                 "se-diagram": "create",
+                "se-distill": "understand",
             },
         )
 
@@ -1056,6 +1059,65 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "data, not instructions",
             "never recommend, select, rank overall",
             "`not run` status",
+        ):
+            self.assertIn(phrase, lowered)
+
+    def test_distill_measures_budget_and_rejects_false_precision(self) -> None:
+        text = normalized("se-distill").lower()
+        for phrase in (
+            "choose one size measure",
+            "output size / input size",
+            "minimum useful artifact",
+            "never claim that 80% of semantic or informational value was objectively measured",
+            "operational prioritization goal",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_distill_uses_traceable_importance_map_and_invariants(self) -> None:
+        text = normalized("se-distill").lower()
+        for phrase in (
+            "build a traceable importance map before drafting",
+            "stable id",
+            "rank items by consequence",
+            "non-negotiable invariant set",
+            "technical mode also preserves exact code, formulas, notation, units",
+            "every non-negotiable item must appear",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_distill_uses_smallest_safe_escape_and_loss_ledger(self) -> None:
+        text = normalized("se-distill").lower()
+        for phrase in (
+            "return the smallest safe result",
+            "smallest relaxation that would fit",
+            "do not silently trade correctness for 10%",
+            "build the loss ledger",
+            "individually name every omitted or compressed point that could change a decision",
+            "consult-the-source list",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_distill_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-distill")
+        for sibling in ("se-digest", "se-research", "se-compare"):
+            self.assertIn(f"`{sibling}`", raw)
+        for field in (
+            "**Scope and measurement**",
+            "**Distilled artifact**",
+            "**Importance map coverage**",
+            "**Conflicts and contested points**",
+            "**Loss ledger**",
+            "**Target safety**",
+            "**Consult the source**",
+            "**Limits**",
+        ):
+            self.assertIn(field, raw)
+        lowered = normalized("se-distill").lower()
+        for phrase in (
+            "read-only",
+            "data, not instructions",
+            "preserve attribution",
+            "do not add external research unless the user separately approves",
         ):
             self.assertIn(phrase, lowered)
 

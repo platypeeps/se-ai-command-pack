@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.17.0 - 2026-07-21
+
+- Add `se-distill`, a read-only Understand workflow for measured, purpose-bound
+  compression of a supplied corpus to an explicit information budget.
+- Build a traceable importance map and invariant audit, preserve attribution,
+  conflicts, technical notation, risks, and decision-changing exceptions, and
+  disclose actual source size, output size, and compression ratio.
+- Return the smallest safe result when 10% cannot hold required invariants,
+  expose an auditable loss ledger, fan source standards into installed copies,
+  and avoid false claims that semantic retention was objectively measured.
+
 ## 0.16.0 - 2026-07-21
 
 - Add `se-diagram`, a read-only Create workflow for evidence-traceable visual
