@@ -5430,7 +5430,8 @@ reading or compressing source material.
 
 ## Workflow
 
-1. Confirm the topic, corpus boundary, audience, purpose, target, must-keeps,
+1. Confirm the topic, corpus boundary, audience, purpose, target, `must_keep=`
+   items,
    and loss tolerance. Do not invent a topic treatment from background
    knowledge outside the supplied corpus. Ask when audience or purpose is
    materially ambiguous because they determine importance.
@@ -5474,7 +5475,8 @@ reading or compressing source material.
 10. Run an invariant audit from source to output. Every non-negotiable item must
     appear in the distilled artifact or trigger the unsafe-target path; every
     other mapped item must appear in the artifact or the loss ledger. Recheck
-    conflicts, attribution, technical notation, and user-designated must-keeps.
+    conflicts, attribution, technical notation, and user-designated
+    `must_keep=` items.
 11. When the requested target cannot contain all invariants, do not claim it
     was met. Return the smallest safe result, its actual size and ratio, the
     exact invariant pressure that made the target unsafe, and the smallest
