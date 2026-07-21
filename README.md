@@ -36,6 +36,7 @@ come directly from canonical skill frontmatter.
 | `se-compare` | Use when the user wants a neutral, evidence-aware comparison of known alternatives on one fair frame without ranking them or recommending a winner. |
 | `se-distill` | Use when the user wants supplied material compressed to an explicit information budget while preserving decision-critical meaning, attribution, exceptions, and an auditable loss ledger. |
 | `se-explain` | Use when the user wants one complex topic explained accurately for a stated audience, purpose, prior-knowledge level, and depth, with explicit analogy and limitation boundaries. |
+| `se-knowledge-gap` | Use when the user wants a bounded, cross-source audit of missing, inaccessible, stale, conflicting, unsupported, duplicated, or unresolved knowledge. |
 
 ### Decide
 

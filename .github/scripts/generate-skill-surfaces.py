@@ -87,6 +87,7 @@ DEFAULT_MANIFEST_HEADER = {
         "traceable feedback synthesis, "
         "evidence-backed context handoffs, "
         "preview-first knowledge publishing, "
+        "bounded knowledge-system audits, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

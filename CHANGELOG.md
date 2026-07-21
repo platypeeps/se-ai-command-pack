@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.25.0 - 2026-07-21
+
+- Add `se-knowledge-gap`, a read-only Understand workflow for auditing a
+  bounded knowledge system against a stated decision or audience.
+- Inventory connector, query, permission, pagination, truncation, terminology,
+  claims, decisions, dates, and authority before distinguishing missing,
+  inaccessible, stale, conflicting, unsupported, duplicated, or unresolved
+  knowledge.
+- Preserve both sides of conflicts and the difference between not found and
+  nonexistent, prioritize closure qualitatively without fake precision, route
+  bounded follow-ups honestly, fan source standards into installed copies, and
+  add focused contract and generation tests.
+
 ## 0.24.0 - 2026-07-21
 
 - Add `se-knowledge-capture`, a write-capable Operate workflow that publishes

@@ -29,7 +29,8 @@ process. User-facing install/update/remove instructions live in the
   with `se-technical-editor` and audience-calibrated explanation with
   `se-explain`, traceable feedback synthesis with `se-feedback`, and compact
   evidence-backed continuity packets with `se-handoff`, plus preview-first
-  Obsidian/Notion publishing with `se-knowledge-capture`.
+  Obsidian/Notion publishing with `se-knowledge-capture` and bounded
+  knowledge-system auditing with `se-knowledge-gap`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -95,6 +96,20 @@ unless the request explicitly asks to audit claims. Both `se-research` and
 `se-fact-check` consume the shared `verification-protocol.md`; the canonical
 source lives under `_shared/references/` while installed paths remain local to
 each skill. The audit is read-only and offers only minimal corrected wording.
+
+### Knowledge-gap workflow boundary
+
+`se-knowledge-gap` audits a bounded existing knowledge system against a stated
+decision or audience. It records search coverage and access limits, normalizes
+terminology, then builds a provenance-preserving claim and decision map before
+classifying missing, inaccessible, stale, conflicting, unsupported, duplicated,
+or unresolved knowledge. “Not found” never becomes “does not exist” without
+sufficient authoritative coverage, and conflicting positions retain their
+dates and authority signals. Individual claim verdicts stay with
+`se-fact-check`, new external evidence with `se-research`, source consolidation
+with an explicit documentation task, and continuous freshness checking with
+`se-monitor` when that separate capability is available. The audit remains
+read-only and reports every proposed follow-up as not run.
 
 ### Pack-help workflow boundary
 
