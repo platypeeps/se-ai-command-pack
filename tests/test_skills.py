@@ -1800,6 +1800,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "disciplines",
             "source types",
             "languages",
+            "`languages=`",
             "inclusion and exclusion rules",
             "stopping condition",
             "never claim exhaustive coverage",

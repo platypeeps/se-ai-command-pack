@@ -33,6 +33,7 @@ searching.
 - `dates=` — publication or evidence date range;
 - `disciplines=` — included disciplinary traditions;
 - `source_types=` — papers, books, reviews, standards, datasets, or other works;
+- `languages=` — included publication languages and any translation boundary;
 - `include=` — explicit inclusion rules, venues, authors, or source classes;
 - `exclude=` — explicit exclusion rules or out-of-scope source classes;
 - `purpose=orient|research|teach|write` — default `orient`;
