@@ -28,7 +28,8 @@ process. User-facing install/update/remove instructions live in the
   installed paths. The current bundle includes report-first technical editing
   with `se-technical-editor` and audience-calibrated explanation with
   `se-explain`, traceable feedback synthesis with `se-feedback`, and compact
-  evidence-backed continuity packets with `se-handoff`.
+  evidence-backed continuity packets with `se-handoff`, plus preview-first
+  Obsidian/Notion publishing with `se-knowledge-capture`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -70,6 +71,19 @@ Arbitrary corpus synthesis stays with `se-digest`, while stakeholder progress
 reporting stays with `se-status`. The workflow omits secret values and unrelated
 private material, remains read-only, and never sends the packet or authorizes its
 next actions.
+
+### Knowledge-capture workflow boundary
+
+`se-knowledge-capture` is the explicit write-capable bridge from one normalized
+`se-capture` artifact to an authorized Obsidian vault or Notion data source. It
+searches canonical URL, external ID, title/aliases, and fingerprint before
+classifying create, managed append/update, skip, or conflict; previews exact
+mapping and preservation effects; requires approval; then writes once and
+verifies by semantic read-back. User-owned and unsupported content is preserved,
+ambiguous or destructive paths stop for specific confirmation, and unavailable
+connectors yield a portable preview. Full-content mirroring and bidirectional
+sync remain out of scope; a separately approved cross-link keeps one canonical
+full record.
 
 ### Claim-audit workflow boundary
 

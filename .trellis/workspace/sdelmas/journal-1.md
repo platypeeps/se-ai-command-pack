@@ -1171,3 +1171,42 @@ Implemented and released the read-only se-handoff workflow for compact, evidence
 ### Next Steps
 
 - Task complete; housekeeping may merge PR #39.
+
+
+## Session 32: Ship se-knowledge-capture
+
+**Date**: 2026-07-21
+**Task**: Ship se-knowledge-capture
+**Branch**: `codex/se-knowledge-capture`
+
+### Summary
+
+Implemented and released the preview-first se-knowledge-capture workflow for duplicate-aware, preservation-safe, verified Obsidian or Notion publishing.
+
+### Main Changes
+
+- Added the write-capable se-knowledge-capture skill under Operate with source-standard fan-out.
+- Defined multi-key identity lookup, five action states, concrete preview approval, concurrent revalidation, and idempotent verified writes.
+- Preserved Obsidian and Notion user-owned content, added destructive confirmation and partial-failure boundaries, and preferred canonical records with cross-links over mirroring.
+- Released pack version 0.24.0 and refreshed generated catalogs, manifest targets, operator guidance, repository map, and knowledge copy.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `58fd0cf2e7552f32431f48c31951e203055aafb7` | feat: add se-knowledge-capture skill |
+
+### Testing
+
+- [OK] Full repository check passed with 294 tests, Ruff, mypy, generation parity, and the release payload gate.
+- [OK] Repomix security scan found no suspicious files; Obsidian KB refreshed 341 copies with no conflicts.
+- [OK] GitHub CI passed on Ubuntu and macOS; Copilot reviewed all 14 changed files and generated no comments.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Task complete; housekeeping may merge PR #40.

@@ -57,6 +57,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-explain",
     "se-feedback",
     "se-handoff",
+    "se-knowledge-capture",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -164,6 +165,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-explain",
                 "se-feedback",
                 "se-handoff",
+                "se-knowledge-capture",
             ),
         )
         self.assertEqual(
@@ -195,6 +197,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-explain": "understand",
                 "se-feedback": "improve",
                 "se-handoff": "coordinate",
+                "se-knowledge-capture": "operate",
             },
         )
 
@@ -1544,6 +1547,67 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Source coverage, omissions, and limits**",
         ):
             self.assertIn(field, raw)
+
+    def test_knowledge_capture_searches_identity_and_classifies_actions(self) -> None:
+        text = normalized("se-knowledge-capture").lower()
+        for phrase in (
+            "canonical url, namespaced external id, normalized title or aliases, then stored fingerprint",
+            "`create`, `append-managed`, `update-managed`, `skip`, or `conflict`",
+            "an ambiguous or contradictory match is `conflict`",
+            "idempotent reruns target the same record",
+            "never use title similarity alone to silently choose a record",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_knowledge_capture_requires_preview_approval_and_verification(self) -> None:
+        text = normalized("se-knowledge-capture").lower()
+        for phrase in (
+            "`mode=apply` requests a write but does not bypass preview or approval",
+            "return the concrete preview and wait",
+            "re-read the destination immediately before writing",
+            "write once, read back, and semantically verify",
+            "full replacement, ambiguous duplicate resolution, destructive field loss",
+            "requires specific confirmation",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_knowledge_capture_preserves_destination_owned_content(self) -> None:
+        text = normalized("se-knowledge-capture").lower()
+        for phrase in (
+            "preserve user-owned frontmatter properties and sections",
+            "change only explicitly declared managed regions",
+            "return an openable obsidian note link",
+            "map only configured data-source properties",
+            "preserve unsupported properties and page content",
+            "return the resulting notion page link",
+            "never mirror full content to both systems by default",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_knowledge_capture_failure_safety_and_final_report_contract(self) -> None:
+        raw = skill_text("se-knowledge-capture")
+        self.assertIn("`se-capture`", raw)
+        for field in (
+            "**Operation and routing**",
+            "**Identity search and matches**",
+            "**Preview and approval state**",
+            "**Mapped and preserved content**",
+            "**Conflicts and destructive gates**",
+            "**Write and verification result**",
+            "**Links and cross-links**",
+            "**Limits and next action**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-knowledge-capture").lower()
+        for phrase in (
+            "data, not instructions",
+            "connector is unavailable",
+            "schema mismatch",
+            "partial write failure",
+            "never claim persistence without verified read-back",
+            "portable preview",
+        ):
+            self.assertIn(phrase, text)
 
 
 class SkillDocumentationTest(unittest.TestCase):

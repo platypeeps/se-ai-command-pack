@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.24.0 - 2026-07-21
+
+- Add `se-knowledge-capture`, a write-capable Operate workflow that publishes
+  one normalized capture to an authorized Obsidian vault or Notion data source.
+- Search multiple identity keys, classify create/managed-update/skip/conflict
+  paths, preserve user-owned and unsupported content, and require a concrete
+  approved preview before every write or destructive decision.
+- Verify writes by semantic read-back, report partial effects honestly, prefer
+  one canonical full record plus optional cross-links over mirroring, fan source
+  standards into installed copies, and add focused safety and generation tests.
+
 ## 0.23.0 - 2026-07-21
 
 - Add `se-handoff`, a read-only Coordinate workflow that reconstructs a compact
