@@ -76,9 +76,9 @@ Do not infer a hard dependency from the list order.
 ## Validation Plan
 
 - `python3 ./.trellis/scripts/task.py list`
-- Compare `jq -r '.children[]'` from the parent task with active and archived
-  child directories; require 49 unique resolved children and no undocumented
-  child-map entries.
+- Run `jq -r '.children[]' .trellis/tasks/07-17-se-skill-roadmap/task.json` and
+  compare its output with active and archived child directories; require 49
+  unique resolved children and no undocumented child-map entries.
 - Confirm each linked child contains `prd.md`, `design.md`, `implement.md`,
   `check.jsonl`, and `implement.jsonl`.
 - `make generate`
