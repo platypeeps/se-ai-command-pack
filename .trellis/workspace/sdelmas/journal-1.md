@@ -1633,3 +1633,41 @@ Added and validated the read-only se-proposal workflow, archived its Trellis tas
 ### Next Steps
 
 - None - task complete
+
+
+## Session 44: Ship se-publish
+
+**Date**: 2026-07-21
+**Task**: Ship se-publish
+**Branch**: `codex/se-publish`
+
+### Summary
+
+Added and validated the read-only se-publish adaptation workflow, archived its Trellis task, and reconciled the roadmap.
+
+### Main Changes
+
+- Added source-faithful destination adaptation with source, adaptation, omission, citation, sensitivity, and accessibility ledgers.
+- Registered source/profile reference fan-out and regenerated installer, catalog, manifest, documentation, release, and repository-map surfaces for 0.36.0.
+- Added focused skill/generator tests, resolved review lifecycle findings through normal archive flow, and reconciled the parent roadmap to 36 of 49 children complete.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `05caadee5453f78cc19d8575e72deb9f4a38fdc9` | feat: add se-publish skill |
+
+### Testing
+
+- [OK] make check (362 tests; Ruff, mypy, generation, and release gates green)
+- [OK] review full check and isolated nine-target install dry-run
+- [OK] GitHub CI green; Copilot review round 1 lifecycle findings addressed by Trellis archive
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
