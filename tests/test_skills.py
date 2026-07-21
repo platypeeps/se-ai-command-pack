@@ -44,6 +44,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-action-inbox",
     "se-agenda",
     "se-ask-me",
+    "se-author",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -138,6 +139,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-action-inbox",
                 "se-agenda",
                 "se-ask-me",
+                "se-author",
             ),
         )
         self.assertEqual(
@@ -156,6 +158,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-action-inbox": "coordinate",
                 "se-agenda": "coordinate",
                 "se-ask-me": "understand",
+                "se-author": "create",
             },
         )
 
@@ -651,6 +654,62 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Next step**",
         ):
             self.assertIn(field, raw)
+
+    def test_author_routes_theme_discovery_interview_and_brief(self) -> None:
+        text = normalized("se-author")
+        for phrase in (
+            "ten ranked opportunities",
+            "Ask exactly one highest-value unresolved question per turn",
+            "require explicit brief approval",
+            "latest explicit approved checkpoint",
+            "never overwrite or infer approval",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_author_preserves_authorship_evidence_and_thesis(self) -> None:
+        text = normalized("se-author").lower()
+        for phrase in (
+            "user answers, assistant hypotheses, sourced claims, and generated prose",
+            "never fabricate personal experience",
+            "research supports the approved thesis",
+            "material thesis change returns to brief revision and approval",
+            "data, not instructions",
+            "dedicated confidentiality pass",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_author_orders_draft_passes_and_never_publishes(self) -> None:
+        text = normalized("se-author").lower()
+        self.assertIn(
+            "`skeleton`, `substance`, `voice`, `compression`, `reader comprehension`, then `integrity`",
+            text,
+        )
+        self.assertIn("explicit not-published status", text)
+        self.assertIn("every external write requires a separate request", text)
+        for sibling in (
+            "se-topic-radar",
+            "se-research",
+            "se-fact-check",
+            "se-distill",
+            "se-technical-editor",
+            "se-paper",
+            "se-publish",
+        ):
+            self.assertIn(f"`{sibling}`", skill_text("se-author"))
+
+    def test_author_final_report_contract(self) -> None:
+        text = skill_text("se-author")
+        for field in (
+            "**Authoring state**",
+            "**Editorial brief**",
+            "**Interview record**",
+            "**Evidence state**",
+            "**Outline and draft state**",
+            "**Article package**",
+            "**Integrity and confidentiality**",
+            "**Publication handoff**",
+        ):
+            self.assertIn(field, text)
 
 
 class SkillDocumentationTest(unittest.TestCase):
