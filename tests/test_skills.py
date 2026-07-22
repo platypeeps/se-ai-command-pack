@@ -79,6 +79,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-stakeholder-map",
     "se-study-guide",
     "se-thread-digest",
+    "se-tutorial",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -208,6 +209,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-stakeholder-map",
                 "se-study-guide",
                 "se-thread-digest",
+                "se-tutorial",
             ),
         )
         self.assertEqual(
@@ -261,6 +263,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-stakeholder-map": "coordinate",
                 "se-study-guide": "understand",
                 "se-thread-digest": "coordinate",
+                "se-tutorial": "create",
             },
         )
 
@@ -2993,6 +2996,64 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Evidence and revision ledger**",
             "**Downstream payloads**",
             "**Coverage, privacy, and uncertainty**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_tutorial_requires_outcome_prerequisite_and_checkpoint_contracts(self) -> None:
+        text = normalized("se-tutorial").lower()
+        for phrase in (
+            "observable final result",
+            "prerequisite check",
+            "stop before the first dependent step",
+            "every major checkpoint",
+            "stable assertion",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_tutorial_preserves_platform_version_and_execution_state(self) -> None:
+        text = normalized("se-tutorial").lower()
+        for phrase in (
+            "`verified`, `partially-verified`, or `unverified`",
+            "never describe unverified or partially verified behavior as working",
+            "platform or environment branch",
+            "version and date scope",
+            "authoritative sources",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_tutorial_safeguards_secrets_destructive_steps_and_cleanup(self) -> None:
+        text = normalized("se-tutorial").lower()
+        for phrase in (
+            "placeholder, never a real secret",
+            "verify the exact target",
+            "safer alternative",
+            "backup and rollback",
+            "cleanup can be destructive",
+            "commands on the reader's system",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_tutorial_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-tutorial")
+        self.assertIn("references/source-standards.md", raw)
+        self.assertIn("references/personal-profile-contract.md", raw)
+        for sibling in (
+            "`se-study-guide`",
+            "`se-learn`",
+            "`se-explain`",
+            "`se-runbook`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Tutorial contract**",
+            "**Prerequisite and environment check**",
+            "**Checkpoint-driven tutorial**",
+            "**Troubleshooting and recovery map**",
+            "**Final validation**",
+            "**Cleanup and rollback**",
+            "**Version, source, and execution inventory**",
+            "**Sibling handoffs**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

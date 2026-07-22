@@ -3,7 +3,7 @@
   "name": "se-tutorial",
   "title": "Implement se-tutorial",
   "description": "Add a verified technical tutorial workflow with learning objectives, prerequisites, incremental steps, expected results, validation, troubleshooting, cleanup, and honest execution status.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

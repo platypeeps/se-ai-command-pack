@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.46.0 - 2026-07-21
+
+- Add `se-tutorial`, a read-only Create workflow for checkpoint-driven
+  technical teaching from a declared starting state to an observable result.
+- Require prerequisite gates, platform and version branches, exact execution
+  labels, stable expected-output assertions, recovery, final validation, and
+  an honest verified/unverified inventory.
+- Protect secrets, production targets, destructive steps, rollback, and
+  cleanup while keeping reader-system execution, deployment, publication, and
+  certification outside the workflow.
+
 ## 0.45.0 - 2026-07-21
 
 - Add `se-thread-digest`, a read-only Coordinate workflow for evidence-linked

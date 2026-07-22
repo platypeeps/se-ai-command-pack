@@ -65,6 +65,7 @@ come directly from canonical skill frontmatter.
 | `se-presentation` | Use when the user wants to turn an approved source artifact into an audience-specific story arc and source-traceable slide specification before using presentation tooling. |
 | `se-proposal` | Use when the user wants to develop an evidence-backed, decision-ready proposal with transparent alternatives, investment, risks, success criteria, and an explicit ask. |
 | `se-publish` | Use when the user wants an approved source artifact adapted into a source-faithful, destination-specific draft and preview without sending or publishing it. |
+| `se-tutorial` | Use when the user wants a checkpoint-driven technical tutorial that moves a defined audience from a known starting state to an observable result with honest execution status, verification, recovery, and cleanup. |
 
 ### Coordinate
 
@@ -180,6 +181,13 @@ decisions, explicit commitments, candidate actions, corrections, disputes,
 and unknowns distinct; preserves message and revision evidence; respects the
 audience and private-channel boundary; and never posts, reacts, monitors,
 assigns, or persists without a separate authorized operation.
+
+`se-tutorial` turns a declared technical starting state into a checkpoint-
+driven teaching path with prerequisite gates, environment and version branches,
+exact execution labels, expected results, recovery, final validation, and safe
+cleanup. It distinguishes verified, partially verified, and unverified examples
+and never implies that commands ran on the reader's system or that a plausible
+example works.
 
 `se-premortem` stress-tests an accepted plan before execution by defining the
 failed state, developing evidence-labeled failure modes, preserving correlated
