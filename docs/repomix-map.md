@@ -12273,6 +12273,10 @@ SKILL_TEXT = """---
 ⋮----
 class SkillReviewInventoryTest(TempDirTestCase)
 ⋮----
+def test_git_probe_fails_closed_when_git_is_missing_or_times_out(self) -> None
+⋮----
+failures = (
+⋮----
 def write_se_pack(self) -> tuple[Path, Path]
 ⋮----
 root = self.base / "se-pack"

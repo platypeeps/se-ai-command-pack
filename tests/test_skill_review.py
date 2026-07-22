@@ -7,6 +7,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from unittest import mock
 
 from install_test_support import PACK_ROOT, TempDirTestCase
 
@@ -56,6 +57,16 @@ Report findings.
 
 
 class SkillReviewInventoryTest(TempDirTestCase):
+    def test_git_probe_fails_closed_when_git_is_missing_or_times_out(self) -> None:
+        failures = (
+            OSError("git is unavailable"),
+            subprocess.TimeoutExpired(["git", "status"], review.GIT_TIMEOUT_SECONDS),
+        )
+        for failure in failures:
+            with self.subTest(failure=type(failure).__name__):
+                with mock.patch.object(review.subprocess, "run", side_effect=failure):
+                    self.assertIsNone(review._run_git(self.base, "status"))
+
     def write_se_pack(self) -> tuple[Path, Path]:
         root = self.base / "se-pack"
         skill = root / "templates" / "skills" / "se-test" / "SKILL.md"
