@@ -664,6 +664,113 @@ the verified owner repository.
 
 ---
 
+## Scenario: Observed Session Evidence In Skill Reviews
+
+### 1. Scope / Trigger
+
+- Trigger: changing how `se-review-skills` discovers, classifies, reports, or
+  acts on conversations that used a reviewed skill.
+- Why: session indexes contain incidental mentions, private data, nested
+  transcripts, incomplete outcomes, and old skill versions. Without a separate
+  evidence gate, an execution error can be misreported as a current source
+  defect or leak raw conversation content into a task.
+
+### 2. Signatures
+
+```text
+sessions=auto|off       default auto
+session=<id>            repeatable, inside the verified project boundary
+```
+
+Automatic review inspects the available current conversation, then bounded
+project-scoped history. It stops at three confirmed invocations per skill and
+twenty total, allocated round-robin across skills.
+
+### 3. Contracts
+
+- Confirm invocation through explicit user or platform activation, or an
+  assistant declaration corroborated by distinctive workflow behavior. Paths,
+  diffs, maps, copied prompts, test output, and nested transcripts are
+  mention-only candidates.
+- Keep session discovery and causal judgment inline with the parent. Use only
+  an already available project-aware reader and never scan global history, raw
+  home directories, provider caches, or unrelated projects.
+- Minimize evidence to a redacted session locator and relevant turn range,
+  invocation evidence, skill provenance, request, expected contract, behavior,
+  outcome, causal class, and confidence. Never persist raw dialogue, secrets,
+  personal data, host paths, or full tool output.
+- Record provenance as `current-canonical`, `installed-drift`,
+  `historical-version`, or `unknown`. Historical or unknown evidence can show
+  recurrence risk but cannot alone prove a current source defect.
+- Classify mistakes as `skill-contract`, `execution-deviation`,
+  `tool-or-environment`, `user-intent-change`, or `indeterminate`. A selectable
+  finding also requires an observed consequence, causal explanation, current
+  canonical locator, allowed template remedy, and falsifiable validation.
+- Compare a successful or neutral invocation when available. Structure a remedy
+  as core workflow, safety gate, conditional reference, deterministic helper,
+  host overlay, evaluation, or recovery path. Every gotcha names trigger,
+  failure, prevention, recovery, and regression method.
+- Session evidence is read-only and never grants task or edit authority. Before
+  `task=` or `apply=`, recompute the source snapshot and revalidate the project
+  boundary, invocation, provenance, causality, locator, and redaction.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Session reader is unavailable or incompletely indexed | Continue static review and report the coverage limit. |
+| Search result only mentions the skill | Reject it as an invocation and do not spend the confirmed-session budget. |
+| Explicit session is outside the verified project | Reject it without global fallback. |
+| Activation, outcome, or version was lost to compaction | Classify as `indeterminate`; do not create a finding. |
+| Clear skill contract was ignored | Classify `execution-deviation`; prefer evaluation unless recurrence implicates structure. |
+| Tool or permission failure caused the outcome | Change the skill only when its fallback or recovery contract is deficient. |
+| User changed intent after invocation | Preserve chronology as `user-intent-change`; do not blame the skill. |
+| Selected session evidence is stale before mutation | Reject the selector and require a fresh review. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: verify a user activation, compare the relevant current skill rule to a
+  redacted mistake and a successful control, classify the cause, point to the
+  current template, and propose a testable recovery gotcha.
+- Base: no safe history reader exists, so complete the static skill review and
+  disclose zero historical-session coverage.
+- Bad: count every skill-name search hit, quote a private transcript, assume an
+  old session used current source, delegate raw conversations, or create a task
+  because one run failed.
+
+### 6. Tests Required
+
+- Pin `sessions=auto|off`, repeatable `session=`, the three-per-skill and
+  twenty-total budgets, round-robin allocation, and project-only discovery.
+- Pin invocation confirmation, mention-only and nested-transcript rejection,
+  all provenance and causal classes, successful controls, privacy minimization,
+  structural remedies, gotcha fields, and source-plus-session revalidation.
+- Assert the session-evidence reference ships to every registered platform and
+  run focused skill tests, `make generate` twice, `make check`, and the release
+  payload/version gate.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+Search every session for se-example, count all matches as uses, quote the failed
+conversation into a Trellis task, and edit the installed copy.
+```
+
+#### Correct
+
+```text
+Search only bounded project history, confirm invocation, minimize and classify
+the observed mistake, correlate it with current canonical source, and require a
+fresh source-plus-session check before any selected template mutation.
+```
+
+The correct flow preserves privacy, distinguishes execution from contract
+failure, and keeps task or edit authority separate from observational evidence.
+
+---
+
 ## Scenario: Pack Lifecycle CLI Changes
 
 ### 1. Scope / Trigger
