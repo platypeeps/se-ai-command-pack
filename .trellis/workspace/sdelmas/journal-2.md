@@ -230,3 +230,43 @@ Approved and documented the public output-only worklog boundary with private del
 ### Next Steps
 
 - None - task complete
+
+
+## Session 59: Resolve roadmap integration findings
+
+**Date**: 2026-07-22
+**Task**: Resolve roadmap integration findings
+**Branch**: `main`
+
+### Summary
+
+Closed FIR-01 and FIR-02 by making weekly-review timezone resolution explicit/private-only, documenting the skill-review workflow boundary, and shipping release 0.50.0 through PR #78.
+
+### Main Changes
+
+- Removed the public America/Denver fallback and required explicit or authorized private timezone input before calendar calculations.
+- Documented se-review-skills ownership and distinctions from se-help, sd-audit-repo, and sd-review-local.
+- Added complete operator-guide coverage and robust named-timezone regression guards; released version 0.50.0.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `391fd692731aefb4e97e604a259b90ee7a89ea1b` | fix: close roadmap integration findings |
+| `4401b9aaacc0b347184ed545e71be13e82d7ff91` | fix: address review feedback round 1 |
+| `38a218a24e1cfc25e7d71720315b77b7501474a6` | test: reject lowercase timezone fallbacks |
+
+### Testing
+
+- [OK] 221 focused skill tests
+- [OK] Canonical full gate: 458 tests, Ruff, mypy, generation parity, install audit, and Obsidian KB freshness
+- [OK] PR #78 CI green; three Copilot findings fixed; final review clean with zero unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
