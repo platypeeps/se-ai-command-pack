@@ -87,6 +87,7 @@ class ReviewError(Exception):
 class RegistryData:
     families: dict[str, str]
     family_order: tuple[str, ...]
+    skill_order: tuple[str, ...]
     platforms: tuple[str, ...]
 
 
@@ -219,11 +220,11 @@ def _call_value(call: ast.Call, name: str, position: int) -> str | None:
 
 def _parse_registry(path: Path) -> RegistryData:
     if not path.is_file() or path.is_symlink():
-        return RegistryData({}, (), ())
+        return RegistryData({}, (), (), ())
     try:
         tree = ast.parse(_read_regular_text(path), filename=str(path))
     except SyntaxError:
-        return RegistryData({}, (), ())
+        return RegistryData({}, (), (), ())
 
     family_order: list[str] = []
     labels = _assignment(tree, "FAMILY_LABELS")
@@ -235,6 +236,7 @@ def _parse_registry(path: Path) -> RegistryData:
         ]
 
     families: dict[str, str] = {}
+    skill_order: list[str] = []
     for assignment_name, constructor, family_position in (
         ("SKILLS", "SkillInfo", 1),
         ("COMMAND_REGISTRY", "CommandInfo", 2),
@@ -252,6 +254,8 @@ def _parse_registry(path: Path) -> RegistryData:
             skill_name = _call_value(entry, "name", 0)
             family = _call_value(entry, "family", family_position)
             if skill_name and family:
+                if skill_name not in families:
+                    skill_order.append(skill_name)
                 families[skill_name] = family
 
     platforms: list[str] = []
@@ -262,7 +266,12 @@ def _parse_registry(path: Path) -> RegistryData:
             for key in registry.keys
             if (value := _string_value(key)) is not None
         ]
-    return RegistryData(families, tuple(family_order), tuple(sorted(platforms)))
+    return RegistryData(
+        families,
+        tuple(family_order),
+        tuple(skill_order),
+        tuple(sorted(platforms)),
+    )
 
 
 def _package_context(root: Path) -> PackageContext:
@@ -561,7 +570,21 @@ def _select_paths(
         raise ReviewError("scope=skill requires exactly one resolved skill")
     if scope == "family" and not family:
         raise ReviewError("scope=family requires --family")
-    return sorted(resolved, key=lambda item: (str(item.context.root), item.canonical.parent.name))
+    registry_positions = {
+        str(item.context.root): {
+            name: index
+            for index, name in enumerate(item.context.registry.skill_order)
+        }
+        for item in resolved
+    }
+
+    def sort_key(item: ResolvedSkill) -> tuple[str, int, str]:
+        root_key = str(item.context.root)
+        skill_name = item.canonical.parent.name
+        positions = registry_positions[root_key]
+        return (root_key, positions.get(skill_name, len(positions)), skill_name)
+
+    return sorted(resolved, key=sort_key)
 
 
 def _paragraphs(body: str) -> list[str]:
@@ -717,7 +740,7 @@ def _target_matrix(item: ResolvedSkill, rows: Sequence[dict[str, Any]]) -> list[
                 "frontmatter": (
                     ["name", "description"]
                     if item.context.name == "se-ai-command-pack"
-                    else "unknown"
+                    else []
                 ),
                 "commandFormat": command_format,
                 "uiMetadata": "none-observed",
@@ -755,16 +778,8 @@ def _inventory_record(item: ResolvedSkill) -> dict[str, Any]:
         "se-upstream",
         "repo-local",
     }
-    references = [
-        entry["path"]
-        for entry in related
-        if "/references/" in entry["path"]
-    ]
-    scripts = [
-        entry["path"]
-        for entry in related
-        if "/scripts/" in entry["path"]
-    ]
+    references = _resource_paths(related, "references")
+    scripts = _resource_paths(related, "scripts")
     links = sorted({match.group(1) for match in LINK_PATTERN.finditer(body)})
     return {
         "name": skill_name,
@@ -813,6 +828,18 @@ def _inventory_record(item: ResolvedSkill) -> dict[str, Any]:
             "canCreateTask": owner_verified and trellis.is_file() and changeable,
         },
     }
+
+
+def _resource_paths(
+    related: Sequence[dict[str, str]], directory: str
+) -> list[str]:
+    matches: list[str] = []
+    for entry in related:
+        path = entry["path"]
+        parts = [part for part in re.split(r"[\\/]", path) if part]
+        if len(parts) >= 2 and parts[-2] == directory:
+            matches.append(path)
+    return matches
 
 
 def _largest_section_lines(body: str) -> int:

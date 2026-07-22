@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -243,6 +244,53 @@ class SkillReviewInventoryTest(TempDirTestCase):
             [target["target"] for target in skill["platformTargets"]],
             ["agents", "claude", "codex"],
         )
+        self.assertTrue(
+            all(
+                target["frontmatter"] == ["name", "description"]
+                for target in skill["platformTargets"]
+            )
+        )
+
+    def test_inventory_uses_declared_registry_order(self) -> None:
+        root, _ = self.write_se_pack()
+        second = root / "templates" / "skills" / "se-z" / "SKILL.md"
+        second.parent.mkdir(parents=True)
+        second.write_text(SKILL_TEXT.format(name="se-z"), encoding="utf-8")
+        (root / "installer" / "registry.py").write_text(
+            "FAMILY_LABELS = {'improve': 'Improve'}\n"
+            "SKILLS = ("
+            "SkillInfo(name='se-z', family='improve'), "
+            "SkillInfo(name='se-test', family='improve'),"
+            ")\n"
+            "PLATFORM_REGISTRY = {'agents': object()}\n",
+            encoding="utf-8",
+        )
+        payload = review.build_inventory(
+            root,
+            [],
+            None,
+            "package",
+            root_was_explicit=True,
+        )
+        self.assertEqual(
+            [skill["name"] for skill in payload["skills"]],
+            ["se-z", "se-test"],
+        )
+
+    def test_resource_classification_accepts_windows_and_posix_paths(self) -> None:
+        related = [
+            {"path": r"C:\repo\skill\references\rubric.md"},
+            {"path": "/repo/skill/references/schema.md"},
+            {"path": r"C:\repo\skill\scripts\inventory.py"},
+        ]
+        self.assertEqual(
+            review._resource_paths(related, "references"),
+            [related[0]["path"], related[1]["path"]],
+        )
+        self.assertEqual(
+            review._resource_paths(related, "scripts"),
+            [related[2]["path"]],
+        )
 
     def test_inventory_surfaces_embedded_script_candidate_facts(self) -> None:
         root, skill_path = self.write_se_pack()
@@ -283,6 +331,9 @@ class SkillReviewInventoryTest(TempDirTestCase):
         self.assertEqual(matrix["gemini"]["commandFormat"], "toml")
         self.assertEqual(matrix["claude"]["content"], "adapted")
         self.assertEqual(matrix["shared"]["content"], "shared")
+        self.assertTrue(
+            all(isinstance(entry["frontmatter"], list) for entry in matrix.values())
+        )
 
     def test_installed_copy_maps_to_source_and_reports_drift(self) -> None:
         source_root, source_skill = self.write_se_pack()
@@ -402,6 +453,8 @@ class SkillReviewInventoryTest(TempDirTestCase):
         self.assertIn("requires --family", str(caught.exception))
 
     def test_first_party_identity_with_wrong_remote_is_unresolved(self) -> None:
+        if shutil.which("git") is None:
+            self.skipTest("git executable is not available")
         root, _ = self.write_se_pack()
         subprocess.run(["git", "init", "-q", str(root)], check=True)
         subprocess.run(

@@ -10064,6 +10064,7 @@ class RegistryData
 ⋮----
 families: dict[str, str]
 family_order: tuple[str, ...]
+skill_order: tuple[str, ...]
 platforms: tuple[str, ...]
 ⋮----
 @dataclass(frozen=True)
@@ -10138,6 +10139,7 @@ labels = _assignment(tree, "FAMILY_LABELS")
 family_order = [
 ⋮----
 families: dict[str, str] = {}
+skill_order: list[str] = []
 ⋮----
 value = _assignment(tree, assignment_name)
 ⋮----
@@ -10282,6 +10284,14 @@ resolved = [_resolve_path(path, context) for path in selected_paths]
 ⋮----
 resolved = [
 ⋮----
+registry_positions = {
+⋮----
+def sort_key(item: ResolvedSkill) -> tuple[str, int, str]
+⋮----
+root_key = str(item.context.root)
+skill_name = item.canonical.parent.name
+positions = registry_positions[root_key]
+⋮----
 def _paragraphs(body: str) -> list[str]
 ⋮----
 result: list[str] = []
@@ -10319,7 +10329,7 @@ lines = path.read_text(encoding="utf-8", errors="strict").splitlines()
 def _related_templates(item: ResolvedSkill) -> list[dict[str, str]]
 ⋮----
 context = item.context
-skill_name = item.canonical.parent.name
+⋮----
 candidates: set[Path] = set()
 ⋮----
 short = skill_name.removeprefix("sd-")
@@ -10370,9 +10380,12 @@ allowed = item.context.allowed_template_root
 changeable = allowed is None or _is_relative_to(item.canonical, allowed)
 trellis = item.context.root / ".trellis" / "scripts" / "task.py"
 owner_verified = item.context.owner_kind in {
-references = [
-scripts = [
+references = _resource_paths(related, "references")
+scripts = _resource_paths(related, "scripts")
 links = sorted({match.group(1) for match in LINK_PATTERN.finditer(body)})
+⋮----
+path = entry["path"]
+parts = [part for part in re.split(r"[\\/]", path) if part]
 ⋮----
 def _largest_section_lines(body: str) -> int
 ⋮----
@@ -12345,6 +12358,14 @@ second = self.inventory(root, "se-test")
 repository = first["repositories"][0]
 ⋮----
 skill = first["skills"][0]
+⋮----
+def test_inventory_uses_declared_registry_order(self) -> None
+⋮----
+second = root / "templates" / "skills" / "se-z" / "SKILL.md"
+⋮----
+def test_resource_classification_accepts_windows_and_posix_paths(self) -> None
+⋮----
+related = [
 ⋮----
 def test_inventory_surfaces_embedded_script_candidate_facts(self) -> None
 ⋮----
