@@ -7,10 +7,10 @@ not this file, remains authoritative for bundled skill ownership.
 
 - **Understand**: `$se-help goal="Audit the factual claims in this draft and preserve their original locations."` routes to `$se-fact-check`.
 - **Decide**: `$se-help goal="Recommend one of these three known vendors using our constraints and evidence."` routes to `$se-decide`.
-- **Create**: `$se-help family=create` explains that this release has no bundled Create skill and does not invent one.
+- **Create**: `$se-help goal="Turn this approved technical brief into an audience-specific slide story with source traceability."` routes to `$se-presentation`.
 - **Coordinate**: `$se-help goal="Report project outcomes, blockers, risks, decisions, and next actions since Friday."` routes to `$se-status`.
 - **Operate**: `$se-help mode=tour` introduces the pack and its current availability labels.
-- **Improve**: `$se-help family=improve` explains that this release has no bundled Improve skill and offers no planned capability as shipped.
+- **Improve**: `$se-help goal="Review this technical draft for correctness, citations, structure, and voice before revision."` routes to `$se-technical-editor`.
 
 ## Common comparisons
 
