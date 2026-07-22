@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~308 | Active |
+| `journal-2.md` | ~311 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
