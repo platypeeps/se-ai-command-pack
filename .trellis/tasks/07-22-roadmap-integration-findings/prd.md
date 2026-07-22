@@ -27,22 +27,22 @@ Close FIR-01 and FIR-02 from the parent final integration review: remove the pub
 
 ## Acceptance Criteria
 
-- [ ] The canonical `se-weekly-review` template contains no `America/Denver`
+- [x] The canonical `se-weekly-review` template contains no `America/Denver`
       fallback and defines precedence as explicit timezone, then an authorized
       private worklog-profile timezone, then ask or stop.
-- [ ] Focused tests fail for any named/default locale fallback and pin the
+- [x] Focused tests fail for any named/default locale fallback and pin the
       required unresolved-timezone behavior without weakening reporting-window
       or DST semantics.
-- [ ] `docs/SE_AI_COMMAND_PACK.md` covers every registered skill, including a
+- [x] `docs/SE_AI_COMMAND_PACK.md` covers every registered skill, including a
       clear `se-review-skills` boundary against `se-help`, `sd-audit-repo`, and
       `sd-review-local`.
-- [ ] Tests fail when a registered public skill is omitted from the operator
+- [x] Tests fail when a registered public skill is omitted from the operator
       guide.
-- [ ] Generated payloads remain flat and identical across Agents, Claude Code,
+- [x] Generated payloads remain flat and identical across Agents, Claude Code,
       and Codex, with a manifest version bump and matching changelog entry.
-- [ ] `make generate`, focused tests, `make check`, an all-platform temporary
+- [x] `make generate`, focused tests, `make check`, an all-platform temporary
       installer dry-run, and `git diff --check` pass.
-- [ ] No `se-worklog` payload, private automation, private destination value,
+- [x] No `se-worklog` payload, private automation, private destination value,
       schedule, path, or write-back behavior is created or changed.
 
 ## Out of Scope

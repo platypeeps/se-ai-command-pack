@@ -36,8 +36,11 @@ identify them before resolving profiles or reading sources.
   Convert an explicit end date to the next local midnight. When omitted, use the
   previous completed Monday-through-Sunday week only if that cadence is
   unambiguous in current context; otherwise ask;
-- `timezone=` — IANA timezone for the reporting window. Use an explicit value,
-  then an authorized worklog-profile value, then `America/Denver`;
+- `timezone=` — IANA timezone for the reporting window. Resolve it before any
+  calendar calculation: use an explicit value, then an authorized private
+  worklog-profile timezone already supplied to this workflow. If neither is
+  available, ask for the timezone and stop until it is resolved; never guess
+  from a named locale, host default, or system setting;
 - `worklog_profile=off|<locator>` — required private worklog configuration
   boundary. Resolve exactly one explicit or unambiguous context locator, or
   `off`; never search private stores or guess a locator;
@@ -59,7 +62,8 @@ identify them before resolving profiles or reading sources.
    worklog-profile mode or locator, personal-profile mode or locator, source
    inventory, privacy scope, audience, and length. If `worklog_profile` is
    unresolved, or is `off` without an authorized source inventory, stop; do not
-   discover private configuration globally.
+   discover private configuration globally. If timezone is unresolved, ask and
+   stop before calculating a calendar boundary.
 2. Treat a private worklog profile as host-owned configuration, not a public
    schema. Read only the fields needed for this invocation: timezone/week
    convention, bounded source inventory, explicit noise or identity rules,

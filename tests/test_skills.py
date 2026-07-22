@@ -2742,6 +2742,34 @@ class SkillSafetyPinsTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
+    def test_weekly_review_requires_explicit_or_authorized_timezone(self) -> None:
+        raw = skill_text("se-weekly-review")
+        text = normalized("se-weekly-review").lower()
+        explicit = text.index("use an explicit value")
+        authorized = text.index("authorized private worklog-profile timezone")
+        unresolved = text.index("ask for the timezone and stop")
+        self.assertLess(explicit, authorized)
+        self.assertLess(authorized, unresolved)
+        self.assertIn("stop before calculating a calendar boundary", text)
+        self.assertIn("never guess from a named locale, host default", text)
+        self.assertNotIn("america/denver", text)
+        self.assertEqual(
+            re.findall(
+                r"\b[A-Z][A-Za-z0-9_+-]+"
+                r"(?:/[A-Z][A-Za-z0-9_+-]+)+\b",
+                raw,
+            ),
+            [],
+        )
+        self.assertIsNone(
+            re.search(
+                r"\b(?:africa|america|antarctica|arctic|asia|atlantic|australia|"
+                r"brazil|canada|chile|etc|europe|indian|mexico|pacific|us)/"
+                r"(?:[a-z0-9_+-]+/)*[a-z0-9_+-]+\b",
+                text,
+            )
+        )
+
     def test_weekly_review_separates_synthesis_and_limits_patterns(self) -> None:
         text = normalized("se-weekly-review").lower()
         for phrase in (
@@ -3355,6 +3383,29 @@ class SkillSafetyPinsTest(unittest.TestCase):
 
 
 class SkillDocumentationTest(unittest.TestCase):
+    def test_operator_guide_covers_every_registered_skill(self) -> None:
+        operator = (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md").read_text(
+            encoding="utf-8"
+        )
+        for name in SKILL_NAMES:
+            self.assertIn(f"`{name}`", operator, name)
+
+    def test_operator_guide_distinguishes_skill_review_boundaries(self) -> None:
+        operator = " ".join(
+            (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        for phrase in (
+            "`se-review-skills` owns bounded review",
+            "default is review-only",
+            "later explicit `apply=` or `task=` selector",
+            "Pack discovery and intent routing remain with `se-help`",
+            "Broader engineering repository audits remain with `sd-audit-repo`",
+            "local code-review providers remain with `sd-review-local`",
+        ):
+            self.assertIn(phrase, operator)
+
     def test_thread_digest_docs_distinguish_thread_and_document_synthesis(self) -> None:
         operator = " ".join(
             (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md")
