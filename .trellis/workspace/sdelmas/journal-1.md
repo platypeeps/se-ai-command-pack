@@ -1490,7 +1490,7 @@ Added and reviewed a read-only, outcome-based planning workflow and released it 
 
 **Date**: 2026-07-21
 **Task**: Implement se-postmortem
-**Branch**: `codex/se-socratic-review`
+**Branch**: `main`
 
 ### Summary
 
@@ -1832,7 +1832,7 @@ Implemented se-review-skills, bundled deterministic analysis, cross-platform pay
 
 **Date**: 2026-07-21
 **Task**: Add se-socratic-review
-**Branch**: `main`
+**Branch**: `codex/se-socratic-review`
 
 ### Summary
 
