@@ -423,6 +423,24 @@ operationally validates a runbook. Compact point-of-work checks stay with
 `se-plan`, and live incident coordination with the applicable incident-command
 process.
 
+### SOP workflow boundary
+
+`se-sop` owns controlled procedure design for routine, repeatable work. It
+inventories observed and approved practice, preserves conflicts and unknowns,
+and keeps proposed improvements in a separate future-state register. Every
+operative step carries an observable trigger, responsible function, bounded
+action, output, verification, record, failure response, and source basis.
+Mandatory controls retain their authority and applicability; helpful guidance
+remains visibly non-mandatory.
+
+The workflow defines supported exceptions, escalation and safe-stop behavior,
+document ownership, version, effective date, review cadence, staleness triggers,
+and source-backed compliance scope. It never executes, enforces, assigns,
+approves, publishes, trains, creates operational records, or certifies the
+procedure. Event-driven intervention, failure, rollback, and recovery stay with
+`se-runbook`; compact point-of-work checks stay with `se-checklist`; and project
+planning stays with `se-plan`.
+
 ### Comparison workflow boundary
 
 `se-compare` owns deep, neutral comparison of a known bounded set. It defines
