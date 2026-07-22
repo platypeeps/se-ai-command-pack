@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.42.0 - 2026-07-21
+
+- Add `se-sop`, a read-only Operate workflow for source-traceable standard
+  operating procedures governing routine, repeatable work.
+- Preserve observed, approved, proposed, conflicting, and unknown practice;
+  keep proposed improvements outside the operative procedure; and make every
+  step, mandatory control, exception, record, and escalation path testable.
+- Require document-control and maintenance metadata, evidence compliance and
+  authority claims, expose stale or undocumented practice, and route event-
+  driven recovery to `se-runbook` instead of silently absorbing it.
+
 ## 0.41.0 - 2026-07-21
 
 - Add `se-socratic-review`, a read-only Understand workflow for bounded,

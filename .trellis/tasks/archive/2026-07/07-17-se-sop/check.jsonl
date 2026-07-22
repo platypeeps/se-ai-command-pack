@@ -1,0 +1,2 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Verify focused behavior contracts, failure boundaries, source handling, and full repository quality gates."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check the canonical skill, registry, generated payload, catalog documentation, release metadata, and tests as one data flow."}

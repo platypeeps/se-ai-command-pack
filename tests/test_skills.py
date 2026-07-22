@@ -75,6 +75,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-runbook",
     "se-review-skills",
     "se-socratic-review",
+    "se-sop",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -200,6 +201,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-runbook",
                 "se-review-skills",
                 "se-socratic-review",
+                "se-sop",
             ),
         )
         self.assertEqual(
@@ -249,6 +251,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-runbook": "operate",
                 "se-review-skills": "improve",
                 "se-socratic-review": "understand",
+                "se-sop": "operate",
             },
         )
 
@@ -2733,6 +2736,73 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Escalation and handoff**",
             "**End-state verification and records**",
             "**Maintenance and staleness**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_sop_preserves_current_practice_and_proposed_future(self) -> None:
+        text = normalized("se-sop").lower()
+        for phrase in (
+            "`observed-current`, `approved-current`, `proposed-future`, `conflicting`, or `unknown`",
+            "proposed improvements never enter the operative procedure",
+            "preserve conflicting practice",
+            "do not convert a proposed improvement into current practice",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_sop_makes_controls_and_exceptions_operationally_testable(self) -> None:
+        text = normalized("se-sop").lower()
+        for phrase in (
+            "every procedure step and mandatory control must be operationally testable",
+            "separate mandatory controls from helpful guidance",
+            "undocumented exceptions remain explicit gaps",
+            "each supported exception and each discovered exception gap",
+            "allowed deviation or `unknown`, approving authority or `unknown`",
+            "escalation target or `unassigned`, decision required",
+            "timeout or fallback, handoff acknowledgement",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_sop_preserves_conflict_evidence_and_routes_failure_response(self) -> None:
+        text = normalized("se-sop").lower()
+        for phrase in (
+            "retain each variant's underlying observed or approved state",
+            "local correction is limited to restoring an expected routine precondition or output",
+            "diagnosis, rollback, restore, or recovery belongs in `se-runbook`",
+            "active incident response belongs in the applicable incident-command process",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_sop_evidences_compliance_and_document_control(self) -> None:
+        text = normalized("se-sop").lower()
+        for phrase in (
+            "jurisdiction, version, effective date, applicable scope",
+            "label it `unverified requirement`",
+            "version, effective date, review cadence",
+            "changing a date does not make a stale procedure current",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_sop_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-sop")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in ("`se-runbook`", "`se-checklist`", "`se-plan`"):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**SOP contract**",
+            "**Source and provenance register**",
+            "**Document control**",
+            "**Roles and responsibilities**",
+            "**Inputs and prerequisites**",
+            "**Routine procedure**",
+            "**Mandatory controls**",
+            "**Helpful guidance**",
+            "**Exceptions and escalation**",
+            "**Outputs, records, and completion**",
+            "**Proposed future state**",
+            "**Compliance and authority gaps**",
+            "**Maintenance and staleness**",
+            "**Sibling handoffs**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

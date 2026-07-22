@@ -88,6 +88,7 @@ come directly from canonical skill frontmatter.
 | `se-checklist` | Use when the user wants a short read-do or do-confirm checklist derived from bounded authoritative sources, with observable pass conditions, failure responses, and no execution or certification. |
 | `se-knowledge-capture` | Use when the user wants a normalized capture safely published to Obsidian or Notion through duplicate-aware preview, preservation, approval, and verified write-back. |
 | `se-runbook` | Use when the user wants a source-traceable operational runbook with bounded authority, ordered steps, verification, failure handling, escalation, rollback, recovery, and maintenance metadata. |
+| `se-sop` | Use when the user wants a source-traceable standard operating procedure for routine repeatable work, with controlled current practice, testable controls, exceptions, records, and maintenance metadata. |
 
 ### Improve
 
@@ -205,6 +206,14 @@ distinguishes validated, partially validated, and proposed steps; reconciles
 partial state before retry or recovery; separates rollback from recovery; and
 warns when the current environment, version, or date is outside validation.
 The workflow authors but never executes the runbook.
+
+`se-sop` turns observed and approved routine practice into a controlled,
+maintainable procedure. It preserves conflicts, unknowns, and undocumented
+exceptions; keeps proposed improvements outside current practice; makes every
+step and mandatory control operationally testable; and records authority,
+compliance scope, document control, and staleness. Event-driven failure,
+rollback, and recovery remain `se-runbook` work, and the workflow never executes
+or approves the SOP.
 
 `se-compare` applies one fair, source-aware frame to a known set of
 alternatives. It preserves version and evidence asymmetry, explicit unknown and

@@ -16,10 +16,10 @@ consistent execution and maintenance.
 
 ## Acceptance Criteria
 
-- [ ] Roles, inputs, outputs, controls, and exceptions are operationally testable.
-- [ ] Current practice and proposed future state remain distinct.
-- [ ] Tests cover undocumented exceptions, conflicting sources, compliance claims, and stale procedures.
-- [ ] Generated surfaces, documentation, release metadata, and full checks pass.
+- [x] Roles, inputs, outputs, controls, and exceptions are operationally testable.
+- [x] Current practice and proposed future state remain distinct.
+- [x] Tests cover undocumented exceptions, conflicting sources, compliance claims, and stale procedures.
+- [x] Generated surfaces, documentation, release metadata, and full checks pass.
 
 ## Out of Scope
 
