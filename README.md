@@ -94,6 +94,7 @@ come directly from canonical skill frontmatter.
 | `se-knowledge-capture` | Use when the user wants a normalized capture safely published to Obsidian or Notion through duplicate-aware preview, preservation, approval, and verified write-back. |
 | `se-runbook` | Use when the user wants a source-traceable operational runbook with bounded authority, ordered steps, verification, failure handling, escalation, rollback, recovery, and maintenance metadata. |
 | `se-sop` | Use when the user wants a source-traceable standard operating procedure for routine repeatable work, with controlled current practice, testable controls, exceptions, records, and maintenance metadata. |
+| `se-watchlist` | Use when the user wants a read-only review of configured channels, feeds, authors, searches, playlists, podcasts, or collections that reports only material new items since an explicit checkpoint. |
 
 ### Improve
 
@@ -195,6 +196,12 @@ faithful, timestamped knowledge notes. It discloses complete, partial, metadata-
 only, and unavailable coverage; separates creator content from assistant
 analysis; and preserves timestamp, quotation, claim, language, edit, and
 comparison uncertainty without pretending the video was watched.
+
+`se-watchlist` reviews bounded channels, feeds, authors, searches, playlists,
+podcasts, or collections against an explicit checkpoint. It separates source
+coverage from an empty delta, deduplicates conservatively, applies only
+evidenced exclusions, explains privacy-safe relevance, and returns a minimized
+next monitor state without persisting, scheduling, subscribing, or notifying.
 
 `se-premortem` stress-tests an accepted plan before execution by defining the
 failed state, developing evidence-labeled failure modes, preserving correlated

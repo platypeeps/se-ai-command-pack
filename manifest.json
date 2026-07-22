@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.47.0",
+  "version": "0.48.0",
   "license": "MIT",
-  "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
+  "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
     {
       "platform": "agents",
@@ -1908,8 +1908,8 @@
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-monitor/references/state-schema.md",
-      "target": ".config/agents/skills/se-monitor/references/state-schema.md",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-monitor/references/source-standards.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1917,8 +1917,8 @@
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/_shared/references/source-standards.md",
-      "target": ".config/agents/skills/se-monitor/references/source-standards.md",
+      "source": "templates/skills/_shared/references/state-schema.md",
+      "target": ".config/agents/skills/se-monitor/references/state-schema.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1935,8 +1935,8 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-monitor/references/state-schema.md",
-      "target": ".claude/skills/se-monitor/references/state-schema.md",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-monitor/references/source-standards.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1944,8 +1944,8 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/_shared/references/source-standards.md",
-      "target": ".claude/skills/se-monitor/references/source-standards.md",
+      "source": "templates/skills/_shared/references/state-schema.md",
+      "target": ".claude/skills/se-monitor/references/state-schema.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1962,8 +1962,8 @@
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-monitor/references/state-schema.md",
-      "target": ".codex/skills/se-monitor/references/state-schema.md",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-monitor/references/source-standards.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1971,8 +1971,8 @@
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/_shared/references/source-standards.md",
-      "target": ".codex/skills/se-monitor/references/source-standards.md",
+      "source": "templates/skills/_shared/references/state-schema.md",
+      "target": ".codex/skills/se-monitor/references/state-schema.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -3188,6 +3188,114 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-video-notes/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-watchlist/SKILL.md",
+      "target": ".config/agents/skills/se-watchlist/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-watchlist/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/state-schema.md",
+      "target": ".config/agents/skills/se-watchlist/references/state-schema.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/personal-profile-contract.md",
+      "target": ".config/agents/skills/se-watchlist/references/personal-profile-contract.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-watchlist/SKILL.md",
+      "target": ".claude/skills/se-watchlist/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-watchlist/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/state-schema.md",
+      "target": ".claude/skills/se-watchlist/references/state-schema.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/personal-profile-contract.md",
+      "target": ".claude/skills/se-watchlist/references/personal-profile-contract.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-watchlist/SKILL.md",
+      "target": ".codex/skills/se-watchlist/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-watchlist/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/state-schema.md",
+      "target": ".codex/skills/se-watchlist/references/state-schema.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/personal-profile-contract.md",
+      "target": ".codex/skills/se-watchlist/references/personal-profile-contract.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     }
