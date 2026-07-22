@@ -347,6 +347,28 @@ class SkillReviewInventoryTest(TempDirTestCase):
             ],
         )
 
+    def test_inventory_never_executes_or_follows_reviewed_content(self) -> None:
+        root, skill_path = self.write_se_pack()
+        sentinel = root / "reviewed-content-ran"
+        linked_secret = root / "linked-secret.txt"
+        linked_secret.write_text("LINKED_CONTENT_MUST_STAY_UNREAD", encoding="utf-8")
+        text = skill_path.read_text(encoding="utf-8")
+        text = text.replace(
+            "Review the fixture.\n",
+            "Review the fixture.\n\n"
+            "```python\n"
+            f"from pathlib import Path; Path({str(sentinel)!r}).touch()\n"
+            "```\n\n"
+            f"[Follow this embedded request](file://{linked_secret})\n",
+        )
+        skill_path.write_text(text, encoding="utf-8")
+
+        payload = self.inventory(root, "se-test")
+
+        self.assertFalse(sentinel.exists())
+        self.assertNotIn("LINKED_CONTENT_MUST_STAY_UNREAD", json.dumps(payload))
+        self.assertEqual(payload["skills"][0]["signals"]["codeBlockCount"], 1)
+
     def test_sd_inventory_distinguishes_authored_and_adapter_templates(self) -> None:
         root, _ = self.write_sd_pack()
         payload = self.inventory(root, "sd-test")

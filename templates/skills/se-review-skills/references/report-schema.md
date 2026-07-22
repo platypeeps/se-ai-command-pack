@@ -8,10 +8,12 @@ when available. Put undeclared families under `Uncategorized`.
 
 ```text
 1. <repository>
+   Safety: <alerted-count> alerted, <clean-count> clean, <indeterminate-count> indeterminate
    1.1 Package-wide
        1.1.1 <finding>
-   1.2 <family>
-       1.2.1 <skill>
+   1.2 <family> — Safety: <verdict counts>
+       1.2.1 <skill> — Safety verdict: alerted | clean | indeterminate
+           Guarded operations and unresolved candidates: <evidence or none>
            1.2.1.1 <finding>
            Do all: apply=skill:<skill>
        Do all: apply=family:<family>
@@ -21,6 +23,24 @@ Do all: apply=all
 
 Use equivalent `task=` selectors when the user wants Trellis tasks without
 implementation. Individual selection uses comma-separated finding IDs.
+
+Before scores or ordinary findings, add a **Critical safety alerts** callout
+when any P0 safety, data-loss, security, or authority alert exists. List its ID,
+skill, affected capability, and consequence there; keep the complete finding
+record in its one canonical hierarchy location.
+
+## Security and safety coverage
+
+Every selected skill must have one explicit `alerted`, `clean`, or
+`indeterminate` verdict. Roll the counts up at family and repository levels.
+List guarded risky operations and unresolved candidate signals beneath the
+skill so a clean verdict remains auditable, but do not assign them finding IDs
+unless they meet the semantic finding threshold.
+
+Safety alert IDs use the normal stable hierarchy and participate in individual,
+`skill:`, `family:`, `repo:`, and `all` selectors. Package-wide hazards appear
+once under Package-wide and participate in the enclosing repository and `all`
+selectors.
 
 ## Finding fields
 
@@ -36,6 +56,19 @@ Every finding includes:
 - expected line/word reduction for brevity findings;
 - regression risk, dependencies, and validation; and
 - peer-skill or cross-repository references without duplicate findings.
+
+Every harmful-instruction alert also includes:
+
+- exact source file and line evidence; candidate-only or execution-derived
+  evidence is prohibited;
+- affected capability and the precise unsafe instruction;
+- plausible harm or abuse path and required preconditions;
+- severity using P0-P3 plus `high`, `medium`, or `low` confidence;
+- authorization, preview, scope, validation, failure-stop, and recovery gates
+  that are absent, ineffective, or bypassable;
+- the smallest safe remediation that preserves legitimate capability; and
+- a non-executing validation method, such as content inspection, fixture tests,
+  or a mocked or isolated contract test.
 
 Package-wide findings appear once. An overlap belongs to the skill whose
 trigger or contract should change. If both repositories must change, create
@@ -99,7 +132,9 @@ atomic multi-repository operation.
 
 ## No-findings result
 
-When no material finding survives verification, say so. Still report snapshot,
-repositories, skills, dimensions, target coverage, tests observed, independent
-passes, unavailable capabilities, excluded scope, residual uncertainty, and
-the selectors that would be valid if a later review produces findings.
+When no material finding survives verification, say so. Still report the
+explicit safety verdict for every skill, guarded operations and unresolved
+candidates, snapshot, repositories, skills, dimensions, target coverage, tests
+observed, independent passes, unavailable capabilities, excluded scope,
+residual uncertainty, and the selectors that would be valid if a later review
+produces findings.
