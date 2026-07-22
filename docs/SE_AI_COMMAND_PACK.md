@@ -290,6 +290,20 @@ observations. Help reports observed version mismatches through
 guessing their cause. It remains read-only and ends with a copy-ready
 user-scoped invocation that requires a separate request before execution.
 
+### Skill-review workflow boundary
+
+`se-review-skills` owns bounded review of one or more skills or skill packages.
+It inventories capabilities, identifies evidence-backed issues, overlap, and
+improvement opportunities, and returns numbered selectors at skill, family,
+and all-skills scope. The default is review-only: applying an improvement or
+creating a task requires a later explicit `apply=` or `task=` selector.
+
+Pack discovery and intent routing remain with `se-help`. Broader engineering
+repository audits remain with `sd-audit-repo`, while execution of configured
+local code-review providers remains with `sd-review-local`. A skill review does
+not silently broaden into either workflow, edit installed copies, or treat a
+recommendation as authorization to mutate a repository.
+
 ### Personal-profile workflow boundary
 
 `se-profile` is the sole mutation owner for a user-owned
@@ -689,6 +703,11 @@ recorded decisions, cutoff carryover, supported lessons, directly self-reported
 energy, documented friction, and at most three next-week focus items remain
 separate. Missing connectors are coverage gaps rather than empty-week evidence,
 and sparse weeks produce short truthful reviews.
+
+Timezone resolution precedes calendar-boundary calculation: use an explicit
+invocation value, then an authorized private worklog-profile timezone already
+supplied to the workflow. If neither is available, ask and stop rather than
+guessing a named locale, host default, or system setting.
 
 The private worklog boundary is explicit: `worklog_profile=off|<locator>` must
 resolve before source reads, never searches private stores, and has no public

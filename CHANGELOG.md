@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.50.0 - 2026-07-22
+
+- Remove the public `se-weekly-review` named-timezone fallback: resolve an
+  explicit timezone first, then authorized private worklog-profile input, and
+  otherwise ask and stop before calculating the DST-safe local week boundary.
+- Document `se-review-skills` in the operator guide as a review-only workflow,
+  distinct from pack help, repository auditing, and configured local code
+  review, with explicit later selectors required for application or task work.
+- Add focused regressions for portable timezone resolution and complete
+  registry coverage in the operator guide.
+
 ## 0.49.0 - 2026-07-22
 
 - Add `se-weekly-review`, a read-only Improve workflow for evidence-backed
