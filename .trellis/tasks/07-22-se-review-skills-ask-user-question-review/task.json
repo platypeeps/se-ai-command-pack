@@ -1,0 +1,32 @@
+{
+  "id": "se-review-skills-ask-user-question-review",
+  "name": "se-review-skills-ask-user-question-review",
+  "title": "Detect missing AskUserQuestion guidance in skill reviews",
+  "description": "Extend se-review-skills to identify workflows that should use AskUserQuestion or a verified platform-equivalent for necessary user decisions, then produce bounded evidence-backed enhancement suggestions for those skills.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-07-22",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "templates/skills/se-review-skills/SKILL.md",
+    "templates/skills/se-review-skills/references/review-rubric.md",
+    "templates/skills/se-review-skills/references/report-schema.md",
+    "tests/test_skills.py",
+    "tests/test_skill_review.py"
+  ],
+  "notes": "Keep this semantic interaction-review capability separate from the existing analyzer-hardening task, which covers inventory runtime, ownership, and snapshot correctness.",
+  "meta": {}
+}
