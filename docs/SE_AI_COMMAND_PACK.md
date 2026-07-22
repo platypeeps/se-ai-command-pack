@@ -165,6 +165,25 @@ with `se-explain`, and operational execution with `se-runbook`. The workflow
 does not run commands on the reader's system, deploy, publish, enroll, submit,
 or certify.
 
+### Video-notes workflow boundary
+
+`se-video-notes` owns destination-neutral notes for one supplied video or a
+bounded comparison set. It inventories video identity, metadata, version,
+caption source and quality, language, transcript access, timestamp basis, and
+coverage before separating metadata, transcript-grounded creator content,
+description or comment material, and assistant analysis. Complete, partial,
+metadata-only, and unavailable transcripts remain explicit states; unavailable
+captions produce verified metadata plus a manual-viewing aid, never guessed
+video content.
+
+Every chapter, timestamp, short quotation, claim, demonstration, and referenced
+resource maps to its video and evidence basis. Edited cuts, ads, automatic-
+caption errors, translations, and unequal comparison coverage remain visible.
+Independent claim verification stays with `se-fact-check`, general source
+normalization with `se-capture`, and persistence with `se-knowledge-capture`.
+Downloading, transcription implementation, access bypass, channel mutation,
+publication, and external writes remain `not run`.
+
 ### Socratic-review workflow boundary
 
 `se-socratic-review` owns a bounded formative dialogue that asks exactly one

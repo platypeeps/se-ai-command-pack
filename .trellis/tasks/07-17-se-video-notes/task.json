@@ -3,7 +3,7 @@
   "name": "se-video-notes",
   "title": "Implement se-video-notes",
   "description": "Add a YouTube and video-note workflow that produces timestamped, source-faithful notes with transcript availability disclosure, claim extraction, and downstream routing.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

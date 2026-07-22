@@ -80,6 +80,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-study-guide",
     "se-thread-digest",
     "se-tutorial",
+    "se-video-notes",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -210,6 +211,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-study-guide",
                 "se-thread-digest",
                 "se-tutorial",
+                "se-video-notes",
             ),
         )
         self.assertEqual(
@@ -264,6 +266,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-study-guide": "understand",
                 "se-thread-digest": "coordinate",
                 "se-tutorial": "create",
+                "se-video-notes": "understand",
             },
         )
 
@@ -3054,6 +3057,62 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Cleanup and rollback**",
             "**Version, source, and execution inventory**",
             "**Sibling handoffs**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_video_notes_preserves_source_coverage_and_content_classes(self) -> None:
+        text = normalized("se-video-notes").lower()
+        for phrase in (
+            "`complete-transcript`, `partial-transcript`, `metadata-only`, or `unavailable`",
+            "metadata, transcript-grounded creator content, and assistant analysis",
+            "read every accessible transcript region",
+            "caption source and quality",
+            "never imply that the video was watched",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_video_notes_requires_timestamp_and_quote_fidelity(self) -> None:
+        text = normalized("se-video-notes").lower()
+        for phrase in (
+            "known timestamp map and basis",
+            "never create timestamps from untimed prose",
+            "do not convert transcript offsets",
+            "exact, short, and traceable",
+            "edits, inserted ads, or alternate cuts",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_video_notes_handles_missing_captions_and_compare_asymmetry(self) -> None:
+        text = normalized("se-video-notes").lower()
+        for phrase in (
+            "no usable captions or transcript representation is available",
+            "no guessed summary",
+            "questions and checklist for manual viewing",
+            "agreements, conflicts, method or evidence differences, and unique contributions",
+            "evidence asymmetry, not a negative judgment",
+            "do not merge or align multilingual captions",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_video_notes_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-video-notes")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in (
+            "`se-fact-check`",
+            "`se-capture`",
+            "`se-knowledge-capture`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Video-note contract**",
+            "**Source inventory and coverage**",
+            "**Timestamped notes**",
+            "**Claims and verification queue**",
+            "**Comparison view**",
+            "**Limitations and manual-viewing aid**",
+            "**Portable Markdown artifact**",
+            "**Downstream handoffs**",
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)

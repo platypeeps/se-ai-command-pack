@@ -80,7 +80,7 @@ DEFAULT_MANIFEST_HEADER = {
     "description": (
         "Install user-level knowledge-work skills for personal profiles, "
         "consultation, technical authoring, checkpoint-driven technical "
-        "tutorials, destination-neutral capture, "
+        "tutorials, timestamped video notes, destination-neutral capture, "
         "critical checklists, "
         "controlled standard operating procedures, "
         "safe operational runbooks, "
