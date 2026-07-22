@@ -1826,3 +1826,43 @@ Implemented se-review-skills, bundled deterministic analysis, cross-platform pay
 ### Next Steps
 
 - None - task complete
+
+
+## Session 49: Add se-socratic-review
+
+**Date**: 2026-07-21
+**Task**: Add se-socratic-review
+**Branch**: `main`
+
+### Summary
+
+Implemented, validated, reviewed, and merged the bounded Socratic review skill across canonical and generated package surfaces.
+
+### Main Changes
+
+- Added the one-question-at-a-time se-socratic-review skill with adaptive evidence classification, misconception repair, and learner-controlled stopping.
+- Registered and generated the cross-platform release payload, documentation, tests, and version 0.41.0 metadata.
+- Grounded Trellis implementation and validation context after the deterministic PR preflight.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7b2db50d9899c98745f9074ee7c48240eba3e17c` | feat: add se-socratic-review |
+| `081ef2fc6eb3f3cdcb16f90e723543186795041c` | chore: ground socratic review context |
+
+### Testing
+
+- [OK] make check (411 tests, Ruff, mypy, generation parity, release gate)
+- [OK] sd-ai-command-pack-review-full-check.sh
+- [OK] Two fresh-context skill behavior probes
+- [OK] Copilot review on final head reported no new comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
