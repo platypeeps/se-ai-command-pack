@@ -7,8 +7,8 @@
 ## Current Status
 
 <!-- @@@auto:current-status -->
-- **Active File**: `journal-1.md`
-- **Total Sessions**: 52
+- **Active File**: `journal-2.md`
+- **Total Sessions**: 53
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,8 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1981 | Active |
+| `journal-2.md` | ~44 | Active |
+| `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 53 | 2026-07-21 | Deliver se-thread-digest | `cfba7b1b7db6f0fa55c4ac94cb3702819632a8a3`, `79d707691cc7d45da4cebfd80f3c656001897201` | `codex/se-thread-digest` |
 | 52 | 2026-07-21 | Deliver se-study-guide | `efd02f4a8624a9146d07391257b4d811e7372c02` | `codex/se-study-guide` |
 | 51 | 2026-07-21 | Deliver se-stakeholder-map | `db6700cbb45ddd7aa1780fb712e2bff1664f52aa` | `codex/se-stakeholder-map` |
 | 50 | 2026-07-21 | Implement se-sop | `2394fdf`, `aa1ed5a`, `629e838` | `codex/se-sop` |
