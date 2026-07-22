@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.41.0 - 2026-07-21
+
+- Add `se-socratic-review`, a read-only Understand workflow for bounded,
+  adaptive, one-question-at-a-time formative review.
+- Classify demonstrated responses, adapt difficulty and representation without
+  silently lowering the target, and keep hints or reveals as contaminated
+  rather than mastery evidence.
+- Validate prompts and sources before attributing errors, repair
+  misconceptions with non-identical transfer checks, and preserve non-grading,
+  non-psychological, learner-controlled stopping boundaries.
+
 ## 0.40.0 - 2026-07-21
 
 - Add `se-review-skills`, an Improve workflow for evidence-backed review of

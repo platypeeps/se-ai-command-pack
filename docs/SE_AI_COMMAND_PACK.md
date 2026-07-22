@@ -127,6 +127,18 @@ probing with `se-socratic-review`; unavailable siblings remain honest proposed
 handoffs. The workflow is read-only and never enrolls, purchases, schedules,
 grades, or credentials.
 
+### Socratic-review workflow boundary
+
+`se-socratic-review` owns a bounded formative dialogue that asks exactly one
+assessable question per turn, requires commitment before explanation, and
+adapts difficulty, representation, prerequisites, or transfer checks from the
+learner's demonstrated reasoning. It distinguishes correct reasoning from a
+correct guess, partial models, procedural success without understanding,
+misconceptions, and unassessed turns. Hints and reveals remain contaminated
+evidence; invalid prompts are retired rather than counted against the learner.
+The workflow is read-only, learner-controlled, non-grading, and never infers
+intelligence, personality, or general ability.
+
 ### Literature-map workflow boundary
 
 `se-literature-map` owns a source-traceable map of a bounded field or research

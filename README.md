@@ -44,6 +44,7 @@ come directly from canonical skill frontmatter.
 | `se-learn` | Use when the user wants an adaptive, mastery-oriented learning path from a stated capability goal, diagnosed baseline, constraints, and observable evidence. |
 | `se-literature-map` | Use when the user wants a source-traceable map of a field's schools, methods, works, relationships, disputes, gaps, and reading paths without a flattened narrative review. |
 | `se-monitor` | Use when the user wants a dated, source-traceable comparison of a watched subject against an explicit baseline, with meaningful deltas and a portable next-state artifact. |
+| `se-socratic-review` | Use when the user wants a bounded, adaptive Socratic review that asks one question at a time, tests demonstrated understanding, repairs misconceptions, and reports evidence without grading. |
 
 ### Decide
 
