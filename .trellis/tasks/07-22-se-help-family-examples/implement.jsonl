@@ -1,3 +1,2 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
 {"file": "templates/skills/se-help/references/examples.md", "reason": "Canonical example resource containing the stale Create and Improve claims."}
 {"file": "templates/skills/_shared/references/skill-catalog.md", "reason": "Generated catalog evidence for current family membership; do not edit directly."}
