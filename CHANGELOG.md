@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.44.0 - 2026-07-21
+
+- Add `se-study-guide`, a read-only Understand workflow that transforms a
+  bounded source set into a durable concept, retrieval, practice, and review
+  artifact.
+- Preserve complete source coverage, conflicting definitions, exact notation,
+  prerequisite relationships, and clear source-content, source-derived,
+  generated, inferred, and unsupported states.
+- Require varied, unambiguous questions with traceable solutions and leakage
+  checks while keeping teaching, grading, certification, scheduling, deck
+  creation, external research, and mastery claims outside the workflow.
+
 ## 0.43.0 - 2026-07-21
 
 - Add `se-stakeholder-map`, a read-only Coordinate workflow for mapping the

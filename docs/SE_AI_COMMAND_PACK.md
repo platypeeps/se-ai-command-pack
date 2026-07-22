@@ -127,6 +127,25 @@ probing with `se-socratic-review`; unavailable siblings remain honest proposed
 handoffs. The workflow is read-only and never enrolls, purchases, schedules,
 grades, or credentials.
 
+### Study-guide workflow boundary
+
+`se-study-guide` owns durable transformation of a bounded source set into a
+concept and prerequisite map, essential definitions and notation, worked
+examples, traps, retrieval prompts, flashcards, varied practice, traceable
+solutions, and review order. It reads every accessible source fully, discloses
+unreadable regions, preserves conflicting definitions in context, and labels
+source content, source-derived transformation, generated scaffolding,
+generated inference, and unsupported gaps separately.
+
+Every answer, solution, rubric, and distractor maps to concept IDs and source
+locators or remains visibly generated or unsupported. Prompt audits catch
+ambiguity, answer leakage, notation drift, and omitted-context dependencies.
+Compression stays with `se-distill`, curricula with `se-learn`, one-concept
+teaching with `se-explain`, live assessment with `se-socratic-review`, and
+stepwise teaching with `se-tutorial` when available. The workflow is read-only
+and never adds external research, creates decks, schedules sessions, grades,
+certifies, or claims mastery.
+
 ### Socratic-review workflow boundary
 
 `se-socratic-review` owns a bounded formative dialogue that asks exactly one
