@@ -79,3 +79,41 @@ Implemented the checkpoint-driven se-tutorial workflow, shipped release 0.46.0, 
 ### Next Steps
 
 - Merge PR #68 after final exact-head review and green CI.
+
+
+## Session 55: Ship se-video-notes
+
+**Date**: 2026-07-21
+**Task**: Ship se-video-notes
+**Branch**: `codex/se-video-notes`
+
+### Summary
+
+Implemented and validated a source-faithful timestamped video-note workflow, released it as 0.47.0, and completed Trellis task bookkeeping.
+
+### Main Changes
+
+- Added the read-only se-video-notes skill with explicit transcript coverage, evidence classes, timestamp and quotation provenance, compare asymmetry, and safe downstream handoffs.
+- Registered and generated the skill across supported platforms, refreshed release documentation and the repository map, and added focused safety and generation tests.
+- Archived the completed child task and reconciled the parent skill roadmap to 47 of 50 completed children.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cbeb6d6e10530728001b7d6567f030dc5fa0beff` | feat: add video notes skill |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh — 443 tests plus lint, mypy, release, install, generated-surface, Repomix, and KB checks passed
+- [OK] GitHub CI — all required jobs passed on PR #69
+- [OK] Fresh-context probes — timestamp fidelity and the final integrated contract passed after correcting the no-caption boundary
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Complete Copilot follow-up, merge PR #69, then continue the backlog loop with the highest-ranked remaining task.
