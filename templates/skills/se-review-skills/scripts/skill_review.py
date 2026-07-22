@@ -469,13 +469,19 @@ def _safe_manifest_source(
     source_path = Path(source)
     if source_path.is_absolute() or ".." in source_path.parts:
         return None
-    canonical = (context.root / source_path).resolve()
+    supplied = context.root / source_path
+    current = context.root
+    for part in source_path.parts:
+        current /= part
+        if current.is_symlink():
+            return None
+    canonical = supplied.resolve()
     if not _is_relative_to(canonical, context.root):
         return None
     allowed = context.allowed_template_root
     if allowed is not None and not _is_relative_to(canonical, allowed):
         return None
-    if canonical.name != "SKILL.md" or canonical.is_symlink() or not canonical.is_file():
+    if canonical.name != "SKILL.md" or not canonical.is_file():
         return None
     return canonical
 

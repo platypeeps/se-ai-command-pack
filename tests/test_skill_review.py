@@ -787,6 +787,19 @@ class SkillReviewInventoryTest(TempDirTestCase):
         self.assertNotEqual(skill["canonicalPath"], str(outside))
         self.assertFalse(skill["taskRouting"]["canCreateTask"])
 
+    def test_manifest_source_cannot_cross_a_symlink_boundary(self) -> None:
+        source_root, source_skill = self.write_se_pack()
+        linked = source_root / "templates" / "skills" / "linked"
+        linked.symlink_to(source_skill.parent, target_is_directory=True)
+
+        context = review._package_context(source_root)
+
+        self.assertIsNone(
+            review._safe_manifest_source(
+                context, "templates/skills/linked/SKILL.md"
+            )
+        )
+
 
 if __name__ == "__main__":
     import unittest
