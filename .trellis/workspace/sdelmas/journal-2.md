@@ -309,3 +309,37 @@ Completed the final integration revalidation for the 50-child SE skill roadmap a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 61: Plan harmful-instruction skill review
+
+**Date**: 2026-07-22
+**Task**: Plan harmful-instruction skill review
+**Branch**: `codex/se-review-skills-safety-task`
+
+### Summary
+
+Created the P1 se-review-skills harmful-instruction safety task, published PR #82, curated implementation and check context after Copilot feedback, and left the task in planning for future implementation.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c7e14ab` | (see git log) |
+| `5491f32` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
