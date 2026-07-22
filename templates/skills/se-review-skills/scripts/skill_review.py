@@ -15,12 +15,12 @@ import os
 import re
 import subprocess
 import sys
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any, Sequence
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
 MAX_DESCRIPTION_SIMILARITY_PAIRS = 10_000
@@ -89,6 +89,7 @@ class RegistryData:
     family_order: tuple[str, ...]
     skill_order: tuple[str, ...]
     platforms: tuple[str, ...]
+    shared_references: dict[str, tuple[str, ...]]
 
 
 @dataclass(frozen=True)
@@ -110,6 +111,17 @@ class ResolvedSkill:
     canonical: Path
     context: PackageContext
     source_role: str
+    drift: str
+    mapping_evidence: str
+    installations: tuple[InstalledCopy, ...]
+
+
+@dataclass(frozen=True)
+class InstalledCopy:
+    path: Path
+    root: Path
+    platform: str | None
+    observed_hash: str
     drift: str
     mapping_evidence: str
 
@@ -220,11 +232,11 @@ def _call_value(call: ast.Call, name: str, position: int) -> str | None:
 
 def _parse_registry(path: Path) -> RegistryData:
     if not path.is_file() or path.is_symlink():
-        return RegistryData({}, (), (), ())
+        return RegistryData({}, (), (), (), {})
     try:
         tree = ast.parse(_read_regular_text(path), filename=str(path))
     except SyntaxError:
-        return RegistryData({}, (), (), ())
+        return RegistryData({}, (), (), (), {})
 
     family_order: list[str] = []
     labels = _assignment(tree, "FAMILY_LABELS")
@@ -266,11 +278,26 @@ def _parse_registry(path: Path) -> RegistryData:
             for key in registry.keys
             if (value := _string_value(key)) is not None
         ]
+
+    shared_references: dict[str, tuple[str, ...]] = {}
+    shared = _assignment(tree, "SHARED_REFERENCES")
+    if isinstance(shared, ast.Dict):
+        for key_node, value_node in zip(shared.keys, shared.values, strict=True):
+            key = _string_value(key_node)
+            if key is None or not isinstance(value_node, (ast.Tuple, ast.List)):
+                continue
+            consumers = tuple(
+                value
+                for entry in value_node.elts
+                if (value := _string_value(entry)) is not None
+            )
+            shared_references[key] = consumers
     return RegistryData(
         families,
         tuple(family_order),
         tuple(skill_order),
         tuple(sorted(platforms)),
+        shared_references,
     )
 
 
@@ -436,7 +463,57 @@ def _manifest_rows(context: PackageContext) -> list[dict[str, Any]]:
     return [row for row in rows if isinstance(row, dict)] if isinstance(rows, list) else []
 
 
-def _installed_mapping(observed: Path) -> tuple[Path, PackageContext, str] | None:
+def _safe_manifest_source(
+    context: PackageContext, source: str
+) -> Path | None:
+    source_path = Path(source)
+    if source_path.is_absolute() or ".." in source_path.parts:
+        return None
+    canonical = (context.root / source_path).resolve()
+    if not _is_relative_to(canonical, context.root):
+        return None
+    allowed = context.allowed_template_root
+    if allowed is not None and not _is_relative_to(canonical, allowed):
+        return None
+    if canonical.name != "SKILL.md" or canonical.is_symlink() or not canonical.is_file():
+        return None
+    return canonical
+
+
+def _manifest_mapping(
+    observed: Path, context: PackageContext
+) -> tuple[Path, str | None, str] | None:
+    if context.owner_kind not in {"sd-upstream", "se-upstream", "repo-local"}:
+        return None
+    observed_parts = observed.resolve().parts
+    for row in _manifest_rows(context):
+        target = row.get("target")
+        source = row.get("source")
+        if not isinstance(target, str) or not isinstance(source, str):
+            continue
+        target_path = Path(target)
+        if target_path.is_absolute() or ".." in target_path.parts:
+            continue
+        target_parts = target_path.parts
+        if not target_parts or len(observed_parts) < len(target_parts):
+            continue
+        if observed_parts[-len(target_parts) :] != target_parts:
+            continue
+        canonical = _safe_manifest_source(context, source)
+        if canonical is None:
+            continue
+        platform = row.get("platform")
+        return (
+            canonical,
+            platform if isinstance(platform, str) else None,
+            f"verified manifest target {target!r} in {context.root}",
+        )
+    return None
+
+
+def _installed_mapping(
+    observed: Path,
+) -> tuple[Path, PackageContext, str | None, str] | None:
     for base in observed.parents:
         for receipt_name in RECEIPT_NAMES:
             receipt_path = base / receipt_name
@@ -463,18 +540,16 @@ def _installed_mapping(observed: Path) -> tuple[Path, PackageContext, str] | Non
                 source = row.get("source")
                 if not isinstance(source, str):
                     continue
-                source_path = Path(source)
-                if source_path.is_absolute() or ".." in source_path.parts:
+                canonical = _safe_manifest_source(context, source)
+                if canonical is None:
                     continue
-                canonical = (context.root / source).resolve()
-                if not _is_relative_to(canonical, context.root):
-                    continue
-                allowed = context.allowed_template_root
-                if allowed is not None and not _is_relative_to(canonical, allowed):
-                    continue
-                if canonical.name != "SKILL.md" or not canonical.is_file():
-                    continue
-                return canonical, context, receipt_path.as_posix()
+                platform = row.get("platform")
+                return (
+                    canonical,
+                    context,
+                    platform if isinstance(platform, str) else None,
+                    receipt_path.as_posix(),
+                )
     return None
 
 
@@ -493,22 +568,89 @@ def _role_for(canonical: Path, observed: Path, context: PackageContext) -> str:
 
 
 def _resolve_path(
-    path: Path, context_hint: PackageContext | None = None
+    path: Path,
+    context_hint: PackageContext | None = None,
+    *,
+    installation_root: Path | None = None,
+    platform: str | None = None,
 ) -> ResolvedSkill:
     observed = path.absolute()
     if observed.is_symlink() or any(parent.is_symlink() for parent in observed.parents):
         raise ReviewError(f"skill path crosses a symlink boundary: {observed}")
-    mapping = _installed_mapping(observed)
-    if mapping:
-        canonical, context, evidence = mapping
-        drift = "canonical-match" if _sha256(observed) == _sha256(canonical) else "local-override"
+    manifest_mapping = (
+        _manifest_mapping(observed, context_hint) if context_hint is not None else None
+    )
+    if manifest_mapping:
+        canonical, mapped_platform, evidence = manifest_mapping
+        context = context_hint
+        drift = (
+            "canonical-match"
+            if _sha256(observed) == _sha256(canonical)
+            else "installed-drift"
+        )
+        copy = InstalledCopy(
+            observed,
+            installation_root or observed.parent.parent,
+            platform or mapped_platform,
+            _sha256(observed),
+            drift,
+            evidence,
+        )
         return ResolvedSkill(
             observed,
             canonical,
             context,
-            "installed-copy" if drift == "canonical-match" else "local-override",
+            "installed-copy",
             drift,
             evidence,
+            (copy,),
+        )
+
+    mapping = _installed_mapping(observed)
+    if mapping:
+        canonical, context, mapped_platform, evidence = mapping
+        drift = (
+            "canonical-match"
+            if _sha256(observed) == _sha256(canonical)
+            else "installed-drift"
+        )
+        copy = InstalledCopy(
+            observed,
+            installation_root or observed.parent.parent,
+            platform or mapped_platform,
+            _sha256(observed),
+            drift,
+            evidence,
+        )
+        return ResolvedSkill(
+            observed,
+            canonical,
+            context,
+            "installed-copy",
+            drift,
+            evidence,
+            (copy,),
+        )
+
+    if installation_root is not None:
+        context = _package_context(observed.parent)
+        evidence = "unmatched installed copy; canonical ownership unresolved"
+        copy = InstalledCopy(
+            observed,
+            installation_root,
+            platform,
+            _sha256(observed),
+            "unresolved",
+            evidence,
+        )
+        return ResolvedSkill(
+            observed,
+            observed.resolve(),
+            context,
+            "installed-copy-unowned",
+            "unresolved",
+            evidence,
+            (copy,),
         )
 
     if context_hint is not None and _is_relative_to(observed.resolve(), context_hint.root):
@@ -524,6 +666,7 @@ def _resolve_path(
         role,
         "canonical-match",
         "canonical path inside repository",
+        (),
     )
 
 
@@ -534,6 +677,8 @@ def _select_paths(
     family: str | None,
     scope: str | None,
     root_was_explicit: bool,
+    *,
+    allow_empty: bool = False,
 ) -> list[ResolvedSkill]:
     discovered = _discover(context, root, root_was_explicit)
     selected_paths: list[Path] = []
@@ -553,6 +698,8 @@ def _select_paths(
     if not selected_paths:
         selected_paths = discovered
     if not selected_paths:
+        if allow_empty and not skill_specs:
+            return []
         raise ReviewError(f"no skills found under bounded root: {root}")
 
     if not skill_specs and context.name is None and not root_was_explicit:
@@ -591,6 +738,222 @@ def _select_paths(
         return (root_key, positions.get(skill_name, len(positions)), skill_name)
 
     return sorted(resolved, key=sort_key)
+
+
+def _manifest_install_roots(
+    context: PackageContext, home: Path
+) -> list[tuple[Path, tuple[str, ...], str]]:
+    roots: dict[Path, set[str]] = {}
+    for row in _manifest_rows(context):
+        target = row.get("target")
+        source = row.get("source")
+        if not isinstance(target, str) or not isinstance(source, str):
+            continue
+        target_path = Path(target)
+        if (
+            target_path.is_absolute()
+            or ".." in target_path.parts
+            or target_path.name != "SKILL.md"
+            or len(target_path.parts) < 3
+        ):
+            continue
+        if _safe_manifest_source(context, source) is None:
+            continue
+        install_root = (home / target_path.parent.parent).absolute()
+        platform = row.get("platform")
+        roots.setdefault(install_root, set())
+        if isinstance(platform, str):
+            roots[install_root].add(platform)
+    return [
+        (path, tuple(sorted(platforms)), "manifest")
+        for path, platforms in sorted(roots.items(), key=lambda item: str(item[0]))
+    ]
+
+
+def _validate_installed_root(path: Path) -> Path:
+    supplied = path.expanduser().absolute()
+    if supplied.is_symlink() or any(parent.is_symlink() for parent in supplied.parents):
+        raise ReviewError(f"installed skill root crosses a symlink boundary: {supplied}")
+    resolved = _validate_bounded_root(supplied)
+    if not resolved.exists():
+        raise ReviewError(f"installed skill root does not exist: {resolved}")
+    if not resolved.is_dir():
+        raise ReviewError(f"installed skill root is not a directory: {resolved}")
+    return resolved
+
+
+def _discover_installed(
+    context: PackageContext,
+    mode: str,
+    explicit_roots: Sequence[Path],
+) -> tuple[list[ResolvedSkill], list[dict[str, Any]]]:
+    if mode not in {"auto", "off"}:
+        raise ReviewError(f"unknown installed discovery mode: {mode}")
+    if mode == "off" and explicit_roots:
+        raise ReviewError("installed roots cannot be supplied when installed discovery is off")
+    if mode == "off":
+        return [], []
+
+    root_specs: list[tuple[Path, tuple[str, ...], str]]
+    if explicit_roots:
+        root_specs = [
+            (_validate_installed_root(path), (), "explicit") for path in explicit_roots
+        ]
+    else:
+        root_specs = _manifest_install_roots(context, Path.home())
+
+    installed: list[ResolvedSkill] = []
+    root_records: list[dict[str, Any]] = []
+    seen_roots: set[Path] = set()
+    for candidate, platforms, source in root_specs:
+        absolute = candidate.expanduser().absolute()
+        if absolute in seen_roots:
+            continue
+        seen_roots.add(absolute)
+        if source == "manifest":
+            if absolute.is_symlink() or any(
+                parent.is_symlink() for parent in absolute.parents
+            ):
+                root_records.append(
+                    {
+                        "path": str(absolute),
+                        "source": source,
+                        "platforms": list(platforms),
+                        "status": "skipped-symlink",
+                        "skillsFound": 0,
+                        "symlinksSkipped": 0,
+                    }
+                )
+                continue
+            if not absolute.exists():
+                root_records.append(
+                    {
+                        "path": str(absolute),
+                        "source": source,
+                        "platforms": list(platforms),
+                        "status": "missing",
+                        "skillsFound": 0,
+                        "symlinksSkipped": 0,
+                    }
+                )
+                continue
+            if not absolute.is_dir():
+                root_records.append(
+                    {
+                        "path": str(absolute),
+                        "source": source,
+                        "platforms": list(platforms),
+                        "status": "not-directory",
+                        "skillsFound": 0,
+                        "symlinksSkipped": 0,
+                    }
+                )
+                continue
+
+        paths: list[Path] = []
+        symlinks_skipped = 0
+        for path in sorted(absolute.glob("*/SKILL.md")):
+            if path.is_symlink() or path.parent.is_symlink():
+                symlinks_skipped += 1
+                continue
+            if path.is_file():
+                paths.append(path.absolute())
+        for path in paths:
+            installed.append(
+                _resolve_path(
+                    path,
+                    context,
+                    installation_root=absolute,
+                    platform=platforms[0] if len(platforms) == 1 else None,
+                )
+            )
+        root_records.append(
+            {
+                "path": str(absolute),
+                "source": source,
+                "platforms": list(platforms),
+                "status": "scanned",
+                "skillsFound": len(paths),
+                "symlinksSkipped": symlinks_skipped,
+            }
+        )
+    return installed, root_records
+
+
+def _skill_name(item: ResolvedSkill) -> str:
+    text = _read_regular_text(item.canonical)
+    metadata, _, _ = _frontmatter(text, str(item.canonical))
+    return metadata.get("name") or item.canonical.parent.name
+
+
+def _deduplication_key(item: ResolvedSkill) -> tuple[str, ...]:
+    if item.context.owner_kind in {"sd-upstream", "se-upstream", "repo-local"}:
+        return ("canonical", str(item.context.root), str(item.canonical.resolve()))
+    return ("unowned-content", _skill_name(item), _sha256(item.canonical))
+
+
+def _deduplicate_resolved(items: Sequence[ResolvedSkill]) -> list[ResolvedSkill]:
+    groups: dict[tuple[str, ...], list[ResolvedSkill]] = {}
+    for item in items:
+        groups.setdefault(_deduplication_key(item), []).append(item)
+
+    deduplicated: list[ResolvedSkill] = []
+    for group in groups.values():
+        primary = next(
+            (
+                item
+                for item in group
+                if item.observed.resolve() == item.canonical.resolve()
+            ),
+            group[0],
+        )
+        installations = {
+            str(copy.path): copy
+            for item in group
+            for copy in item.installations
+        }
+        ordered = tuple(
+            installations[path] for path in sorted(installations)
+        )
+        aggregate_drift = primary.drift
+        if any(copy.drift == "installed-drift" for copy in ordered):
+            aggregate_drift = "installed-drift"
+        evidence = primary.mapping_evidence
+        if ordered:
+            copy_label = "copy" if len(ordered) == 1 else "copies"
+            evidence = (
+                f"{evidence}; deduplicated {len(ordered)} installed "
+                f"{copy_label} by canonical identity"
+            )
+        deduplicated.append(
+            replace(
+                primary,
+                drift=aggregate_drift,
+                mapping_evidence=evidence,
+                installations=ordered,
+            )
+        )
+
+    registry_positions = {
+        str(item.context.root): {
+            name: index
+            for index, name in enumerate(item.context.registry.skill_order)
+        }
+        for item in deduplicated
+    }
+
+    def sort_key(item: ResolvedSkill) -> tuple[str, int, str, str]:
+        root_key = str(item.context.root)
+        name = _skill_name(item)
+        positions = registry_positions[root_key]
+        return (
+            root_key,
+            positions.get(name, len(positions)),
+            name,
+            str(item.canonical),
+        )
+
+    return sorted(deduplicated, key=sort_key)
 
 
 def _paragraphs(body: str) -> list[str]:
@@ -670,10 +1033,29 @@ def _pinned_tests(context: PackageContext, skill_name: str) -> list[str]:
 def _related_templates(item: ResolvedSkill) -> list[dict[str, str]]:
     context = item.context
     skill_name = item.canonical.parent.name
-    candidates: set[Path] = set()
+    candidates: dict[Path, str] = {}
     for path in item.canonical.parent.rglob("*"):
         if path.is_file() and not path.is_symlink():
-            candidates.add(path.resolve())
+            candidates[path.resolve()] = "authored-template"
+    for relative, consumers in context.registry.shared_references.items():
+        if skill_name not in consumers:
+            continue
+        source = Path(relative)
+        if source.is_absolute() or ".." in source.parts:
+            raise ReviewError(
+                f"shared reference escapes the template root: {relative}"
+            )
+        source_root = context.allowed_template_root or context.root
+        candidate = source_root / source
+        if candidate.is_symlink() or not candidate.is_file():
+            raise ReviewError(f"unsafe or missing shared reference: {candidate}")
+        path = candidate.resolve()
+        allowed = context.allowed_template_root
+        if allowed is not None and not _is_relative_to(path, allowed):
+            raise ReviewError(
+                f"shared reference escapes the template allowlist: {relative}"
+            )
+        candidates[path] = "authored-shared-reference"
     if context.name == "sd-ai-command-pack":
         short = skill_name.removeprefix("sd-")
         for relative in (
@@ -684,16 +1066,16 @@ def _related_templates(item: ResolvedSkill) -> list[dict[str, str]]:
         ):
             path = (context.root / relative).resolve()
             if path.is_file() and not path.is_symlink():
-                candidates.add(path)
+                role = "authored-template"
+                if relative.startswith(
+                    ("templates/.claude/", "templates/.gemini/", "templates/.github/")
+                ):
+                    role = "generated-template-adapter"
+                candidates[path] = role
 
     related: list[dict[str, str]] = []
     for path in sorted(candidates):
-        relative = path.relative_to(context.root).as_posix()
-        role = "authored-template"
-        if context.name == "sd-ai-command-pack" and relative.startswith(
-            ("templates/.claude/", "templates/.gemini/", "templates/.github/")
-        ):
-            role = "generated-template-adapter"
+        role = candidates[path]
         related.append({"path": str(path), "role": role, "hash": _sha256(path)})
     return related
 
@@ -793,8 +1175,21 @@ def _inventory_record(item: ResolvedSkill) -> dict[str, Any]:
         "description": metadata.get("description", ""),
         "canonicalPath": str(item.canonical),
         "canonicalHash": _sha256(item.canonical),
+        "reviewPath": str(item.canonical),
         "observedPath": str(item.observed),
         "observedHash": _sha256(item.observed),
+        "installations": [
+            {
+                "path": str(copy.path),
+                "root": str(copy.root),
+                "platform": copy.platform,
+                "observedHash": copy.observed_hash,
+                "drift": copy.drift,
+                "mappingEvidence": copy.mapping_evidence,
+            }
+            for copy in item.installations
+        ],
+        "installedCopies": len(item.installations),
         "sourceRole": item.source_role,
         "drift": item.drift,
         "mappingEvidence": item.mapping_evidence,
@@ -934,6 +1329,8 @@ def build_inventory(
     scope: str | None,
     *,
     root_was_explicit: bool,
+    installed_mode: str = "off",
+    installed_roots: Sequence[Path] = (),
 ) -> dict[str, Any]:
     root = _validate_bounded_root(root)
     context = _package_context(root)
@@ -944,23 +1341,59 @@ def build_inventory(
         family,
         scope,
         root_was_explicit,
+        allow_empty=installed_mode != "off",
     )
+    installed_items, installation_roots = _discover_installed(
+        context,
+        installed_mode,
+        installed_roots,
+    )
+    if skill_specs:
+        selected_names = {_skill_name(item) for item in items}
+        installed_items = [
+            item for item in installed_items if _skill_name(item) in selected_names
+        ]
+    if family:
+        installed_items = [
+            item
+            for item in installed_items
+            if item.context.registry.families.get(_skill_name(item), "Uncategorized")
+            == family
+        ]
+    combined = [*items, *installed_items]
+    if not combined:
+        raise ReviewError(f"no skills found under bounded root or installed roots: {root}")
+    items = _deduplicate_resolved(combined)
+    if scope == "skill" and len(items) != 1:
+        raise ReviewError("scope=skill requires exactly one deduplicated skill")
     records = [_inventory_record(item) for item in items]
     payload: dict[str, Any] = {
         "schemaVersion": SCHEMA_VERSION,
         "scope": scope or ("skill" if len(records) == 1 else "repo"),
-        "selector": {"skills": list(skill_specs), "family": family, "root": str(root)},
+        "selector": {
+            "skills": list(skill_specs),
+            "family": family,
+            "root": str(root),
+            "installed": installed_mode,
+            "installedRoots": [str(path) for path in installed_roots],
+        },
         "repositories": _repository_records(items),
+        "installationRoots": installation_roots,
         "skills": records,
         "candidateSignals": _cross_skill_signals(records),
         "coverage": {
             "selectedSkills": len(records),
+            "installedCopies": sum(
+                skill["installedCopies"] for skill in records
+            ),
+            "deduplicatedSkillRecords": len(combined) - len(items),
             "readOnly": True,
             "semanticFindingsProduced": False,
             "limits": [
                 "Metadata parsing is intentionally limited to top-level scalar fields.",
                 "Host capabilities marked unknown require current host verification.",
                 "Similarity and repetition are candidate signals, not defects.",
+                "Missing or symlinked automatic install roots remain coverage limits.",
             ],
         },
     }
@@ -976,6 +1409,19 @@ def _parser() -> argparse.ArgumentParser:
     inventory.add_argument("--root", type=Path)
     inventory.add_argument("--skill", action="append", default=[])
     inventory.add_argument("--family")
+    inventory.add_argument(
+        "--installed",
+        choices=("auto", "off"),
+        default="auto",
+        help="scan supported user skill roots (default: auto)",
+    )
+    inventory.add_argument(
+        "--installed-root",
+        type=Path,
+        action="append",
+        default=[],
+        help="repeatable bounded installed skill root; overrides automatic roots",
+    )
     inventory.add_argument(
         "--scope",
         choices=("skill", "family", "repo", "package", "all"),
@@ -998,6 +1444,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             args.family,
             args.scope,
             root_was_explicit=root_was_explicit,
+            installed_mode=args.installed,
+            installed_roots=args.installed_root,
         )
     except ReviewError as error:
         print(f"error: {error}", file=sys.stderr)

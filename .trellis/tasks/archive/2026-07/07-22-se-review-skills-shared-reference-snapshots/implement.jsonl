@@ -1,0 +1,4 @@
+{"file": "templates/skills/se-review-skills/scripts/skill_review.py", "reason": "Canonical deterministic analyzer that currently omits registry-mapped shared resources."}
+{"file": "installer/registry.py", "reason": "Package source of truth for shared-reference membership; evidence only unless separately justified."}
+{"file": "templates/skills/se-review-skills/SKILL.md", "reason": "Portable workflow contract for installed discovery, canonical routing, deduplication, and next steps."}
+{"file": "templates/skills/se-review-skills/references/report-schema.md", "reason": "Report and selector contract that must cover deduplicated installations and final next steps."}

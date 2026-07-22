@@ -298,6 +298,14 @@ improvement opportunities, and returns numbered selectors at skill, family,
 and all-skills scope. The default is review-only: applying an improvement or
 creating a task requires a later explicit `apply=` or `task=` selector.
 
+By default it also inspects bounded user skill roots derived from the verified
+pack manifest. Installed copies are matched to canonical repository sources;
+the repository source remains the review and task target even when an installed
+copy has drifted. Multiple installations of the same canonical skill collapse
+into one finding set while retaining per-path drift evidence. Unverified copies
+are never merged by name alone. Every report ends with advisory suggested next
+steps, including exact selectors and installation-refresh guidance where useful.
+
 Pack discovery and intent routing remain with `se-help`. Broader engineering
 repository audits remain with `sd-audit-repo`, while configured local
 code-review providers remain with `sd-review-local`. A skill review does

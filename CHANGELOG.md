@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.52.0 - 2026-07-22
+
+- Expand `se-review-skills` to discover bounded user installation roots from
+  verified manifests, with explicit-root and opt-out controls.
+- Prefer canonical local repository sources for review, tasks, and edits while
+  retaining per-installation hash drift evidence and safely separating
+  unverifiable same-name copies.
+- Deduplicate multi-platform installations and shared reference inputs in the
+  deterministic snapshot, and require advisory suggested next steps at the end
+  of every report.
+
 ## 0.51.0 - 2026-07-22
 
 - Add an explicit harmful-instruction security and safety assessment to every

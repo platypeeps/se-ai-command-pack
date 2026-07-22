@@ -315,7 +315,10 @@ model routing, and evaluation coverage. Findings are evidence-backed and
 numbered for individual or grouped selection. Review is read-only; accepted
 work is reconciled into the canonical owner's Trellis repository before any
 template edit, and first-party SD/SE remediation is constrained to upstream
-templates.
+templates. It also scans verified manifest-derived user installation roots,
+maps matching or drifted copies back to repository sources, and deduplicates
+multi-platform installs without losing per-copy drift evidence. Reports finish
+with suggested next steps and exact valid selectors.
 
 `se-distill` compresses a supplied corpus to an explicit information budget
 using a traceable importance map and invariant audit. It reports measured input

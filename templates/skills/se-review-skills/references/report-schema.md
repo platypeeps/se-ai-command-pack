@@ -4,6 +4,13 @@ Use stable hierarchical IDs within one inventory snapshot. Sort repositories
 by verified identity, families by declared order, and skills by registry order
 when available. Put undeclared families under `Uncategorized`.
 
+Before the hierarchy, state every bounded installation root, whether it was
+scanned, missing, invalid, or skipped, and the number of installed copies
+collapsed into each canonical review record. For every mapped copy, show its
+path and `canonical-match` or `installed-drift` status. Review findings and
+mutation selectors always point at the canonical repository source. Unowned
+copies remain separate unless normalized name and content hash both match.
+
 ## Layout
 
 ```text
@@ -130,6 +137,21 @@ Apply one skill-sized batch in the current verified owner repository. Report:
 Stop after a failed check or material unaccepted tradeoff. Do not imply an
 atomic multi-repository operation.
 
+## Suggested next steps
+
+End every report with **Suggested next steps**. Order the smallest useful
+follow-ups and include exact valid selectors where findings exist. Distinguish:
+
+- repository remediation through `task=` or `apply=` against the canonical
+  source;
+- installation refresh advice when one or more installed copies differ from
+  that source;
+- verification needed before an unresolved copy can be mapped or changed; and
+- no-action or later-review advice when no material finding survives.
+
+These suggestions are advisory. They do not create tasks, edit repositories,
+refresh installations, or grant any authority not already present in the mode.
+
 ## No-findings result
 
 When no material finding survives verification, say so. Still report the
@@ -137,4 +159,5 @@ explicit safety verdict for every skill, guarded operations and unresolved
 candidates, snapshot, repositories, skills, dimensions, target coverage, tests
 observed, independent passes, unavailable capabilities, excluded scope,
 residual uncertainty, and the selectors that would be valid if a later review
-produces findings.
+produces findings. Finish with **Suggested next steps**, even when the only
+recommendation is no action or a later bounded review.
