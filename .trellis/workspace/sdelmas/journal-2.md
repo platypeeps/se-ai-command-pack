@@ -544,3 +544,36 @@ Created and published six Trellis planning tasks from the SE skill review, then 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 67: Add session evidence to skill reviews
+
+**Date**: 2026-07-22
+**Task**: Add session evidence to skill reviews
+**Branch**: `codex/se-review-skills-session-evidence`
+
+### Summary
+
+Added bounded project-scoped session review, invocation and provenance gates, causal classification, structural remedies, gotchas, privacy controls, cross-platform generation, tests, and the 0.53.0 release payload.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `093809c` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
