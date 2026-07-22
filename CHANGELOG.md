@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.43.0 - 2026-07-21
+
+- Add `se-stakeholder-map`, a read-only Coordinate workflow for mapping the
+  people and groups relevant to a bounded initiative or decision.
+- Keep formal authority, informal influence, observed positions, user
+  judgments, assistant inferences, role-specific interests, dependencies, and
+  engagement order distinct, with validation attached to every inference.
+- Surface missing perspectives, conflicting incentives, group disagreement,
+  and organizational staleness while prohibiting sensitive profiling,
+  manipulative engagement tactics, contact, or external writes.
+
 ## 0.42.0 - 2026-07-21
 
 - Add `se-sop`, a read-only Operate workflow for source-traceable standard

@@ -76,6 +76,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-review-skills",
     "se-socratic-review",
     "se-sop",
+    "se-stakeholder-map",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -202,6 +203,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-review-skills",
                 "se-socratic-review",
                 "se-sop",
+                "se-stakeholder-map",
             ),
         )
         self.assertEqual(
@@ -252,6 +254,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-review-skills": "improve",
                 "se-socratic-review": "understand",
                 "se-sop": "operate",
+                "se-stakeholder-map": "coordinate",
             },
         )
 
@@ -2802,6 +2805,68 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Proposed future state**",
             "**Compliance and authority gaps**",
             "**Maintenance and staleness**",
+            "**Sibling handoffs**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_stakeholder_map_preserves_provenance_and_role_complexity(self) -> None:
+        text = normalized("se-stakeholder-map").lower()
+        for phrase in (
+            "`observed`, `user-judgment`, `assistant-inference`, `conflicting`, or `unknown`",
+            "every assistant inference must carry a validation question and validation action",
+            "formal authority and informal influence remain separate",
+            "one person with multiple roles receives role-specific entries",
+            "never treat a group as monolithic",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_stakeholder_map_limits_profiling_and_manipulation(self) -> None:
+        text = normalized("se-stakeholder-map").lower()
+        for phrase in (
+            "do not infer private motives",
+            "protected or sensitive traits",
+            "behavior or process evidence",
+            "no personality, psychographic, or vulnerability profile",
+            "never recommend deception, coercion, covert persuasion, or exploiting vulnerabilities",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_stakeholder_map_surfaces_gaps_conflicts_and_staleness(self) -> None:
+        text = normalized("se-stakeholder-map").lower()
+        for phrase in (
+            "missing stakeholder means an access or coverage gap, not evidence of irrelevance",
+            "conflicting incentives",
+            "organizational change",
+            "as-of cutoff",
+            "revalidation trigger",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_stakeholder_map_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-stakeholder-map")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in (
+            "`se-agenda`",
+            "`se-plan`",
+            "`se-handoff`",
+            "`se-feedback`",
+            "`se-profile`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Mapping contract**",
+            "**Source coverage and limits**",
+            "**Stakeholder register**",
+            "**Authority and influence view**",
+            "**Roles, dependencies, and tensions**",
+            "**Observed positions and concerns**",
+            "**Inferences and validation plan**",
+            "**Missing-stakeholder and access gaps**",
+            "**Engagement sequence and information needs**",
+            "**Conflicting incentives and decision risks**",
+            "**Privacy and sensitivity review**",
+            "**Staleness and revalidation**",
             "**Sibling handoffs**",
             "**Execution boundary**",
         ):
