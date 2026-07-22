@@ -37,14 +37,18 @@ separate approval.
 
 ### Final integration
 
-1. Confirm every deliverable child is completed or explicitly dispositioned.
-2. Build the final cross-skill trigger matrix and resolve contradictions in the
-   owning child or a narrowly scoped follow-up.
-3. Verify public/private profile boundaries, all six family assignments, flat
-   installed targets, shared-reference fan-out, generated surfaces, version,
-   and changelog as one system.
-4. Run the full validation plan and archive the parent only after its child list
-   agrees with the public catalog and Trellis archive state.
+1. [x] Confirm every deliverable child is completed or explicitly dispositioned.
+2. [x] Build the final cross-skill trigger matrix. No material trigger ambiguity
+   was found; `final-integration-review.md` accounts for all 52 public skills.
+3. [ ] Resolve FIR-01 and FIR-02 from `final-integration-review.md` in
+   `07-22-roadmap-integration-findings`, then reverify the private-worklog
+   boundary and operator documentation.
+4. [x] Verify all six family assignments, flat installed targets,
+   shared-reference fan-out, generated surfaces, current version, and changelog
+   as one system.
+5. [x] Run the full validation plan, including the temporary-root all-platform
+   dry run. Keep the parent `in_progress` until both findings are resolved and
+   post-merge finish-work can archive it.
 
 ## Validation Plan
 

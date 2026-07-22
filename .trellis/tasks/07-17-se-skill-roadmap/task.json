@@ -3,7 +3,7 @@
   "name": "se-skill-roadmap",
   "title": "Expand SE skill families and workflows",
   "description": "Plan and deliver the next general knowledge-work skill families, catalog taxonomy, and personal worklog boundary without disrupting flat installed skill paths.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -72,6 +72,6 @@
   ],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Waiting on 07-22-roadmap-integration-findings to resolve FIR-01 and FIR-02 before final revalidation and archive.",
   "meta": {}
 }
