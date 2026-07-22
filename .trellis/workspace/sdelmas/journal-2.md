@@ -117,3 +117,40 @@ Implemented and validated a source-faithful timestamped video-note workflow, rel
 ### Next Steps
 
 - Complete Copilot follow-up, merge PR #69, then continue the backlog loop with the highest-ranked remaining task.
+
+
+## Session 56: Add se-watchlist
+
+**Date**: 2026-07-22
+**Task**: Add se-watchlist
+**Branch**: `codex/se-watchlist-finish-work`
+
+### Summary
+
+Added and shipped a read-only source-watchlist workflow with safe checkpoint recovery, conservative deduplication, audience-bounded ranking, and explicit downstream handoffs.
+
+### Main Changes
+
+- Added se-watchlist across the canonical registry, supported platform manifests, documentation, and release 0.48.0.
+- Shared se-monitor-state/v1 with per-source recovery boundaries and pending-item semantics so incomplete coverage cannot lose future material.
+- Added safety pins and fresh-context probes for repeated runs, ambiguous dates, unavailable sources, exclusions, privacy, and sibling-skill boundaries.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `87c44b4f68006bef17a611801bc21de1f506dce3` | feat: add watchlist skill |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh (450 tests; lint, typing, generation, release, install, and KB gates passed)
+- [OK] Fresh-context checkpoint and boundary probes passed after recovery and privacy fixes
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
