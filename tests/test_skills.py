@@ -2761,6 +2761,14 @@ class SkillSafetyPinsTest(unittest.TestCase):
             ),
             [],
         )
+        self.assertIsNone(
+            re.search(
+                r"\b(?:africa|america|antarctica|arctic|asia|atlantic|australia|"
+                r"brazil|canada|chile|etc|europe|indian|mexico|pacific|us)/"
+                r"(?:[a-z0-9_+-]+/)*[a-z0-9_+-]+\b",
+                text,
+            )
+        )
 
     def test_weekly_review_separates_synthesis_and_limits_patterns(self) -> None:
         text = normalized("se-weekly-review").lower()
