@@ -25,7 +25,12 @@ SPEC = importlib.util.spec_from_file_location("skill_review", SCRIPT_PATH)
 assert SPEC is not None and SPEC.loader is not None
 review = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = review
-SPEC.loader.exec_module(review)
+previous_dont_write_bytecode = sys.dont_write_bytecode
+sys.dont_write_bytecode = True
+try:
+    SPEC.loader.exec_module(review)
+finally:
+    sys.dont_write_bytecode = previous_dont_write_bytecode
 
 SKILL_TEXT = """---
 name: {name}
@@ -57,6 +62,9 @@ Report findings.
 
 
 class SkillReviewInventoryTest(TempDirTestCase):
+    def test_test_loader_does_not_write_into_the_skill_payload(self) -> None:
+        self.assertFalse((SCRIPT_PATH.parent / "__pycache__").exists())
+
     def test_git_probe_fails_closed_when_git_is_missing_or_times_out(self) -> None:
         failures = (
             OSError("git is unavailable"),

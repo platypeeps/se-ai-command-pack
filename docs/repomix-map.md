@@ -12269,9 +12269,13 @@ SPEC = importlib.util.spec_from_file_location("skill_review", SCRIPT_PATH)
 ⋮----
 review = importlib.util.module_from_spec(SPEC)
 ⋮----
+previous_dont_write_bytecode = sys.dont_write_bytecode
+⋮----
 SKILL_TEXT = """---
 ⋮----
 class SkillReviewInventoryTest(TempDirTestCase)
+⋮----
+def test_test_loader_does_not_write_into_the_skill_payload(self) -> None
 ⋮----
 def test_git_probe_fails_closed_when_git_is_missing_or_times_out(self) -> None
 ⋮----
