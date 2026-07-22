@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 65
+- **Total Sessions**: 66
 - **Last Active**: 2026-07-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~505 | Active |
+| `journal-2.md` | ~544 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 66 | 2026-07-22 | Create skill review planning tasks | `fa1444b`, `5aa848f` | `codex/add-skill-review-tasks` |
 | 65 | 2026-07-22 | Align se-help family examples | `6f9d76e`, `c1a63c1`, `a4f6881` | `codex/se-help-family-examples` |
 | 64 | 2026-07-22 | Refresh SD AI command pack to 0.30.4 | `b6d6d82` | `codex/update-sd-ai-command-pack-0-30-4` |
 | 63 | 2026-07-22 | Create PR for installed skill review inventory | `d7dd9f0`, `4b7d76f` | `codex/review-installed-skills` |

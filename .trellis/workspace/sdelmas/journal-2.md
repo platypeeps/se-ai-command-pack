@@ -505,3 +505,42 @@ Aligned Create and Improve help examples with registered skills, added catalog-d
 ### Next Steps
 
 - None - task complete
+
+
+## Session 66: Create skill review planning tasks
+
+**Date**: 2026-07-22
+**Task**: Create skill review planning tasks
+**Branch**: `codex/add-skill-review-tasks`
+
+### Summary
+
+Created and published six Trellis planning tasks from the SE skill review, then removed generated context scaffolds caught by review preflight.
+
+### Main Changes
+
+- Created six bounded planning tasks for the verified SE skill-review findings.
+- Added requirements, acceptance criteria, snapshot provenance, affected templates, and validation expectations to each PRD.
+- Removed generated context-manifest scaffold rows after the deterministic preflight identified them.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fa1444b` | chore: add skill review tasks |
+| `5aa848f` | fix: remove task context scaffolds |
+
+### Testing
+
+- [OK] All six task context manifests validate with zero entries.
+- [OK] Deterministic PR full-check passed: 472 tests, Ruff, mypy, generated surfaces, release gate, install audit, KB freshness, and review preflight.
+- [OK] GitHub CI passed and current-head Copilot review produced no comments or threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
