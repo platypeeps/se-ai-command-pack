@@ -14,7 +14,7 @@ behind a separately reviewed portable contract and explicit user consent.
 
 ## Current State
 
-- 48 of 50 children are completed and archived; the remaining 2 are in
+- 49 of 50 children are completed and archived; the remaining child is in
   planning with complete PRD, design, implementation, and context artifacts.
 - The foundation and portable profile slice are complete, including
   `personal-profile-contract`, `se-profile`, and the read-only `se-ask-me`
@@ -22,10 +22,10 @@ behind a separately reviewed portable contract and explicit user consent.
 - `se-plan`, `se-handoff`, `se-monitor`, and `se-retro` are complete, closing
   the plan-and-coordinate delivery cohort.
 - `se-review-skills`, `se-socratic-review`, `se-sop`, `se-stakeholder-map`,
-  `se-study-guide`, `se-thread-digest`, `se-tutorial`, `se-video-notes`, and
-  `se-watchlist` are complete. The remaining product-skill child is P2.
-  `personal-worklog-profile` remains
-  a separate P3 design boundary and does not authorize private settings or paths in the
+  `se-study-guide`, `se-thread-digest`, `se-tutorial`, `se-video-notes`,
+  `se-watchlist`, and `se-weekly-review` are complete. No product-skill child
+  remains. `personal-worklog-profile` is the final child; it remains a separate
+  P3 design boundary and does not authorize private settings or paths in the
   public payload.
 
 ## Delivery Model

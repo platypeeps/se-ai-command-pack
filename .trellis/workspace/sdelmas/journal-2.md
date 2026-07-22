@@ -154,3 +154,42 @@ Added and shipped a read-only source-watchlist workflow with safe checkpoint rec
 ### Next Steps
 
 - None - task complete
+
+
+## Session 57: Add se-weekly-review
+
+**Date**: 2026-07-22
+**Task**: Add se-weekly-review
+**Branch**: `codex/se-weekly-review-finish-work`
+
+### Summary
+
+Added and shipped a read-only personal weekly-review workflow with explicit private worklog configuration, DST-safe reporting windows, evidence-bounded synthesis, and destination-neutral handoffs.
+
+### Main Changes
+
+- Added se-weekly-review across the canonical registry, supported platform manifests, shared source/profile references, documentation, and release 0.49.0.
+- Separated outcomes, meaningful activity, decisions, carryover, lessons, self-reported energy, documented friction, and a bounded next-week focus while preserving missing-source and conservative-deduplication semantics.
+- Archived the completed child task and reconciled the parent skill roadmap to 49 of 50 completed children.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `33887ae8b7f22a63bb5b860e2806bee5b6ac1e9b` | feat: add se-weekly-review |
+| `ba539875e2e732ff1c26d88e9d7936233eff6371` | docs: refresh repository map |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh — 455 tests plus Ruff, mypy, generation, release, install, Repomix, and KB gates passed
+- [OK] Independent Trellis implementation/check agents completed with all findings fixed and no residual blockers
+- [OK] GitHub CI passed on PR #72; two Copilot review rounds completed with both findings fixed or rebutted and all threads resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
