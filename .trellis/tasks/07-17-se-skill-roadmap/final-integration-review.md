@@ -4,23 +4,20 @@ Review date: 2026-07-22
 
 ## Outcome
 
-The roadmap is mechanically integrated but not ready to close. All 50 linked
-children are completed and archived, the 52-skill public catalog is generated
-consistently across six families and three platforms, trigger boundaries are
-materially distinct, and the full quality gate passes. Two product-owned
-findings block the private-worklog and final-documentation acceptance criteria:
+The roadmap is ready to close. All 50 linked children are completed and
+archived, the 52-skill public catalog is generated consistently across six
+families and three platforms, trigger boundaries remain materially distinct,
+and the full quality gate passes. Product follow-up
+`07-22-roadmap-integration-findings` resolved FIR-01 and FIR-02 in release
+`0.50.0` through merged PR #78; its Trellis archive and journal landed through
+PR #79.
 
-1. `templates/skills/se-weekly-review/SKILL.md` hard-codes
-   `America/Denver` as a fallback even though the approved worklog design makes
-   timezone a private-profile value.
-2. `docs/SE_AI_COMMAND_PACK.md` does not document `se-review-skills`, although
-   the registry, README catalog, bundled help catalog, manifest, changelog, and
-   canonical template all include it.
-
-The parent stays `in_progress`. Resolve both findings in product-owned follow-up
-work through `07-22-roadmap-integration-findings`, rerun this review, and
-archive the parent only through post-merge finish-work. The two unapproved
-worklog implementation proposals remain uncreated.
+The public `se-weekly-review` payload now keeps timezone resolution explicit or
+authorized-private and stops before calendar calculation when unresolved. The
+operator guide now documents `se-review-skills` and its boundaries from
+`se-help`, `sd-audit-repo`, and `sd-review-local`. Focused regressions pin both
+contracts. Archive the parent only through post-merge finish-work. The two
+unapproved worklog implementation proposals remain uncreated.
 
 ## Child reconciliation
 
@@ -62,7 +59,7 @@ with bounded validation never implying broader execution authority.
 - Catalogs: the marker-bounded README catalog and bundled
   `references/skill-catalog.md` match registry membership, family order, skill
   order, and frontmatter descriptions exactly.
-- Manifest and paths: version `0.49.0` contains 375 exact rows: 125 logical
+- Manifest and paths: version `0.50.0` contains 375 exact rows: 125 logical
   payload files fanned byte-for-byte to `agents`, `claude`, and `codex`. Every
   `SKILL.md` target has the flat shape `<platform skills dir>/<se-id>/SKILL.md`;
   no family directory or changed skill ID appears.
@@ -79,13 +76,12 @@ with bounded validation never implying broader execution authority.
   read-back. Its ten registered consumers cite the shared contract and keep
   profile use optional/read-only; profile data cannot establish facts,
   identity, consent, or action authority.
-- Release: manifest version `0.49.0` matches the top dated changelog heading.
-  Parent-only evidence changes do not alter shipped payload, so the current
-  release gate correctly requires no bump. Fixing finding FIR-01 will change
-  shipped bytes and therefore requires the normal manifest version bump and
-  matching changelog entry.
+- Release: manifest version `0.50.0` matches the top dated changelog heading.
+  PR #78 made the required payload bump for FIR-01 and regenerated the shipped
+  surfaces. This parent-only closure changes no payload, so the current release
+  gate correctly requires no additional bump.
 
-## Blocking findings
+## Resolved findings
 
 ### FIR-01 - Private timezone leaked into a public payload
 
@@ -102,6 +98,9 @@ with bounded validation never implying broader execution authority.
   tests, update release documentation, regenerate, and make the required
   version/changelog decision. Do not implement either unapproved `se-worklog`
   or private-automation proposal as part of this fix.
+- Resolution: PR #78 removed the named fallback, established the required
+  precedence and stop behavior, added uppercase, numeric, multi-segment, and
+  lowercase-region regression guards, and released the change in `0.50.0`.
 
 ### FIR-02 - Operator documentation omits one registered skill
 
@@ -113,28 +112,31 @@ with bounded validation never implying broader execution authority.
   `sd-review-local`, and preserve review-only versus explicit later
   apply/task-selection authority. Add a focused existing-test assertion that
   catches future registry/operator-guide omissions.
+- Resolution: PR #78 added the operator-guide boundary and a registry-wide
+  completeness assertion covering every public skill ID.
 
-These findings are concrete and independently actionable. This parent-only
-review does not edit product surfaces; it routes both findings to the focused
-P1 task `07-22-roadmap-integration-findings`. That task is not one of the two
-unapproved worklog implementation proposals.
+Both findings are closed by the archived P1 follow-up
+`07-22-roadmap-integration-findings`. No `se-worklog` skill, private automation,
+private path, schedule, destination, or write-back behavior was introduced.
 
 ## Validation record
 
 - Child/archive artifact audit: pass, 50/50.
-- Registry/catalog/manifest/reference/flat-path audit: pass except FIR-02's
-  operator-guide omission.
+- Registry/catalog/manifest/reference/flat-path and operator-guide audit: pass.
 - Public-artifact privacy scan: no user identity, absolute home path, TaskNotes,
-  `obsidian://`, private metadata marker, or unapproved `se-worklog` payload;
-  one named timezone hit, FIR-01.
+  `obsidian://`, private metadata marker, unapproved `se-worklog` payload, or
+  named timezone fallback.
 - `make generate`: pass; manifest, README, and help catalog unchanged.
-- `make check`: pass; 455 tests, Ruff, mypy, generated-surface parity, and
+- `make check`: pass; 458 tests, Ruff, mypy, generated-surface parity, and
   release payload gate all green.
 - Fresh temporary-root installer audit:
   `.venv/bin/python install.py --root <temp> --all --dry-run` returned 0,
   planned 125 payload files for each of three platforms plus three receipts,
   and left the temporary root empty.
 - `git diff --check`: pass after recording this review.
+- PR #78 remote validation: all CI checks passed; three Copilot findings were
+  fixed; the final review reported no new comments and GraphQL reported zero
+  unresolved threads.
 
 ## Scripting decision
 

@@ -72,6 +72,6 @@
   ],
   "parent": null,
   "relatedFiles": [],
-  "notes": "Waiting on 07-22-roadmap-integration-findings to resolve FIR-01 and FIR-02 before final revalidation and archive.",
+  "notes": "Final integration revalidation passed after PR #78 resolved FIR-01 and FIR-02 in release 0.50.0; archive only through post-merge finish-work. The two documented worklog implementation proposals remain uncreated and require separate approval.",
   "meta": {}
 }

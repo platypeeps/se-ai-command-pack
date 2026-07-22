@@ -40,15 +40,16 @@ separate approval.
 1. [x] Confirm every deliverable child is completed or explicitly dispositioned.
 2. [x] Build the final cross-skill trigger matrix. No material trigger ambiguity
    was found; `final-integration-review.md` accounts for all 52 public skills.
-3. [ ] Resolve FIR-01 and FIR-02 from `final-integration-review.md` in
+3. [x] Resolve FIR-01 and FIR-02 from `final-integration-review.md` in
    `07-22-roadmap-integration-findings`, then reverify the private-worklog
-   boundary and operator documentation.
+   boundary and operator documentation. PR #78 shipped both fixes in `0.50.0`;
+   PR #79 archived the follow-up and recorded its session.
 4. [x] Verify all six family assignments, flat installed targets,
    shared-reference fan-out, generated surfaces, current version, and changelog
    as one system.
 5. [x] Run the full validation plan, including the temporary-root all-platform
-   dry run. Keep the parent `in_progress` until both findings are resolved and
-   post-merge finish-work can archive it.
+   dry run. Both findings are resolved; keep the parent `in_progress` only until
+   this final-review PR merges and post-merge finish-work archives it.
 
 ## Validation Plan
 
