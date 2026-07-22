@@ -544,3 +544,41 @@ Created and published six Trellis planning tasks from the SE skill review, then 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 67: Add AskUserQuestion review planning task
+
+**Date**: 2026-07-22
+**Task**: Add AskUserQuestion review planning task
+**Branch**: `codex/se-review-skills-ask-user-question-review`
+
+### Summary
+
+Created and published a Trellis planning task for reviewing skills that should use AskUserQuestion or a verified platform-equivalent, then completed the deterministic and remote PR review loop.
+
+### Main Changes
+
+- Added a P2 no-start planning task with requirements and acceptance criteria for structured user-question recommendations.
+- Defined blocking, optional, discoverable-answer, safe-default, semantic-evidence, and cross-platform interaction boundaries.
+- Published PR #88 with a task-only scope and completed one clean Copilot review round.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `faf2750` | chore: add AskUserQuestion skill review task |
+
+### Testing
+
+- [OK] Trellis context validation passed with empty placeholder-free manifests.
+- [OK] Deterministic full-check passed: 472 tests, Ruff, mypy, generated surfaces, release gate, install audit, KB freshness, and review preflight.
+- [OK] GitHub CI passed and Copilot produced no comments or review threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
