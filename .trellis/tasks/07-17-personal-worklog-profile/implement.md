@@ -40,8 +40,8 @@
   harmless.
 - Treat successful read-back as part of private automation completion, not an
   optional diagnostic.
-- Keep the delivery task `in_progress` until `finish-work` archives it after
-  the delivery PR is verified merged; checked acceptance evidence records the
+- Keep this design task `in_progress` until `finish-work` archives it after
+  this PR is verified merged; checked acceptance evidence records the
   completed design decision, not premature lifecycle completion.
 - This task should not receive a manifest version or changelog entry because it
   changes no shipped payload.
