@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, destination-neutral capture, critical checklists, safe operational runbooks, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
@@ -2783,6 +2783,60 @@
       "scope": "user",
       "source": "templates/skills/se-review-skills/scripts/skill_review.py",
       "target": ".codex/skills/se-review-skills/scripts/skill_review.py",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-socratic-review/SKILL.md",
+      "target": ".config/agents/skills/se-socratic-review/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".config/agents/skills/se-socratic-review/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-socratic-review/SKILL.md",
+      "target": ".claude/skills/se-socratic-review/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".claude/skills/se-socratic-review/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-socratic-review/SKILL.md",
+      "target": ".codex/skills/se-socratic-review/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/source-standards.md",
+      "target": ".codex/skills/se-socratic-review/references/source-standards.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     }

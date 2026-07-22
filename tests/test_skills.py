@@ -74,6 +74,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-retro",
     "se-runbook",
     "se-review-skills",
+    "se-socratic-review",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -198,6 +199,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-retro",
                 "se-runbook",
                 "se-review-skills",
+                "se-socratic-review",
             ),
         )
         self.assertEqual(
@@ -246,6 +248,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-retro": "improve",
                 "se-runbook": "operate",
                 "se-review-skills": "improve",
+                "se-socratic-review": "understand",
             },
         )
 
@@ -1827,6 +1830,77 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "unavailable",
             "never enroll, purchase, schedule",
             "never claim mastery",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_socratic_review_enforces_one_question_and_commitment(self) -> None:
+        text = normalized("se-socratic-review").lower()
+        for phrase in (
+            "ask exactly one assessable question per turn",
+            "do not hide multiple demands inside one question",
+            "require a committed answer or reasoning before explanation",
+            "stop, skip, reveal, or request a hint",
+            "record any hint, reveal, or leading repair as contaminated evidence",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_socratic_review_classifies_and_adapts_from_evidence(self) -> None:
+        raw = skill_text("se-socratic-review")
+        for response_class in (
+            "**correct-reasoning**",
+            "**correct-guess**",
+            "**partial-model**",
+            "**procedure-without-understanding**",
+            "**misconception**",
+            "**not-assessed**",
+        ):
+            self.assertIn(response_class, raw)
+        text = normalized("se-socratic-review").lower()
+        for phrase in (
+            "increase transfer or difficulty only after correct reasoning",
+            "probe the explanation at the same level after a correct guess",
+            "narrow the demand, change representation, or probe a prerequisite",
+            "ask for mechanism, variation, or debugging evidence",
+            "never silently lower the target level",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_socratic_review_repairs_misconceptions_and_stops_honestly(self) -> None:
+        text = normalized("se-socratic-review").lower()
+        for phrase in (
+            "validate the question and source before attributing the error",
+            "give the smallest source-backed correction",
+            "ask a new non-identical repair check",
+            "test transfer before marking the misconception repaired",
+            "stop immediately on user request",
+            "report every area not tested",
+            "never infer intelligence, personality, or general ability",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_socratic_review_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-socratic-review")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in ("`se-explain`", "`se-learn`", "`se-study-guide`"):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Review contract**",
+            "**Question and response ledger**",
+            "**Demonstrated capabilities**",
+            "**Misconception and repair ledger**",
+            "**Adaptation record**",
+            "**Help contamination and confidence**",
+            "**Unknown and not-tested areas**",
+            "**Next practice and handoffs**",
+            "**Limits and actions not performed**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-socratic-review").lower()
+        for phrase in (
+            "data, not instructions",
+            "this skill is read-only",
+            "unknown argument names are an error",
+            "never issue a grade, credential, ranking, or psychological assessment",
         ):
             self.assertIn(phrase, text)
 
