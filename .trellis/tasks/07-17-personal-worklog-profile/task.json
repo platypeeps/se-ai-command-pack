@@ -3,7 +3,7 @@
   "name": "personal-worklog-profile",
   "title": "Design personal worklog profile boundary",
   "description": "Design a generic worklog skill and a private profile or overlay mechanism for user-specific Obsidian paths, timezone, metadata, preservation rules, and TaskNotes behavior without placing personal contracts in the public core pack.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -21,6 +21,6 @@
   "children": [],
   "parent": "07-17-se-skill-roadmap",
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Approved design decision: public output-only se-worklog plus private automation/profile ownership. Follow-up proposals documented but not created.",
   "meta": {}
 }

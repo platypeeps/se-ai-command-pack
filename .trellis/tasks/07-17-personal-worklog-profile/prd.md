@@ -12,13 +12,29 @@ metadata, connector fallback, and TaskNotes policy are personal. The public pack
 currently installs the same framework-neutral payload for every user and has no
 profile/config contract.
 
+## Approved Decision
+
+**Approved on 2026-07-22.** The user approved a public, output-only
+`se-worklog` skill plus a private automation/profile layer that owns
+destinations, scheduling, write-back, and private operational values.
+
+The approval evidence is the explicit boundary supplied for this task:
+"a public, output-only `se-worklog` skill plus private automation/profile
+handling destinations, scheduling, write-back, and private operational
+values." This approval completes the design decision only. It does not
+authorize creating either follow-up task, shipping the public skill, changing
+public templates or release surfaces, or modifying private automation.
+
 ## Requirements
 
 - Separate portable worklog behavior from personal profile data and connector
   details.
-- Define the portable workflow: determine the reporting window, inventory work
-  sources, classify substantive activity, preserve unrelated existing content,
-  write or patch the intended artifact, and verify by read-back.
+- Define portable synthesis: determine the reporting window, inventory supplied
+  work sources, classify substantive activity, and return the intended artifact
+  without destination discovery or mutation.
+- Define private delivery: resolve the configured destination, preserve
+  unrelated existing content, write or patch the owned content, and verify by
+  direct read-back.
 - Treat timezone, destination paths, filename variants, metadata, section
   ownership, maximum follow-up links, TaskNotes policy, and connector/fallback
   choices as profile data rather than core instructions.
@@ -32,16 +48,20 @@ profile/config contract.
 
 ## Acceptance Criteria
 
-- [ ] The design identifies every personal datum that must not ship in the
-      public default payload.
-- [ ] The generic workflow can be described without an Obsidian-specific path or
-      one user's naming convention.
-- [ ] The chosen profile/overlay approach preserves user edits and supports
-      explicit write-through/read-back verification.
-- [ ] Privacy, migration, install/update/remove, and failure-mode implications
-      are documented.
-- [ ] Any implementation work is split into separately approved follow-up tasks
-      with testable acceptance criteria.
+- [x] The design identifies every personal datum that must not ship in the
+      public default payload. Evidence: `design.md`, "Private data inventory."
+- [x] The generic workflow is described without a product-specific path or one
+      user's naming convention. Evidence: `design.md`, "Portable public
+      `se-worklog`."
+- [x] The chosen private-layer approach preserves user edits and requires
+      explicit write-through/read-back verification. Evidence: `design.md`,
+      "Private automation/profile layer" and "Scenario validation."
+- [x] Privacy, migration, install/update/remove, and failure-mode implications
+      are documented. Evidence: `design.md`, "Lifecycle And Failure Contract."
+- [x] Implementation work is split into two paste-ready follow-up proposals,
+      each requiring separate approval and testable acceptance criteria.
+      Evidence: `implement.md`, "Uncreated follow-up proposals." Neither task
+      was created.
 
 ## Out of Scope
 

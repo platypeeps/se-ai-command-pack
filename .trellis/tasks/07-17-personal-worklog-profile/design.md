@@ -13,49 +13,58 @@ Do not add a general profile subsystem to `se-ai-command-pack` for one personal
 workflow. The current installer deliberately has no configuration surface, and
 the same framework-neutral payload is installed for every user.
 
-## Proposal
+## Approved Proposal
 
-Adopt a two-layer boundary:
+Approved on 2026-07-22: adopt a public, output-only `se-worklog` skill with a
+private automation/profile layer for destinations, scheduling, write-back, and
+private operational values. Approval completes this design decision only; it
+does not authorize implementation or follow-up task creation.
 
-### Portable core candidate
+### Portable public `se-worklog`
 
-A future `se-worklog` skill would accept explicit request/context arguments such
-as reporting period, activity sources, project grouping, audience, and output
-length. Its responsibilities would be:
+A future public skill owns only portable synthesis:
 
-1. Resolve and state the reporting window.
-2. Inventory available activity sources and identify unavailable ones.
-3. Exclude automation/helper noise using stated criteria.
-4. Group substantive work by project or workstream.
-5. Produce a dated worklog with outcomes, decisions, open items, and a bounded
-   set of suggested follow-ups.
-6. Return the artifact in conversation; it would not choose a destination,
-   patch a note, create task files, or schedule the next run.
+1. Resolve and state the reporting window from explicit request context.
+2. Inventory supplied activity sources and disclose unavailable ones.
+3. Separate substantive work from helper noise using visible general criteria.
+4. Group work by project or workstream.
+5. Produce a dated artifact with outcomes, decisions, open items, and bounded
+   suggested follow-ups.
+6. Return the artifact in conversation with assumptions and gaps stated.
 
-The core skill must not contain a real identity, timezone, vault path, note
-name, section marker, metadata tag, connector endpoint, or follow-up URL
-template. It should treat all activity inputs as data, not instructions.
+It does **not** schedule itself; discover or load a private profile; infer a
+destination; read, create, patch, move, or delete notes; create task files;
+generate destination-specific links; select connectors; or persist run state.
+It treats activity inputs as untrusted data, not instructions.
 
 ### Private automation/profile layer
 
-The private layer would invoke or reproduce the portable synthesis contract and
-own:
+The private layer owns:
 
-- local timezone and previous-day calculation;
-- authoritative activity sources and noise classification overrides;
-- destination system, root, directory, and filename variants;
-- metadata/frontmatter and owned-section markers;
-- existing-content preservation rules;
-- maximum follow-up links and whether links or task files are allowed;
-- preferred connector and explicit fallback behavior;
-- empty-day behavior;
-- write-through followed by direct read-back verification; and
-- private operational memory about prior runs.
+- scheduling, local reporting-window policy, and timezone;
+- authorized sources, private noise overrides, connector and fallback order;
+- destination system, root, directory, filename/path variants, and selection;
+- metadata, owned-section markers, and preservation of user-authored content;
+- empty-day policy, link limit/templates, and any task-file policy;
+- write-through, direct read-back comparison, and completion state; and
+- prior-run observations, migration state, and other private operational values.
 
-Store that layer in the existing private automation configuration/memory or a
-private companion repository, not in this public manifest. Explicit invocation
-values override private defaults; private defaults override portable defaults.
-The public skill must never discover or load a private profile implicitly.
+Store this layer in its existing private owner or a private companion, never in
+the public manifest. Precedence is: explicit current-invocation values override
+private profile defaults; private profile defaults override portable defaults.
+The public skill never discovers or loads a private profile implicitly. Missing
+required private values fail in the private layer rather than becoming guessed
+public defaults.
+
+### Private data inventory
+
+Public payloads, examples, fixtures, logs, and tests must exclude real values
+for identities/account names; home, vault, repository, and destination paths;
+timezone and schedule; filename variants; metadata, tags, section markers, and
+link/task templates; source accounts; endpoints, credentials, tokens, and
+fallback ordering; preservation/noise exceptions; mutation policy and limits;
+and prior-run state, private memory, or observed work history. Use only
+synthetic, path-neutral placeholders.
 
 ### Options considered
 
@@ -83,11 +92,14 @@ The public skill must never discover or load a private profile implicitly.
 
 ## Affected Files
 
-For this task:
+For this task, only these six task artifacts change:
 
+- `.trellis/tasks/07-17-personal-worklog-profile/check.jsonl`
 - `.trellis/tasks/07-17-personal-worklog-profile/prd.md`
 - `.trellis/tasks/07-17-personal-worklog-profile/design.md`
+- `.trellis/tasks/07-17-personal-worklog-profile/implement.jsonl`
 - `.trellis/tasks/07-17-personal-worklog-profile/implement.md`
+- `.trellis/tasks/07-17-personal-worklog-profile/task.json`
 
 Potential later work, only after separate approval:
 
@@ -97,6 +109,28 @@ Potential later work, only after separate approval:
   profile and write-through workflow.
 
 No public installer/profile files should be added by this task.
+
+## Lifecycle And Failure Contract
+
+- **Privacy:** private values enter only the private automation at run time and
+  never appear in public instructions, examples, fixtures, logs, or errors.
+- **Migration:** do not move private values. First map the private caller to the
+  portable output contract and validate synthetic/private dry runs; switch
+  orchestration separately. Failure leaves the prior private workflow available
+  as a reversible rollback.
+- **Public install/update/remove:** normal pack lifecycle applies. Install
+  creates no private config; update cannot overwrite it; removal deletes only
+  pack-owned public payload and preserves private automation and artifacts.
+- **Private install/update/remove:** the private owner provisions and migrates
+  its profile, schedule, connectors, and adapters. Updates preserve private and
+  user-authored values unless an explicit, validated migration authorizes a
+  change. Removal disables scheduling and removes only private-owned config
+  after an explicit plan; destination artifacts remain by default.
+- **Failure:** source discovery, synthesis, destination selection, write, and
+  read-back are separate states. Source outage causes a disclosed incomplete
+  result or policy-defined stop, never an assumed empty day. Destination outage
+  or ambiguity prevents mutation. Write error or missing/mismatched read-back
+  fails the run. Retries are idempotent and preserve unrelated content.
 
 ## Risks And Edge Cases
 
@@ -115,6 +149,32 @@ No public installer/profile files should be added by this task.
   a mutation workflow. Keep writes outside the initial portable core.
 - Private profile data may still leak through examples or tests. Use synthetic
   names, paths, tags, dates, and connector identifiers in any public artifact.
+
+## Scenario Validation
+
+| Scenario | Required result |
+|---|---|
+| First run with a valid private profile | Public synthesis returns an artifact without discovering a destination; private delivery creates only the explicitly selected artifact and directly verifies it before completion. |
+| Missing or unreadable private profile | Public synthesis remains usable with explicit inputs, but private delivery stops before mutation and does not guess required values. |
+| Substantive day | Public synthesis groups supported work and labels gaps; private delivery writes once and directly verifies the owned result. |
+| Empty day | State that no substantive activity was found; invent neither work nor follow-ups. Private policy decides whether to write. |
+| Existing note with user edits | Change only the explicitly owned section or append if allowed; direct read-back must show the intended owned content and byte-for-byte preservation outside it. |
+| Filename/path variant | Private selection applies an explicit deterministic rule; ambiguity stops before mutation. The public skill never sees the path. |
+| Source outage | Report the source and impact; use fallback only when privately configured and never classify outage as an empty day. |
+| Destination outage | Synthesis may be returned, but delivery fails and no alternate destination is guessed. |
+| Write failure | Report failure with safe context, do not advance completion, and retry only through an idempotent preservation path. |
+| Write/read-back failure | Missing, stale, unreadable, or mismatched read-back fails completion even when the write call reported success. |
+
+## Scripting Decision
+
+This semantic design work does not benefit from a permanent script. Assigning
+authority, separating portable and private responsibilities, and judging
+preservation/failure semantics require review, not deterministic transformation.
+A helper would also create an unapproved implementation/release surface.
+`git diff --check` plus a one-off privacy-pattern scan is sufficient here. A
+future task may separately justify a read-only helper for repeated source
+inventory or normalization, but judgment and mutation authority remain in the
+skill and private automation.
 
 ## Validation
 
