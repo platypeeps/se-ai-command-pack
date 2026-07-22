@@ -342,7 +342,13 @@ def _walk_skill_files(root: Path) -> list[Path]:
     return sorted(found)
 
 
-def _discover(context: PackageContext) -> list[Path]:
+def _discover(
+    context: PackageContext,
+    bounded_root: Path,
+    root_was_explicit: bool,
+) -> list[Path]:
+    if root_was_explicit and bounded_root != context.root:
+        return _walk_skill_files(bounded_root)
     if context.name == "se-ai-command-pack":
         base = context.root / "templates" / "skills"
         return sorted(
@@ -529,7 +535,7 @@ def _select_paths(
     scope: str | None,
     root_was_explicit: bool,
 ) -> list[ResolvedSkill]:
-    discovered = _discover(context)
+    discovered = _discover(context, root, root_was_explicit)
     selected_paths: list[Path] = []
     for spec in skill_specs:
         path = _candidate_path(spec, root, enforce_root=root_was_explicit)

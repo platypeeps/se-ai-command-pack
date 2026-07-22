@@ -287,6 +287,26 @@ class SkillReviewInventoryTest(TempDirTestCase):
             ["se-z", "se-test"],
         )
 
+    def test_explicit_nested_root_does_not_widen_to_package_scope(self) -> None:
+        root, selected = self.write_se_pack()
+        sibling = root / "templates" / "skills" / "se-sibling" / "SKILL.md"
+        sibling.parent.mkdir(parents=True)
+        sibling.write_text(SKILL_TEXT.format(name="se-sibling"), encoding="utf-8")
+        context = review._package_context(root)
+        with mock.patch.object(review, "_package_context", return_value=context):
+            payload = review.build_inventory(
+                selected.parent,
+                [],
+                None,
+                "skill",
+                root_was_explicit=True,
+            )
+        self.assertEqual(payload["selector"]["root"], str(selected.parent))
+        self.assertEqual(
+            [skill["name"] for skill in payload["skills"]],
+            ["se-test"],
+        )
+
     def test_resource_classification_accepts_windows_and_posix_paths(self) -> None:
         related = [
             {"path": r"C:\repo\skill\references\rubric.md"},

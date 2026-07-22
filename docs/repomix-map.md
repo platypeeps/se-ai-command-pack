@@ -10190,8 +10190,6 @@ def _walk_skill_files(root: Path) -> list[Path]
 ⋮----
 found: list[Path] = []
 ⋮----
-def _discover(context: PackageContext) -> list[Path]
-⋮----
 base = context.root / "templates" / "skills"
 ⋮----
 base = context.root / "templates" / ".agents" / "skills"
@@ -10267,7 +10265,7 @@ context = _package_context(observed.parent)
 canonical = observed.resolve()
 role = _role_for(canonical, observed, context)
 ⋮----
-discovered = _discover(context)
+discovered = _discover(context, root, root_was_explicit)
 selected_paths: list[Path] = []
 ⋮----
 path = _candidate_path(spec, root, enforce_root=root_was_explicit)
@@ -12366,6 +12364,12 @@ skill = first["skills"][0]
 def test_inventory_uses_declared_registry_order(self) -> None
 ⋮----
 second = root / "templates" / "skills" / "se-z" / "SKILL.md"
+⋮----
+def test_explicit_nested_root_does_not_widen_to_package_scope(self) -> None
+⋮----
+sibling = root / "templates" / "skills" / "se-sibling" / "SKILL.md"
+⋮----
+context = review._package_context(root)
 ⋮----
 def test_resource_classification_accepts_windows_and_posix_paths(self) -> None
 ⋮----
