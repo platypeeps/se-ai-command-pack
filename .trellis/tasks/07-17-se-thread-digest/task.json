@@ -3,7 +3,7 @@
   "name": "se-thread-digest",
   "title": "Implement se-thread-digest",
   "description": "Add an outcome-oriented conversation digest for Slack and similar threads that extracts decisions, commitments, questions, risks, and message-level evidence.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

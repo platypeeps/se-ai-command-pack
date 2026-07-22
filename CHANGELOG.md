@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.45.0 - 2026-07-21
+
+- Add `se-thread-digest`, a read-only Coordinate workflow for evidence-linked
+  outcomes and unresolved work from bounded conversation windows.
+- Preserve message locators, revisions, corrections, conflicts, gaps, private-
+  channel boundaries, and conservative decision and commitment semantics.
+- Provide unapplied payloads for status, handoff, and knowledge capture while
+  keeping posting, reactions, monitoring, tasks, and other mutations outside
+  the workflow.
+
 ## 0.44.0 - 2026-07-21
 
 - Add `se-study-guide`, a read-only Understand workflow that transforms a

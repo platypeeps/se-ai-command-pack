@@ -698,6 +698,23 @@ with `se-plan`, continuity transfer with `se-handoff`, feedback synthesis with
 `se-feedback`, and personal-profile maintenance with `se-profile`. Contact,
 scheduling, assignments, approvals, and external writes remain `not run`.
 
+### Thread-digest workflow boundary
+
+`se-thread-digest` owns outcome reconstruction for one bounded Slack thread,
+channel window, chat export, issue discussion, or equivalent conversation. It
+retains message locators, parent/reply relationships, timestamps, revisions,
+corrections, conflicts, coverage gaps, and a conservative state for every
+proposal, decision, explicit commitment, candidate action, question,
+disagreement, and risk. Silence, repetition, attendance, reactions, and third-
+party assignments never prove acceptance by themselves.
+
+Generic multi-document synthesis stays with `se-digest`; meeting-intent
+reconciliation stays with `se-meeting-follow-through`. The workflow may draft
+portable `se-status`, `se-handoff`, and `se-knowledge-capture` payloads but does
+not invoke them. Private-channel information remains within the authorized
+source and stated audience, and posting, reacting, canvases, lists, monitoring,
+messages, tasks, persistence, and other external mutations remain `not run`.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):
