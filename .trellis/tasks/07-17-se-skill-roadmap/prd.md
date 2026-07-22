@@ -14,10 +14,10 @@ independently planned children spanning Understand, Decide, Create, Coordinate,
 Operate, and Improve.
 
 The parent metadata is the source of truth for membership and completion. At
-this reconciliation point, 49 children are completed and archived, 1 remains
-in planning, and every linked child has a PRD, design, implementation plan, and
-planning/check context files. The parent remains a coordination and integration
-envelope; it does not implement product behavior directly.
+this reconciliation point, all 50 children are completed and archived, and
+every linked child has a PRD, design, implementation plan, and planning/check
+context files. The parent remains a coordination and integration envelope; it
+does not implement product behavior directly.
 
 ## Requirements
 
@@ -44,7 +44,7 @@ envelope; it does not implement product behavior directly.
 | Delivery cohort | Children | State |
 | --- | --- | --- |
 | Foundation | `skill-family-taxonomy`, `se-decide`, `se-status`, `se-fact-check`, `se-help`, `personal-profile-contract` | 6 completed |
-| Personal context boundary | `se-profile`, `se-ask-me`, `personal-worklog-profile` | 2 completed, 1 planning |
+| Personal context boundary | `se-profile`, `se-ask-me`, `personal-worklog-profile` | 3 completed |
 | Plan and coordinate | `se-plan`, `se-handoff`, `se-monitor`, `se-retro` | 4 completed |
 | Capture and knowledge operations | `se-capture`, `se-video-notes`, `se-thread-digest`, `se-knowledge-capture`, `se-watchlist`, `se-weekly-review`, `se-action-inbox`, `se-knowledge-gap`, `se-publish`, `se-meeting-follow-through`, `se-bookmark-triage` | 11 completed |
 | Understand and learn | `se-distill`, `se-explain`, `se-literature-map`, `se-compare`, `se-learn`, `se-study-guide`, `se-socratic-review` | 7 completed |
