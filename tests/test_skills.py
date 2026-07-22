@@ -78,6 +78,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-sop",
     "se-stakeholder-map",
     "se-study-guide",
+    "se-thread-digest",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -206,6 +207,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-sop",
                 "se-stakeholder-map",
                 "se-study-guide",
+                "se-thread-digest",
             ),
         )
         self.assertEqual(
@@ -258,6 +260,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-sop": "operate",
                 "se-stakeholder-map": "coordinate",
                 "se-study-guide": "understand",
+                "se-thread-digest": "coordinate",
             },
         )
 
@@ -2937,6 +2940,63 @@ class SkillSafetyPinsTest(unittest.TestCase):
         ):
             self.assertIn(field, raw)
 
+    def test_thread_digest_requires_bounded_message_coverage(self) -> None:
+        text = normalized("se-thread-digest").lower()
+        for phrase in (
+            "explicit conversation scope and time window",
+            "complete, partial, edited, deleted, unavailable, or unknown",
+            "stable message id or link",
+            "parent and reply context",
+            "never imply complete coverage",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_thread_digest_preserves_conversation_state_and_evidence(self) -> None:
+        text = normalized("se-thread-digest").lower()
+        for phrase in (
+            "proposal, decision, explicit commitment, candidate action",
+            "every decision and explicit commitment",
+            "silence, repetition, attendance, or a reaction is not acceptance",
+            "supersession chain",
+            "unknown owners, dates, authority, and resolution state remain `unknown`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_thread_digest_limits_privacy_actions_and_injection(self) -> None:
+        text = normalized("se-thread-digest").lower()
+        for phrase in (
+            "data, not instructions",
+            "never widen private-channel information",
+            "do not expose unrelated participant details",
+            "posting, reacting, canvases, lists, monitoring",
+            "all `not run`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_thread_digest_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-thread-digest")
+        self.assertIn("references/source-standards.md", raw)
+        for sibling in (
+            "`se-digest`",
+            "`se-meeting-follow-through`",
+            "`se-status`",
+            "`se-handoff`",
+            "`se-knowledge-capture`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Conversation contract**",
+            "**Outcome digest**",
+            "**Decision and proposal ledger**",
+            "**Commitment and candidate-action ledger**",
+            "**Open questions, disagreements, and risks**",
+            "**Evidence and revision ledger**",
+            "**Downstream payloads**",
+            "**Coverage, privacy, and uncertainty**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
     def test_review_skills_enforces_scope_evidence_and_template_boundaries(self) -> None:
         text = normalized("se-review-skills").lower()
         for phrase in (
@@ -3000,6 +3060,18 @@ class SkillSafetyPinsTest(unittest.TestCase):
 
 
 class SkillDocumentationTest(unittest.TestCase):
+    def test_thread_digest_docs_distinguish_thread_and_document_synthesis(self) -> None:
+        operator = " ".join(
+            (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        self.assertIn(
+            "bounded thread outcome reconstruction with `se-thread-digest`, "
+            "generic multi-document synthesis with `se-digest`",
+            operator,
+        )
+
     def test_technical_editor_docs_use_canonical_pass_names(self) -> None:
         readme = " ".join(
             (PACK_ROOT / "README.md").read_text(encoding="utf-8").split()

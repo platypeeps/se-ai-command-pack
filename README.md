@@ -78,6 +78,7 @@ come directly from canonical skill frontmatter.
 | `se-handoff` | Use when the user wants a compact, evidence-backed continuity packet that lets another person, team, or AI session safely resume a defined objective. |
 | `se-meeting-follow-through` | Use when the user wants a source-traceable post-meeting package that reconciles intended and actual outcomes, decisions, commitments, unresolved items, and consent-gated follow-through. |
 | `se-stakeholder-map` | Use when the user wants an evidence-aware map of the people and groups relevant to a defined initiative or decision, with authority, influence, interests, tensions, engagement order, and validation gaps kept distinct. |
+| `se-thread-digest` | Use when the user wants a bounded Slack thread, channel window, or equivalent conversation converted into an evidence-linked digest of decisions, commitments, unresolved work, disagreement, risks, and message history. |
 
 ### Operate
 
@@ -172,6 +173,13 @@ positions, user judgments, assistant inferences, dependencies, and information
 needs distinct. It pairs every inference with validation, exposes missing or
 conflicting perspectives, and proposes only transparent engagement sequencing;
 it does not profile, manipulate, contact, schedule, assign, or write externally.
+
+`se-thread-digest` turns a bounded Slack thread, channel window, or equivalent
+conversation into an evidence-linked outcome digest. It keeps proposals,
+decisions, explicit commitments, candidate actions, corrections, disputes,
+and unknowns distinct; preserves message and revision evidence; respects the
+audience and private-channel boundary; and never posts, reacts, monitors,
+assigns, or persists without a separate authorized operation.
 
 `se-premortem` stress-tests an accepted plan before execution by defining the
 failed state, developing evidence-labeled failure modes, preserving correlated

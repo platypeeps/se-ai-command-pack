@@ -85,6 +85,7 @@ DEFAULT_MANIFEST_HEADER = {
         "safe operational runbooks, "
         "evidence-aware stakeholder mapping, "
         "source-bound study guides, "
+        "message-evidenced conversation digests, "
         "neutral comparisons, "
         "evidence-traceable diagrams, "
         "auditable extreme distillation, "

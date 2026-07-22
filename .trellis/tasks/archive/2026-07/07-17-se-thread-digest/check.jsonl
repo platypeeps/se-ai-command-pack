@@ -1,0 +1,2 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Provides the repository quality, generated-drift, safety, and release verification contract."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Checks that canonical prose, registry fan-out, generated catalogs, tests, documentation, and release metadata remain synchronized."}
