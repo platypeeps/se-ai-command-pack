@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 59
+- **Total Sessions**: 60
 - **Last Active**: 2026-07-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~270 | Active |
+| `journal-2.md` | ~311 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 60 | 2026-07-22 | Close SE skill roadmap | `881ffc0ffbd978108862390d3e65ec2b4aba8ccd` | `main` |
 | 59 | 2026-07-22 | Resolve roadmap integration findings | `391fd692731aefb4e97e604a259b90ee7a89ea1b`, `4401b9aaacc0b347184ed545e71be13e82d7ff91`, `38a218a24e1cfc25e7d71720315b77b7501474a6` | `main` |
 | 58 | 2026-07-22 | Approve personal worklog profile boundary | `d47a132`, `3c1260d` | `main` |
 | 57 | 2026-07-22 | Add se-weekly-review | `33887ae8b7f22a63bb5b860e2806bee5b6ac1e9b`, `ba539875e2e732ff1c26d88e9d7936233eff6371` | `codex/se-weekly-review-finish-work` |
