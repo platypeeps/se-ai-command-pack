@@ -562,6 +562,30 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 targets,
             )
 
+    def test_tutorial_installs_shared_references(self) -> None:
+        expected_sources = {
+            "_shared/references/source-standards.md",
+            "_shared/references/personal-profile-contract.md",
+        }
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-tutorial" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        targets = {row["target"] for row in manifest["files"]}
+        for info in gen.PLATFORM_REGISTRY.values():
+            self.assertIn(
+                f"{info.skills_dir}/se-tutorial/references/source-standards.md",
+                targets,
+            )
+            self.assertIn(
+                f"{info.skills_dir}/se-tutorial/references/personal-profile-contract.md",
+                targets,
+            )
+
     def test_postmortem_installs_source_standards(self) -> None:
         expected_sources = {"_shared/references/source-standards.md"}
         actual_sources = {

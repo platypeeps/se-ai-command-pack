@@ -1,0 +1,2 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Pins the required focused tests, full gate, release checks, and generated-artifact verification."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Ensures the canonical template, registry, manifest, catalogs, operator docs, and tests remain synchronized across layers."}

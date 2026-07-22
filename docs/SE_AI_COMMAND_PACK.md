@@ -146,6 +146,25 @@ stepwise teaching with `se-tutorial` when available. The workflow is read-only
 and never adds external research, creates decks, schedules sessions, grades,
 certifies, or claims mastery.
 
+### Tutorial workflow boundary
+
+`se-tutorial` owns checkpoint-driven technical teaching from a declared reader,
+objective, starting state, environment, prerequisites, and version scope to an
+observable final result. Every step carries an exact command or code sample,
+execution state, expected output or stable assertion, checkpoint, failure
+signals, recovery, and rollback when state changes. Verified, partially
+verified, and unverified examples remain distinct, and mutable APIs or versions
+are dated and checked against authoritative sources.
+
+Platform differences produce explicit branches instead of universalized
+commands. Secrets remain placeholders; destructive, costly, and production
+steps require scoped targets, safer alternatives, authorization, backup, and
+rollback, and cleanup receives the same safeguards. Durable review material
+stays with `se-study-guide`, curricula with `se-learn`, one-concept teaching
+with `se-explain`, and operational execution with `se-runbook`. The workflow
+does not run commands on the reader's system, deploy, publish, enroll, submit,
+or certify.
+
 ### Socratic-review workflow boundary
 
 `se-socratic-review` owns a bounded formative dialogue that asks exactly one
