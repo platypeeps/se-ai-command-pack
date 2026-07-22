@@ -15,6 +15,14 @@ behind a separately reviewed portable contract and explicit user consent.
 ## Current State
 
 - All 50 children are completed and archived.
+- The 2026-07-22 final integration review passed child reconciliation,
+  six-family trigger accounting, registry/catalog/manifest parity, flat-path
+  compatibility, shared-reference fan-out, profile-consumer checks, release
+  alignment, the full repository gate, and an all-platform installer dry run.
+- Two product-owned findings keep the parent open: the public
+  `se-weekly-review` payload contains a private timezone fallback, and the
+  operator guide omits `se-review-skills`. See `final-integration-review.md`;
+  both are routed to the focused `07-22-roadmap-integration-findings` task.
 - The foundation and portable profile slice are complete, including
   `personal-profile-contract`, `se-profile`, and the read-only `se-ask-me`
   consumer.

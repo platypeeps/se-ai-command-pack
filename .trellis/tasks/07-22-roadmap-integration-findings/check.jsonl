@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify canonical ownership, regression coverage, generated parity, release alignment, and the full repository gate."}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Verify timezone and operator-guide contracts remain consistent across source, generated, documentation, and installed boundaries."}

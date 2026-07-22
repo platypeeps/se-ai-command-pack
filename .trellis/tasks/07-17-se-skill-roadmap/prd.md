@@ -62,15 +62,24 @@ design; cohort placement does not create a second taxonomy.
       checked, and archived independently.
 - [x] The parent child map accounts for all 50 `task.json` children exactly
       once and distinguishes completed work from planned work.
-- [ ] The final catalog uses all six registered families without ambiguous
-      trigger overlap.
-- [ ] Existing skill IDs and installed target paths remain compatible.
+- [x] The final catalog uses all six registered families without ambiguous
+      trigger overlap. Evidence: `final-integration-review.md`, "Catalog and
+      trigger-boundary accounting."
+- [x] Existing skill IDs and installed target paths remain compatible.
+      Evidence: `final-integration-review.md`, "Cross-layer evidence."
 - [ ] The personal-profile and private-worklog boundaries remain consent-driven,
       provenance-backed, correctable, and absent from the public core by default.
+      Blocked by FIR-01 in `final-integration-review.md`; resolution is routed
+      to `07-22-roadmap-integration-findings`.
 - [ ] Final integration review confirms generated surfaces, documentation,
-      versioning, and the full repository quality gate are consistent.
+      versioning, and the full repository quality gate are consistent. The
+      mechanical gates pass, but FIR-01 and FIR-02 in
+      `final-integration-review.md` remain open and are routed to
+      `07-22-roadmap-integration-findings`.
 - [ ] The parent is archived only after all deliverable children are complete or
-      intentionally removed through an explicit roadmap decision.
+      intentionally removed through an explicit roadmap decision. All children
+      are complete; archive only after the blocking findings are resolved and
+      post-merge finish-work runs.
 
 ## Out of Scope
 
