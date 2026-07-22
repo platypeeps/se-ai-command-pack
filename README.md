@@ -46,6 +46,7 @@ come directly from canonical skill frontmatter.
 | `se-monitor` | Use when the user wants a dated, source-traceable comparison of a watched subject against an explicit baseline, with meaningful deltas and a portable next-state artifact. |
 | `se-socratic-review` | Use when the user wants a bounded, adaptive Socratic review that asks one question at a time, tests demonstrated understanding, repairs misconceptions, and reports evidence without grading. |
 | `se-study-guide` | Use when the user wants a bounded source set transformed into a durable study guide with traceable concepts, definitions, examples, retrieval prompts, practice, solutions, traps, and review order. |
+| `se-video-notes` | Use when the user wants one or more supplied videos converted into source-faithful, timestamped notes with explicit transcript coverage, claim extraction, comparison, and read-only downstream handoffs. |
 
 ### Decide
 
@@ -188,6 +189,12 @@ exact execution labels, expected results, recovery, final validation, and safe
 cleanup. It distinguishes verified, partially verified, and unverified examples
 and never implies that commands ran on the reader's system or that a plausible
 example works.
+
+`se-video-notes` turns supplied video metadata and transcripts into source-
+faithful, timestamped knowledge notes. It discloses complete, partial, metadata-
+only, and unavailable coverage; separates creator content from assistant
+analysis; and preserves timestamp, quotation, claim, language, edit, and
+comparison uncertainty without pretending the video was watched.
 
 `se-premortem` stress-tests an accepted plan before execution by defining the
 failed state, developing evidence-labeled failure modes, preserving correlated

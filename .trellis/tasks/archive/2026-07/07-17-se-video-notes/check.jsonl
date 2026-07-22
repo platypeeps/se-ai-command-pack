@@ -1,0 +1,2 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Pins focused tests, full release gates, generated-surface verification, and evidence-backed validation."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Keeps the canonical skill, registry, manifest, catalogs, documentation, and tests synchronized across layers."}

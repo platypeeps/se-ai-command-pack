@@ -130,6 +130,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-study-guide", family="understand"),
     SkillInfo(name="se-thread-digest", family="coordinate"),
     SkillInfo(name="se-tutorial", family="create"),
+    SkillInfo(name="se-video-notes", family="understand"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 
@@ -185,6 +186,7 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-study-guide",
         "se-thread-digest",
         "se-tutorial",
+        "se-video-notes",
     ),
     "_shared/references/verification-protocol.md": (
         "se-research",

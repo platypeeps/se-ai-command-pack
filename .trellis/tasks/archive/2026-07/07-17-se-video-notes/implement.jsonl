@@ -1,0 +1,2 @@
+{"file":".trellis/spec/backend/directory-structure.md","reason":"Defines canonical template, registry, generated-surface, and test ownership for a new bundled skill."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Defines test-first delivery, generated-surface synchronization, release metadata, and validation expectations."}

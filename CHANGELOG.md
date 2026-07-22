@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.47.0 - 2026-07-21
+
+- Add `se-video-notes`, a read-only Understand workflow for source-faithful,
+  timestamped notes from supplied videos and transcripts.
+- Preserve complete, partial, metadata-only, and unavailable coverage states;
+  separate metadata, creator content, and assistant analysis; and keep every
+  timestamp, quotation, claim, resource, and comparison traceable.
+- Provide a useful no-caption fallback plus unapplied fact-check and capture
+  handoffs while keeping downloading, transcription, channel mutation,
+  publication, and persistence outside the workflow.
+
 ## 0.46.0 - 2026-07-21
 
 - Add `se-tutorial`, a read-only Create workflow for checkpoint-driven
