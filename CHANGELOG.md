@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.49.0 - 2026-07-22
+
+- Add `se-weekly-review`, a read-only Improve workflow for evidence-backed
+  personal synthesis across one timezone-bounded week of configured work and
+  knowledge sources.
+- Keep outcomes, activity, decisions, carryover, lessons, self-reported energy,
+  documented friction, and a small next-week focus distinct while preserving
+  missing-source, sparse-week, and conservative deduplication semantics.
+- Enforce the explicit private worklog-profile boundary, read-only personal-
+  profile use, destination-neutral capture handoff, shared reference fan-out,
+  and focused privacy, timezone, overlap, and generated-surface coverage.
+
 ## 0.48.0 - 2026-07-21
 
 - Add `se-watchlist`, a read-only Operate workflow that reviews bounded content

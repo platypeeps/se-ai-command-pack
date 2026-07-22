@@ -112,6 +112,7 @@ DEFAULT_MANIFEST_HEADER = {
         "source-faithful destination adaptation, "
         "constructive adversarial reviews, "
         "evidence-led general retrospectives, "
+        "evidence-backed personal weekly reviews, "
         "bookmark and action-inbox triage, agendas, research, "
         "fact checks, decisions, status "
         "reports, discovery, briefs, meeting prep, scans, and digests into "

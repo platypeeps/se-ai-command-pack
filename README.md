@@ -11,6 +11,7 @@ report-first technical editing,
 decision-oriented agendas, evidence-linked meeting follow-through,
 portable baseline monitoring, methodologically gated research papers,
 outcome-based execution planning, evidence-linked blameless postmortems,
+evidence-backed personal weekly reviews,
 pack discovery,
 deep research, claim fact-checking, decision support, project-status reporting,
 daily briefs, meeting prep, landscape scans, and document digests — installed
@@ -107,6 +108,7 @@ come directly from canonical skill frontmatter.
 | `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
 | `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
 | `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
+| `se-weekly-review` | Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct. |
 | `se-review-skills` | Use when the user wants one or more AI skills reviewed for defects, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context strategy, subagent use, and model routing, with numbered selectable improvements or Trellis remediation tasks. |
 <!-- SE_SKILL_CATALOG:END -->
 

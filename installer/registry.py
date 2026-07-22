@@ -122,6 +122,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-publish", family="create"),
     SkillInfo(name="se-red-team", family="improve"),
     SkillInfo(name="se-retro", family="improve"),
+    SkillInfo(name="se-weekly-review", family="improve"),
     SkillInfo(name="se-runbook", family="operate"),
     SkillInfo(name="se-review-skills", family="improve"),
     SkillInfo(name="se-socratic-review", family="understand"),
@@ -180,6 +181,7 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-publish",
         "se-red-team",
         "se-retro",
+        "se-weekly-review",
         "se-runbook",
         "se-socratic-review",
         "se-sop",
@@ -212,6 +214,7 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-publish",
         "se-tutorial",
         "se-watchlist",
+        "se-weekly-review",
     ),
 }
 

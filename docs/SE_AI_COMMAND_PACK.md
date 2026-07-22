@@ -34,7 +34,8 @@ process. User-facing install/update/remove instructions live in the
   knowledge-system auditing with `se-knowledge-gap`, plus adaptive
   mastery-oriented paths with `se-learn` and source-traceable field mapping
   with `se-literature-map`, plus evidence-linked post-meeting reconciliation
-  with `se-meeting-follow-through`.
+  with `se-meeting-follow-through`, plus private cross-stream weekly reflection
+  with `se-weekly-review`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -674,6 +675,31 @@ available. Formal incident causal and safeguard analysis remains with
 `se-postmortem`. `se-retro` never records a journal entry, creates or assigns a
 task, contacts participants, publishes a report, changes systems, or executes a
 follow-up.
+
+### Weekly-review workflow boundary
+
+`se-weekly-review` owns personal cross-stream synthesis for one explicit local
+week. It inventories configured work and knowledge sources, normalizes aware
+timestamps into a half-open local reporting window based on local calendar
+midnights rather than a fixed 168-hour duration, and conservatively groups
+duplicate records without erasing provenance. For a current or future-ending
+range, the evidence cutoff is invocation time, so scheduled future records do
+not become completed activity. Observable outcomes, meaningful activity,
+recorded decisions, cutoff carryover, supported lessons, directly self-reported
+energy, documented friction, and at most three next-week focus items remain
+separate. Missing connectors are coverage gaps rather than empty-week evidence,
+and sparse weeks produce short truthful reviews.
+
+The private worklog boundary is explicit: `worklog_profile=off|<locator>` must
+resolve before source reads, never searches private stores, and has no public
+schema, path, identity, tag, source list, or destination data. The separate
+`profile=auto|off|<locator>` surface consumes `se-personal-profile/v1` under its
+existing read-only rules; weekly evidence never writes back. Objective project
+progress remains `se-status`, deeper bounded-event analysis remains `se-retro`,
+`se-capture` does not own weekly synthesis, and persistence through
+`se-knowledge-capture` requires a separate explicit request. The weekly review
+itself never publishes notes, mutates tasks or profiles, schedules work,
+contacts people, or scores employee performance.
 
 ### Premortem workflow boundary
 
