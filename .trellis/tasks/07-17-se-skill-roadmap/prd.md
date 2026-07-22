@@ -14,7 +14,7 @@ independently planned children spanning Understand, Decide, Create, Coordinate,
 Operate, and Improve.
 
 The parent metadata is the source of truth for membership and completion. At
-this reconciliation point, 45 children are completed and archived, 5 remain
+this reconciliation point, 46 children are completed and archived, 4 remain
 in planning, and every linked child has a PRD, design, implementation plan, and
 planning/check context files. The parent remains a coordination and integration
 envelope; it does not implement product behavior directly.
@@ -48,7 +48,7 @@ envelope; it does not implement product behavior directly.
 | Plan and coordinate | `se-plan`, `se-handoff`, `se-monitor`, `se-retro` | 4 completed |
 | Capture and knowledge operations | `se-capture`, `se-video-notes`, `se-thread-digest`, `se-knowledge-capture`, `se-watchlist`, `se-weekly-review`, `se-action-inbox`, `se-knowledge-gap`, `se-publish`, `se-meeting-follow-through`, `se-bookmark-triage` | 8 completed, 3 planning |
 | Understand and learn | `se-distill`, `se-explain`, `se-literature-map`, `se-compare`, `se-learn`, `se-study-guide`, `se-socratic-review` | 7 completed |
-| Create and communicate | `se-author`, `se-topic-radar`, `se-technical-editor`, `se-paper`, `se-proposal`, `se-tutorial`, `se-presentation`, `se-diagram` | 7 completed, 1 planning |
+| Create and communicate | `se-author`, `se-topic-radar`, `se-technical-editor`, `se-paper`, `se-proposal`, `se-tutorial`, `se-presentation`, `se-diagram` | 8 completed |
 | Coordinate and operate | `se-stakeholder-map`, `se-feedback`, `se-agenda`, `se-runbook`, `se-sop`, `se-checklist` | 6 completed |
 | Improve and assure | `se-premortem`, `se-evaluate`, `se-red-team`, `se-postmortem`, `se-review-skills` | 5 completed |
 

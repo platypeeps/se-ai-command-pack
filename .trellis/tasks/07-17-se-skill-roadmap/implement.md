@@ -14,7 +14,7 @@
 
 ### Completed baseline
 
-1. Treat the 45 archived children reported by Trellis as complete.
+1. Treat the 46 archived children reported by Trellis as complete.
 2. The completed work includes the foundation and portable-profile slices,
    `se-plan`, `se-handoff`, `se-monitor`, and the shipped children reflected in
    the cohort counts in `prd.md`.
@@ -26,7 +26,7 @@
 1. Keep the parent in planning; it is a coordination envelope, not an
    implementation target.
 2. Under an unfiltered autonomous backlog run, activate the highest-ranked
-   implementation-ready child from live state. `se-thread-digest`, the latest
+   implementation-ready child from live state. `se-tutorial`, the latest
    deterministic selection, is shipped and archived and must not be reactivated.
 3. Preserve each selected child's nearest-neighbor trigger boundaries before
    editing its canonical skill.
@@ -41,8 +41,7 @@ Do not infer a hard dependency from the list order.
 
 1. Capture and knowledge operations: `se-video-notes`, `se-watchlist`,
    `se-weekly-review`.
-2. Create and communicate: `se-tutorial`.
-3. Complete `personal-worklog-profile` as a separate P3 design decision; create
+2. Complete `personal-worklog-profile` as a separate P3 design decision; create
    no implementation follow-up without explicit task-creation consent.
 
 ### Final integration
