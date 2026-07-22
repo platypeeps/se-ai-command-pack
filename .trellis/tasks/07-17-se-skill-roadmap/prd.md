@@ -67,19 +67,16 @@ design; cohort placement does not create a second taxonomy.
       trigger-boundary accounting."
 - [x] Existing skill IDs and installed target paths remain compatible.
       Evidence: `final-integration-review.md`, "Cross-layer evidence."
-- [ ] The personal-profile and private-worklog boundaries remain consent-driven,
+- [x] The personal-profile and private-worklog boundaries remain consent-driven,
       provenance-backed, correctable, and absent from the public core by default.
-      Blocked by FIR-01 in `final-integration-review.md`; resolution is routed
-      to `07-22-roadmap-integration-findings`.
-- [ ] Final integration review confirms generated surfaces, documentation,
-      versioning, and the full repository quality gate are consistent. The
-      mechanical gates pass, but FIR-01 and FIR-02 in
-      `final-integration-review.md` remain open and are routed to
-      `07-22-roadmap-integration-findings`.
-- [ ] The parent is archived only after all deliverable children are complete or
-      intentionally removed through an explicit roadmap decision. All children
-      are complete; archive only after the blocking findings are resolved and
-      post-merge finish-work runs.
+      Evidence: FIR-01 resolution in `final-integration-review.md` and PR #78.
+- [x] Final integration review confirms generated surfaces, documentation,
+      versioning, and the full repository quality gate are consistent. Evidence:
+      `final-integration-review.md`, release `0.50.0`, and PR #78 validation.
+- [x] The parent is archived only after all deliverable children are complete or
+      intentionally removed through an explicit roadmap decision. All 50
+      original children are complete and archived; archive this parent only
+      through post-merge finish-work.
 
 ## Out of Scope
 
