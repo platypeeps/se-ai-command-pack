@@ -57,11 +57,15 @@ Implemented the checkpoint-driven se-tutorial workflow, shipped release 0.46.0, 
 
 ### Main Changes
 
-### Main Changes
-
 - Added the canonical `se-tutorial` skill with prerequisite gates, platform and version branches, explicit execution states, checkpoints, recovery, final validation, and safeguarded cleanup.
 - Registered release 0.46.0 across generated catalogs, manifest targets, shared source/profile references, and operator documentation.
 - Added focused contract and generated-surface tests; fresh-context probes corrected reader-test and production-execution ambiguities before final validation.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e922e144c1ffd25ac8766f13828451d0e5028fb6` | (see git log) |
 
 ### Testing
 
@@ -75,22 +79,3 @@ Implemented the checkpoint-driven se-tutorial workflow, shipped release 0.46.0, 
 ### Next Steps
 
 - Merge PR #68 after final exact-head review and green CI.
-
-
-### Git Commits
-
-| Hash | Message |
-|------|---------|
-| `e922e144c1ffd25ac8766f13828451d0e5028fb6` | (see git log) |
-
-### Testing
-
-- Validation was not recorded for this session.
-
-### Status
-
-[OK] **Completed**
-
-### Next Steps
-
-- None - task complete
