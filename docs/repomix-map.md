@@ -10042,6 +10042,7 @@ SCHEMA_VERSION = 1
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
 MAX_DESCRIPTION_SIMILARITY_PAIRS = 10_000
+HASH_CHUNK_BYTES = 128 * 1024
 FIRST_PARTY_REMOTES = {
 IGNORED_DIRECTORIES = frozenset(
 RECEIPT_NAMES = (
@@ -10096,7 +10097,7 @@ value = json.loads(path.read_text(encoding="utf-8", errors="strict"))
 ⋮----
 def _sha256(path: Path) -> str
 ⋮----
-content = path.read_bytes()
+digest = hashlib.sha256()
 ⋮----
 def _run_git(path: Path, *args: str) -> str | None
 ⋮----
@@ -12281,6 +12282,13 @@ previous_dont_write_bytecode = sys.dont_write_bytecode
 SKILL_TEXT = """---
 ⋮----
 class SkillReviewInventoryTest(TempDirTestCase)
+⋮----
+def test_sha256_streams_instead_of_reading_the_whole_file(self) -> None
+⋮----
+path = self.base / "resource.bin"
+content = b"review-skill" * (review.HASH_CHUNK_BYTES // 4)
+⋮----
+expected = "sha256:" + hashlib.sha256(content).hexdigest()
 ⋮----
 def test_test_loader_does_not_write_into_the_skill_payload(self) -> None
 ⋮----

@@ -24,6 +24,7 @@ SCHEMA_VERSION = 1
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
 MAX_DESCRIPTION_SIMILARITY_PAIRS = 10_000
+HASH_CHUNK_BYTES = 128 * 1024
 FIRST_PARTY_REMOTES = {
     "se-ai-command-pack": "github.com/platypeeps/se-ai-command-pack",
     "sd-ai-command-pack": "github.com/platypeeps/sd-ai-command-pack",
@@ -138,10 +139,13 @@ def _read_json_object(path: Path) -> dict[str, Any] | None:
 
 def _sha256(path: Path) -> str:
     try:
-        content = path.read_bytes()
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            while chunk := handle.read(HASH_CHUNK_BYTES):
+                digest.update(chunk)
     except OSError as error:
         raise ReviewError(f"cannot hash {path}: {error}") from None
-    return "sha256:" + hashlib.sha256(content).hexdigest()
+    return "sha256:" + digest.hexdigest()
 
 
 def _run_git(path: Path, *args: str) -> str | None:

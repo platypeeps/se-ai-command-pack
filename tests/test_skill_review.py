@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import json
 import subprocess
@@ -62,6 +63,18 @@ Report findings.
 
 
 class SkillReviewInventoryTest(TempDirTestCase):
+    def test_sha256_streams_instead_of_reading_the_whole_file(self) -> None:
+        path = self.base / "resource.bin"
+        content = b"review-skill" * (review.HASH_CHUNK_BYTES // 4)
+        path.write_bytes(content)
+        expected = "sha256:" + hashlib.sha256(content).hexdigest()
+        with mock.patch.object(
+            Path,
+            "read_bytes",
+            side_effect=AssertionError("whole-file read is not allowed"),
+        ):
+            self.assertEqual(review._sha256(path), expected)
+
     def test_test_loader_does_not_write_into_the_skill_payload(self) -> None:
         self.assertFalse((SCRIPT_PATH.parent / "__pycache__").exists())
 
