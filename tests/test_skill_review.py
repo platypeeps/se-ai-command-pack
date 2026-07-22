@@ -418,8 +418,231 @@ class SkillReviewInventoryTest(TempDirTestCase):
             encoding="utf-8",
         )
         drifted = self.inventory(install_root, str(observed))["skills"][0]
-        self.assertEqual(drifted["drift"], "local-override")
-        self.assertEqual(drifted["sourceRole"], "local-override")
+        self.assertEqual(drifted["drift"], "installed-drift")
+        self.assertEqual(drifted["sourceRole"], "installed-copy")
+        self.assertEqual(drifted["canonicalPath"], str(source_skill))
+
+    def initialize_verified_se_repo(self, root: Path) -> None:
+        if shutil.which("git") is None:
+            self.skipTest("git executable is not available")
+        trellis = root / ".trellis" / "scripts" / "task.py"
+        trellis.parent.mkdir(parents=True)
+        trellis.write_text("# fixture task entrypoint\n", encoding="utf-8")
+        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(root),
+                "remote",
+                "add",
+                "origin",
+                "git@github.com:platypeeps/se-ai-command-pack.git",
+            ],
+            check=True,
+        )
+
+    def test_installed_discovery_prefers_repo_and_deduplicates_platforms(self) -> None:
+        source_root, source_skill = self.write_se_pack()
+        self.initialize_verified_se_repo(source_root)
+        home = self.base / "installed-home"
+        codex_root = home / ".codex" / "skills"
+        claude_root = home / ".claude" / "skills"
+        codex = codex_root / "se-test" / "SKILL.md"
+        claude = claude_root / "se-test" / "SKILL.md"
+        codex.parent.mkdir(parents=True)
+        claude.parent.mkdir(parents=True)
+        codex.write_text(source_skill.read_text(encoding="utf-8"), encoding="utf-8")
+        claude.write_text(
+            source_skill.read_text(encoding="utf-8") + "Installed drift.\n",
+            encoding="utf-8",
+        )
+
+        payload = review.build_inventory(
+            source_root,
+            [],
+            None,
+            "package",
+            root_was_explicit=True,
+            installed_mode="auto",
+            installed_roots=[codex_root, claude_root],
+        )
+
+        self.assertEqual(len(payload["skills"]), 1)
+        skill = payload["skills"][0]
+        self.assertEqual(skill["reviewPath"], str(source_skill))
+        self.assertEqual(skill["canonicalPath"], str(source_skill))
+        self.assertEqual(skill["installedCopies"], 2)
+        self.assertEqual(skill["drift"], "installed-drift")
+        self.assertTrue(skill["taskRouting"]["canCreateTask"])
+        self.assertEqual(
+            {entry["path"] for entry in skill["installations"]},
+            {str(codex), str(claude)},
+        )
+        self.assertEqual(payload["coverage"]["deduplicatedSkillRecords"], 2)
+        self.assertEqual(
+            [entry["status"] for entry in payload["installationRoots"]],
+            ["scanned", "scanned"],
+        )
+
+    def test_same_named_unverified_install_is_not_claimed_by_repo(self) -> None:
+        source_root, source_skill = self.write_se_pack()
+        self.initialize_verified_se_repo(source_root)
+        custom_root = self.base / "custom-host" / "skills"
+        installed = custom_root / "se-test" / "SKILL.md"
+        installed.parent.mkdir(parents=True)
+        installed.write_text(source_skill.read_text(encoding="utf-8"), encoding="utf-8")
+
+        payload = review.build_inventory(
+            source_root,
+            [],
+            None,
+            "package",
+            root_was_explicit=True,
+            installed_mode="auto",
+            installed_roots=[custom_root],
+        )
+
+        self.assertEqual(len(payload["skills"]), 2)
+        unowned = next(
+            skill
+            for skill in payload["skills"]
+            if skill["sourceRole"] == "installed-copy-unowned"
+        )
+        self.assertEqual(unowned["canonicalPath"], str(installed))
+        self.assertFalse(unowned["taskRouting"]["canCreateTask"])
+        self.assertEqual(unowned["drift"], "unresolved")
+
+    def test_installed_discovery_can_be_disabled_or_explicitly_overridden(self) -> None:
+        source_root, source_skill = self.write_se_pack()
+        custom_root = self.base / "override" / "skills"
+        installed = custom_root / "external" / "SKILL.md"
+        installed.parent.mkdir(parents=True)
+        installed.write_text(SKILL_TEXT.format(name="external"), encoding="utf-8")
+
+        repository_only = review.build_inventory(
+            source_root,
+            [],
+            None,
+            "package",
+            root_was_explicit=True,
+            installed_mode="off",
+        )
+        self.assertEqual(repository_only["coverage"]["installedCopies"], 0)
+        self.assertEqual(repository_only["installationRoots"], [])
+
+        overridden = review.build_inventory(
+            source_root,
+            [],
+            None,
+            "package",
+            root_was_explicit=True,
+            installed_mode="auto",
+            installed_roots=[custom_root],
+        )
+        self.assertEqual(overridden["coverage"]["installedCopies"], 1)
+        self.assertEqual(
+            overridden["installationRoots"][0]["path"], str(custom_root)
+        )
+        self.assertEqual(overridden["installationRoots"][0]["source"], "explicit")
+
+        with self.assertRaises(review.ReviewError):
+            review.build_inventory(
+                source_root,
+                [],
+                None,
+                "package",
+                root_was_explicit=True,
+                installed_mode="off",
+                installed_roots=[custom_root],
+            )
+
+        missing = self.base / "missing" / "skills"
+        with self.assertRaises(review.ReviewError):
+            review.build_inventory(
+                source_root,
+                [],
+                None,
+                "package",
+                root_was_explicit=True,
+                installed_mode="auto",
+                installed_roots=[missing],
+            )
+
+    def test_auto_install_roots_come_from_manifest_without_home_walk(self) -> None:
+        source_root, source_skill = self.write_se_pack()
+        self.initialize_verified_se_repo(source_root)
+        home = self.base / "auto-home"
+        installed = home / ".codex" / "skills" / "se-test" / "SKILL.md"
+        installed.parent.mkdir(parents=True)
+        installed.write_text(source_skill.read_text(encoding="utf-8"), encoding="utf-8")
+
+        with mock.patch.object(Path, "home", return_value=home):
+            payload = review.build_inventory(
+                source_root,
+                [],
+                None,
+                "package",
+                root_was_explicit=True,
+                installed_mode="auto",
+            )
+
+        roots = {entry["path"]: entry for entry in payload["installationRoots"]}
+        self.assertEqual(roots[str(home / ".codex" / "skills")]["status"], "scanned")
+        self.assertEqual(roots[str(home / ".agents" / "skills")]["status"], "missing")
+        self.assertEqual(roots[str(home / ".claude" / "skills")]["status"], "missing")
+        self.assertEqual(payload["skills"][0]["installedCopies"], 1)
+
+    def test_shared_references_are_hashed_and_change_the_snapshot(self) -> None:
+        root, _ = self.write_se_pack()
+        shared = root / "templates" / "skills" / "_shared" / "references" / "source.md"
+        shared.parent.mkdir(parents=True)
+        shared.write_text("Shared evidence.\n", encoding="utf-8")
+        registry = root / "installer" / "registry.py"
+        registry.write_text(
+            registry.read_text(encoding="utf-8")
+            + "SHARED_REFERENCES = {'_shared/references/source.md': ('se-test',)}\n",
+            encoding="utf-8",
+        )
+
+        first = self.inventory(root, "se-test")
+        skill = first["skills"][0]
+        self.assertIn(str(shared), skill["references"])
+        related = next(
+            entry for entry in skill["relatedTemplates"] if entry["path"] == str(shared)
+        )
+        self.assertEqual(related["role"], "authored-shared-reference")
+
+        shared.write_text("Changed shared evidence.\n", encoding="utf-8")
+        second = self.inventory(root, "se-test")
+        self.assertNotEqual(first["snapshotId"], second["snapshotId"])
+
+    def test_missing_or_symlinked_shared_references_fail_closed(self) -> None:
+        root, _ = self.write_se_pack()
+        registry = root / "installer" / "registry.py"
+        original = registry.read_text(encoding="utf-8")
+        registry.write_text(
+            original
+            + "SHARED_REFERENCES = {'_shared/references/missing.md': ('se-test',)}\n",
+            encoding="utf-8",
+        )
+        with self.assertRaises(review.ReviewError) as missing:
+            self.inventory(root, "se-test")
+        self.assertIn("missing shared reference", str(missing.exception))
+
+        outside = self.base / "outside-shared.md"
+        outside.write_text("Outside.\n", encoding="utf-8")
+        linked = root / "templates" / "skills" / "_shared" / "references" / "linked.md"
+        linked.parent.mkdir(parents=True)
+        linked.symlink_to(outside)
+        registry.write_text(
+            original
+            + "SHARED_REFERENCES = {'_shared/references/linked.md': ('se-test',)}\n",
+            encoding="utf-8",
+        )
+        with self.assertRaises(review.ReviewError) as symlinked:
+            self.inventory(root, "se-test")
+        self.assertIn("unsafe or missing shared reference", str(symlinked.exception))
 
     def test_unbounded_generic_multiple_roots_are_rejected(self) -> None:
         root = self.base / "generic"
@@ -563,6 +786,19 @@ class SkillReviewInventoryTest(TempDirTestCase):
         skill = payload["skills"][0]
         self.assertNotEqual(skill["canonicalPath"], str(outside))
         self.assertFalse(skill["taskRouting"]["canCreateTask"])
+
+    def test_manifest_source_cannot_cross_a_symlink_boundary(self) -> None:
+        source_root, source_skill = self.write_se_pack()
+        linked = source_root / "templates" / "skills" / "linked"
+        linked.symlink_to(source_skill.parent, target_is_directory=True)
+
+        context = review._package_context(source_root)
+
+        self.assertIsNone(
+            review._safe_manifest_source(
+                context, "templates/skills/linked/SKILL.md"
+            )
+        )
 
 
 if __name__ == "__main__":

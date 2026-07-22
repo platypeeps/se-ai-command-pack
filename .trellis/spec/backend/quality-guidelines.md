@@ -573,6 +573,97 @@ the correction is bounded, and execution stays separate.
 
 ---
 
+## Scenario: Installed Skill Review Inventory
+
+### 1. Scope / Trigger
+
+- Trigger: changing `se-review-skills` discovery, installed-copy ownership,
+  deduplication, snapshot inputs, or task-routing evidence.
+- Why: this shipped analyzer crosses repository manifests, user installation
+  roots, Git identity, shared resources, and mutation-routing boundaries.
+
+### 2. Signatures
+
+```text
+skill_review.py inventory [--root PATH] [--skill NAME_OR_PATH]...
+  [--family FAMILY] [--scope skill|family|repo|package|all]
+  [--installed auto|off] [--installed-root PATH]... [--pretty]
+```
+
+The CLI defaults to `--installed auto`. The Python `build_inventory()` API
+defaults installed discovery to `off` so callers and tests must opt in.
+
+### 3. Contracts
+
+- Automatic discovery derives bounded user skill roots only from verified
+  manifest `target` rows and inspects direct child `*/SKILL.md` files. It never
+  recursively searches a home directory or plugin cache.
+- A copy maps to the current repository only through verified manifest target,
+  provenance, package identity, and Git ownership evidence. The canonical
+  repository file remains `reviewPath` for both matching and drifted installs.
+- Verified copies deduplicate by canonical repository identity. Unowned copies
+  deduplicate only when normalized skill name and content hash both match.
+- Every collapsed copy retains path, root, platform, observed hash, drift, and
+  mapping evidence. Installed copies are evidence, never mutation targets.
+- Parse `SHARED_REFERENCES` statically from the registry AST. Hash each selected
+  canonical shared source into `relatedTemplates` and snapshot identity without
+  importing or executing reviewed repository code.
+- Inventory schema version 2 exposes `installationRoots`, per-skill
+  `installations`, `installedCopies`, `reviewPath`, and deduplication coverage.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Automatic install root is absent | Record `missing`; continue with bounded coverage. |
+| Automatic root or skill is symlinked | Skip it and report the coverage limit. |
+| Explicit root is missing, unbounded, non-directory, or symlinked | Reject before scanning. |
+| Same name lacks verified ownership | Keep it unowned and disable task creation. |
+| Installed hash differs from canonical | Report `installed-drift`; still review the verified canonical source. |
+| Shared reference is missing, escaped, or symlinked | Fail closed before snapshot creation. |
+| Installed discovery is `off` with explicit roots | Reject the contradictory arguments. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: matching Claude and Codex copies collapse into one repository record
+  with two installation entries; a drifted copy changes aggregate drift but
+  not task ownership.
+- Base: `--installed off` inventories only the selected repository skills.
+- Bad: walking `$HOME`, mapping by a skill-name prefix, editing an installed
+  copy, or merging different same-named unowned skills.
+
+### 6. Tests Required
+
+- Assert manifest-derived roots without a home walk, explicit opt-out and root
+  overrides, multi-platform deduplication, drift routing, and unowned-name
+  separation.
+- Assert shared-reference content and membership change snapshot identity and
+  that missing or symlinked sources fail closed.
+- Preserve tests proving reviewed content is never executed, symlinks are not
+  followed, pair comparison remains bounded, and SE/SD canonical roles remain
+  stable.
+- Run the focused analyzer suite, skill contract tests, `make generate`, and
+  `make check` with a temporary bytecode cache outside the shipped skill tree.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+~/.codex/skills/se-example/SKILL.md differs, so edit that installed file and
+open one task for every host copy named se-example.
+```
+
+#### Correct
+
+```text
+Map each bounded installed copy through verified package evidence, review the
+canonical repository source once, retain per-copy drift, and route one task to
+the verified owner repository.
+```
+
+---
+
 ## Scenario: Pack Lifecycle CLI Changes
 
 ### 1. Scope / Trigger

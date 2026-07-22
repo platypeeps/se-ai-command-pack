@@ -3362,6 +3362,28 @@ class SkillSafetyPinsTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
+    def test_review_skills_discovers_and_deduplicates_user_installations(self) -> None:
+        text = normalized("se-review-skills").lower()
+        schema = normalized_resource(
+            "se-review-skills", "references/report-schema.md"
+        ).lower()
+        for phrase in (
+            "bounded user installation roots derived from its verified manifest",
+            "review and operate on that repository source whether the installed hash matches or differs",
+            "deduplicate verified copies by canonical repository identity",
+            "never by name alone",
+            "never replace this bounded discovery with a home-directory, plugin-cache, or filesystem scan",
+        ):
+            self.assertIn(phrase, text)
+        for phrase in (
+            "installed copies collapsed into each canonical review record",
+            "`canonical-match` or `installed-drift`",
+            "review findings and mutation selectors always point at the canonical repository source",
+            "**suggested next steps**",
+            "installation refresh advice",
+        ):
+            self.assertIn(phrase, schema)
+
     def test_review_skills_requires_a_safety_verdict_for_every_skill(self) -> None:
         rubric = normalized_resource(
             "se-review-skills", "references/review-rubric.md"
@@ -3455,6 +3477,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Repository selectors**",
             "**Task/application state**",
             "**Execution boundary**",
+            "**Suggested next steps**",
         ):
             self.assertIn(field, raw)
         for sibling in ("`se-help`", "`sd-audit-repo`", "`sd-review-local`"):

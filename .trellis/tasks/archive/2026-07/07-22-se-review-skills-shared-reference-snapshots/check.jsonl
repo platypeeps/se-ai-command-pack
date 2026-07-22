@@ -1,0 +1,2 @@
+{"file": "tests/test_skill_review.py", "reason": "Add snapshot and resource-coverage regression fixtures."}
+{"file": "tests/test_skills.py", "reason": "Preserve the portable se-review-skills safety and behavior contract."}
