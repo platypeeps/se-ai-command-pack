@@ -2754,7 +2754,11 @@ class SkillSafetyPinsTest(unittest.TestCase):
         self.assertIn("never guess from a named locale, host default", text)
         self.assertNotIn("america/denver", text)
         self.assertEqual(
-            re.findall(r"\b[A-Z][A-Za-z_+-]+/[A-Z][A-Za-z_+-]+\b", raw),
+            re.findall(
+                r"\b[A-Z][A-Za-z0-9_+-]+"
+                r"(?:/[A-Z][A-Za-z0-9_+-]+)+\b",
+                raw,
+            ),
             [],
         )
 
@@ -3390,7 +3394,7 @@ class SkillDocumentationTest(unittest.TestCase):
             "later explicit `apply=` or `task=` selector",
             "Pack discovery and intent routing remain with `se-help`",
             "Broader engineering repository audits remain with `sd-audit-repo`",
-            "local code-review providers remains with `sd-review-local`",
+            "local code-review providers remain with `sd-review-local`",
         ):
             self.assertIn(phrase, operator)
 

@@ -2795,8 +2795,8 @@ and all-skills scope. The default is review-only: applying an improvement or
 creating a task requires a later explicit `apply=` or `task=` selector.
 
 Pack discovery and intent routing remain with `se-help`. Broader engineering
-repository audits remain with `sd-audit-repo`, while execution of configured
-local code-review providers remains with `sd-review-local`. A skill review does
+repository audits remain with `sd-audit-repo`, while configured local
+code-review providers remain with `sd-review-local`. A skill review does
 not silently broaden into either workflow, edit installed copies, or treat a
 recommendation as authorization to mutate a repository.
 
