@@ -2,7 +2,7 @@
 
 ## Reconciliation Baseline
 
-1. Treat the 49 entries in the parent `task.json` child list as authoritative.
+1. Treat the 50 entries in the parent `task.json` child list as authoritative.
 2. Verify that every child resolves in active or archived Trellis state and has
    PRD, design, implementation, check-context, and implementation-context files.
 3. Keep the parent child map and progress counts current when a child is added,
@@ -44,7 +44,8 @@ Do not infer a hard dependency from the list order.
 2. Understand and learn: `se-study-guide`, `se-socratic-review`.
 3. Create and communicate: `se-tutorial`.
 4. Coordinate and operate: `se-stakeholder-map`, `se-sop`.
-5. Complete `personal-worklog-profile` as a separate P3 design decision; create
+5. Improve and assure: `se-review-skills` (P1).
+6. Complete `personal-worklog-profile` as a separate P3 design decision; create
    no implementation follow-up without explicit task-creation consent.
 
 ### Final integration
@@ -62,7 +63,7 @@ Do not infer a hard dependency from the list order.
 
 - `python3 ./.trellis/scripts/task.py list`
 - Run `jq -r '.children[]' .trellis/tasks/07-17-se-skill-roadmap/task.json` and
-  compare its output with active and archived child directories; require 49
+  compare its output with active and archived child directories; require 50
   unique resolved children and no undocumented child-map entries.
 - Confirm each linked child contains `prd.md`, `design.md`, `implement.md`,
   `check.jsonl`, and `implement.jsonl`.

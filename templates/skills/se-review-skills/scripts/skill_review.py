@@ -1,0 +1,955 @@
+#!/usr/bin/env python3
+"""Build a deterministic inventory for a bounded skill review.
+
+The script reports facts and candidate signals. It never creates findings,
+tasks, or edits. Semantic judgment remains with the calling skill.
+"""
+
+from __future__ import annotations
+
+import argparse
+import ast
+import hashlib
+import json
+import os
+import re
+import subprocess
+import sys
+from dataclasses import dataclass
+from difflib import SequenceMatcher
+from pathlib import Path
+from typing import Any, Sequence
+
+SCHEMA_VERSION = 1
+GIT_TIMEOUT_SECONDS = 15
+MAX_TEXT_BYTES = 2_000_000
+FIRST_PARTY_REMOTES = {
+    "se-ai-command-pack": "github.com/platypeeps/se-ai-command-pack",
+    "sd-ai-command-pack": "github.com/platypeeps/sd-ai-command-pack",
+}
+IGNORED_DIRECTORIES = frozenset(
+    {
+        ".git",
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        "build",
+        "dist",
+        "node_modules",
+        "vendor",
+        "__pycache__",
+    }
+)
+RECEIPT_NAMES = (
+    ".se-ai-command-pack/provenance.json",
+    ".sd-ai-command-pack/provenance.json",
+)
+HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.+?)\s*$", re.MULTILINE)
+LINK_PATTERN = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+FENCED_BLOCK_PATTERN = re.compile(
+    r"^```([^\n]*)\n(.*?)^```[ \t]*$",
+    re.MULTILINE | re.DOTALL,
+)
+WORD_PATTERN = re.compile(r"\b[\w'-]+\b")
+INLINE_CODE_PATTERN = re.compile(r"`([^`]+)`")
+SCRIPT_SIGNAL_PATTERNS = {
+    "structured-parsing": re.compile(
+        r"\b(json|ya?ml|toml|csv|xml|jq|parse|deserialize|loads?)\b",
+        re.IGNORECASE,
+    ),
+    "normalization-or-transformation": re.compile(
+        r"\b(normalize|canonicali[sz]e|transform|convert|sort|deduplicat)\w*\b",
+        re.IGNORECASE,
+    ),
+    "validation-or-schema": re.compile(
+        r"\b(validate|validation|schema|assert|lint|check)\w*\b",
+        re.IGNORECASE,
+    ),
+    "hashing": re.compile(
+        r"\b(sha(?:1|224|256|384|512)?|hash|digest|checksum)\w*\b",
+        re.IGNORECASE,
+    ),
+    "path-resolution-or-inventory": re.compile(
+        r"\b(realpath|resolve|glob|find|inventory|manifest|pathlib|Path)\b",
+        re.IGNORECASE,
+    ),
+}
+
+
+class ReviewError(Exception):
+    """Expected invalid-input or unsafe-boundary failure."""
+
+
+@dataclass(frozen=True)
+class RegistryData:
+    families: dict[str, str]
+    family_order: tuple[str, ...]
+    platforms: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class PackageContext:
+    root: Path
+    git_root: Path | None
+    name: str | None
+    version: str | None
+    manifest: dict[str, Any] | None
+    registry: RegistryData
+    remote: str | None
+    owner_kind: str
+    allowed_template_root: Path | None
+
+
+@dataclass(frozen=True)
+class ResolvedSkill:
+    observed: Path
+    canonical: Path
+    context: PackageContext
+    source_role: str
+    drift: str
+    mapping_evidence: str
+
+
+def _read_regular_text(path: Path) -> str:
+    if path.is_symlink() or not path.is_file():
+        raise ReviewError(f"unsafe or missing regular file: {path}")
+    try:
+        size = path.stat().st_size
+        if size > MAX_TEXT_BYTES:
+            raise ReviewError(
+                f"refusing text file larger than {MAX_TEXT_BYTES} bytes: {path}"
+            )
+        return path.read_text(encoding="utf-8", errors="strict")
+    except (OSError, UnicodeError) as error:
+        raise ReviewError(f"cannot read UTF-8 file {path}: {error}") from None
+
+
+def _read_json_object(path: Path) -> dict[str, Any] | None:
+    if path.is_symlink() or not path.is_file():
+        return None
+    try:
+        value = json.loads(path.read_text(encoding="utf-8", errors="strict"))
+    except (OSError, UnicodeError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
+
+def _sha256(path: Path) -> str:
+    try:
+        content = path.read_bytes()
+    except OSError as error:
+        raise ReviewError(f"cannot hash {path}: {error}") from None
+    return "sha256:" + hashlib.sha256(content).hexdigest()
+
+
+def _run_git(path: Path, *args: str) -> str | None:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(path), *args],
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=GIT_TIMEOUT_SECONDS,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    if result.returncode != 0:
+        return None
+    value = result.stdout.strip()
+    return value or None
+
+
+def _git_root(path: Path) -> Path | None:
+    start = path if path.is_dir() else path.parent
+    value = _run_git(start, "rev-parse", "--show-toplevel")
+    return Path(value).resolve() if value else None
+
+
+def _normalized_remote(remote: str | None) -> str | None:
+    if not remote:
+        return None
+    value = remote.strip().removesuffix(".git")
+    if value.startswith("git@") and ":" in value:
+        host, path = value[4:].split(":", 1)
+        value = f"{host}/{path}"
+    value = re.sub(r"^[a-z]+://", "", value, flags=re.IGNORECASE)
+    value = value.removeprefix("git@")
+    return value.casefold().strip("/")
+
+
+def _is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+    except ValueError:
+        return False
+    return True
+
+
+def _assignment(tree: ast.Module, name: str) -> ast.AST | None:
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            if any(isinstance(target, ast.Name) and target.id == name for target in node.targets):
+                return node.value
+        elif isinstance(node, ast.AnnAssign):
+            if isinstance(node.target, ast.Name) and node.target.id == name:
+                return node.value
+    return None
+
+
+def _string_value(node: ast.AST | None) -> str | None:
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    return None
+
+
+def _call_value(call: ast.Call, name: str, position: int) -> str | None:
+    for keyword in call.keywords:
+        if keyword.arg == name:
+            return _string_value(keyword.value)
+    if len(call.args) > position:
+        return _string_value(call.args[position])
+    return None
+
+
+def _parse_registry(path: Path) -> RegistryData:
+    if not path.is_file() or path.is_symlink():
+        return RegistryData({}, (), ())
+    try:
+        tree = ast.parse(_read_regular_text(path), filename=str(path))
+    except SyntaxError:
+        return RegistryData({}, (), ())
+
+    family_order: list[str] = []
+    labels = _assignment(tree, "FAMILY_LABELS")
+    if isinstance(labels, ast.Dict):
+        family_order = [
+            value
+            for key in labels.keys
+            if (value := _string_value(key)) is not None
+        ]
+
+    families: dict[str, str] = {}
+    for assignment_name, constructor, family_position in (
+        ("SKILLS", "SkillInfo", 1),
+        ("COMMAND_REGISTRY", "CommandInfo", 2),
+    ):
+        value = _assignment(tree, assignment_name)
+        if not isinstance(value, (ast.Tuple, ast.List)):
+            continue
+        for entry in value.elts:
+            if not isinstance(entry, ast.Call):
+                continue
+            function = entry.func
+            function_name = function.id if isinstance(function, ast.Name) else None
+            if function_name != constructor:
+                continue
+            skill_name = _call_value(entry, "name", 0)
+            family = _call_value(entry, "family", family_position)
+            if skill_name and family:
+                families[skill_name] = family
+
+    platforms: list[str] = []
+    registry = _assignment(tree, "PLATFORM_REGISTRY")
+    if isinstance(registry, ast.Dict):
+        platforms = [
+            value
+            for key in registry.keys
+            if (value := _string_value(key)) is not None
+        ]
+    return RegistryData(families, tuple(family_order), tuple(sorted(platforms)))
+
+
+def _package_context(root: Path) -> PackageContext:
+    root = root.resolve()
+    git_root = _git_root(root)
+    package_root = git_root or root
+    manifest = _read_json_object(package_root / "manifest.json")
+    name_value = manifest.get("name") if manifest else None
+    version_value = manifest.get("version") if manifest else None
+    name = name_value if isinstance(name_value, str) else None
+    version = version_value if isinstance(version_value, str) else None
+    registry = _parse_registry(package_root / "installer" / "registry.py")
+    remote = _run_git(package_root, "config", "--get", "remote.origin.url")
+    normalized = _normalized_remote(remote)
+
+    owner_kind = "unresolved"
+    expected = FIRST_PARTY_REMOTES.get(name or "")
+    if expected:
+        if normalized == expected:
+            owner_kind = (
+                "se-upstream" if name == "se-ai-command-pack" else "sd-upstream"
+            )
+    elif git_root is not None:
+        owner_kind = "repo-local"
+
+    allowed: Path | None = None
+    if name == "se-ai-command-pack":
+        allowed = package_root / "templates" / "skills"
+    elif name == "sd-ai-command-pack":
+        allowed = package_root / "templates"
+
+    return PackageContext(
+        root=package_root,
+        git_root=git_root,
+        name=name,
+        version=version,
+        manifest=manifest,
+        registry=registry,
+        remote=remote,
+        owner_kind=owner_kind,
+        allowed_template_root=allowed.resolve() if allowed else None,
+    )
+
+
+def _validate_bounded_root(root: Path) -> Path:
+    resolved = root.expanduser().resolve()
+    filesystem_root = Path(resolved.anchor).resolve()
+    if resolved in {filesystem_root, Path.home().resolve()}:
+        raise ReviewError(
+            f"refusing unbounded filesystem or home-directory discovery: {resolved}"
+        )
+    return resolved
+
+
+def _walk_skill_files(root: Path) -> list[Path]:
+    found: list[Path] = []
+    for current, directories, files in os.walk(root, followlinks=False):
+        directories[:] = sorted(
+            name
+            for name in directories
+            if name not in IGNORED_DIRECTORIES
+            and not (Path(current) / name).is_symlink()
+        )
+        if "SKILL.md" in files:
+            found.append((Path(current) / "SKILL.md").resolve())
+        if len(found) > 1000:
+            raise ReviewError(f"skill discovery exceeded 1000 files under {root}")
+    return sorted(found)
+
+
+def _discover(context: PackageContext) -> list[Path]:
+    if context.name == "se-ai-command-pack":
+        base = context.root / "templates" / "skills"
+        return sorted(
+            path.resolve()
+            for path in base.glob("*/SKILL.md")
+            if path.parent.name != "_shared" and not path.is_symlink()
+        )
+    if context.name == "sd-ai-command-pack":
+        base = context.root / "templates" / ".agents" / "skills"
+        return sorted(
+            path.resolve()
+            for path in base.glob("*/SKILL.md")
+            if not path.is_symlink()
+        )
+    return _walk_skill_files(context.root)
+
+
+def _frontmatter(text: str, label: str) -> tuple[dict[str, str], str, tuple[str, ...]]:
+    if not text.startswith("---\n"):
+        raise ReviewError(f"{label}: missing frontmatter opening")
+    end = text.find("\n---\n", 4)
+    if end == -1:
+        raise ReviewError(f"{label}: missing frontmatter closing")
+    raw = text[4 : end + 1]
+    body = text[end + 5 :]
+    values: dict[str, str] = {}
+    keys: list[str] = []
+    lines = raw.splitlines()
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        if not line or line[0].isspace() or ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        key = key.strip()
+        value = value.strip()
+        keys.append(key)
+        if value in {"|", ">", "|-", ">-"}:
+            continuation: list[str] = []
+            while index < len(lines) and (
+                not lines[index] or lines[index][0].isspace()
+            ):
+                continuation.append(lines[index].strip())
+                index += 1
+            values[key] = " ".join(part for part in continuation if part)
+            continue
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            try:
+                parsed = ast.literal_eval(value)
+            except (SyntaxError, ValueError):
+                parsed = value[1:-1]
+            values[key] = str(parsed)
+        else:
+            values[key] = value
+    return values, body, tuple(keys)
+
+
+def _candidate_path(
+    value: str,
+    root: Path,
+    *,
+    enforce_root: bool,
+) -> Path | None:
+    supplied = Path(value).expanduser()
+    candidates = [supplied] if supplied.is_absolute() else [root / supplied]
+    for candidate in candidates:
+        if not candidate.exists():
+            continue
+        resolved = candidate.resolve()
+        if enforce_root and not _is_relative_to(resolved, root):
+            raise ReviewError(f"skill path escapes the bounded root: {value}")
+        if candidate.is_symlink():
+            raise ReviewError(f"skill path crosses a symlink boundary: {candidate}")
+        if candidate.is_dir():
+            candidate = candidate / "SKILL.md"
+        if candidate.name != "SKILL.md":
+            raise ReviewError(f"skill path must name a skill directory or SKILL.md: {value}")
+        return candidate.absolute()
+    return None
+
+
+def _manifest_rows(context: PackageContext) -> list[dict[str, Any]]:
+    rows = context.manifest.get("files", []) if context.manifest else []
+    return [row for row in rows if isinstance(row, dict)] if isinstance(rows, list) else []
+
+
+def _installed_mapping(observed: Path) -> tuple[Path, PackageContext, str] | None:
+    for base in (observed.parent, *observed.parents):
+        for receipt_name in RECEIPT_NAMES:
+            receipt_path = base / receipt_name
+            receipt = _read_json_object(receipt_path)
+            if receipt is None:
+                continue
+            source_value = receipt.get("sourceRoot")
+            if not isinstance(source_value, str) or not source_value.strip():
+                continue
+            supplied_source_root = Path(source_value).expanduser()
+            if supplied_source_root.is_symlink() or not supplied_source_root.is_dir():
+                continue
+            source_root = supplied_source_root.resolve()
+            context = _package_context(source_root)
+            if context.name not in FIRST_PARTY_REMOTES:
+                continue
+            try:
+                target = observed.relative_to(base).as_posix()
+            except ValueError:
+                continue
+            for row in _manifest_rows(context):
+                if row.get("target") != target:
+                    continue
+                source = row.get("source")
+                if not isinstance(source, str):
+                    continue
+                source_path = Path(source)
+                if source_path.is_absolute() or ".." in source_path.parts:
+                    continue
+                canonical = (context.root / source).resolve()
+                if not _is_relative_to(canonical, context.root):
+                    continue
+                allowed = context.allowed_template_root
+                if allowed is not None and not _is_relative_to(canonical, allowed):
+                    continue
+                if canonical.name != "SKILL.md" or not canonical.is_file():
+                    continue
+                return canonical, context, receipt_path.as_posix()
+    return None
+
+
+def _role_for(canonical: Path, observed: Path, context: PackageContext) -> str:
+    if observed.resolve() != canonical.resolve():
+        return "installed-copy"
+    allowed = context.allowed_template_root
+    if allowed is not None and not _is_relative_to(canonical, allowed):
+        return "local-override"
+    relative = canonical.relative_to(context.root).as_posix()
+    if context.name == "sd-ai-command-pack" and relative.startswith(
+        ("templates/.claude/", "templates/.gemini/", "templates/.github/")
+    ):
+        return "generated-template-adapter"
+    return "authored-template"
+
+
+def _resolve_path(
+    path: Path, context_hint: PackageContext | None = None
+) -> ResolvedSkill:
+    observed = path.absolute()
+    if observed.is_symlink() or any(parent.is_symlink() for parent in observed.parents):
+        raise ReviewError(f"skill path crosses a symlink boundary: {observed}")
+    mapping = _installed_mapping(observed)
+    if mapping:
+        canonical, context, evidence = mapping
+        drift = "canonical-match" if _sha256(observed) == _sha256(canonical) else "local-override"
+        return ResolvedSkill(
+            observed,
+            canonical,
+            context,
+            "installed-copy" if drift == "canonical-match" else "local-override",
+            drift,
+            evidence,
+        )
+
+    if context_hint is not None and _is_relative_to(observed.resolve(), context_hint.root):
+        context = context_hint
+    else:
+        context = _package_context(observed.parent)
+    canonical = observed.resolve()
+    role = _role_for(canonical, observed, context)
+    return ResolvedSkill(
+        observed,
+        canonical,
+        context,
+        role,
+        "canonical-match",
+        "canonical path inside repository",
+    )
+
+
+def _select_paths(
+    context: PackageContext,
+    root: Path,
+    skill_specs: Sequence[str],
+    family: str | None,
+    scope: str | None,
+    root_was_explicit: bool,
+) -> list[ResolvedSkill]:
+    discovered = _discover(context)
+    selected_paths: list[Path] = []
+    for spec in skill_specs:
+        path = _candidate_path(spec, root, enforce_root=root_was_explicit)
+        if path is not None:
+            selected_paths.append(path)
+            continue
+        matches = [path for path in discovered if path.parent.name == spec]
+        if not matches:
+            raise ReviewError(f"unknown skill in bounded scope: {spec}")
+        if len(matches) > 1:
+            labels = ", ".join(str(path) for path in matches)
+            raise ReviewError(f"ambiguous skill {spec!r}; matches: {labels}")
+        selected_paths.append(matches[0])
+
+    if not selected_paths:
+        selected_paths = discovered
+    if not selected_paths:
+        raise ReviewError(f"no skills found under bounded root: {root}")
+
+    if not skill_specs and context.name is None and not root_was_explicit:
+        declared_roots = {path.parent.parent for path in selected_paths}
+        if len(declared_roots) > 1:
+            raise ReviewError(
+                "multiple unrelated skill roots found; pass --root or --skill explicitly"
+            )
+
+    resolved = [_resolve_path(path, context) for path in selected_paths]
+    if family:
+        resolved = [
+            item
+            for item in resolved
+            if item.context.registry.families.get(item.canonical.parent.name) == family
+        ]
+        if not resolved:
+            raise ReviewError(f"family {family!r} has no skills in the bounded scope")
+
+    if scope == "skill" and len(resolved) != 1:
+        raise ReviewError("scope=skill requires exactly one resolved skill")
+    if scope == "family" and not family:
+        raise ReviewError("scope=family requires --family")
+    return sorted(resolved, key=lambda item: (str(item.context.root), item.canonical.parent.name))
+
+
+def _paragraphs(body: str) -> list[str]:
+    result: list[str] = []
+    for paragraph in re.split(r"\n\s*\n", body):
+        normalized = " ".join(paragraph.split())
+        if len(normalized) >= 80 and not normalized.startswith("#"):
+            result.append(normalized)
+    return result
+
+
+def _declared_arguments(body: str) -> list[str]:
+    start = re.search(r"^## Arguments\s*$", body, re.MULTILINE)
+    if start is None:
+        return []
+    remainder = body[start.end() :]
+    end = re.search(r"^## [^#]", remainder, re.MULTILINE)
+    section = remainder[: end.start()] if end else remainder
+    return sorted(set(INLINE_CODE_PATTERN.findall(section)))
+
+
+def _script_candidate_signals(
+    related: Sequence[dict[str, str]],
+) -> tuple[int, list[dict[str, Any]]]:
+    block_count = 0
+    candidates: list[dict[str, Any]] = []
+    for entry in related:
+        path = Path(entry["path"])
+        if path.suffix.casefold() != ".md":
+            continue
+        text = _read_regular_text(path)
+        for match in FENCED_BLOCK_PATTERN.finditer(text):
+            block_count += 1
+            language = match.group(1).strip().casefold() or "plain"
+            content = match.group(2)
+            kinds = [
+                name
+                for name, pattern in SCRIPT_SIGNAL_PATTERNS.items()
+                if pattern.search(content)
+            ]
+            content_lines = [line for line in content.splitlines() if line.strip()]
+            if language in {"bash", "console", "fish", "powershell", "sh", "zsh"}:
+                if len(content_lines) >= 2:
+                    kinds.append("stable-command-orchestration")
+            if not kinds:
+                continue
+            candidates.append(
+                {
+                    "path": str(path),
+                    "line": text.count("\n", 0, match.start()) + 1,
+                    "language": language,
+                    "lineCount": len(content.splitlines()),
+                    "candidateKinds": sorted(set(kinds)),
+                }
+            )
+    return block_count, candidates
+
+
+def _pinned_tests(context: PackageContext, skill_name: str) -> list[str]:
+    tests = context.root / "tests"
+    if not tests.is_dir():
+        return []
+    matches: list[str] = []
+    for path in sorted(tests.glob("test*.py")):
+        try:
+            lines = path.read_text(encoding="utf-8", errors="strict").splitlines()
+        except (OSError, UnicodeError):
+            continue
+        for number, line in enumerate(lines, start=1):
+            if skill_name in line:
+                matches.append(f"{path.relative_to(context.root).as_posix()}:{number}")
+                if len(matches) == 25:
+                    return matches
+    return matches
+
+
+def _related_templates(item: ResolvedSkill) -> list[dict[str, str]]:
+    context = item.context
+    skill_name = item.canonical.parent.name
+    candidates: set[Path] = set()
+    for path in item.canonical.parent.rglob("*"):
+        if path.is_file() and not path.is_symlink():
+            candidates.add(path.resolve())
+    if context.name == "sd-ai-command-pack":
+        short = skill_name.removeprefix("sd-")
+        for relative in (
+            f"templates/.commands/{skill_name}.md",
+            f"templates/.claude/commands/sd/{short}.md",
+            f"templates/.gemini/commands/sd/{short}.toml",
+            f"templates/.github/prompts/{skill_name}.prompt.md",
+        ):
+            path = (context.root / relative).resolve()
+            if path.is_file() and not path.is_symlink():
+                candidates.add(path)
+
+    related: list[dict[str, str]] = []
+    for path in sorted(candidates):
+        relative = path.relative_to(context.root).as_posix()
+        role = "authored-template"
+        if context.name == "sd-ai-command-pack" and relative.startswith(
+            ("templates/.claude/", "templates/.gemini/", "templates/.github/")
+        ):
+            role = "generated-template-adapter"
+        related.append({"path": str(path), "role": role, "hash": _sha256(path)})
+    return related
+
+
+def _associated_rows(item: ResolvedSkill, related: Sequence[dict[str, str]]) -> list[dict[str, Any]]:
+    relative_sources = {
+        Path(entry["path"]).relative_to(item.context.root).as_posix()
+        for entry in related
+    }
+    return [
+        row
+        for row in _manifest_rows(item.context)
+        if isinstance(row.get("source"), str) and row["source"] in relative_sources
+    ]
+
+
+def _target_matrix(item: ResolvedSkill, rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
+    platforms = set(item.context.registry.platforms)
+    platforms.update(
+        row["platform"]
+        for row in rows
+        if isinstance(row.get("platform"), str)
+    )
+    result: list[dict[str, Any]] = []
+    for platform in sorted(platforms):
+        platform_rows = [row for row in rows if row.get("platform") == platform]
+        sources = sorted(
+            {
+                source
+                for row in platform_rows
+                if isinstance((source := row.get("source")), str)
+            }
+        )
+        suffixes = {Path(source).suffix for source in sources}
+        command_format = "none"
+        if ".toml" in suffixes:
+            command_format = "toml"
+        elif ".md" in suffixes and item.context.name == "sd-ai-command-pack":
+            command_format = "markdown"
+        adapted = any(
+            source.startswith(
+                ("templates/.claude/", "templates/.gemini/", "templates/.github/")
+            )
+            for source in sources
+        )
+        result.append(
+            {
+                "target": platform,
+                "content": "adapted" if adapted else ("shared" if sources else "unknown"),
+                "frontmatter": (
+                    ["name", "description"]
+                    if item.context.name == "se-ai-command-pack"
+                    else "unknown"
+                ),
+                "commandFormat": command_format,
+                "uiMetadata": "none-observed",
+                "contextIsolation": "unknown",
+                "modelRouting": "profile-only",
+                "validation": "manifest-mapped" if sources else "unknown",
+                "sources": sources,
+            }
+        )
+    return result
+
+
+def _inventory_record(item: ResolvedSkill) -> dict[str, Any]:
+    text = _read_regular_text(item.canonical)
+    metadata, body, metadata_keys = _frontmatter(text, str(item.canonical))
+    skill_name = metadata.get("name") or item.canonical.parent.name
+    family = item.context.registry.families.get(skill_name, "Uncategorized")
+    headings = [match.group(2) for match in HEADING_PATTERN.finditer(body)]
+    paragraph_counts: dict[str, int] = {}
+    for paragraph in _paragraphs(body):
+        paragraph_counts[paragraph] = paragraph_counts.get(paragraph, 0) + 1
+    duplicates = [
+        {"count": count, "preview": paragraph[:160]}
+        for paragraph, count in sorted(paragraph_counts.items())
+        if count > 1
+    ]
+    related = _related_templates(item)
+    code_block_count, script_candidates = _script_candidate_signals(related)
+    rows = _associated_rows(item, related)
+    allowed = item.context.allowed_template_root
+    changeable = allowed is None or _is_relative_to(item.canonical, allowed)
+    trellis = item.context.root / ".trellis" / "scripts" / "task.py"
+    owner_verified = item.context.owner_kind in {
+        "sd-upstream",
+        "se-upstream",
+        "repo-local",
+    }
+    references = [
+        entry["path"]
+        for entry in related
+        if "/references/" in entry["path"]
+    ]
+    scripts = [
+        entry["path"]
+        for entry in related
+        if "/scripts/" in entry["path"]
+    ]
+    links = sorted({match.group(1) for match in LINK_PATTERN.finditer(body)})
+    return {
+        "name": skill_name,
+        "family": family,
+        "description": metadata.get("description", ""),
+        "canonicalPath": str(item.canonical),
+        "canonicalHash": _sha256(item.canonical),
+        "observedPath": str(item.observed),
+        "observedHash": _sha256(item.observed),
+        "sourceRole": item.source_role,
+        "drift": item.drift,
+        "mappingEvidence": item.mapping_evidence,
+        "reviewable": changeable,
+        "changeable": changeable,
+        "metadataKeys": list(metadata_keys),
+        "headings": headings,
+        "arguments": _declared_arguments(body),
+        "siblingNames": sorted(
+            name
+            for name, declared_family in item.context.registry.families.items()
+            if declared_family == family and name != skill_name
+        ),
+        "references": references,
+        "scripts": scripts,
+        "linkedResources": links,
+        "relatedTemplates": related,
+        "stats": {
+            "lines": len(text.splitlines()),
+            "words": len(WORD_PATTERN.findall(text)),
+            "bodyParagraphs": len(_paragraphs(body)),
+        },
+        "signals": {
+            "repeatedParagraphs": duplicates,
+            "largestSectionLines": _largest_section_lines(body),
+            "codeBlockCount": code_block_count,
+            "scriptCandidateSignals": script_candidates,
+        },
+        "pinnedTests": _pinned_tests(item.context, skill_name),
+        "platformTargets": _target_matrix(item, rows),
+        "taskRouting": {
+            "ownerKind": item.context.owner_kind,
+            "ownerRepo": str(item.context.root),
+            "remote": item.context.remote,
+            "trellisEntrypoint": str(trellis) if trellis.is_file() else None,
+            "allowedTemplateRoot": str(allowed) if allowed else None,
+            "canCreateTask": owner_verified and trellis.is_file() and changeable,
+        },
+    }
+
+
+def _largest_section_lines(body: str) -> int:
+    indices = [match.start() for match in HEADING_PATTERN.finditer(body)]
+    if not indices:
+        return len(body.splitlines())
+    boundaries = [0, *indices, len(body)]
+    return max(
+        len(body[boundaries[index] : boundaries[index + 1]].splitlines())
+        for index in range(len(boundaries) - 1)
+    )
+
+
+def _cross_skill_signals(records: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    descriptions: list[dict[str, Any]] = []
+    for index, left in enumerate(records):
+        for right in records[index + 1 :]:
+            left_description = str(left.get("description", ""))
+            right_description = str(right.get("description", ""))
+            ratio = SequenceMatcher(
+                None,
+                left_description.casefold(),
+                right_description.casefold(),
+            ).ratio()
+            if ratio >= 0.65:
+                descriptions.append(
+                    {
+                        "skills": [left["name"], right["name"]],
+                        "ratio": round(ratio, 3),
+                    }
+                )
+    descriptions.sort(key=lambda item: (-item["ratio"], item["skills"]))
+    return {
+        "descriptionSimilarityCandidates": descriptions,
+        "unorderedPairsCompared": len(records) * (len(records) - 1) // 2,
+        "warning": "Candidate signals are not findings; verify semantics and evidence.",
+    }
+
+
+def _repository_records(items: Sequence[ResolvedSkill]) -> list[dict[str, Any]]:
+    contexts: dict[str, PackageContext] = {}
+    for item in items:
+        contexts[str(item.context.root)] = item.context
+    return [
+        {
+            "root": str(context.root),
+            "gitRoot": str(context.git_root) if context.git_root else None,
+            "package": context.name,
+            "version": context.version,
+            "remote": context.remote,
+            "ownerKind": context.owner_kind,
+            "familyOrder": list(context.registry.family_order),
+            "declaredPlatforms": list(context.registry.platforms),
+            "allowedTemplateRoot": (
+                str(context.allowed_template_root)
+                if context.allowed_template_root
+                else None
+            ),
+        }
+        for context in sorted(contexts.values(), key=lambda value: str(value.root))
+    ]
+
+
+def build_inventory(
+    root: Path,
+    skill_specs: Sequence[str],
+    family: str | None,
+    scope: str | None,
+    *,
+    root_was_explicit: bool,
+) -> dict[str, Any]:
+    root = _validate_bounded_root(root)
+    context = _package_context(root)
+    items = _select_paths(
+        context,
+        root,
+        skill_specs,
+        family,
+        scope,
+        root_was_explicit,
+    )
+    records = [_inventory_record(item) for item in items]
+    payload: dict[str, Any] = {
+        "schemaVersion": SCHEMA_VERSION,
+        "scope": scope or ("skill" if len(records) == 1 else "repo"),
+        "selector": {"skills": list(skill_specs), "family": family, "root": str(root)},
+        "repositories": _repository_records(items),
+        "skills": records,
+        "candidateSignals": _cross_skill_signals(records),
+        "coverage": {
+            "selectedSkills": len(records),
+            "readOnly": True,
+            "semanticFindingsProduced": False,
+            "limits": [
+                "Metadata parsing is intentionally limited to top-level scalar fields.",
+                "Host capabilities marked unknown require current host verification.",
+                "Similarity and repetition are candidate signals, not defects.",
+            ],
+        },
+    }
+    canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+    payload["snapshotId"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+    return payload
+
+
+def _parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description=__doc__)
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    inventory = subparsers.add_parser("inventory", help="inventory a bounded skill scope")
+    inventory.add_argument("--root", type=Path)
+    inventory.add_argument("--skill", action="append", default=[])
+    inventory.add_argument("--family")
+    inventory.add_argument(
+        "--scope",
+        choices=("skill", "family", "repo", "package", "all"),
+    )
+    inventory.add_argument("--pretty", action="store_true")
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    parser = _parser()
+    args = parser.parse_args(argv)
+    root_was_explicit = args.root is not None
+    root = (args.root or Path.cwd()).expanduser().resolve()
+    if not root.exists():
+        parser.error(f"bounded root does not exist: {root}")
+    try:
+        payload = build_inventory(
+            root,
+            args.skill,
+            args.family,
+            args.scope,
+            root_was_explicit=root_was_explicit,
+        )
+    except ReviewError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 2
+    indent = 2 if args.pretty else None
+    print(json.dumps(payload, indent=indent, sort_keys=bool(indent)))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

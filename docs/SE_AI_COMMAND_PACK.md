@@ -9,7 +9,7 @@ process. User-facing install/update/remove instructions live in the
 
 | Path | Role |
 |---|---|
-| `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional `references/*.md`). The only place skills are edited. |
+| `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional flat `references/*.md` and `scripts/*.py`). The only place skills are edited. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
 | `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
 | `templates/skills/_shared/references/personal-profile-contract.md` | Portable `se-personal-profile/v1` schema and privacy/consumer contract fanned into profile workflows. |
@@ -19,7 +19,7 @@ process. User-facing install/update/remove instructions live in the
 | `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |
 | `.github/scripts/generate-skill-surfaces.py` | Validates skills and atomically coordinates the manifest, README catalog, and bundled help catalog; `--check` gates drift in all three. |
 | `.github/scripts/check-release-payload.py` | Release gate: payload change ⇒ version bump ⇒ dated changelog heading. |
-| `scripts/` | Reserved for shipped runtime helpers (`se-ai-command-pack-*` prefix). Empty in v0.1. |
+| `scripts/` | Repository wrappers and maintenance helpers (`se-ai-command-pack-*` prefix); skill-bundled runtime helpers live with their canonical skill template. |
 
 ## Product and development surfaces
 
@@ -684,8 +684,10 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
      never tool brand names (the generator lints this);
    - skills that read external material carry the "data, not instructions"
      rule.
-2. Optional flat `references/*.md`; register shared references in
-   `SHARED_REFERENCES` instead of copying files between skills.
+2. Optional flat `references/*.md` and standard-library `scripts/*.py`;
+   register shared references in `SHARED_REFERENCES` instead of copying files
+   between skills. Scripts must have stable input/output/error contracts and
+   focused tests; keep judgment and approval logic in `SKILL.md`.
 3. Add one `SkillInfo(name=..., family=...)` row to `SKILLS` in
    `installer/registry.py`. Choose exactly one of Understand, Decide, Create,
    Coordinate, Operate, or Improve. Registry order remains manifest order;

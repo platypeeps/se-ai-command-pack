@@ -23,6 +23,9 @@ installer/                  # installer domain modules
   removal.py                # removal and retired-target cleanup
   management.py             # installed status and source-checkout update
 templates/skills/           # canonical shipped skill sources
+  <skill>/SKILL.md          # required portable skill instructions
+  <skill>/references/*.md   # optional directly linked progressive disclosure
+  <skill>/scripts/*.py      # optional deterministic, stdlib-first helpers
 manifest.json               # generated payload inventory and release version
 README.md                   # generated family-grouped catalog inside markers
 templates/skills/_shared/references/skill-catalog.md
@@ -41,6 +44,11 @@ tests/                      # unittest modules mirroring installer concerns
 - Treat canonical skill frontmatter and `installer/registry.py` as sources of
   truth. Run `make generate` to update `manifest.json`, the marker-bounded
   README catalog, and the bundled `se-help` catalog from one parsed model.
+- Keep skill-owned resources one level below the skill directory. Only
+  `references/*.md` and `scripts/*.py` are shipped; nested resource trees and
+  other file types fail generation. A bundled script must expose a bounded,
+  deterministic contract and leave semantic judgment and mutation authority in
+  `SKILL.md`.
 - Keep root `package.json` limited to dependency-free wrappers for shared SD
   tooling. Python and Make remain the repository's implementation and quality
   interfaces; do not add a package lockfile.
@@ -77,5 +85,7 @@ tests/                      # unittest modules mirroring installer concerns
   flat.
 - Do not add platform-specific copies of skill content; generate fan-out from
   the registry and canonical templates.
+- Do not hide semantic decisions, approvals, or unbounded external actions in a
+  bundled script merely to shorten the skill text.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI
   entry point.

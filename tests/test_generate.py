@@ -147,6 +147,23 @@ class RealRepoGeneratorTest(unittest.TestCase):
                         targets,
                     )
 
+    def test_review_skill_bundled_resources_fan_to_every_platform(self) -> None:
+        expected = {
+            "SKILL.md",
+            "references/report-schema.md",
+            "references/review-rubric.md",
+            "references/runtime-routing.md",
+            "scripts/skill_review.py",
+        }
+        self.assertEqual(set(gen.skill_payload_files("se-review-skills")), expected)
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        rows = manifest["files"]
+        for platform, info in gen.PLATFORM_REGISTRY.items():
+            for relative in expected:
+                target = f"{info.skills_dir}/se-review-skills/{relative}"
+                matches = [row for row in rows if row["target"] == target]
+                self.assertEqual(len(matches), 1, (platform, target))
+
     def test_help_catalog_reference_fans_into_help_only(self) -> None:
         source = "_shared/references/skill-catalog.md"
         self.assertEqual(gen.SHARED_REFERENCES[source], ("se-help",))
@@ -973,6 +990,29 @@ class SandboxGeneratorTest(TempDirTestCase):
             "x", encoding="utf-8"
         )
         self.assert_validation_error("unexpected file")
+
+    def test_skill_script_is_validated_and_shipped(self) -> None:
+        self.write_skill()
+        scripts = self.skills_root / "se-test" / "scripts"
+        scripts.mkdir()
+        (scripts / "inventory.py").write_text("print('ok')\n", encoding="utf-8")
+        gen.validate_skills()
+        self.assertEqual(
+            gen.skill_payload_files("se-test"),
+            ["SKILL.md", "scripts/inventory.py"],
+        )
+        rows = gen.build_rows()
+        for platform, info in gen.PLATFORM_REGISTRY.items():
+            target = f"{info.skills_dir}/se-test/scripts/inventory.py"
+            matches = [row for row in rows if row["target"] == target]
+            self.assertEqual(len(matches), 1, (platform, target))
+
+    def test_nested_or_wrong_resource_file_is_rejected(self) -> None:
+        self.write_skill()
+        nested = self.skills_root / "se-test" / "scripts" / "nested"
+        nested.mkdir(parents=True)
+        (nested / "inventory.py").write_text("print('no')\n", encoding="utf-8")
+        self.assert_validation_error("unexpected directory")
 
     def test_missing_shared_reference(self) -> None:
         self.write_skill()

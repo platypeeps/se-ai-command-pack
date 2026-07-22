@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.40.0 - 2026-07-21
+
+- Add `se-review-skills`, an Improve workflow for evidence-backed review of
+  bounded skills and skill packages with stable individual, skill, family,
+  repository, and complete-scope selectors.
+- Preserve operative capabilities while finding defects, overlap, missing
+  behavior, brevity opportunities, metadata and target-portability issues,
+  deterministic script candidates, and evaluation gaps.
+- Ship a standard-library inventory helper with provenance-aware canonical
+  source resolution, strict SD/SE template boundaries, target capability
+  matrices, stable snapshots, bounded subagent/model recommendations, and safe
+  upstream or repo-local Trellis task routing.
+
 ## 0.39.0 - 2026-07-21
 
 - Add `se-runbook`, a read-only Operate workflow for source-traceable,
