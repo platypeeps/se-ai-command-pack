@@ -26,8 +26,8 @@
 1. Keep the parent in planning; it is a coordination envelope, not an
    implementation target.
 2. Under an unfiltered autonomous backlog run, activate the highest-ranked
-   implementation-ready child. `se-socratic-review`, the latest deterministic
-   selection, is shipped and archived; choose its successor from live state.
+   implementation-ready child from live state. `se-socratic-review`, the latest
+   deterministic selection, is shipped and archived and must not be reactivated.
 3. Preserve each selected child's nearest-neighbor trigger boundaries before
    editing its canonical skill.
 4. After each selected child ships, update the parent completion and planning
