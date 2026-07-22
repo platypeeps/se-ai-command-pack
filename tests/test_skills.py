@@ -72,6 +72,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-publish",
     "se-red-team",
     "se-retro",
+    "se-weekly-review",
     "se-runbook",
     "se-review-skills",
     "se-socratic-review",
@@ -204,6 +205,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-publish",
                 "se-red-team",
                 "se-retro",
+                "se-weekly-review",
                 "se-runbook",
                 "se-review-skills",
                 "se-socratic-review",
@@ -260,6 +262,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-publish": "create",
                 "se-red-team": "improve",
                 "se-retro": "improve",
+                "se-weekly-review": "improve",
                 "se-runbook": "operate",
                 "se-review-skills": "improve",
                 "se-socratic-review": "understand",
@@ -2704,6 +2707,84 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)
+
+    def test_weekly_review_resolves_private_context_before_sources(self) -> None:
+        text = normalized("se-weekly-review").lower()
+        for phrase in (
+            "before source reads",
+            "`worklog_profile=off|<locator>`",
+            "never search private stores or guess a locator",
+            "`profile=auto|off|<locator>`",
+            "default `auto`",
+            "default `private-only`",
+            "use a broader scope only when the current request explicitly names it",
+            "`off` without an authorized source inventory",
+            "weekly evidence never updates, confirms, or extends the profile",
+            "never reproduce private paths, tags, people",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_weekly_review_pins_timezone_coverage_and_deduplication(self) -> None:
+        text = normalized("se-weekly-review").lower()
+        for phrase in (
+            "[local start 00:00, next local start 00:00)",
+            "using local calendar boundaries rather than a fixed 168-hour duration",
+            "convert an explicit end date to the next local midnight",
+            "the earlier of invocation time and the closing boundary",
+            "future scheduled records are not completed activity",
+            "an event at the closing boundary belongs to the next week",
+            "missing or ambiguous timezone records unresolved",
+            "a missing source is not evidence of no activity",
+            "connector failure is not an empty week",
+            "shared stable origin id or canonical locator",
+            "similar wording, titles, participants, or times alone are insufficient",
+            "counting one event more than once",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_weekly_review_separates_synthesis_and_limits_patterns(self) -> None:
+        text = normalized("se-weekly-review").lower()
+        for phrase in (
+            "work opened and completed within the week is not carryover",
+            "do not convert activity volume into outcomes, value, or performance",
+            "include energy only from direct self-report",
+            "workflow records never establish energy",
+            "friction from direct self-report or a concrete documented workflow obstacle",
+            "energy from direct self-report; friction from direct self-report or documented workflow obstacles",
+            "never infer mood, health, motivation, productivity",
+            "at most three next-week focus items",
+            "sparse evidence",
+            "weekly review is not employee-performance scoring",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_weekly_review_routes_status_retro_and_capture_without_acting(self) -> None:
+        raw = skill_text("se-weekly-review")
+        self.assertIn("references/source-standards.md", raw)
+        self.assertIn("references/personal-profile-contract.md", raw)
+        for sibling in (
+            "`se-status`",
+            "`se-retro`",
+            "`se-capture`",
+            "`se-knowledge-capture`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Review contract and coverage**",
+            "**Week summary**",
+            "**Outcomes**",
+            "**Meaningful activity**",
+            "**Decisions and lessons**",
+            "**Carryover**",
+            "**Energy and friction patterns**",
+            "**Next-week focus**",
+            "**Capture handoff and execution boundary**",
+        ):
+            self.assertIn(field, raw)
+        text = normalized("se-weekly-review").lower()
+        self.assertIn("timezone, evidence cutoff, profile modes", text)
+        self.assertIn("return destination-neutral markdown", text)
+        self.assertIn("all marked `not run`", text)
 
     def test_runbook_requires_complete_step_and_mutation_contracts(self) -> None:
         text = normalized("se-runbook").lower()
