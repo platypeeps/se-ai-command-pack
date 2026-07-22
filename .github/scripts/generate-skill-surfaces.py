@@ -210,6 +210,13 @@ def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
         )
 
     for path in sorted(skill_dir.rglob("*")):
+        relative = path.relative_to(skill_dir).as_posix()
+        if path.is_symlink():
+            errors.append(
+                f"{label}: unexpected symlink {relative} "
+                "(skill payload files and directories must be regular)"
+            )
+            continue
         if path.is_dir():
             relative_dir = path.relative_to(skill_dir)
             if (
@@ -222,7 +229,6 @@ def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
                     "are shipped in this pack version)"
                 )
             continue
-        relative = path.relative_to(skill_dir).as_posix()
         if relative == "SKILL.md":
             continue
         parts = Path(relative).parts

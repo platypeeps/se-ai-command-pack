@@ -189,11 +189,24 @@ class SkillReviewInventoryTest(TempDirTestCase):
             payload["candidateSignals"]["unorderedPairsCompared"],
             skill_count * (skill_count - 1) // 2,
         )
+        self.assertEqual(payload["candidateSignals"]["unorderedPairsSkipped"], 0)
         reviewer = next(
             item for item in payload["skills"] if item["name"] == "se-review-skills"
         )
         self.assertIn("mode=review|task|apply", reviewer["arguments"])
         self.assertIn("se-red-team", reviewer["siblingNames"])
+
+    def test_similarity_analysis_skips_scopes_above_the_pair_limit(self) -> None:
+        records = [
+            {"name": f"se-{index}", "description": f"Use when testing {index}."}
+            for index in range(3)
+        ]
+        with mock.patch.object(review, "MAX_DESCRIPTION_SIMILARITY_PAIRS", 2):
+            signals = review._cross_skill_signals(records)
+        self.assertEqual(signals["descriptionSimilarityCandidates"], [])
+        self.assertEqual(signals["unorderedPairsTotal"], 3)
+        self.assertEqual(signals["unorderedPairsCompared"], 0)
+        self.assertEqual(signals["unorderedPairsSkipped"], 3)
 
     def test_se_inventory_is_stable_and_template_bounded(self) -> None:
         root, _ = self.write_se_pack()

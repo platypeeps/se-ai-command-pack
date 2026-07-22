@@ -23,6 +23,7 @@ from typing import Any, Sequence
 SCHEMA_VERSION = 1
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
+MAX_DESCRIPTION_SIMILARITY_PAIRS = 10_000
 FIRST_PARTY_REMOTES = {
     "se-ai-command-pack": "github.com/platypeeps/se-ai-command-pack",
     "sd-ai-command-pack": "github.com/platypeeps/sd-ai-command-pack",
@@ -822,6 +823,21 @@ def _largest_section_lines(body: str) -> int:
 
 
 def _cross_skill_signals(records: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    total_pairs = len(records) * (len(records) - 1) // 2
+    if total_pairs > MAX_DESCRIPTION_SIMILARITY_PAIRS:
+        return {
+            "descriptionSimilarityCandidates": [],
+            "descriptionSimilarityPairLimit": MAX_DESCRIPTION_SIMILARITY_PAIRS,
+            "unorderedPairsTotal": total_pairs,
+            "unorderedPairsCompared": 0,
+            "unorderedPairsSkipped": total_pairs,
+            "warning": (
+                "Description similarity was skipped because the pair count "
+                "exceeded the deterministic analysis limit; candidate signals "
+                "are not findings."
+            ),
+        }
+
     descriptions: list[dict[str, Any]] = []
     for index, left in enumerate(records):
         for right in records[index + 1 :]:
@@ -842,7 +858,10 @@ def _cross_skill_signals(records: Sequence[dict[str, Any]]) -> dict[str, Any]:
     descriptions.sort(key=lambda item: (-item["ratio"], item["skills"]))
     return {
         "descriptionSimilarityCandidates": descriptions,
-        "unorderedPairsCompared": len(records) * (len(records) - 1) // 2,
+        "descriptionSimilarityPairLimit": MAX_DESCRIPTION_SIMILARITY_PAIRS,
+        "unorderedPairsTotal": total_pairs,
+        "unorderedPairsCompared": total_pairs,
+        "unorderedPairsSkipped": 0,
         "warning": "Candidate signals are not findings; verify semantics and evidence.",
     }
 

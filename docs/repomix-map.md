@@ -418,9 +418,9 @@ last_index = index
 ⋮----
 banned = sorted({match.group(0) for match in BANNED_PHRASE_PATTERN.finditer(text)})
 ⋮----
-relative_dir = path.relative_to(skill_dir)
-⋮----
 relative = path.relative_to(skill_dir).as_posix()
+⋮----
+relative_dir = path.relative_to(skill_dir)
 ⋮----
 parts = Path(relative).parts
 expected_suffix = (
@@ -10041,6 +10041,7 @@ tasks, or edits. Semantic judgment remains with the calling skill.
 SCHEMA_VERSION = 1
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
+MAX_DESCRIPTION_SIMILARITY_PAIRS = 10_000
 FIRST_PARTY_REMOTES = {
 IGNORED_DIRECTORIES = frozenset(
 RECEIPT_NAMES = (
@@ -10377,6 +10378,8 @@ indices = [match.start() for match in HEADING_PATTERN.finditer(body)]
 boundaries = [0, *indices, len(body)]
 ⋮----
 def _cross_skill_signals(records: Sequence[dict[str, Any]]) -> dict[str, Any]
+⋮----
+total_pairs = len(records) * (len(records) - 1) // 2
 ⋮----
 descriptions: list[dict[str, Any]] = []
 ⋮----
@@ -11548,6 +11551,10 @@ rows = gen.build_rows()
 ⋮----
 target = f"{info.skills_dir}/se-test/scripts/inventory.py"
 ⋮----
+def test_symlinked_skill_resource_is_rejected(self) -> None
+⋮----
+target = self.base / "outside.py"
+⋮----
 def test_nested_or_wrong_resource_file_is_rejected(self) -> None
 ⋮----
 nested = self.skills_root / "se-test" / "scripts" / "nested"
@@ -12309,6 +12316,12 @@ payload = review.build_inventory(
 skill_count = len(SKILL_NAMES)
 ⋮----
 reviewer = next(
+⋮----
+def test_similarity_analysis_skips_scopes_above_the_pair_limit(self) -> None
+⋮----
+records = [
+⋮----
+signals = review._cross_skill_signals(records)
 ⋮----
 def test_se_inventory_is_stable_and_template_bounded(self) -> None
 ⋮----

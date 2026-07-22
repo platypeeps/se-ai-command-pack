@@ -1007,6 +1007,15 @@ class SandboxGeneratorTest(TempDirTestCase):
             matches = [row for row in rows if row["target"] == target]
             self.assertEqual(len(matches), 1, (platform, target))
 
+    def test_symlinked_skill_resource_is_rejected(self) -> None:
+        self.write_skill()
+        scripts = self.skills_root / "se-test" / "scripts"
+        scripts.mkdir()
+        target = self.base / "outside.py"
+        target.write_text("print('outside')\n", encoding="utf-8")
+        (scripts / "inventory.py").symlink_to(target)
+        self.assert_validation_error("unexpected symlink scripts/inventory.py")
+
     def test_nested_or_wrong_resource_file_is_rejected(self) -> None:
         self.write_skill()
         nested = self.skills_root / "se-test" / "scripts" / "nested"
