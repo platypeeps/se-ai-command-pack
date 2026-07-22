@@ -12927,8 +12927,8 @@ identify them before resolving profiles or reading sources.
   worklog profile. With `worklog_profile=off`, supply the authorized sources
   directly;
 - `privacy=private-only|internal|outward-safe` — disclosure ceiling for source
-  use and output; default `private-only` unless current context establishes a
-  narrower or equally safe scope;
+  use and output; default `private-only`. Use a broader scope only when the
+  current request explicitly names it for a defined audience;
 - `audience=` — intended reader, used only within the privacy ceiling; and
 - `length=short|standard` — default `standard`; sparse evidence always permits
   a shorter result.
@@ -13031,9 +13031,9 @@ identify them before resolving profiles or reading sources.
   confidence, and transfer limits;
 - **Carryover** — work evidenced open at the cutoff, with unknown ownership,
   dates, and priority preserved;
-- **Energy and friction patterns** — direct self-report or documented workflow
-  evidence, confidence, alternatives, and explicit `none supported` when
-  appropriate;
+- **Energy and friction patterns** — energy from direct self-report; friction
+  from direct self-report or documented workflow obstacles; evidence,
+  confidence, alternatives, and explicit `none supported` when appropriate;
 - **Next-week focus** — at most three ranked, evidence-linked focus items with
   rationale, progress signal, and proposal/commitment state; and
 - **Capture handoff and execution boundary** — portable Markdown plus profile
