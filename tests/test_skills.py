@@ -98,7 +98,9 @@ def normalized(name: str) -> str:
 
 
 def normalized_resource(name: str, relative: str) -> str:
-    return " ".join((SKILLS_ROOT / name / relative).read_text("utf-8").split())
+    return " ".join(
+        (SKILLS_ROOT / name / relative).read_text(encoding="utf-8").split()
+    )
 
 
 def skill_frontmatter(name: str) -> dict:
