@@ -175,13 +175,13 @@ def _git_root(path: Path) -> Path | None:
 def _normalized_remote(remote: str | None) -> str | None:
     if not remote:
         return None
-    value = remote.strip().removesuffix(".git")
+    value = remote.strip()
     if value.startswith("git@") and ":" in value:
         host, path = value[4:].split(":", 1)
         value = f"{host}/{path}"
     value = re.sub(r"^[a-z]+://", "", value, flags=re.IGNORECASE)
     value = value.removeprefix("git@")
-    return value.casefold().strip("/")
+    return value.casefold().strip("/").removesuffix(".git")
 
 
 def _is_relative_to(path: Path, parent: Path) -> bool:
@@ -431,7 +431,7 @@ def _manifest_rows(context: PackageContext) -> list[dict[str, Any]]:
 
 
 def _installed_mapping(observed: Path) -> tuple[Path, PackageContext, str] | None:
-    for base in (observed.parent, *observed.parents):
+    for base in observed.parents:
         for receipt_name in RECEIPT_NAMES:
             receipt_path = base / receipt_name
             receipt = _read_json_object(receipt_path)

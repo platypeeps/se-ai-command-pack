@@ -10115,7 +10115,7 @@ value = _run_git(start, "rev-parse", "--show-toplevel")
 ⋮----
 def _normalized_remote(remote: str | None) -> str | None
 ⋮----
-value = remote.strip().removesuffix(".git")
+value = remote.strip()
 ⋮----
 value = f"{host}/{path}"
 value = re.sub(r"^[a-z]+://", "", value, flags=re.IGNORECASE)
@@ -12314,6 +12314,10 @@ def test_test_loader_does_not_write_into_the_skill_payload(self) -> None
 def test_git_probe_fails_closed_when_git_is_missing_or_times_out(self) -> None
 ⋮----
 failures = (
+⋮----
+def test_remote_normalization_strips_slashes_before_git_suffix(self) -> None
+⋮----
+expected = "github.com/platypeeps/se-ai-command-pack"
 ⋮----
 def write_se_pack(self) -> tuple[Path, Path]
 ⋮----

@@ -89,6 +89,16 @@ class SkillReviewInventoryTest(TempDirTestCase):
                 with mock.patch.object(review.subprocess, "run", side_effect=failure):
                     self.assertIsNone(review._run_git(self.base, "status"))
 
+    def test_remote_normalization_strips_slashes_before_git_suffix(self) -> None:
+        expected = "github.com/platypeeps/se-ai-command-pack"
+        for remote in (
+            "https://github.com/platypeeps/se-ai-command-pack.git/",
+            "git@github.com:platypeeps/se-ai-command-pack.git/",
+            "HTTPS://GITHUB.COM/PLATYPEEPS/SE-AI-COMMAND-PACK.GIT///",
+        ):
+            with self.subTest(remote=remote):
+                self.assertEqual(review._normalized_remote(remote), expected)
+
     def write_se_pack(self) -> tuple[Path, Path]:
         root = self.base / "se-pack"
         skill = root / "templates" / "skills" / "se-test" / "SKILL.md"
