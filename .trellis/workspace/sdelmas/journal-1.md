@@ -1866,3 +1866,43 @@ Implemented, validated, reviewed, and merged the bounded Socratic review skill a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 50: Implement se-sop
+
+**Date**: 2026-07-21
+**Task**: Implement se-sop
+**Branch**: `codex/se-sop`
+
+### Summary
+
+Added a source-traceable SOP workflow for routine repeatable work, integrated it across generated package surfaces, closed fresh-context and Copilot review findings, and reconciled the roadmap to 42 of 50 completed children.
+
+### Main Changes
+
+- Added the canonical read-only se-sop template with evidence states, operational step and control contracts, exception discovery, actionable escalation, document control, compliance boundaries, maintenance, and sibling routing.
+- Registered se-sop under Operate, fanned source standards into every platform, released 0.42.0, and regenerated catalogs, manifest, documentation, and the Repomix map.
+- Added focused skill and generator tests; fresh-context probes tightened conflict-state preservation, escalation actionability, recovery routing, and live incident-response boundaries.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2394fdf` | feat: add se-sop skill |
+| `aa1ed5a` | docs: refresh repository map |
+| `629e838` | chore: archive se-sop task |
+
+### Testing
+
+- [OK] 417 repository tests plus Ruff, mypy, generator drift, release payload, install audit, and Obsidian KB checks through the canonical full-check wrapper
+- [OK] skill-creator quick validation and two fresh-context forward probes
+- [OK] CI matrix and release gate on PR #64; Copilot rereview generated no new comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #64 after the final bookkeeping head passes the same CI and review gates, then continue the autonomous backlog inventory.
