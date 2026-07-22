@@ -1,0 +1,2 @@
+{"file": "tests/test_skills.py", "reason": "Add and run registry-to-example consistency coverage."}
+{"file": "tests/test_generate.py", "reason": "Verify the corrected example resource fans out to supported targets."}

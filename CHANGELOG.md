@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.52.1 - 2026-07-22
+
+- Align `se-help` Create and Improve examples with their registered bundled
+  skills and add a catalog-derived regression check for nonempty families.
+
 ## 0.52.0 - 2026-07-22
 
 - Expand `se-review-skills` to discover bounded user installation roots from

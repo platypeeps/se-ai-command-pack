@@ -600,6 +600,37 @@ class SkillSafetyPinsTest(unittest.TestCase):
         self.assertTrue(named)
         self.assertEqual(named - set(SKILL_NAMES), set())
 
+    def test_help_family_examples_match_registered_catalog(self) -> None:
+        examples = (
+            SKILLS_ROOT / "se-help" / "references" / "examples.md"
+        ).read_text(encoding="utf-8")
+        lines = examples.splitlines()
+
+        for family, label in FAMILY_LABELS.items():
+            prefix = f"- **{label}**:"
+            matching = [line for line in lines if line.startswith(prefix)]
+            self.assertEqual(len(matching), 1, f"expected one {label} example")
+
+            registered = {
+                skill.name for skill in SKILLS if skill.family == family
+            }
+            if not registered:
+                continue
+
+            example = matching[0]
+            lowered = example.lower()
+            self.assertNotIn("no bundled", lowered)
+            self.assertNotIn("empty", lowered)
+            self.assertNotIn("planned", lowered)
+            mentioned = set(re.findall(r"\$(se-[a-z0-9-]+)\b", example))
+            self.assertTrue(
+                mentioned & registered,
+                f"{label} example does not route to a registered family skill",
+            )
+
+        for boundary in ("unknown", "external", "not discoverable", "unavailable"):
+            self.assertIn(boundary, examples.lower())
+
     def test_profile_modes_arguments_and_ownership(self) -> None:
         text = normalized("se-profile")
         for mode in (

@@ -465,3 +465,43 @@ Refreshed the repository-installed SD AI command pack, published PR 85, and comp
 ### Next Steps
 
 - None - task complete
+
+
+## Session 65: Align se-help family examples
+
+**Date**: 2026-07-22
+**Task**: Align se-help family examples
+**Branch**: `codex/se-help-family-examples`
+
+### Summary
+
+Aligned Create and Improve help examples with registered skills, added catalog-derived regression coverage, refreshed generated knowledge, and completed a clean PR review cycle.
+
+### Main Changes
+
+- Routed Create and Improve examples to registered bundled skills.
+- Added a family-catalog regression test and bumped the shipped payload to 0.52.1.
+- Refreshed the repository map and removed generated task-context scaffold rows.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6f9d76e` | fix: align se-help family examples |
+| `c1a63c1` | docs: refresh repository map |
+| `a4f6881` | chore: remove task context scaffolds |
+
+### Testing
+
+- [OK] 472 tests, Ruff, mypy, generated-surface, and release checks passed.
+- [OK] Deterministic PR full-check passed with Prism and Gito disabled.
+- [OK] GitHub CI and current-head Copilot review passed with zero review threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
