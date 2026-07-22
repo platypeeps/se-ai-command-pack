@@ -323,7 +323,16 @@ Created the P1 se-review-skills harmful-instruction safety task, published PR #8
 
 ### Main Changes
 
-- Detailed change bullets were not supplied; see the summary above.
+- Added explicit `alerted`, `clean`, and `indeterminate` safety verdicts,
+  guarded-operation thresholds, hazard categories, and complete alert evidence
+  to the canonical `se-review-skills` template and references.
+- Added focused convention and behavior coverage for harmful, guarded,
+  ambiguous, clean, and no-execution cases; kept analyzer output
+  non-authoritative and side-effect free.
+- Bumped the pack to `0.51.0`, regenerated catalogs and the Repomix map, and
+  refreshed the repo-local Obsidian KB.
+- Addressed three Copilot comments across two review-fix commits and resolved
+  every review thread.
 
 ### Git Commits
 
@@ -331,6 +340,47 @@ Created the P1 se-review-skills harmful-instruction safety task, published PR #8
 |------|---------|
 | `c7e14ab` | (see git log) |
 | `5491f32` | (see git log) |
+
+### Testing
+
+- `bash scripts/sd-ai-command-pack-review-full-check.sh` passed after each
+  review-fix head: 463 tests, Ruff, mypy, generation parity, release gate,
+  install audit, KB freshness, and Prism/Gito-disabled pack checks.
+- GitHub CI passed on macOS and Ubuntu with Python 3.10 and 3.13.
+- Copilot round 3 reviewed the final head with no new comments; direct GraphQL
+  polling confirmed zero unresolved review threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #83 when ready, then run repository housekeeping.
+
+
+## Session 62: Add harmful-instruction safety review
+
+**Date**: 2026-07-22
+**Task**: Add harmful-instruction safety review
+**Branch**: `codex/se-review-skills-harmful-instructions`
+
+### Summary
+
+Added explicit per-skill security and safety verdicts to se-review-skills, strengthened non-execution coverage, refreshed generated knowledge, and addressed all PR review comments.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3b4ce3b` | (see git log) |
+| `13f1016` | (see git log) |
+| `92b7c41` | (see git log) |
+| `12bcf35` | (see git log) |
 
 ### Testing
 

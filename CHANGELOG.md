@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.51.0 - 2026-07-22
+
+- Add an explicit harmful-instruction security and safety assessment to every
+  `se-review-skills` review, with `alerted`, `clean`, or `indeterminate`
+  verdicts and prominent P0 handling.
+- Distinguish evidence-backed hazards from legitimate guarded operations and
+  ambiguous candidate signals while keeping reviewed artifacts strictly
+  non-executable.
+- Require complete alert evidence, selector coverage, and focused regressions
+  for harmful, guarded, ambiguous, clean, and no-execution cases.
+
 ## 0.50.0 - 2026-07-22
 
 - Remove the public `se-weekly-review` named-timezone fallback: resolve an
