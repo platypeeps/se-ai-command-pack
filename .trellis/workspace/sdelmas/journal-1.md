@@ -1490,7 +1490,7 @@ Added and reviewed a read-only, outcome-based planning workflow and released it 
 
 **Date**: 2026-07-21
 **Task**: Implement se-postmortem
-**Branch**: `main`
+**Branch**: `codex/se-socratic-review`
 
 ### Summary
 
