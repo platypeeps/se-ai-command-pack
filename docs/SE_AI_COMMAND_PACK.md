@@ -13,6 +13,7 @@ process. User-facing install/update/remove instructions live in the
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
 | `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
 | `templates/skills/_shared/references/personal-profile-contract.md` | Portable `se-personal-profile/v1` schema and privacy/consumer contract fanned into profile workflows. |
+| `templates/skills/_shared/references/state-schema.md` | Portable `se-monitor-state/v1` schema fanned into compatible bounded-delta workflows. |
 | `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
@@ -240,6 +241,24 @@ deep investigation with `se-research`. Persistence, recurring schedules,
 subscriptions, notifications, webhooks, and external writes require separate
 requests and authorized capabilities; all remain `not run` in the monitor
 report.
+
+### Watchlist workflow boundary
+
+`se-watchlist` owns read-only attention triage for a bounded set of channels,
+feeds, authors, searches, playlists, podcasts, or collections since an explicit
+checkpoint. It reuses `se-monitor-state/v1`, separates baseline creation,
+ranked change, no material change, and insufficient coverage, and never treats
+an unavailable or stale source as evidence that nothing changed.
+
+Stable external IDs, conservative canonical URLs, exact supplied fingerprints,
+and original locators form the identity order; uncertain cross-posts and
+repeated topics remain unresolved until semantic evidence establishes
+continuity. Exclusions apply only when their conditions are sourced, and any
+private interest/profile signal stays out of outward-facing explanations.
+Broad catch-up remains `se-brief`, saved-backlog triage remains
+`se-bookmark-triage`, and persistence or recurrence remains `se-monitor` or
+host-owned. Capture, video-note, brief, and fact-check routes are proposed only
+and marked not run.
 
 ### Planning workflow boundary
 

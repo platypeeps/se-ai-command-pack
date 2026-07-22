@@ -81,6 +81,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-thread-digest",
     "se-tutorial",
     "se-video-notes",
+    "se-watchlist",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -212,6 +213,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-thread-digest",
                 "se-tutorial",
                 "se-video-notes",
+                "se-watchlist",
             ),
         )
         self.assertEqual(
@@ -267,6 +269,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-thread-digest": "coordinate",
                 "se-tutorial": "create",
                 "se-video-notes": "understand",
+                "se-watchlist": "operate",
             },
         )
 
@@ -2107,7 +2110,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
         raw = skill_text("se-monitor")
         self.assertIn("references/state-schema.md", raw)
         schema = (
-            SKILLS_ROOT / "se-monitor" / "references" / "state-schema.md"
+            SKILLS_ROOT / "_shared" / "references" / "state-schema.md"
         ).read_text(encoding="utf-8")
         for phrase in (
             "`se-monitor-state/v1`",
@@ -3114,6 +3117,97 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Portable Markdown artifact**",
             "**Downstream handoffs**",
             "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_watchlist_reuses_monitor_checkpoint_semantics(self) -> None:
+        text = normalized("se-watchlist").lower()
+        for phrase in (
+            "references/state-schema.md",
+            "`se-monitor-state/v1`",
+            "first-baseline mode and do not claim a delta",
+            "stable key already appears in the compared `items` set",
+            "persistence and scheduling remain owned by `se-monitor` or the host",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_watchlist_preserves_coverage_and_empty_delta_states(self) -> None:
+        text = normalized("se-watchlist").lower()
+        for phrase in (
+            "`baseline-created`, `ranked-change`, `no-material-change`, or `insufficient-coverage`",
+            "strictly after that source's effective checkpoint boundary",
+            "unknown or timezone-ambiguous publication dates",
+            "coverage failure is not `no-material-change`",
+            "never pad an empty result",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_watchlist_preserves_per_source_recovery_and_pending_items(self) -> None:
+        text = normalized("se-watchlist").lower()
+        schema = " ".join(
+            (
+                SKILLS_ROOT / "_shared" / "references" / "state-schema.md"
+            ).read_text(encoding="utf-8").lower().split()
+        )
+        for phrase in (
+            "per-source `comparisonfrom` recovery boundaries",
+            "retry checkpoint `pendingitems`",
+            "a pending key is unresolved, not seen or new",
+            "do not advance a source boundary across",
+        ):
+            self.assertIn(phrase, text)
+        for phrase in (
+            '"comparisonfrom"',
+            '"pendingitems"',
+            "recover that source from its own boundary",
+            "not in the stable compared `items` set",
+        ):
+            self.assertIn(phrase, schema)
+
+    def test_watchlist_deduplicates_conservatively(self) -> None:
+        text = normalized("se-watchlist").lower()
+        for phrase in (
+            "namespaced stable external id",
+            "conservative canonical url",
+            "exact supplied content fingerprint",
+            "never use title alone",
+            "unresolved duplicate",
+            "repeated-topic decisions require semantic evidence",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_watchlist_bounds_ranking_profile_and_exclusions(self) -> None:
+        text = normalized("se-watchlist").lower()
+        for phrase in (
+            "references/personal-profile-contract.md",
+            "confirmed context-matching",
+            "private-only profile signals may shape only output whose audience is authorized",
+            "cannot silently shape outward-facing selection",
+            "an exclusion applies only when evidence establishes its condition",
+            "do not invent relevance, novelty, urgency, duration, language, or topic equivalence",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_watchlist_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-watchlist")
+        for sibling in (
+            "`se-monitor`",
+            "`se-brief`",
+            "`se-bookmark-triage`",
+            "`se-capture`",
+            "`se-video-notes`",
+            "`se-fact-check`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Watchlist contract**",
+            "**Checkpoint and outcome**",
+            "**Source coverage**",
+            "**Ranked attention queue**",
+            "**Excluded, duplicate, and unresolved items**",
+            "**Next monitor state**",
+            "**Downstream handoffs**",
+            "**Capability status**",
         ):
             self.assertIn(field, raw)
 

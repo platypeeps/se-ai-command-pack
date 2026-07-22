@@ -3,7 +3,7 @@
   "name": "se-watchlist",
   "title": "Implement se-watchlist",
   "description": "Add a source-watchlist workflow for channels, playlists, searches, feeds, and authors that reports only material new items since a checkpoint and routes promising content onward.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

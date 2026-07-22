@@ -308,7 +308,10 @@ class RealRepoGeneratorTest(unittest.TestCase):
             )
 
     def test_monitor_installs_state_schema_and_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
+        expected_sources = {
+            "_shared/references/source-standards.md",
+            "_shared/references/state-schema.md",
+        }
         actual_sources = {
             source
             for source, consumers in gen.SHARED_REFERENCES.items()
@@ -327,6 +330,32 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 f"{info.skills_dir}/se-monitor/references/state-schema.md",
                 targets,
             )
+
+    def test_watchlist_installs_monitor_profile_and_source_references(self) -> None:
+        expected_sources = {
+            "_shared/references/personal-profile-contract.md",
+            "_shared/references/source-standards.md",
+            "_shared/references/state-schema.md",
+        }
+        actual_sources = {
+            source
+            for source, consumers in gen.SHARED_REFERENCES.items()
+            if "se-watchlist" in consumers
+        }
+        self.assertEqual(actual_sources, expected_sources)
+
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        targets = {row["target"] for row in manifest["files"]}
+        for info in gen.PLATFORM_REGISTRY.values():
+            for basename in (
+                "personal-profile-contract.md",
+                "source-standards.md",
+                "state-schema.md",
+            ):
+                self.assertIn(
+                    f"{info.skills_dir}/se-watchlist/references/{basename}",
+                    targets,
+                )
 
     def test_paper_installs_profile_source_and_verification_references(self) -> None:
         expected_sources = {

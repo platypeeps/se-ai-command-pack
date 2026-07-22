@@ -24,6 +24,12 @@ rules, empty-result behavior, downstream routes, and monitor/brief boundaries.
 Confirm identical checkpoints cannot re-report unchanged items and coverage gaps
 never masquerade as no material change.
 
+Keep state handling script-free in this task. `se-monitor` and `se-watchlist`
+share one schema, so a watchlist-only helper would duplicate executable
+semantics. If repeated implementation errors justify automation later, design
+one read-only shared validator for both skills; keep identity, topic repetition,
+relevance, profile scope, and coverage judgment in the skill contracts.
+
 ## Follow-Ups
 
 Scheduling, persistent checkpoints, subscriptions, and notifications remain host integrations.

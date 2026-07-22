@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.48.0 - 2026-07-21
+
+- Add `se-watchlist`, a read-only Operate workflow that reviews bounded content
+  sources against an explicit checkpoint and returns only material new items.
+- Preserve source coverage, conservative identity and deduplication, evidenced
+  exclusions, privacy-safe relevance explanations, and truthful baseline,
+  ranked-change, no-material-change, and insufficient-coverage outcomes.
+- Promote `se-monitor-state/v1` to a shared contract for monitor-compatible
+  deltas, fan source/profile/state references into installed watchlist copies,
+  and add focused safety and generation coverage.
+
 ## 0.47.0 - 2026-07-21
 
 - Add `se-video-notes`, a read-only Understand workflow for source-faithful,
