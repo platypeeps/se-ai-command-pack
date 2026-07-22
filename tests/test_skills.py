@@ -77,6 +77,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-socratic-review",
     "se-sop",
     "se-stakeholder-map",
+    "se-study-guide",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -204,6 +205,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-socratic-review",
                 "se-sop",
                 "se-stakeholder-map",
+                "se-study-guide",
             ),
         )
         self.assertEqual(
@@ -255,6 +257,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-socratic-review": "understand",
                 "se-sop": "operate",
                 "se-stakeholder-map": "coordinate",
+                "se-study-guide": "understand",
             },
         )
 
@@ -2867,6 +2870,68 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Conflicting incentives and decision risks**",
             "**Privacy and sensitivity review**",
             "**Staleness and revalidation**",
+            "**Sibling handoffs**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+
+    def test_study_guide_covers_sources_and_preserves_conflicts(self) -> None:
+        text = normalized("se-study-guide").lower()
+        for phrase in (
+            "read every accessible source in full",
+            "unreadable, partial, or omitted regions",
+            "source concept ledger",
+            "preserve each definition with its source, context, and scope",
+            "never silently choose one conflicting definition",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_study_guide_separates_source_and_generated_material(self) -> None:
+        text = normalized("se-study-guide").lower()
+        for phrase in (
+            "`source-content`, `source-derived`, `generated-scaffolding`, `generated-inference`, or `unsupported`",
+            "every answer, solution, rubric, and distractor",
+            "generated material never becomes a source claim",
+            "do not invent a solvable answer from a thin source",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_study_guide_builds_unambiguous_varied_practice(self) -> None:
+        text = normalized("se-study-guide").lower()
+        for phrase in (
+            "recall, explanation, application, comparison, error diagnosis, misconception repair, and transfer",
+            "inspect every prompt independently for answer leakage",
+            "one clear retrieval target",
+            "relationships and application, not isolated trivia alone",
+            "required concepts are never silently removed",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_study_guide_boundaries_and_final_report_contract(self) -> None:
+        raw = skill_text("se-study-guide")
+        self.assertIn("references/source-standards.md", raw)
+        self.assertIn(
+            "Never certify a learner or claim certification of mastery",
+            normalized("se-study-guide"),
+        )
+        for sibling in (
+            "`se-distill`",
+            "`se-learn`",
+            "`se-explain`",
+            "`se-socratic-review`",
+            "`se-tutorial`",
+        ):
+            self.assertIn(sibling, raw)
+        for field in (
+            "**Study contract**",
+            "**Source coverage and limits**",
+            "**Concept and prerequisite map**",
+            "**Essential definitions and notation**",
+            "**Worked examples and common traps**",
+            "**Retrieval and flashcard set**",
+            "**Practice, solutions, and rubrics**",
+            "**Conflict and unsupported-content ledger**",
+            "**Review order**",
             "**Sibling handoffs**",
             "**Execution boundary**",
         ):

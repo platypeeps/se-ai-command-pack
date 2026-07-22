@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 51
+- **Total Sessions**: 52
 - **Last Active**: 2026-07-21
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1944 | Active |
+| `journal-1.md` | ~1981 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 52 | 2026-07-21 | Deliver se-study-guide | `efd02f4a8624a9146d07391257b4d811e7372c02` | `codex/se-study-guide` |
 | 51 | 2026-07-21 | Deliver se-stakeholder-map | `db6700cbb45ddd7aa1780fb712e2bff1664f52aa` | `codex/se-stakeholder-map` |
 | 50 | 2026-07-21 | Implement se-sop | `2394fdf`, `aa1ed5a`, `629e838` | `codex/se-sop` |
 | 49 | 2026-07-21 | Add se-socratic-review | `7b2db50d9899c98745f9074ee7c48240eba3e17c`, `081ef2fc6eb3f3cdcb16f90e723543186795041c` | `codex/se-socratic-review` |

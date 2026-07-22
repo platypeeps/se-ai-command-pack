@@ -84,6 +84,7 @@ DEFAULT_MANIFEST_HEADER = {
         "controlled standard operating procedures, "
         "safe operational runbooks, "
         "evidence-aware stakeholder mapping, "
+        "source-bound study guides, "
         "neutral comparisons, "
         "evidence-traceable diagrams, "
         "auditable extreme distillation, "

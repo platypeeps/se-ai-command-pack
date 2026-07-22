@@ -1,0 +1,2 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Verify focused learning-artifact behavior, generated surfaces, release metadata, and the full repository gate."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check template, registry, source references, generated manifests, catalogs, docs, and release surfaces together."}

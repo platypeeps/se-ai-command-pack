@@ -45,6 +45,7 @@ come directly from canonical skill frontmatter.
 | `se-literature-map` | Use when the user wants a source-traceable map of a field's schools, methods, works, relationships, disputes, gaps, and reading paths without a flattened narrative review. |
 | `se-monitor` | Use when the user wants a dated, source-traceable comparison of a watched subject against an explicit baseline, with meaningful deltas and a portable next-state artifact. |
 | `se-socratic-review` | Use when the user wants a bounded, adaptive Socratic review that asks one question at a time, tests demonstrated understanding, repairs misconceptions, and reports evidence without grading. |
+| `se-study-guide` | Use when the user wants a bounded source set transformed into a durable study guide with traceable concepts, definitions, examples, retrieval prompts, practice, solutions, traps, and review order. |
 
 ### Decide
 
@@ -157,6 +158,13 @@ risks, decision points, and immediate authorized actions. It keeps commitments
 separate from proposed owners, dates, and estimates, exposes cycles and missing
 prerequisites, and hands repository implementation planning to the local
 development workflow without creating tasks or competing technical artifacts.
+
+`se-study-guide` transforms a bounded source set into a durable concept map,
+definition and notation reference, worked examples, retrieval prompts,
+flashcards, varied practice, traceable solutions, common traps, and review
+order. It keeps source material distinct from generated scaffolding and
+unsupported gaps, preserves conflicts, and never teaches live, grades,
+certifies, schedules, or claims mastery.
 
 `se-stakeholder-map` maps people and groups relevant to one initiative or
 decision while keeping formal authority, informal influence, observed

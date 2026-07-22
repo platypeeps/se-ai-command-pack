@@ -1944,3 +1944,39 @@ Added and validated the evidence-aware stakeholder mapping skill, integrated rel
 ### Next Steps
 
 - None - task complete
+
+
+## Session 52: Deliver se-study-guide
+
+**Date**: 2026-07-21
+**Task**: Deliver se-study-guide
+**Branch**: `codex/se-study-guide`
+
+### Summary
+
+Implemented the source-bound se-study-guide workflow, released it as 0.44.0 across supported install surfaces, and completed Trellis task bookkeeping.
+
+### Main Changes
+
+- Added the canonical se-study-guide skill with coverage, provenance, conflict, practice, and certification boundaries.
+- Registered and documented release 0.44.0 across generated catalogs, manifest targets, and shared source standards.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `efd02f4a8624a9146d07391257b4d811e7372c02` | feat: add study guide skill |
+
+### Testing
+
+- [OK] Full repository gate passed with 427 tests plus generator, Ruff, mypy, release-payload, install-audit, and KB checks.
+- [OK] Fresh-context source and practice probes passed after tightening the unconditional certification boundary.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #66 after final exact-head review and green CI.
