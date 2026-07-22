@@ -1906,3 +1906,41 @@ Added a source-traceable SOP workflow for routine repeatable work, integrated it
 ### Next Steps
 
 - Merge PR #64 after the final bookkeeping head passes the same CI and review gates, then continue the autonomous backlog inventory.
+
+
+## Session 51: Deliver se-stakeholder-map
+
+**Date**: 2026-07-21
+**Task**: Deliver se-stakeholder-map
+**Branch**: `codex/se-stakeholder-map`
+
+### Summary
+
+Added and validated the evidence-aware stakeholder mapping skill, integrated release 0.43.0, and reconciled Trellis roadmap progress.
+
+### Main Changes
+
+- Added the canonical se-stakeholder-map Coordinate workflow with explicit provenance, authority, influence, privacy, staleness, and engagement boundaries.
+- Registered the skill and shared source standards across supported install targets, catalogs, documentation, release metadata, and generated repository maps.
+- Archived the completed child task and reconciled the parent skill roadmap to 43 of 50 completed children.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `db6700cbb45ddd7aa1780fb712e2bff1664f52aa` | feat: add stakeholder mapping skill |
+
+### Testing
+
+- [OK] Focused skill and generator suites passed.
+- [OK] Two fresh-context skill evaluations passed.
+- [OK] Full repository gate passed 422 tests, ruff, mypy, generation, release, install-audit, and knowledge-base checks.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
