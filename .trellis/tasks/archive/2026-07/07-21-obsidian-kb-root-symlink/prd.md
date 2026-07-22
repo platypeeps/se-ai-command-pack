@@ -4,6 +4,19 @@
 
 Prevent the KB refresh helper from following a root .obsidian-kb symlink into an external vault; detect, report, and safely migrate or stop while preserving the target.
 
+## Resolution
+
+Closed without a consumer-local implementation. The helper is an installed
+`sd-ai-command-pack` surface, and upstream
+[PR #212](https://github.com/platypeeps/sd-ai-command-pack/pull/212) already
+shipped the canonical lifecycle contract. That contract intentionally preserves
+and uses a valid directory symlink (including an external vault) while rejecting
+broken links, non-directory targets, and occupied non-directory roots before
+writes. Rejecting every root symlink here would both drift from the installed
+source and reverse the accepted upstream behavior. Updating this repository's
+installed SD pack is a separate maintenance operation, not an implementation
+inside `se-ai-command-pack`.
+
 ## Requirements
 
 - Classify the root `.obsidian-kb` path with non-following filesystem checks

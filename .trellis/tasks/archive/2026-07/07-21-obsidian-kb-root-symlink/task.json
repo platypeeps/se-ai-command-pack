@@ -3,7 +3,7 @@
   "name": "obsidian-kb-root-symlink",
   "title": "Handle root Obsidian KB symlinks safely",
   "description": "Prevent the KB refresh helper from following a root .obsidian-kb symlink into an external vault; detect, report, and safely migrate or stop while preserving the target.",
-  "status": "planning",
+  "status": "completed",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -11,7 +11,7 @@
   "creator": "sdelmas",
   "assignee": "sdelmas",
   "createdAt": "2026-07-21",
-  "completedAt": null,
+  "completedAt": "2026-07-22",
   "branch": null,
   "base_branch": "main",
   "worktree_path": null,
@@ -21,6 +21,6 @@
   "children": [],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Superseded by canonical sd-ai-command-pack PR #212 (https://github.com/platypeeps/sd-ai-command-pack/pull/212), which owns the installed helper and intentionally preserves valid directory symlinks while rejecting unusable roots. Do not implement a conflicting consumer-local copy.",
   "meta": {}
 }
