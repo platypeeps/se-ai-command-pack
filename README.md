@@ -99,6 +99,7 @@ come directly from canonical skill frontmatter.
 | `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
 | `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
 | `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
+| `se-review-skills` | Use when the user wants one or more AI skills reviewed for defects, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context strategy, subagent use, and model routing, with numbered selectable improvements or Trellis remediation tasks. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -248,6 +249,16 @@ small set of proposed follow-ups without recording, assigning, or creating
 work. Software-delivery debugging and gate retros route conditionally to the
 specialized `sd-retro` workflow when it is available.
 
+`se-review-skills` inventories a bounded skill, family, repository, or package
+before reviewing correctness, sibling overlap, missing capabilities,
+capability-preserving brevity, progressive disclosure, script-extraction
+opportunities, metadata, portability, context strategy, bounded subagent use,
+model routing, and evaluation coverage. Findings are evidence-backed and
+numbered for individual or grouped selection. Review is read-only; accepted
+work is reconciled into the canonical owner's Trellis repository before any
+template edit, and first-party SD/SE remediation is constrained to upstream
+templates.
+
 `se-distill` compresses a supplied corpus to an explicit information budget
 using a traceable importance map and invariant audit. It reports measured input
 and output size, preserves load-bearing attribution and disagreement, and
@@ -278,8 +289,9 @@ remain separate operations.
 
 ## What gets installed where
 
-Skills are plain `SKILL.md` directories, installed into every platform
-whose anchor directory exists in your home directory:
+Skills are self-contained `SKILL.md` directories with optional references and
+scripts, installed into every platform whose anchor directory exists in your
+home directory:
 
 | Platform | Skills directory | Gating anchor | Used by |
 |---|---|---|---|

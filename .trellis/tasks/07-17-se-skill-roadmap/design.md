@@ -3,7 +3,7 @@
 ## Overview
 
 Use this parent as the requirements, sequencing, and integration envelope for
-49 independently implementable child tasks. The parent coordinates priorities,
+50 independently implementable child tasks. The parent coordinates priorities,
 cross-skill boundaries, compatibility, and final release verification; it does
 not own direct product implementation.
 
@@ -14,16 +14,17 @@ behind a separately reviewed portable contract and explicit user consent.
 
 ## Current State
 
-- 39 of 49 children are completed and archived; the remaining 10 are in
+- 39 of 50 children are completed and archived; the remaining 11 are in
   planning with complete PRD, design, implementation, and context artifacts.
 - The foundation and portable profile slice are complete, including
   `personal-profile-contract`, `se-profile`, and the read-only `se-ask-me`
   consumer.
 - `se-plan`, `se-handoff`, `se-monitor`, and `se-retro` are complete, closing
   the plan-and-coordinate delivery cohort.
-- The remaining product-skill children are P2. `personal-worklog-profile`
-  remains a separate P3 design boundary and does not authorize private settings
-  or paths in the public payload.
+- `se-review-skills` is the remaining P1 product-skill child. The other
+  remaining product-skill children are P2. `personal-worklog-profile` remains
+  a separate P3 design boundary and does not authorize private settings or
+  paths in the public payload.
 
 ## Delivery Model
 
@@ -57,7 +58,8 @@ first implementation lands:
 - Coordinate and operate: distinguish stakeholder/meeting artifacts from
   repeatable operating procedures and execution checklists.
 - Improve and assure: distinguish pre-action risk discovery, criteria-based
-  evaluation, adversarial challenge, and after-action learning.
+  evaluation, adversarial challenge, after-action learning, and package-skill
+  quality review.
 
 Each child can have its own PR and version decision based on the then-current
 `main`. When multiple children are intentionally batched into one release,
@@ -93,7 +95,7 @@ not papered over in the parent.
 
 - `.trellis/tasks/07-17-se-skill-roadmap/` — parent requirements, design, and
   orchestration plan.
-- The 49 linked child task directories, including archived completed children —
+- The 50 linked child task directories, including archived completed children —
   independently owned planning and delivery records.
 - During final integration review only: `README.md`, `docs/SE_AI_COMMAND_PACK.md`,
   `installer/registry.py`, `manifest.json`, `CHANGELOG.md`, and canonical skill

@@ -123,6 +123,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-red-team", family="improve"),
     SkillInfo(name="se-retro", family="improve"),
     SkillInfo(name="se-runbook", family="operate"),
+    SkillInfo(name="se-review-skills", family="improve"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 

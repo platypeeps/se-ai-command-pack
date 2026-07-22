@@ -1,0 +1,2 @@
+{"file":".trellis/spec/backend/directory-structure.md","reason":"Follow canonical template, registry, generator, module, and bundled-resource ownership conventions."}
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Implement path safety, deterministic generation, focused tests, and release-aligned payload changes."}

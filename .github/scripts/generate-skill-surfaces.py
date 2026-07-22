@@ -58,6 +58,10 @@ REQUIRED_SECTIONS = (
 )
 
 ALLOWED_FRONTMATTER_KEYS = ("name", "description")
+ALLOWED_RESOURCE_SUFFIXES = {
+    "references": ".md",
+    "scripts": ".py",
+}
 DESCRIPTION_PREFIX = "Use when"
 DESCRIPTION_MAX_LENGTH = 1024
 
@@ -206,21 +210,36 @@ def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
         )
 
     for path in sorted(skill_dir.rglob("*")):
+        relative = path.relative_to(skill_dir).as_posix()
+        if path.is_symlink():
+            errors.append(
+                f"{label}: unexpected symlink {relative} "
+                "(skill payload files and directories must be regular)"
+            )
+            continue
         if path.is_dir():
-            if path.relative_to(skill_dir).as_posix() != "references":
+            relative_dir = path.relative_to(skill_dir)
+            if (
+                len(relative_dir.parts) != 1
+                or relative_dir.parts[0] not in ALLOWED_RESOURCE_SUFFIXES
+            ):
                 errors.append(
                     f"{label}: unexpected directory "
-                    f"{path.relative_to(skill_dir).as_posix()}/ (only references/ "
-                    "is shipped in this pack version)"
+                    f"{relative_dir.as_posix()}/ (only references/ and scripts/ "
+                    "are shipped in this pack version)"
                 )
             continue
-        relative = path.relative_to(skill_dir).as_posix()
         if relative == "SKILL.md":
             continue
-        if not relative.startswith("references/") or path.suffix != ".md":
+        parts = Path(relative).parts
+        expected_suffix = (
+            ALLOWED_RESOURCE_SUFFIXES.get(parts[0]) if len(parts) == 2 else None
+        )
+        if expected_suffix is None or path.suffix != expected_suffix:
             errors.append(
-                f"{label}: unexpected file {relative} (only SKILL.md and "
-                "references/*.md are shipped in this pack version)"
+                f"{label}: unexpected file {relative} (only SKILL.md, "
+                "references/*.md, and scripts/*.py are shipped in this pack "
+                "version)"
             )
     metadata = None
     if not errors and isinstance(description, str):
@@ -300,17 +319,20 @@ def validate_skills() -> dict[str, dict[str, str]]:
 
 
 def skill_payload_files(name: str) -> list[str]:
-    """Per-skill shipped file list: SKILL.md first, then sorted references."""
+    """Per-skill shipped file list: SKILL.md first, then sorted resources."""
     skill_dir = SKILLS_ROOT / name
-    references_dir = skill_dir / "references"
-    references: list[str] = []
-    if references_dir.is_dir():
-        references = sorted(
+    resources: list[str] = []
+    for directory, suffix in ALLOWED_RESOURCE_SUFFIXES.items():
+        resource_dir = skill_dir / directory
+        if resource_dir.is_symlink() or not resource_dir.is_dir():
+            continue
+        resources.extend(
             path.relative_to(skill_dir).as_posix()
-            for path in references_dir.rglob("*.md")
-            if path.is_file()
+            for path in resource_dir.glob(f"*{suffix}")
+            if path.is_file() and not path.is_symlink()
         )
-    return ["SKILL.md", *references]
+    resources.sort()
+    return ["SKILL.md", *resources]
 
 
 def build_rows() -> list[dict]:

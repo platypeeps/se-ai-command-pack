@@ -73,6 +73,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-red-team",
     "se-retro",
     "se-runbook",
+    "se-review-skills",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -196,6 +197,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-red-team",
                 "se-retro",
                 "se-runbook",
+                "se-review-skills",
             ),
         )
         self.assertEqual(
@@ -243,6 +245,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-red-team": "improve",
                 "se-retro": "improve",
                 "se-runbook": "operate",
+                "se-review-skills": "improve",
             },
         )
 
@@ -2659,6 +2662,67 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "**Execution boundary**",
         ):
             self.assertIn(field, raw)
+
+    def test_review_skills_enforces_scope_evidence_and_template_boundaries(self) -> None:
+        text = normalized("se-review-skills").lower()
+        for phrase in (
+            "candidate signals into findings",
+            "file/line or reproducible-command evidence",
+            "for the se pack, review and change only `templates/skills/**`",
+            "for the sd pack, review and change only `templates/**`",
+            "installed copies, registries, manifests, generators",
+            "first-party issue without a template remedy is non-selectable",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_review_skills_preserves_capabilities_and_bounded_delegation(self) -> None:
+        text = normalized("se-review-skills").lower()
+        for phrase in (
+            "build a capability ledger for every skill",
+            "use subagents only for independently testable work",
+            "cap fan-out, prohibit recursive delegation",
+            "parent verify and deduplicate",
+            "give independent validators raw artifacts, not conclusions",
+            "portable model profile",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_review_skills_routes_tasks_and_applies_from_stable_snapshots(self) -> None:
+        text = normalized("se-review-skills").lower()
+        for phrase in (
+            "preserve its json and `snapshotid`",
+            "reconcile active and archived trellis tasks",
+            "at most one planning task per affected skill and snapshot",
+            "route verified sd and se work to their respective upstream trellis checkouts",
+            "cross-repository selections create handoffs and stop",
+            "require `task=` or `apply=`",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_review_skills_resources_and_final_report_contract(self) -> None:
+        raw = skill_text("se-review-skills")
+        skill_root = SKILLS_ROOT / "se-review-skills"
+        for relative in (
+            "references/review-rubric.md",
+            "references/runtime-routing.md",
+            "references/report-schema.md",
+            "scripts/skill_review.py",
+        ):
+            self.assertIn(relative, raw)
+            self.assertTrue((skill_root / relative).is_file(), relative)
+        for field in (
+            "**Review contract**",
+            "**Coverage and limits**",
+            "**Package-wide findings**",
+            "**Family and skill findings**",
+            "**Runtime recommendations**",
+            "**Repository selectors**",
+            "**Task/application state**",
+            "**Execution boundary**",
+        ):
+            self.assertIn(field, raw)
+        for sibling in ("`se-help`", "`sd-audit-repo`", "`sd-review-local`"):
+            self.assertIn(sibling, raw)
 
 
 class SkillDocumentationTest(unittest.TestCase):

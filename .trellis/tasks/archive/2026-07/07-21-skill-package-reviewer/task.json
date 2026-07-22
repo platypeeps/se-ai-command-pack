@@ -1,0 +1,33 @@
+{
+  "id": "skill-package-reviewer",
+  "name": "skill-package-reviewer",
+  "title": "Add se-review-skills",
+  "description": "Add a compact Improve-family workflow that reviews arbitrary skills for defects, overlaps, capability-preserving simplification, metadata and runtime routing, then routes accepted work to the owning repository's Trellis tasks.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-07-21",
+  "completedAt": "2026-07-21",
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "07-17-se-skill-roadmap",
+  "relatedFiles": [
+    "templates/skills/se-review-skills/SKILL.md",
+    "installer/registry.py",
+    ".github/scripts/generate-skill-surfaces.py",
+    "scripts/se-ai-command-pack-skill-review.py",
+    "tests/test_skills.py",
+    "tests/test_generate.py"
+  ],
+  "notes": "",
+  "meta": {}
+}

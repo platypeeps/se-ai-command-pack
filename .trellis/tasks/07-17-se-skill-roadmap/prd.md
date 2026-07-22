@@ -2,19 +2,19 @@
 
 ## Goal
 
-Coordinate the 49 linked roadmap children that expand the public SE catalog
+Coordinate the 50 linked roadmap children that expand the public SE catalog
 across six outcome families, while preserving flat installed skill paths and an
 explicit boundary between portable product skills and private personal context.
 
 ## Background
 
 This roadmap began with nine children covering taxonomy, decision support,
-delivery coordination, and a personal-worklog boundary. It now contains 49
+delivery coordination, and a personal-worklog boundary. It now contains 50
 independently planned children spanning Understand, Decide, Create, Coordinate,
 Operate, and Improve.
 
 The parent metadata is the source of truth for membership and completion. At
-this reconciliation point, 39 children are completed and archived, 10 remain
+this reconciliation point, 39 children are completed and archived, 11 remain
 in planning, and every linked child has a PRD, design, implementation plan, and
 planning/check context files. The parent remains a coordination and integration
 envelope; it does not implement product behavior directly.
@@ -50,7 +50,7 @@ envelope; it does not implement product behavior directly.
 | Understand and learn | `se-distill`, `se-explain`, `se-literature-map`, `se-compare`, `se-learn`, `se-study-guide`, `se-socratic-review` | 5 completed, 2 planning |
 | Create and communicate | `se-author`, `se-topic-radar`, `se-technical-editor`, `se-paper`, `se-proposal`, `se-tutorial`, `se-presentation`, `se-diagram` | 7 completed, 1 planning |
 | Coordinate and operate | `se-stakeholder-map`, `se-feedback`, `se-agenda`, `se-runbook`, `se-sop`, `se-checklist` | 4 completed, 2 planning |
-| Improve and assure | `se-premortem`, `se-evaluate`, `se-red-team`, `se-postmortem` | 4 completed |
+| Improve and assure | `se-premortem`, `se-evaluate`, `se-red-team`, `se-postmortem`, `se-review-skills` | 4 completed, 1 planning |
 
 These cohorts organize delivery and review. The family assigned to a shipped
 skill remains owned by the taxonomy source of truth and the child's accepted
@@ -60,7 +60,7 @@ design; cohort placement does not create a second taxonomy.
 
 - [x] Every linked child task has testable requirements and can be implemented,
       checked, and archived independently.
-- [x] The parent child map accounts for all 49 `task.json` children exactly
+- [x] The parent child map accounts for all 50 `task.json` children exactly
       once and distinguishes completed work from planned work.
 - [ ] The final catalog uses all six registered families without ambiguous
       trigger overlap.

@@ -178,6 +178,98 @@ description.
 
 ---
 
+## Scenario: Skill-Owned References And Deterministic Scripts
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing a file below a canonical skill directory other
+  than `SKILL.md`, or changing generator resource validation and fan-out.
+- Why: optional resources cross canonical-source validation, manifest rows,
+  every supported platform target, install behavior, and release payload
+  identity.
+
+### 2. Signatures
+
+```text
+templates/skills/<skill>/SKILL.md
+templates/skills/<skill>/references/<name>.md
+templates/skills/<skill>/scripts/<name>.py
+skill_payload_files(name) -> list[str]
+make generate
+python .github/scripts/generate-skill-surfaces.py --check
+```
+
+### 3. Contracts
+
+- Resource directories are optional and flat. The only accepted resource
+  shapes are `references/*.md` and `scripts/*.py`; nested directories and other
+  suffixes fail validation before any generated surface is written.
+- Every accepted resource is fanned out byte-for-byte beside `SKILL.md` for
+  each platform in `PLATFORM_REGISTRY`, with deterministic ordering and a
+  manifest row using the skill's normal scope and anchor.
+- References hold conditional detail that is directly reachable from the skill.
+  Scripts hold bounded deterministic work such as parsing, normalization,
+  validation, hashing, inventory, or stable transformation. Judgment, dialogue,
+  approvals, and mutation authority remain explicit in `SKILL.md`.
+- Bundled scripts should be Python 3.10-compatible and standard-library-first.
+  Their user-facing contract defines inputs, outputs, failure behavior, side
+  effects, portability, idempotence or dry-run behavior, and tests.
+- Adding or changing a resource changes shipped payload bytes and therefore
+  requires a manifest version bump and matching changelog entry.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Flat `references/*.md` or `scripts/*.py` file | Validate and fan out to every declared platform. |
+| Nested resource directory or unsupported suffix | Fail generation with the unexpected path; write no partial surfaces. |
+| Resource exists but is absent from a platform manifest target | `--check` reports drift and exits nonzero. |
+| Script requires an undeclared runtime dependency | Reject the design or document and validate the dependency before shipping. |
+| Script performs semantic judgment or exceeds caller authority | Keep that operation in the skill; do not extract it. |
+| Resource payload changes without version/changelog alignment | Release gate fails. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: move repeated JSON inventory logic into a read-only, standard-library
+  script with stable JSON output, focused failure tests, and direct invocation
+  from the skill.
+- Base: keep a short one-off judgment instruction in `SKILL.md`; no helper is
+  created because scripting adds more maintenance than reliability.
+- Bad: add a nested helper directory below the skill's scripts resource, ship
+  an executable that silently edits files, or move user approval logic into
+  code to reduce prompt length.
+
+### 6. Tests Required
+
+- Generator tests accept and fan out each allowed resource type to every
+  platform and reject nested directories, wrong suffixes, and unregistered
+  files without partial writes.
+- Skill-specific tests pin the helper's deterministic output, invalid-input
+  behavior, boundary protections, and read-only or dry-run guarantees.
+- Run the helper in an isolated install and assert that every declared platform
+  receives the same payload bytes and no unsupported frontmatter is introduced.
+- Run `make generate` twice, `make check`, the release payload/version gate, and
+  `git diff --check`.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+templates/skills/se-example/scripts/lib/decide.py
+# The script chooses whether the user-approved action is safe and performs it.
+```
+
+#### Correct
+
+```text
+templates/skills/se-example/scripts/inventory.py
+# The script validates bounded inputs and emits stable, read-only JSON facts.
+# SKILL.md interprets the facts and retains approval and mutation decisions.
+```
+
+---
+
 ## Scenario: Decision Skill Evidence And Authority Boundary
 
 ### 1. Scope / Trigger
