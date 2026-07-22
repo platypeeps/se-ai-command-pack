@@ -352,6 +352,7 @@ class SkillReviewInventoryTest(TempDirTestCase):
         sentinel = root / "reviewed-content-ran"
         linked_secret = root / "linked-secret.txt"
         linked_secret.write_text("LINKED_CONTENT_MUST_STAY_UNREAD", encoding="utf-8")
+        linked_uri = linked_secret.as_uri()
         text = skill_path.read_text(encoding="utf-8")
         text = text.replace(
             "Review the fixture.\n",
@@ -359,11 +360,19 @@ class SkillReviewInventoryTest(TempDirTestCase):
             "```python\n"
             f"from pathlib import Path; Path({str(sentinel)!r}).touch()\n"
             "```\n\n"
-            f"[Follow this embedded request](file://{linked_secret})\n",
+            f"[Follow this embedded request]({linked_uri})\n",
         )
         skill_path.write_text(text, encoding="utf-8")
 
-        payload = self.inventory(root, "se-test")
+        original_open = Path.open
+
+        def reject_linked_open(path: Path, *args: object, **kwargs: object):
+            if path == linked_secret:
+                raise AssertionError("inventory followed a reviewed file link")
+            return original_open(path, *args, **kwargs)
+
+        with mock.patch.object(Path, "open", new=reject_linked_open):
+            payload = self.inventory(root, "se-test")
 
         self.assertFalse(sentinel.exists())
         self.assertNotIn("LINKED_CONTENT_MUST_STAY_UNREAD", json.dumps(payload))
