@@ -180,8 +180,9 @@ candidate actions, disputes, owners, dates, and source locators as distinct
 evidence states. Missing prep disables expected-versus-actual conclusions;
 conflicting or sensitive records stay visible without widening disclosure.
 Preparation remains with `se-meeting-prep`, agenda design with `se-agenda`,
-generic conversation synthesis with `se-thread-digest`, and durable publishing
-with `se-knowledge-capture`. Recaps and handoffs are drafts only: task creation,
+bounded thread outcome reconstruction with `se-thread-digest`, generic
+multi-document synthesis with `se-digest`, and durable publishing with
+`se-knowledge-capture`. Recaps and handoffs are drafts only: task creation,
 calendar changes, messages, and system updates require separate authorization.
 
 ### Monitor workflow boundary

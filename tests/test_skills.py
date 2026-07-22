@@ -3060,6 +3060,18 @@ class SkillSafetyPinsTest(unittest.TestCase):
 
 
 class SkillDocumentationTest(unittest.TestCase):
+    def test_thread_digest_docs_distinguish_thread_and_document_synthesis(self) -> None:
+        operator = " ".join(
+            (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        self.assertIn(
+            "bounded thread outcome reconstruction with `se-thread-digest`, "
+            "generic multi-document synthesis with `se-digest`",
+            operator,
+        )
+
     def test_technical_editor_docs_use_canonical_pass_names(self) -> None:
         readme = " ".join(
             (PACK_ROOT / "README.md").read_text(encoding="utf-8").split()

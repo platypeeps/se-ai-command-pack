@@ -2669,8 +2669,9 @@ candidate actions, disputes, owners, dates, and source locators as distinct
 evidence states. Missing prep disables expected-versus-actual conclusions;
 conflicting or sensitive records stay visible without widening disclosure.
 Preparation remains with `se-meeting-prep`, agenda design with `se-agenda`,
-generic conversation synthesis with `se-thread-digest`, and durable publishing
-with `se-knowledge-capture`. Recaps and handoffs are drafts only: task creation,
+bounded thread outcome reconstruction with `se-thread-digest`, generic
+multi-document synthesis with `se-digest`, and durable publishing with
+`se-knowledge-capture`. Recaps and handoffs are drafts only: task creation,
 calendar changes, messages, and system updates require separate authorization.
 
 ### Monitor workflow boundary
@@ -14028,10 +14029,13 @@ skill_root = SKILLS_ROOT / "se-review-skills"
 ⋮----
 class SkillDocumentationTest(unittest.TestCase)
 ⋮----
+def test_thread_digest_docs_distinguish_thread_and_document_synthesis(self) -> None
+⋮----
+operator = " ".join(
+⋮----
 def test_technical_editor_docs_use_canonical_pass_names(self) -> None
 ⋮----
 readme = " ".join(
-operator = " ".join(
 ⋮----
 def test_readme_lists_every_skill(self) -> None
 ⋮----
