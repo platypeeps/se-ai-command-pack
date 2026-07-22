@@ -193,3 +193,40 @@ Added and shipped a read-only personal weekly-review workflow with explicit priv
 ### Next Steps
 
 - None - task complete
+
+
+## Session 58: Approve personal worklog profile boundary
+
+**Date**: 2026-07-22
+**Task**: Approve personal worklog profile boundary
+**Branch**: `main`
+
+### Summary
+
+Approved and documented the public output-only worklog boundary with private delivery ownership, then merged the reviewed design decision.
+
+### Main Changes
+
+- Recorded the approved public/private responsibility split, precedence, lifecycle, privacy, failure, and scenario contracts.
+- Prepared two paste-ready follow-up proposals without creating tasks or changing shipped payloads or private automation.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d47a132` | docs: approve personal worklog boundary |
+| `3c1260d` | docs: clarify design task lifecycle |
+
+### Testing
+
+- [OK] Deterministic full check passed with 455 tests, Ruff, mypy, generation parity, release gate, install audit, and KB freshness.
+- [OK] PR #75 CI passed and Copilot review round two produced no new comments; all review threads resolved.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
