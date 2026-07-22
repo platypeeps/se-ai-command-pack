@@ -393,3 +393,37 @@ Added explicit per-skill security and safety verdicts to se-review-skills, stren
 ### Next Steps
 
 - None - task complete
+
+
+## Session 63: Create PR for installed skill review inventory
+
+**Date**: 2026-07-22
+**Task**: Create PR for installed skill review inventory
+**Branch**: `codex/review-installed-skills`
+
+### Summary
+
+Published PR #84 for installed skill discovery and canonical deduplication, completed two Copilot review rounds, fixed the symlinked manifest-source boundary, rebutted a pathlib rglob false positive, and verified the full local and CI gates.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d7dd9f0` | (see git log) |
+| `4b7d76f` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
