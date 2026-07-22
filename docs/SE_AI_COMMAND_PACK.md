@@ -660,6 +660,25 @@ with `se-decide`, and outcome reconciliation with
 `se-meeting-follow-through`. Scheduling, invitations, messaging, notes, and
 follow-up execution require separate authorized workflows.
 
+### Stakeholder-map workflow boundary
+
+`se-stakeholder-map` owns an evidence-aware map of the people and groups
+relevant to one initiative or decision. It records role-specific entries,
+keeps formal authority separate from behavior- or process-evidenced informal
+influence, and distinguishes observed positions, user judgments, assistant
+inferences, conflicts, and unknowns. Every inference carries a validation
+question and action; missing stakeholders remain access or coverage gaps, not
+evidence that a perspective is irrelevant.
+
+Groups retain internal disagreement, people with multiple roles retain
+role-specific interests and dependencies, and organizational change triggers
+revalidation. The workflow minimizes personal data and prohibits protected-
+trait inference, personality or vulnerability profiling, and manipulative
+engagement. Meeting design stays with `se-agenda`, accepted-outcome planning
+with `se-plan`, continuity transfer with `se-handoff`, feedback synthesis with
+`se-feedback`, and personal-profile maintenance with `se-profile`. Contact,
+scheduling, assignments, approvals, and external writes remain `not run`.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):

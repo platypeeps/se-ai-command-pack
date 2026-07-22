@@ -83,6 +83,7 @@ DEFAULT_MANIFEST_HEADER = {
         "critical checklists, "
         "controlled standard operating procedures, "
         "safe operational runbooks, "
+        "evidence-aware stakeholder mapping, "
         "neutral comparisons, "
         "evidence-traceable diagrams, "
         "auditable extreme distillation, "
