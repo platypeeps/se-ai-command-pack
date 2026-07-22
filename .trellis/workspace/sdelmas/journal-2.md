@@ -43,3 +43,54 @@ Implemented the evidence-linked se-thread-digest workflow, shipped release 0.45.
 ### Next Steps
 
 - Merge PR #67 after final exact-head review and green CI.
+
+
+## Session 54: Deliver se-tutorial
+
+**Date**: 2026-07-21
+**Task**: Deliver se-tutorial
+**Branch**: `codex/se-tutorial`
+
+### Summary
+
+Implemented the checkpoint-driven se-tutorial workflow, shipped release 0.46.0, corrected execution-boundary ambiguities through fresh-context evaluation, and completed Trellis task bookkeeping.
+
+### Main Changes
+
+### Main Changes
+
+- Added the canonical `se-tutorial` skill with prerequisite gates, platform and version branches, explicit execution states, checkpoints, recovery, final validation, and safeguarded cleanup.
+- Registered release 0.46.0 across generated catalogs, manifest targets, shared source/profile references, and operator documentation.
+- Added focused contract and generated-surface tests; fresh-context probes corrected reader-test and production-execution ambiguities before final validation.
+
+### Testing
+
+- [OK] Full repository gate passed with 438 tests plus generator, Ruff, mypy, release-payload, install-audit, repository-preflight, and KB checks.
+- [OK] Three fresh-context probes passed on the corrected skill, and Copilot reviewed all 14 feature-head files with no comments.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #68 after final exact-head review and green CI.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e922e144c1ffd25ac8766f13828451d0e5028fb6` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
