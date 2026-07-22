@@ -453,7 +453,9 @@ def skill_payload_files(name: str) -> list[str]
 ⋮----
 """Per-skill shipped file list: SKILL.md first, then sorted resources."""
 ⋮----
-resources = sorted(
+resources: list[str] = []
+⋮----
+resource_dir = skill_dir / directory
 ⋮----
 def build_rows() -> list[dict]
 ⋮----
@@ -11555,6 +11557,10 @@ target = f"{info.skills_dir}/se-test/scripts/inventory.py"
 def test_symlinked_skill_resource_is_rejected(self) -> None
 ⋮----
 target = self.base / "outside.py"
+⋮----
+def test_symlinked_resource_directory_is_rejected_and_not_enumerated(self) -> None
+⋮----
+external = self.base / "external-scripts"
 ⋮----
 def test_nested_or_wrong_resource_file_is_rejected(self) -> None
 ⋮----

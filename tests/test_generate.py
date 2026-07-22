@@ -1016,6 +1016,18 @@ class SandboxGeneratorTest(TempDirTestCase):
         (scripts / "inventory.py").symlink_to(target)
         self.assert_validation_error("unexpected symlink scripts/inventory.py")
 
+    def test_symlinked_resource_directory_is_rejected_and_not_enumerated(self) -> None:
+        self.write_skill()
+        external = self.base / "external-scripts"
+        external.mkdir()
+        (external / "inventory.py").write_text("print('outside')\n", encoding="utf-8")
+        (self.skills_root / "se-test" / "scripts").symlink_to(
+            external,
+            target_is_directory=True,
+        )
+        self.assertEqual(gen.skill_payload_files("se-test"), ["SKILL.md"])
+        self.assert_validation_error("unexpected symlink scripts")
+
     def test_nested_or_wrong_resource_file_is_rejected(self) -> None:
         self.write_skill()
         nested = self.skills_root / "se-test" / "scripts" / "nested"

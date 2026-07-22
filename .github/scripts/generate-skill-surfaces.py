@@ -321,12 +321,17 @@ def validate_skills() -> dict[str, dict[str, str]]:
 def skill_payload_files(name: str) -> list[str]:
     """Per-skill shipped file list: SKILL.md first, then sorted resources."""
     skill_dir = SKILLS_ROOT / name
-    resources = sorted(
-        path.relative_to(skill_dir).as_posix()
-        for directory, suffix in ALLOWED_RESOURCE_SUFFIXES.items()
-        for path in (skill_dir / directory).glob(f"*{suffix}")
-        if path.is_file() and not path.is_symlink()
-    )
+    resources: list[str] = []
+    for directory, suffix in ALLOWED_RESOURCE_SUFFIXES.items():
+        resource_dir = skill_dir / directory
+        if resource_dir.is_symlink() or not resource_dir.is_dir():
+            continue
+        resources.extend(
+            path.relative_to(skill_dir).as_posix()
+            for path in resource_dir.glob(f"*{suffix}")
+            if path.is_file() and not path.is_symlink()
+        )
+    resources.sort()
     return ["SKILL.md", *resources]
 
 
