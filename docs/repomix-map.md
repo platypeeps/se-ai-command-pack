@@ -11095,7 +11095,9 @@ stop and identify them before reading sources or drafting the SOP.
 3. Classify every substantive rule or step as `observed-current`,
    `approved-current`, `proposed-future`, `conflicting`, or `unknown`. Current
    practice requires direct evidence; approved practice requires an identified
-   authority. Do not convert a proposed improvement into current practice.
+   authority. For `conflicting` practice, retain each variant's underlying
+   observed or approved state so disagreement does not erase evidence. Do not
+   convert a proposed improvement into current practice.
 4. Reconcile sources without inventing consensus. When practice conflicts,
    show the alternatives, their evidence and scope, operational impact, and the
    authority needed to resolve them. Unsafe or materially unresolved conflicts
@@ -11128,18 +11130,25 @@ stop and identify them before reading sources or drafting the SOP.
    - Output: <observable result>
    - Verify: <check and pass condition>
    - Record: <required evidence or none with sourced reason>
-   - If not: <STOP, correct, escalate, or use exception E##>
+   - If not: <STOP, local correction, escalate, or use exception E##>
    - Basis: <source locator, state, scope, and date>
    ```
+
+   Local correction is limited to restoring an expected routine precondition or
+   output. Diagnosis, rollback, restore, or recovery belongs in `se-runbook`;
+   active incident response belongs in the applicable incident-command process.
 
 10. Separate mandatory controls from helpful guidance. A mandatory control
     needs identified authority, applicability, condition, responsible role,
     verification, evidence or record, failure response, and source. Advice with
     incomplete authority stays guidance or a proposed improvement.
-11. Define each supported exception with trigger/detection, affected step,
-    allowed deviation, approving authority, required record, safe stop,
-    escalation, resume condition, and source. If authority or safe continuation
-    is unknown, stop and escalate; do not normalize the workaround.
+11. Define each supported exception and each discovered exception gap with
+    trigger/detection, affected step, allowed deviation or `unknown`, approving
+    authority or `unknown`, required record or `unknown`, safe stop, safe interim
+    state, escalation target or `unassigned`, decision required,
+    evidence/handoff package, timeout or fallback, handoff acknowledgement,
+    resume gate, and source. If authority or safe continuation is unknown, stop
+    and escalate; do not normalize the workaround.
 12. Treat legal, regulatory, policy, security, safety, and quality assertions as
     compliance claims. Record jurisdiction, version, effective date, applicable
     scope, issuing authority, and citation. When that basis is absent or
@@ -11157,7 +11166,8 @@ stop and identify them before reading sources or drafting the SOP.
 15. Audit representative cases: normal path, missing input, conflicting source,
     undocumented exception, unsupported compliance claim, absent owner,
     proposed improvement, stale procedure, and event-driven failure. Route the
-    last case to `se-runbook`; derive a separate `se-checklist` only on request.
+    last case to `se-runbook`, or to incident command when response is live;
+    derive a separate `se-checklist` only on request.
 16. Deliver the SOP as a draft or supplied approval state. Do not execute,
     enforce, approve, assign, publish, train, certify, or create operational
     records. Each requires a separate explicit request and appropriate authority.
@@ -11201,7 +11211,8 @@ stop and identify them before reading sources or drafting the SOP.
   verification, evidence, failure response, and source;
 - **Helpful guidance** — non-mandatory advice with its evidence and limits;
 - **Exceptions and escalation** — detection, deviation, authority, record, safe
-  stop, escalation, resume condition, and unsupported gaps;
+  stop and interim state, escalation target, requested decision, evidence
+  package, timeout/fallback, acknowledgement, resume gate, and unsupported gaps;
 - **Outputs, records, and completion** — produced artifacts, required evidence,
   sourced retention/location, consumers, final checks, and completion signal;
 - **Proposed future state** — improvements, rationale, benefit, risk, ownership,
@@ -11210,8 +11221,8 @@ stop and identify them before reading sources or drafting the SOP.
   conflicting scope, missing approvals, and prohibited certification claims;
 - **Maintenance and staleness** — review ownership, cadence, change triggers,
   evidence to recheck, supported context, and stale-procedure warnings;
-- **Sibling handoffs** — event-driven runbook, compact checklist, or planning
-  needs identified but not run; and
+- **Sibling handoffs** — event-driven runbook, live incident response, compact
+  checklist, or planning needs identified but not run; and
 - **Execution boundary** — execution, enforcement, assignment, approval,
   publication, training, record creation, and certification each marked `not run`.
 ````
@@ -13399,6 +13410,8 @@ def test_sop_preserves_current_practice_and_proposed_future(self) -> None
 text = normalized("se-sop").lower()
 ⋮----
 def test_sop_makes_controls_and_exceptions_operationally_testable(self) -> None
+⋮----
+def test_sop_preserves_conflict_evidence_and_routes_failure_response(self) -> None
 ⋮----
 def test_sop_evidences_compliance_and_document_control(self) -> None
 ⋮----
