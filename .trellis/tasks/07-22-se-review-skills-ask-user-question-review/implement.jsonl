@@ -1,0 +1,6 @@
+{"file": "templates/skills/se-review-skills/SKILL.md", "reason": "Require a semantic interaction-design pass and portable structured-question guidance."}
+{"file": "templates/skills/se-review-skills/references/review-rubric.md", "reason": "Define required, optional, and inappropriate user-question classifications."}
+{"file": "templates/skills/se-review-skills/references/report-schema.md", "reason": "Specify complete evidence and suggestion fields for interaction findings."}
+{"file": "tests/test_skills.py", "reason": "Pin positive, negative, keyword-only, option, free-form, and mutation-boundary behavior."}
+{"file": "manifest.json", "reason": "Synchronize the shipped payload version and generated hashes."}
+{"file": "CHANGELOG.md", "reason": "Document the interaction-design review release."}

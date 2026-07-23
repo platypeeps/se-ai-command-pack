@@ -1,0 +1,4 @@
+{"file": "tests/test_skills.py", "reason": "Run focused se-review-skills interaction contract tests."}
+{"file": "templates/skills/se-review-skills/SKILL.md", "reason": "Verify semantic judgment, portability, and read-only boundaries."}
+{"file": "templates/skills/se-review-skills/references/review-rubric.md", "reason": "Verify classification thresholds and false-positive exclusions."}
+{"file": "templates/skills/se-review-skills/references/report-schema.md", "reason": "Verify complete finding and suggestion fields."}
