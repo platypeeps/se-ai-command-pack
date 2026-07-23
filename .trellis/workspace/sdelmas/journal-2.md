@@ -1288,3 +1288,41 @@ Created PR #104, reconciled local and Copilot feedback, and verified exact-head 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 87: Add installer documentation contract checks
+
+**Date**: 2026-07-23
+**Task**: Add installer documentation contract checks
+**Branch**: `codex/installer-documentation-contract-checks`
+
+### Summary
+
+Added deterministic documentation contract coverage for prior-provenance refresh authorization and preservation precedence.
+
+### Main Changes
+
+- Added focused README and operator-documentation contract tests for canonical normal-refresh terminology.
+- Clarified detailed installer documentation so preserved-target semantics explicitly take precedence over vouched updates.
+- Refreshed the checked-in Repomix repository map and canonical knowledge base.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `39ec3ee` | test: pin installer documentation contract |
+
+### Testing
+
+- [OK] .venv/bin/python -m unittest discover -s tests -p test_installer_docs.py -v (2 tests)
+- [OK] make check (517 tests; Ruff, mypy, generated surfaces, release payload gate)
+- [OK] python3 ./.trellis/scripts/task.py validate 07-23-installer-documentation-contract-checks
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
