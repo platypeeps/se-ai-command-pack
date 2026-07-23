@@ -323,7 +323,6 @@ def install_file(
         )
     if destination.exists():
         current = destination.read_bytes()
-        current_digest = source_digest(current)
         if current == new_content:
             return InstallResult(
                 file,
@@ -341,6 +340,7 @@ def install_file(
                 source_executable=executable,
             )
         if not force:
+            current_digest = source_digest(current)
             if vouched_digest == f"sha256:{current_digest}":
                 if not dry_run:
                     destination.parent.mkdir(parents=True, exist_ok=True)

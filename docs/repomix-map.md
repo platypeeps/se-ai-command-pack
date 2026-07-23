@@ -4167,6 +4167,7 @@ backup_path = None
 backup_path = backup_existing_file(
 ⋮----
 current = destination.read_bytes()
+⋮----
 current_digest = source_digest(current)
 ⋮----
 backup_path = next_backup_path(root, destination)

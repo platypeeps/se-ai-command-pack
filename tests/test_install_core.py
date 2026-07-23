@@ -279,8 +279,12 @@ class InstallFileTest(TempDirTestCase):
     def test_unchanged(self) -> None:
         file = pack_file()
         self.install(file)
-        result = self.install(file)
+        with mock.patch.object(
+            fileops, "source_digest", wraps=fileops.source_digest
+        ) as digest:
+            result = self.install(file)
         self.assertIs(result.status, InstallStatus.UNCHANGED)
+        self.assertEqual(digest.call_count, 1)
 
     def test_conflict_leaves_content(self) -> None:
         file = pack_file()
