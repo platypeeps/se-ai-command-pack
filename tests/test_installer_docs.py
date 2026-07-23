@@ -23,6 +23,7 @@ def markdown_section(path: Path, heading: str) -> str:
 
 class InstallerDocumentationContractTest(unittest.TestCase):
     def assert_refresh_contract(self, section: str) -> None:
+        normalized_section = section.casefold()
         for phrase in (
             "normal refresh",
             "prior provenance hash",
@@ -30,8 +31,8 @@ class InstallerDocumentationContractTest(unittest.TestCase):
             "remain `preserved`",
             "`updated`",
         ):
-            self.assertIn(phrase, section)
-        self.assertNotIn("prior install receipt", section.lower())
+            self.assertIn(phrase.casefold(), normalized_section)
+        self.assertNotIn("prior install receipt", normalized_section)
 
     def test_readme_install_section_uses_canonical_refresh_contract(self) -> None:
         section = markdown_section(PACK_ROOT / "README.md", "Install")
