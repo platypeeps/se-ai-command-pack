@@ -838,3 +838,39 @@ Replaced universal evidence-age and source-count proxies with claim-sensitive fr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 75: Clarify author and tutorial routing
+
+**Date**: 2026-07-22
+**Task**: Clarify author and tutorial routing
+**Branch**: `codex/se-author-tutorial-boundary`
+
+### Summary
+
+Clarified outcome-based routing between publication-shaped authoring and checkpoint-driven tutorials, added focused contract coverage, captured the durable guideline, and resolved the review clarity finding.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bbf524f6952acbc7443402a09b1419f6096ae3c5` | (see git log) |
+| `d869e8d00578237fb0ca0a0a0106867964eb4b95` | (see git log) |
+| `cc6a773b03d07fee445d924f2dda4f083da491a8` | (see git log) |
+| `eac7ae6b019f7536a5cc2545288a0783af55ff1c` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
