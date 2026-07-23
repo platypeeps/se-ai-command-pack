@@ -68,13 +68,19 @@ Every finding includes:
 
 ## Interaction-design findings
 
-Every verified missing-question finding includes the owning skill and exact
-source locator; the missing decision or approval; why structured input is
-appropriate; its `required`, `useful-but-non-blocking`, or `inappropriate`
-classification and blocking state; and the smallest capability-preserving
-instruction change. Also record suggested placement and prompt intent,
-platform fallback behavior, behavior when the user does not answer, and a
-validation method.
+Every verified interaction-design finding includes the owning skill and exact
+source locator; the missing decision or approval, or the existing unnecessary
+prompt; why structured input is appropriate or inappropriate; its `required`,
+`useful-but-non-blocking`, or `inappropriate` classification and blocking
+state; and the smallest capability-preserving instruction change. Also record
+suggested placement and prompt intent, platform fallback behavior, behavior
+when the user does not answer, and a validation method.
+
+`required` and `useful-but-non-blocking` may support a missing-question finding.
+`inappropriate` supports a finding only when the reviewed skill currently
+requires or recommends an unnecessary prompt. A candidate whose discoverable
+answer or safe default merely shows that no question is missing is a rejected
+signal, not a finding.
 
 When mutually exclusive options are appropriate, show two or three choices,
 mark the recommended option, and state its tradeoff. When free-form input is
