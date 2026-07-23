@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 80
+- **Total Sessions**: 82
 - **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1056 | Active |
+| `journal-2.md` | ~1133 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,8 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 82 | 2026-07-23 | Recover bounded inventory pull request | - | `codex/se-review-skills-bounded-inventory-output-replacement` |
+| 81 | 2026-07-23 | Bound se-review-skills inventory output | `c59e4a3`, `db0c106`, `998c574`, `30c4243` | `codex/se-review-skills-bounded-inventory-output` |
 | 80 | 2026-07-23 | Publish bounded inventory output plan | `c567e93` | `codex/se-review-skills-bounded-inventory-output` |
 | 79 | 2026-07-22 | Pin SE interaction contracts | `532df96`, `5754f33` | `codex/se-interaction-contract-regression-tests` |
 | 78 | 2026-07-22 | Align watchlist state sentinel terminology | `7fa086502d7078469eb016e8605c14ac7838e065`, `31285ac805a1423ced688a7cf90815408e875433`, `650e8b7901347ca85da6dd85a0714972391d2704` | `codex/se-watchlist-state-sentinel` |

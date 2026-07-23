@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.62.0 - 2026-07-23
+
+- Add an explicit bounded-output transport for large `se-review-skills`
+  inventories, preserving the complete snapshot in an atomic mode-`0600`
+  artifact while stdout carries a small verifiable status envelope.
+- Reject output escapes, symlinks, reviewed or installed roots, arbitrary
+  existing files, and destination races without changing legacy stdout mode.
+
 ## 0.61.0 - 2026-07-22
 
 - Align the shared monitor-state contract with caller-specific first-state

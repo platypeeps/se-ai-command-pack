@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import contextlib
 import hashlib
 import importlib.util
+import io
 import json
 import shutil
 import subprocess
@@ -203,6 +205,398 @@ class SkillReviewInventoryTest(TempDirTestCase):
             "skill" if len(skills) == 1 else "repo",
             root_was_explicit=True,
         )
+
+    def run_main(self, *arguments: str) -> tuple[int, str, str]:
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr):
+            result = review.main(list(arguments))
+        return result, stdout.getvalue(), stderr.getvalue()
+
+    @staticmethod
+    def with_snapshot(payload: dict) -> dict:
+        canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+        payload["snapshotId"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        return payload
+
+    def test_bounded_output_preserves_full_inventory_and_reports_same_snapshot(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+
+        legacy_code, legacy_stdout, legacy_stderr = self.run_main(
+            "inventory",
+            "--root",
+            str(root),
+            "--skill",
+            "se-test",
+            "--scope",
+            "skill",
+            "--installed",
+            "off",
+        )
+        self.assertEqual(legacy_code, 0)
+        self.assertEqual(legacy_stderr, "")
+        legacy = json.loads(legacy_stdout)
+        self.assertEqual(list(output_root.iterdir()), [])
+
+        pretty_code, pretty_stdout, pretty_stderr = self.run_main(
+            "inventory",
+            "--root",
+            str(root),
+            "--skill",
+            "se-test",
+            "--scope",
+            "skill",
+            "--installed",
+            "off",
+            "--pretty",
+        )
+        self.assertEqual(pretty_code, 0)
+        self.assertEqual(pretty_stderr, "")
+        self.assertEqual(json.loads(pretty_stdout), legacy)
+
+        code, stdout, stderr = self.run_main(
+            "inventory",
+            "--root",
+            str(root),
+            "--skill",
+            "se-test",
+            "--scope",
+            "skill",
+            "--installed",
+            "off",
+            "--output-root",
+            str(output_root),
+            "--output",
+            "inventory.json",
+        )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(stderr, "")
+        envelope = json.loads(stdout)
+        artifact = json.loads((output_root / "inventory.json").read_text("utf-8"))
+        self.assertEqual(artifact, legacy)
+        self.assertEqual(envelope["snapshotId"], legacy["snapshotId"])
+        self.assertEqual(envelope["selectedSkills"], 1)
+        self.assertEqual(envelope["installedCopies"], 0)
+        self.assertEqual(envelope["status"], "success")
+        self.assertTrue(envelope["artifactWritten"])
+        self.assertEqual(envelope["transportSchemaVersion"], 1)
+        self.assertEqual(
+            set(envelope),
+            {
+                "artifactWritten",
+                "coverageLimits",
+                "error",
+                "installedCopies",
+                "inventoryPath",
+                "inventorySchemaVersion",
+                "selectedSkills",
+                "snapshotId",
+                "status",
+                "transportSchemaVersion",
+            },
+        )
+        self.assertEqual((output_root / "inventory.json").stat().st_mode & 0o777, 0o600)
+
+    def test_bounded_envelope_does_not_inline_a_large_inventory(self) -> None:
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+        payload = self.with_snapshot(
+            {
+                "schemaVersion": review.SCHEMA_VERSION,
+                "scope": "package",
+                "selector": {},
+                "repositories": [],
+                "installationRoots": [],
+                "skills": [
+                    {"name": f"se-{index}", "body": "x" * 1000}
+                    for index in range(500)
+                ],
+                "candidateSignals": {},
+                "coverage": {
+                    "selectedSkills": 500,
+                    "installedCopies": 0,
+                    "limits": ["fixture limit"],
+                },
+            }
+        )
+
+        with mock.patch.object(review, "build_inventory", return_value=payload):
+            code, stdout, stderr = self.run_main(
+                "inventory",
+                "--root",
+                str(self.base),
+                "--output-root",
+                str(output_root),
+                "--output",
+                "large.json",
+            )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(stderr, "")
+        self.assertLess(len(stdout), 2_000)
+        self.assertGreater((output_root / "large.json").stat().st_size, 500_000)
+        self.assertEqual(json.loads(stdout)["snapshotId"], payload["snapshotId"])
+        self.assertEqual(
+            json.loads((output_root / "large.json").read_text("utf-8")), payload
+        )
+
+    def test_bounded_output_replaces_only_a_verified_prior_inventory(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+        arguments = (
+            "inventory",
+            "--root",
+            str(root),
+            "--installed",
+            "off",
+            "--output-root",
+            str(output_root),
+            "--output",
+            "inventory.json",
+        )
+
+        first_code, _, _ = self.run_main(*arguments)
+        second_code, _, _ = self.run_main(*arguments)
+        self.assertEqual((first_code, second_code), (0, 0))
+
+        destination = output_root / "inventory.json"
+        destination.write_text("caller-owned\n", encoding="utf-8")
+        code, stdout, stderr = self.run_main(*arguments)
+        self.assertEqual(code, 2)
+        self.assertIn("refusing to replace invalid inventory artifact", stderr)
+        self.assertEqual(destination.read_text("utf-8"), "caller-owned\n")
+        envelope = json.loads(stdout)
+        self.assertFalse(envelope["artifactWritten"])
+        self.assertIsNone(envelope["inventoryPath"])
+
+    def test_existing_inventory_size_limit_preserves_destination(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+        arguments = (
+            "inventory",
+            "--root",
+            str(root),
+            "--installed",
+            "off",
+            "--output-root",
+            str(output_root),
+            "--output",
+            "inventory.json",
+        )
+        first_code, _, _ = self.run_main(*arguments)
+        self.assertEqual(first_code, 0)
+        destination = output_root / "inventory.json"
+        prior_content = destination.read_text("utf-8")
+
+        with mock.patch.object(
+            review, "MAX_EXISTING_INVENTORY_BYTES", len(prior_content) - 1
+        ):
+            code, stdout, stderr = self.run_main(*arguments)
+
+        self.assertEqual(code, 2)
+        self.assertIn("larger than", stderr)
+        self.assertEqual(destination.read_text("utf-8"), prior_content)
+        envelope = json.loads(stdout)
+        self.assertFalse(envelope["artifactWritten"])
+        self.assertIsNone(envelope["inventoryPath"])
+
+    def test_bounded_error_is_single_line_and_size_limited(self) -> None:
+        error = review._bounded_error("first line\n" + "x" * 1_000)
+
+        self.assertNotIn("\n", error)
+        self.assertEqual(len(error), review.MAX_ENVELOPE_ERROR_CHARS)
+        self.assertTrue(error.endswith("..."))
+
+    def test_output_requires_an_explicit_output_root(self) -> None:
+        root, _ = self.write_se_pack()
+        code, stdout, stderr = self.run_main(
+            "inventory",
+            "--root",
+            str(root),
+            "--installed",
+            "off",
+            "--output",
+            "inventory.json",
+        )
+
+        self.assertEqual(code, 2)
+        self.assertIn("--output requires --output-root", stderr)
+        envelope = json.loads(stdout)
+        self.assertEqual(envelope["status"], "error")
+        self.assertFalse(envelope["artifactWritten"])
+        self.assertIsNone(envelope["inventoryPath"])
+
+        parser_stderr = io.StringIO()
+        with contextlib.redirect_stderr(parser_stderr):
+            with self.assertRaises(SystemExit) as raised:
+                review.main(
+                    [
+                        "inventory",
+                        "--root",
+                        str(root),
+                        "--output-root",
+                        str(self.base),
+                    ]
+                )
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("--output-root requires --output", parser_stderr.getvalue())
+
+    def test_destination_change_before_replace_preserves_prior_artifact(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+        arguments = (
+            "inventory",
+            "--root",
+            str(root),
+            "--installed",
+            "off",
+            "--output-root",
+            str(output_root),
+            "--output",
+            "inventory.json",
+        )
+        first_code, _, _ = self.run_main(*arguments)
+        self.assertEqual(first_code, 0)
+        destination = output_root / "inventory.json"
+        prior_content = destination.read_text("utf-8")
+        real_fingerprint = review._destination_fingerprint
+        calls = 0
+
+        def changed_fingerprint(path: Path):
+            nonlocal calls
+            calls += 1
+            fingerprint = real_fingerprint(path)
+            if calls == 3 and fingerprint is not None:
+                return (*fingerprint[:-1], fingerprint[-1] + 1)
+            return fingerprint
+
+        with mock.patch.object(
+            review, "_destination_fingerprint", side_effect=changed_fingerprint
+        ):
+            code, stdout, stderr = self.run_main(*arguments)
+
+        self.assertEqual(code, 2)
+        self.assertIn("changed before replacement", stderr)
+        self.assertEqual(destination.read_text("utf-8"), prior_content)
+        self.assertEqual(
+            sorted(path.name for path in output_root.iterdir()), ["inventory.json"]
+        )
+        self.assertFalse(json.loads(stdout)["artifactWritten"])
+
+    def test_output_destination_rejects_escapes_roots_and_symlinks(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+        payload = self.inventory(root, "se-test")
+
+        with self.assertRaisesRegex(review.ReviewError, "parent escape"):
+            review._validate_output_destination(
+                Path("../inventory.json"), output_root, []
+            )
+        with self.assertRaisesRegex(review.ReviewError, "unsafe output root"):
+            review._validate_output_destination(Path("inventory.json"), Path("/"), [])
+        with self.assertRaisesRegex(review.ReviewError, "reviewed or installed root"):
+            review._validate_output_destination(
+                root / "inventory.json",
+                self.base,
+                review._forbidden_output_roots(payload),
+            )
+
+        linked_root = self.base / "linked-artifacts"
+        linked_root.symlink_to(output_root, target_is_directory=True)
+        with self.assertRaisesRegex(review.ReviewError, "symlink boundary"):
+            review._validate_output_destination(
+                Path("inventory.json"), linked_root, []
+            )
+
+        real_root_parent = self.base / "real-root-parent"
+        nested_root = real_root_parent / "artifacts"
+        nested_root.mkdir(parents=True)
+        linked_root_parent = self.base / "linked-root-parent"
+        linked_root_parent.symlink_to(real_root_parent, target_is_directory=True)
+        with self.assertRaisesRegex(review.ReviewError, "symlink boundary"):
+            review._validate_output_destination(
+                Path("inventory.json"), linked_root_parent / "artifacts", []
+            )
+
+        real_parent = output_root / "real"
+        real_parent.mkdir()
+        linked_parent = output_root / "linked"
+        linked_parent.symlink_to(real_parent, target_is_directory=True)
+        with self.assertRaisesRegex(review.ReviewError, "crosses a symlink"):
+            review._validate_output_destination(
+                Path("linked/inventory.json"), output_root, []
+            )
+
+        directory_destination = output_root / "directory.json"
+        directory_destination.mkdir()
+        with self.assertRaisesRegex(review.ReviewError, "not a regular file"):
+            review._validate_output_destination(
+                Path("directory.json"), output_root, []
+            )
+
+        linked_destination = output_root / "linked.json"
+        linked_destination.symlink_to(real_parent / "inventory.json")
+        with self.assertRaisesRegex(review.ReviewError, "is a symlink"):
+            review._validate_output_destination(
+                Path("linked.json"), output_root, []
+            )
+
+    def test_interrupted_atomic_write_leaves_no_artifact_or_temporary_file(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+        with mock.patch.object(review.os, "replace", side_effect=OSError("interrupted")):
+            code, stdout, stderr = self.run_main(
+                "inventory",
+                "--root",
+                str(root),
+                "--installed",
+                "off",
+                "--output-root",
+                str(output_root),
+                "--output",
+                "inventory.json",
+            )
+
+        self.assertEqual(code, 2)
+        self.assertIn("interrupted", stderr)
+        self.assertFalse((output_root / "inventory.json").exists())
+        self.assertEqual(list(output_root.iterdir()), [])
+        envelope = json.loads(stdout)
+        self.assertFalse(envelope["artifactWritten"])
+        self.assertEqual(envelope["status"], "error")
+
+    def test_bounded_output_succeeds_when_fchmod_is_unavailable(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+
+        with mock.patch.object(review.os, "fchmod", None, create=True):
+            code, stdout, stderr = self.run_main(
+                "inventory",
+                "--root",
+                str(root),
+                "--installed",
+                "off",
+                "--output-root",
+                str(output_root),
+                "--output",
+                "inventory.json",
+            )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(stderr, "")
+        self.assertTrue((output_root / "inventory.json").is_file())
+        envelope = json.loads(stdout)
+        self.assertTrue(envelope["artifactWritten"])
+        self.assertEqual(envelope["status"], "success")
 
     def test_current_package_inventory_compares_every_skill_pair(self) -> None:
         payload = review.build_inventory(
