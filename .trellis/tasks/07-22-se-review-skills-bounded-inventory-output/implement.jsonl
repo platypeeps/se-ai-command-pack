@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Apply repository guidance for deterministic contracts, filesystem boundaries, and focused regression tests during implementation."}
