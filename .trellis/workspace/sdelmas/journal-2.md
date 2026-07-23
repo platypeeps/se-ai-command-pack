@@ -802,3 +802,39 @@ Hardened the se-review-skills inventory analyzer for Python 3.9 compatibility, h
 ### Next Steps
 
 - None - task complete
+
+
+## Session 74: Make shared evidence rules claim-sensitive
+
+**Date**: 2026-07-22
+**Task**: Make shared evidence rules claim-sensitive
+**Branch**: `codex/se-shared-evidence-claim-sensitive`
+
+### Summary
+
+Replaced universal evidence-age and source-count proxies with claim-sensitive freshness and a narrowly dispositive authoritative-record path while preserving conservative corroboration and disconfirmation. Added release metadata and tests, captured the Trellis contract, and resolved PR #93 review feedback.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `612744356e22d286e5ebc3245eb8e0f21062937a` | (see git log) |
+| `3265e2d35b3670e251e816a8085889c1aa375936` | (see git log) |
+| `4d80968caa428d842749885f3b332234ce71f2c5` | (see git log) |
+| `998da3fb0f2c5f0e404799b6ddf23afad9ff01db` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
