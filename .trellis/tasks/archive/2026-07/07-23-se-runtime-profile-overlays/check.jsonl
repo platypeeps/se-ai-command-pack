@@ -1,4 +1,3 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
 {"file": "tests/test_generate.py", "reason": "Pins profile rendering drift and rollback behavior"}
 {"file": "tests/test_install.py", "reason": "Pins platform-specific installed bytes"}
 {"file": "tests/test_skill_review.py", "reason": "Pins generated-to-authored review mapping"}
