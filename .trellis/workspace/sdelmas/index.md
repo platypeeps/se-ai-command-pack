@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 84
+- **Total Sessions**: 85
 - **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1204 | Active |
+| `journal-2.md` | ~1239 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 85 | 2026-07-23 | Receipt-aware installer refresh | `ef04c9d` | `main` |
 | 84 | 2026-07-23 | Review Claude runtime profile overlays | `335926e`, `91a1864` | `codex/add-claude-runtime-profile-overlays` |
 | 83 | 2026-07-23 | Claude runtime profile overlays | `a267be0c4fd47f6a2f1c6c352ecee326183b947c` | `main` |
 | 82 | 2026-07-23 | Recover bounded inventory pull request | - | `codex/se-review-skills-bounded-inventory-output-replacement` |

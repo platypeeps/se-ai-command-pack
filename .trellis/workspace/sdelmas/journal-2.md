@@ -371,7 +371,13 @@ Added explicit per-skill security and safety verdicts to se-review-skills, stren
 
 ### Main Changes
 
-- Detailed change bullets were not supplied; see the summary above.
+- Threaded prior provenance hashes through installer planning and application.
+- Added receipt-vouched `updated` classification with destination digest
+  revalidation before atomic apply.
+- Preserved conflicts for user drift, malformed receipts, symlinks, and
+  preflight races; kept preservation and explicit-force behavior unchanged.
+- Added Claude and Codex end-to-end coverage, lifecycle documentation, and the
+  0.64.0 release metadata.
 
 ### Git Commits
 
@@ -1196,6 +1202,42 @@ Published PR #103, cleared deterministic preflight blockers, addressed Copilot f
 - [OK] 19 focused installer tests and Ruff passed.
 - [OK] Deterministic PR full-check passed with 509 tests, Ruff, mypy, generation parity, install audit, release checks, and Prism/Gito disabled.
 - [OK] Copilot round 2 produced no new comments; all review threads are resolved and CI is green.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 85: Receipt-aware installer refresh
+
+**Date**: 2026-07-23
+**Task**: Receipt-aware installer refresh
+**Branch**: `main`
+
+### Summary
+
+Allowed provenance-vouched prior installer payloads to refresh without force while preserving user drift and preflight race conflicts; released as 0.64.0 with full validation.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ef04c9d` | fix: refresh vouched installer-managed files |
+
+### Testing
+
+- Focused installer and provenance suites: 91 tests passed.
+- `make check`: 515 tests plus Ruff, mypy, generation parity, and the release
+  payload gate passed.
+- Repeated generation and `git diff --check` passed.
 
 ### Status
 
