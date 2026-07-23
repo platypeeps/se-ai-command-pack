@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.60.0 - 2026-07-22
+
+- Add a semantic interaction-design dimension to `se-review-skills` that
+  distinguishes required, useful-but-non-blocking, and inappropriate prompts.
+- Require portable structured-question suggestions with complete evidence,
+  fallback, nonresponse, option-shape, and validation fields while keeping
+  review mode read-only.
+
 ## 0.59.0 - 2026-07-22
 
 - Define readable monitor-state staleness through an explicit freshness-policy

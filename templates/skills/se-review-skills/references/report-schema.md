@@ -66,6 +66,22 @@ Every finding includes:
 - regression risk, dependencies, and validation; and
 - peer-skill or cross-repository references without duplicate findings.
 
+## Interaction-design findings
+
+Every verified missing-question finding includes the owning skill and exact
+source locator; the missing decision or approval; why structured input is
+appropriate; its `required`, `useful-but-non-blocking`, or `inappropriate`
+classification and blocking state; and the smallest capability-preserving
+instruction change. Also record suggested placement and prompt intent,
+platform fallback behavior, behavior when the user does not answer, and a
+validation method.
+
+When mutually exclusive options are appropriate, show two or three choices,
+mark the recommended option, and state its tradeoff. When free-form input is
+necessary, describe the needed input without inventing an option list. Keep
+keyword-only candidates, discoverable answers, and existing safe defaults as
+rejected signals rather than numbered findings.
+
 Every session-derived finding also includes:
 
 - a minimal redacted session locator and relevant turn or event range;

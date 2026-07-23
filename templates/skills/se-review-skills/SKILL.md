@@ -1,6 +1,6 @@
 ---
 name: se-review-skills
-description: Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks.
+description: Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, interaction design, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks.
 ---
 
 # SE Review Skills
@@ -120,6 +120,14 @@ an exact `skill=`, `root=`, or `installed-root=`.
    Compare siblings on trigger, input, output, authority, time horizon, and
    handoff. Assign an overlap finding to one primary skill and cross-reference
    peers instead of duplicating it.
+   Run the rubric's semantic interaction-design pass rather than promoting
+   question-related keywords. Treat `AskUserQuestion` as the named
+   structured-input capability on targets that expose it. On another target,
+   recommend a verified platform equivalent when one is available, or a
+   concise direct-question fallback. Keep portable behavior in canonical
+   instructions and host-only syntax in verified target guidance. Review mode
+   remains read-only; interaction findings do not ask the current user or
+   authorize edits while reviewing another skill.
 6. When `sessions=auto`, run the bounded observed-use pass in the session
    evidence guide. Confirm actual invocation rather than counting incidental
    name matches, inspect at most three distinct confirmed sessions per skill and
@@ -225,6 +233,8 @@ an exact `skill=`, `root=`, or `installed-root=`.
 - **Package-wide findings** — numbered cross-family or cross-skill findings;
 - **Family and skill findings** — stable hierarchical findings, including
   safety alerts, plus individual, skill, and family selectors;
+- **Interaction-design findings** — required, useful-but-non-blocking, and
+  inappropriate question decisions, with portable suggestions and fallbacks;
 - **Runtime recommendations** — invocation, context, delegation roles, portable
   model profile, effort, target overrides, and rationale per skill;
 - **Repository selectors** — one selector per owner and `task=all` or

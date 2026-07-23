@@ -109,7 +109,7 @@ come directly from canonical skill frontmatter.
 | `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
 | `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
 | `se-weekly-review` | Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct. |
-| `se-review-skills` | Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks. |
+| `se-review-skills` | Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, interaction design, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
