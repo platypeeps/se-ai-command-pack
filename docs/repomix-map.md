@@ -1510,8 +1510,8 @@ one verdict, rationale, evidence links or locators, source dates, and confidence
   factual verdict totals; audit their checkable premises separately when useful.
 - Apply the shared source standards and verification protocol. Determine
   freshness from claim volatility, applicable version or period, supersession,
-  and any explicit domain horizon; age alone does not stale immutable or stable
-  historical evidence. Date and scope every mutable claim against the explicit
+  and any explicit domain horizon; age alone does not make immutable or stable
+  historical evidence stale. Date and scope every mutable claim against the explicit
   as-of date, jurisdiction, version, environment, or period.
 - One authoritative primary record may support an exact load-bearing claim only
   when the record is dispositive and its identity and applicability are
