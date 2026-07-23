@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.56.0 - 2026-07-22
+
+- Harden the `se-review-skills` analyzer for the documented Python 3.9 floor,
+  honest test-text references, verified changeability, and bytecode-stable
+  snapshots.
+- Bump the inventory schema to version 3 and preserve reviewability for
+  unresolved installed copies without enabling task or apply routes.
+
 ## 0.55.0 - 2026-07-22
 
 - Preserve unsupported load-bearing claims as `unverified` in claim and

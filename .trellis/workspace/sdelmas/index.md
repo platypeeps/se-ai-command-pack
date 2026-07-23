@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 72
+- **Total Sessions**: 73
 - **Last Active**: 2026-07-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~767 | Active |
+| `journal-2.md` | ~804 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 73 | 2026-07-22 | Harden skill review analyzer | `33961997071fb355960002915cff6b781ebc1e4c`, `32b7789342930647ee084b409e32a0a0966964f1`, `104fe64cb1788038350366fa3536fe07fd1b8623` | `codex/se-review-skills-analyzer-hardening` |
 | 72 | 2026-07-22 | Preserve unverified claims in fact-check audits | `ca4de3e`, `f8d640e`, `11f97ee` | `codex/se-fact-check-audit-completeness` |
 | 71 | 2026-07-22 | Allow request-scoped context in se-ask-me drafts | `1271b0a`, `42ce88b`, `8765b48` | `codex/se-ask-me-current-context-drafts` |
 | 70 | 2026-07-22 | Resolve PR 88 merge conflict | `7ce77e8` | `codex/se-review-skills-ask-user-question-review` |
