@@ -38,6 +38,26 @@ are not interchangeable.
 - Context isolation is not automatically better. Include its cost, lost context,
   and merge burden in the recommendation.
 
+## Session inspection routing
+
+Keep conversation discovery, invocation confirmation, privacy minimization,
+version provenance, and causal classification inline with the parent reviewer.
+They depend on the current project boundary and user authority, and separating
+them can leak private context or turn an incidental match into a false finding.
+
+Use only an already available project-scoped session reader. `trellis mem` is
+one suitable example when the repository already provides it; never install,
+enable, authenticate, or reconfigure a history provider for the review. Do not
+substitute a global session search, plugin-cache crawl, or raw home-directory
+scan. Provider absence or incomplete indexing is a coverage limit, not a reason
+to broaden discovery.
+
+Never pass raw sessions to a subagent. When an independent validator needs to
+test a session-derived claim, give it only the current canonical skill artifact,
+the user-shaped request, and a minimized evidence record with redacted behavior,
+outcome, provenance, and causal hypothesis. The parent retains session locators,
+verifies the evidence, and owns the final classification.
+
 Claude Code documents that `context: fork` runs the skill in a subagent without
 the current conversation history, so use it only for task-shaped instructions
 whose bounded prompt is self-sufficient. Its current skill frontmatter also
@@ -60,10 +80,10 @@ task budget, prohibit recursive spawning, and keep task creation or edits with
 the parent unless separately authorized. The parent verifies evidence,
 deduplicates overlaps, resolves conflicts, and owns the final report.
 
-For independent validation, pass raw artifacts and the user-shaped request.
-Do not pass suspected defects, expected findings, intended fixes, or the
-primary reviewer's conclusion unless the validation is explicitly testing that
-claim.
+For independent validation, pass raw skill artifacts and the user-shaped
+request, but never raw sessions. Do not pass suspected defects, expected
+findings, intended fixes, or the primary reviewer's conclusion unless the
+validation is explicitly testing that claim.
 
 ## Model profiles
 

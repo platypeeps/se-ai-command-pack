@@ -1,0 +1,3 @@
+{"file": "tests/test_skills.py", "reason": "Focused session-evidence behavior pins"}
+{"file": "tests/test_generate.py", "reason": "Cross-platform reference fan-out assertion"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Reusable observed-session review contract"}

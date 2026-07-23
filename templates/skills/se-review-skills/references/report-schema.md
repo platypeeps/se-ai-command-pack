@@ -21,6 +21,8 @@ copies remain separate unless normalized name and content hash both match.
    1.2 <family> — Safety: <verdict counts>
        1.2.1 <skill> — Safety verdict: alerted | clean | indeterminate
            Guarded operations and unresolved candidates: <evidence or none>
+           Observed use: <coverage, invocations, mistakes, controls, or limits>
+           Structural recommendations and gotchas: <records or none>
            1.2.1.1 <finding>
            Do all: apply=skill:<skill>
        Do all: apply=family:<family>
@@ -64,6 +66,26 @@ Every finding includes:
 - regression risk, dependencies, and validation; and
 - peer-skill or cross-repository references without duplicate findings.
 
+Every session-derived finding also includes:
+
+- a minimal redacted session locator and relevant turn or event range;
+- `strong-activation` or `corroborated-use` invocation evidence;
+- `current-canonical`, `installed-drift`, `historical-version`, or `unknown`
+  skill provenance;
+- causal class `skill-contract`, `execution-deviation`,
+  `tool-or-environment`, `user-intent-change`, or `indeterminate`, plus
+  confidence;
+- the redacted observed behavior and consequence;
+- a successful or neutral control comparison when available;
+- the exact current canonical source locator that remains remediable; and
+- the structural remedy and, for an edge-case gotcha, trigger, failure,
+  prevention, recovery, and regression method.
+
+Do not include raw dialogue, secrets, personal or confidential data,
+machine-specific host paths, or full tool output. Mention-only matches and
+session errors without confirmed invocation and current source causality remain
+coverage limits, not findings.
+
 Every harmful-instruction alert also includes:
 
 - exact source file and line evidence; candidate-only or execution-derived
@@ -85,14 +107,18 @@ finding.
 ## Snapshot and selectors
 
 The analyzer snapshot hashes selected files, package identity, family and
-target metadata, ownership evidence, and schema version. Before `task=` or
-`apply=`:
+target metadata, ownership evidence, and schema version. Session evidence is a
+separate private evidence layer and does not change that deterministic source
+snapshot. Before `task=` or `apply=`:
 
 1. recompute the inventory;
 2. require the same snapshot ID;
 3. resolve the selector only inside that snapshot;
-4. preview findings, destinations, priorities, and exact template files; and
-5. reject missing, stale, ambiguous, escaped, or non-template paths.
+4. revalidate selected session records against the project boundary, invocation
+   evidence, provenance, causal class, current canonical locator, and redaction;
+5. preview findings, destinations, priorities, and exact template files; and
+6. reject missing, stale, ambiguous, escaped, or non-template paths or session
+   evidence.
 
 `apply=all` means all accepted findings in this bounded snapshot. It never
 waives safety gates, newly discovered tradeoffs, per-skill checkpoints, or
@@ -157,7 +183,9 @@ refresh installations, or grant any authority not already present in the mode.
 When no material finding survives verification, say so. Still report the
 explicit safety verdict for every skill, guarded operations and unresolved
 candidates, snapshot, repositories, skills, dimensions, target coverage, tests
-observed, independent passes, unavailable capabilities, excluded scope,
-residual uncertainty, and the selectors that would be valid if a later review
-produces findings. Finish with **Suggested next steps**, even when the only
-recommendation is no action or a later bounded review.
+observed, independent passes, session mode and budget, confirmed invocations,
+successful or neutral controls, rejected mention-only candidates, privacy or
+provider limits, unavailable capabilities, excluded scope, residual
+uncertainty, and the selectors that would be valid if a later review produces
+findings. Finish with **Suggested next steps**, even when the only recommendation
+is no action or a later bounded review.

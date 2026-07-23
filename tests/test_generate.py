@@ -152,6 +152,7 @@ class RealRepoGeneratorTest(unittest.TestCase):
             "SKILL.md",
             "references/report-schema.md",
             "references/review-rubric.md",
+            "references/session-evidence.md",
             "references/runtime-routing.md",
             "scripts/skill_review.py",
         }

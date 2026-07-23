@@ -1,0 +1,5 @@
+{"file": "templates/skills/se-review-skills/SKILL.md", "reason": "Core session-review workflow and authority contract"}
+{"file": "templates/skills/se-review-skills/references/session-evidence.md", "reason": "Bounded discovery, causality, privacy, structure, and gotchas"}
+{"file": "templates/skills/se-review-skills/references/review-rubric.md", "reason": "Observed execution review dimension and finding threshold"}
+{"file": "templates/skills/se-review-skills/references/report-schema.md", "reason": "Session coverage and finding fields"}
+{"file": "templates/skills/se-review-skills/references/runtime-routing.md", "reason": "Inline private-session handling and delegation boundary"}

@@ -546,7 +546,79 @@ Created and published six Trellis planning tasks from the SE skill review, then 
 - None - task complete
 
 
-## Session 67: Add AskUserQuestion review planning task
+## Session 67: Add session evidence to skill reviews
+
+**Date**: 2026-07-22
+**Task**: Add session evidence to skill reviews
+**Branch**: `codex/se-review-skills-session-evidence`
+
+### Summary
+
+Added bounded project-scoped session review, invocation and provenance gates, causal classification, structural remedies, gotchas, privacy controls, cross-platform generation, tests, and the 0.53.0 release payload.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `093809c` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 68: Create and review se-review-skills session evidence PR
+
+**Date**: 2026-07-22
+**Task**: Create and review se-review-skills session evidence PR
+**Branch**: `codex/se-review-skills-session-evidence`
+
+### Summary
+
+Refreshed repository knowledge, opened PR #89, clarified the session evidence collection-budget unit after Copilot review, and verified the current head through local and remote review gates.
+
+### Main Changes
+
+- Refreshed the generated repository map and Obsidian knowledge base before PR creation.
+- Defined distinct sessions as the collection-budget unit and pinned repeated-invocation handling across the skill, reference, spec, and tests.
+- Completed two Copilot review rounds, replied to and resolved both actionable threads, and verified green CI.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a7ad3ad` | docs: refresh repository map |
+| `fcbf176` | fix: clarify session review budgets |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh
+- [OK] GitHub Actions: lint, release payload gate, Python 3.10/3.13 Ubuntu, Python 3.13 macOS, and aggregate ci-result
+- [OK] Copilot round 2 reviewed 21/21 files with no new comments; GraphQL showed zero unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 69: Add AskUserQuestion review planning task
 
 **Date**: 2026-07-22
 **Task**: Add AskUserQuestion review planning task
@@ -561,7 +633,6 @@ Created and published a Trellis planning task for reviewing skills that should u
 - Added a P2 no-start planning task with requirements and acceptance criteria for structured user-question recommendations.
 - Defined blocking, optional, discoverable-answer, safe-default, semantic-evidence, and cross-platform interaction boundaries.
 - Published PR #88 with a task-only scope and completed one clean Copilot review round.
-
 
 ### Git Commits
 
