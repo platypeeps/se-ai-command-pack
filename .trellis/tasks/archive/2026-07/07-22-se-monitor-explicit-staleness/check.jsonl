@@ -1,0 +1,3 @@
+{"file": "tests/test_skills.py", "reason": "Run the focused monitor and state-schema contract tests."}
+{"file": "templates/skills/se-monitor/SKILL.md", "reason": "Verify branch selection and qualified-comparison safeguards."}
+{"file": "templates/skills/_shared/references/state-schema.md", "reason": "Verify caller-neutral continuity and no-implicit-age semantics."}

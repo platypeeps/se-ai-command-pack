@@ -47,6 +47,11 @@ boundary users exercise.
   verifies an observable result belongs to `se-tutorial`.
 - If the intended outcome leaves those workflows materially ambiguous, ask one
   focused routing question before selecting a skill.
+- For portable comparison state, define staleness from an explicit caller
+  freshness policy or an unrecoverable source-specific continuity gap. Never
+  select a stale-state recovery branch from age alone when no freshness
+  horizon is part of the accepted contract; preserve source boundaries and use
+  qualified comparison when continuity fails.
 - Preserve compatibility with Python 3.10; use postponed annotations where
   modern typing syntax appears.
 - Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
@@ -60,6 +65,8 @@ boundary users exercise.
   failure and preservation paths when filesystem state is involved.
 - Pin both positive sides of any overlapping-skill routing boundary plus its
   materially ambiguous clarification path.
+- Pin fresh, explicit-policy stale, continuity-gap stale, and no-policy paths
+  whenever a shared state contract selects normal versus qualified comparison.
 - Use temporary install roots; never target the developer's real home directory
   from tests.
 - Mock Git/subprocess boundaries when asserting lifecycle sequencing, while

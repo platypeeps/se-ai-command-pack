@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.59.0 - 2026-07-22
+
+- Define readable monitor-state staleness through an explicit freshness-policy
+  violation or an unrecoverable source-specific continuity gap.
+- Keep age-only, no-policy states on the normal comparison path when source
+  continuity remains recoverable, while preserving qualified stale comparison.
+
 ## 0.58.0 - 2026-07-22
 
 - Clarify that article-shaped tutorials centered on original contribution use

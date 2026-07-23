@@ -51,10 +51,16 @@ identify them before reading sources or state.
 1. Restate the normalized subject, watch set, materiality rules, source scope,
    baseline locator and cutoff, collection through-date, and requested detail.
    Ask when an ambiguity would change what is gathered or compared.
-2. Validate the prior artifact against `references/state-schema.md`. Handle its
-   state deterministically:
+2. Validate the prior artifact against `references/state-schema.md`. After the
+   missing, malformed, and version checks, apply the deterministic staleness
+   rule before choosing a comparison branch. A readable version-1 state is
+   stale only when an explicit freshness policy is violated or a
+   source-specific continuity failure means the requested comparison interval
+   cannot be recovered from its recorded boundary. Age alone does not make a
+   readable state stale. Handle the result deterministically:
    - absent or `new`: enter first-baseline mode and do not claim a delta;
    - unreadable or malformed: name the failure and do not compare;
+   - readable and not stale: enter normal delta mode;
    - readable but stale: label it stale, retain dated gaps, and permit only a
      qualified comparison that cannot turn non-observation into resolution; or
    - newer than supported: reject it without interpretation or comparison.
@@ -102,6 +108,9 @@ identify them before reading sources or state.
   safety rules.
 - Never report a delta when no valid comparison exists. Missing, malformed,
   stale, incompatible, or unsupported state remains visible in the result.
+- Never invent a freshness horizon. When no explicit freshness policy applies,
+  age alone does not select the stale branch; source continuity and coverage
+  still determine whether normal comparison is valid.
 - Never convert source absence into resolution. Use `unverifiable` when source
   coverage cannot establish the watched subject's current state.
 - Minimize retained state and respect the requested audience and source

@@ -2261,6 +2261,30 @@ class SkillSafetyPinsTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
+    def test_monitor_selects_staleness_branch_deterministically(self) -> None:
+        text = normalized("se-monitor").lower()
+        schema = " ".join(
+            (
+                SKILLS_ROOT / "_shared" / "references" / "state-schema.md"
+            ).read_text(encoding="utf-8").lower().split()
+        )
+        for phrase in (
+            "apply the deterministic staleness rule before choosing a comparison branch",
+            "an explicit freshness policy is violated",
+            "source-specific continuity failure",
+            "age alone does not make a readable state stale",
+        ):
+            self.assertIn(phrase, text)
+        for phrase in (
+            "explicit-policy stale",
+            "continuity-gap stale",
+            "fresh comparison",
+            "no-policy comparison",
+            "cannot recover the requested comparison interval from its recorded `comparisonfrom` boundary",
+            "age alone does not select the stale branch",
+        ):
+            self.assertIn(phrase, schema)
+
     def test_monitor_is_read_only_and_routes_siblings(self) -> None:
         raw = skill_text("se-monitor")
         for sibling in ("se-brief", "se-status", "se-research"):
