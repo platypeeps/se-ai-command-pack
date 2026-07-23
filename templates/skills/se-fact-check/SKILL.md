@@ -66,6 +66,9 @@ reading or searching.
    - **contradicted** — stronger credible evidence conflicts with the claim;
    - **outdated** — the claim was supportable for an earlier date but is no
      longer current as of the audit date.
+   Do not remove an audited claim because it is load-bearing and unverified.
+   Keep it in the claim and evidence-gap ledgers with its missing evidence; it
+   cannot support the summary conclusion or recommendation.
 7. Explain the decisive evidence and uncertainty. Keep credible conflicts
    visible, use `unverified` when coverage cannot support a stronger verdict,
    and never treat absence of evidence as contradiction without an authoritative
@@ -90,6 +93,9 @@ reading or searching.
 - Apply `references/source-standards.md` and
   `references/verification-protocol.md`; date mutable evidence, preserve source
   conflicts, and keep weak or incomplete evidence from earning a strong verdict.
+- Preserve every audited factual claim through exactly one verdict. An
+  `unverified` load-bearing claim remains traceable but is excluded from
+  conclusions, recommendations, and corrected wording.
 - Correct only what the evidence requires. Minimal corrected wording is a
   suggestion, not permission to rewrite or publish the user's artifact.
 
@@ -106,7 +112,8 @@ reading or searching.
   supported, contradicted, or outdated claims;
 - **Non-fact-checkable items** — opinion, rhetoric, value judgment, and
   prediction kept outside the verdict totals;
-- **Evidence gaps and conflicts** — inaccessible sources, stale evidence,
-  unresolved ambiguity, and credible disagreement;
+- **Evidence gaps and conflicts** — claim IDs for every unverified claim,
+  missing evidence, inaccessible sources, stale evidence, unresolved
+  ambiguity, and credible disagreement;
 - **Methodology** — source tiers, origin tracing, corroboration, and
   disconfirmation performed under the shared verification protocol.

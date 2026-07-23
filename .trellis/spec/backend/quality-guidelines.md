@@ -504,6 +504,10 @@ one verdict, rationale, evidence links or locators, source dates, and confidence
   conflicts, and date every mutable claim against the explicit as-of date.
 - Absence of evidence is not contradiction without an authoritative
   completeness boundary. Inaccessible content is never inferred from snippets.
+- Preserve every audited factual claim through exactly one verdict. An
+  unsupported load-bearing claim remains `unverified` in the claim and
+  evidence-gap ledgers but cannot support conclusions, recommendations, or
+  corrected wording.
 - Corrected wording is limited to the smallest evidence-matched change for a
   partially supported, contradicted, or outdated claim.
 - Claim audits are read-only. A verdict never grants authority to edit,
@@ -522,6 +526,7 @@ one verdict, rationale, evidence links or locators, source dates, and confidence
 | Stronger current evidence conflicts | Use contradicted and show the decisive dated evidence. |
 | Earlier evidence held but current evidence changed | Use outdated against the explicit as-of date. |
 | Available evidence cannot establish the claim | Use unverified; do not upgrade uncertainty through tone. |
+| An unverified claim is load-bearing | Keep its claim ID, verdict, and missing evidence in the ledgers; exclude it from conclusions and recommendations. |
 | Item is opinion, rhetoric, or prediction | Classify it outside factual verdict totals. |
 | User asks to rewrite or publish | Require a separate request and relevant action authority. |
 
@@ -531,15 +536,18 @@ one verdict, rationale, evidence links or locators, source dates, and confidence
   evidence, assign one calibrated verdict, cite dated sources, and offer only a
   minimal correction where required.
 - Base: evidence is incomplete, so the ledger records unverified with the
-  inaccessible source and the evidence that would resolve it.
+  inaccessible source and the evidence that would resolve it; if the claim is
+  load-bearing, the summary cannot rely on it.
 - Bad: label an opinion false, infer a paywalled source, call missing evidence a
-  contradiction, silently rewrite the draft, or break an existing installed
-  reference path during a canonical-source move.
+  contradiction, delete an unsupported load-bearing claim from the ledger,
+  silently rewrite the draft, or break an existing installed reference path
+  during a canonical-source move.
 
 ### 6. Tests Required
 
 - Pin all five verdicts, exactly-one-verdict wording, claim inventory before
-  search, atomic locators, non-fact-checkable categories, minimal correction,
+  search, atomic locators, unsupported load-bearing claim retention and
+  conclusion exclusion, non-fact-checkable categories, minimal correction,
   prompt-injection resistance, and read-only authority.
 - Pin explicit sibling boundaries from open research and corpus synthesis.
 - Pin every required final-report field and both shared reference citations.

@@ -1,0 +1,3 @@
+{"file": "tests/test_skills.py", "reason": "Run focused and full fact-check contract tests."}
+{"file": "templates/skills/_shared/references/verification-protocol.md", "reason": "Verify shared failure handling preserves gaps without asserting unsupported claims."}
+{"file": "templates/skills/se-fact-check/SKILL.md", "reason": "Review exact-one-verdict, report, and read-only boundaries."}

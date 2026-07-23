@@ -1,0 +1,7 @@
+{"file": "templates/skills/_shared/references/verification-protocol.md", "reason": "Separate unverified claim retention from conclusion exclusion without changing corroboration policy."}
+{"file": "templates/skills/se-fact-check/SKILL.md", "reason": "Require a complete verdict ledger and visible evidence gaps for unsupported load-bearing claims."}
+{"file": "tests/test_skills.py", "reason": "Pin ledger completeness, unverified status, and conclusion exclusion."}
+{"file": "manifest.json", "reason": "Synchronize the shipped payload version and generated hashes."}
+{"file": "CHANGELOG.md", "reason": "Document the evidence-audit completeness contract."}
+{"file": "templates/skills/_shared/references/skill-catalog.md", "reason": "Regenerate the bundled catalog version surface."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Capture the reusable audit-completeness contract if update-spec confirms it."}
