@@ -1326,3 +1326,42 @@ Added deterministic documentation contract coverage for prior-provenance refresh
 ### Next Steps
 
 - None - task complete
+
+
+## Session 88: Review installer documentation contract PR
+
+**Date**: 2026-07-23
+**Task**: Review installer documentation contract PR
+**Branch**: `codex/installer-documentation-contract-checks`
+
+### Summary
+
+Created PR #105, corrected its generated-scope metadata, addressed Copilot feedback, and verified exact-head readiness.
+
+### Main Changes
+
+- Captured the installer documentation test convention in the backend quality spec and refreshed the repository map and Obsidian KB.
+- Added the required tooling/generated scope disclosure to the mixed-scope PR body.
+- Made documentation phrase assertions case-insensitive, replied to and resolved the Copilot thread, and received a clean second review.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4e4d91f` | docs: record installer documentation test contract |
+| `3d6d5d4` | fix: address remote review feedback |
+
+### Testing
+
+- [OK] Focused installer documentation suite: 2 tests passed; Ruff passed.
+- [OK] Deterministic PR full check passed on exact head 3d6d5d4 with Prism and Gito disabled.
+- [OK] PR #105 CI passed and GraphQL reviewThreads reported zero unresolved threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

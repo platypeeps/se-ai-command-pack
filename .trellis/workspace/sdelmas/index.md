@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 87
+- **Total Sessions**: 88
 - **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1326 | Active |
+| `journal-2.md` | ~1365 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 88 | 2026-07-23 | Review installer documentation contract PR | `4e4d91f`, `3d6d5d4` | `codex/installer-documentation-contract-checks` |
 | 87 | 2026-07-23 | Add installer documentation contract checks | `39ec3ee` | `codex/installer-documentation-contract-checks` |
 | 86 | 2026-07-23 | Review receipt-aware installer refresh | `88db6e6`, `476c9a6`, `8eba360`, `9285eb9`, `b267e59` | `codex/refresh-vouched-installer-managed-files` |
 | 85 | 2026-07-23 | Receipt-aware installer refresh | `ef04c9d` | `main` |
