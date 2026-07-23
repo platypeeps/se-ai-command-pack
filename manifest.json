@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.57.0",
+  "version": "0.58.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, evidence-backed personal weekly reviews, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [

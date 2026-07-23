@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.58.0 - 2026-07-22
+
+- Clarify that article-shaped tutorials centered on original contribution use
+  `se-author`, while ordered observable-result teaching uses `se-tutorial`.
+- Route ambiguous tutorial requests by asking for the intended reader outcome
+  without removing either skill's accepted tutorial capability.
+
 ## 0.57.0 - 2026-07-22
 
 - Make shared freshness rules sensitive to claim volatility, applicability,
