@@ -34,7 +34,9 @@ identify them before reading sources, state, or profile data.
 - `sources=` — bounded source definitions or authorized connected-source
   locators; required unless unambiguous in context;
 - `checkpoint=` — `new`, a dated cutoff, or a supplied `se-monitor-state/v1`
-  block; missing state enters first-baseline mode;
+  block; missing state enters first-baseline mode. `checkpoint=new` explicitly
+  starts first-baseline mode. This skill does not accept `baseline=`; that name
+  belongs to `se-monitor` and triggers the unknown-argument stop here;
 - `interests=` — explicit topics, questions, or projects used for relevance;
 - `exclude=` — source, topic, duration, language, format, or repetition rules;
 - `limit=` — optional maximum ranked items after filtering and deduplication;

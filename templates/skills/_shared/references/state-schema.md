@@ -66,8 +66,11 @@ necessarily the top-level `asOf`. Every pending item needs `key`, `sourceId`,
 
 - Version `1` is the only supported schema version. Reject a newer version
   without interpreting its fields or attempting a delta comparison.
-- A missing state or explicit `baseline=new` starts baseline mode. It is not a
-  zero-change delta.
+- A missing state or caller-specific explicit new-state sentinel starts shared
+  first-state behavior. `se-monitor` uses `baseline=new`; `se-watchlist` uses
+  `checkpoint=new`. These caller-specific sentinels are not interchangeable
+  argument names: each skill rejects the other skill's name under its strict
+  unknown-argument boundary. First-state behavior is not a zero-change delta.
 - An unreadable or malformed state cannot support comparison. Report the exact
   validation failure and return a replacement-baseline proposal separately.
 - Classify a readable version-1 state with the deterministic staleness table

@@ -1182,3 +1182,41 @@ bash scripts/sd-ai-command-pack-toolchain.sh doctor
 
 The correct wrapper preserves the repository's canonical check and the shared
 pack gate without creating a recursive review path.
+
+## Shared State Sentinel Contracts
+
+### 1. Scope / Trigger
+
+- Trigger: changing a shared state schema or any skill-specific argument that
+  creates, replaces, or resumes that state.
+- Why: shared references describe portable behavior, but each consuming skill
+  owns a strict argument surface that must not silently acquire another
+  consumer's aliases.
+
+### 2. Contracts
+
+- Shared state references describe first-state behavior in caller-neutral
+  terms and enumerate each consumer's explicit sentinel separately.
+- Caller-specific sentinels are not interchangeable argument names. For the
+  monitor-state schema, `se-monitor` accepts `baseline=new` and `se-watchlist`
+  accepts `checkpoint=new`; each skill rejects the other name through its
+  unknown-argument boundary.
+- Sentinel wording must not alter the shared schema version, recovery rules,
+  pending-item behavior, or the rule that first-state mode is not a
+  zero-change delta.
+
+### 3. Tests Required
+
+- Pin every accepted skill-specific sentinel in its owning skill and in the
+  shared reference.
+- Pin cross-rejection so a shared-reference edit cannot accidentally imply
+  aliasing between consumer argument surfaces.
+- Run the neighboring state recovery, pending-item, first-state, generated
+  surface, and release-payload checks.
+
+### 4. Wrong vs Correct
+
+- Wrong: a shared reference says that `baseline=new` starts state for every
+  consumer, implying that watchlist accepts `baseline=`.
+- Correct: the shared reference names caller-neutral first-state behavior,
+  maps each consumer to its own sentinel, and preserves strict cross-rejection.

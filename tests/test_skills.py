@@ -3384,6 +3384,29 @@ class SkillSafetyPinsTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
+    def test_watchlist_and_monitor_keep_caller_specific_new_sentinels(self) -> None:
+        monitor = normalized("se-monitor").lower()
+        watchlist = normalized("se-watchlist").lower()
+        schema = normalized_resource(
+            "_shared", "references/state-schema.md"
+        ).lower()
+        for phrase in (
+            "`se-monitor` uses `baseline=new`",
+            "`se-watchlist` uses `checkpoint=new`",
+            "caller-specific sentinels are not interchangeable argument names",
+            "shared first-state behavior",
+        ):
+            self.assertIn(phrase, schema)
+        for phrase in (
+            "`checkpoint=new` explicitly starts first-baseline mode",
+            "does not accept `baseline=`",
+            "unknown argument names are an error",
+        ):
+            self.assertIn(phrase, watchlist)
+        self.assertIn("`baseline=`", monitor)
+        self.assertIn("or `new`", monitor)
+        self.assertNotIn("`checkpoint=`", monitor)
+
     def test_watchlist_preserves_coverage_and_empty_delta_states(self) -> None:
         text = normalized("se-watchlist").lower()
         for phrase in (

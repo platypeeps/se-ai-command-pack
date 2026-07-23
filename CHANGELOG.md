@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.61.0 - 2026-07-22
+
+- Align the shared monitor-state contract with caller-specific first-state
+  sentinels: `se-monitor` accepts `baseline=new`, `se-watchlist` accepts
+  `checkpoint=new`, and neither argument name aliases the other.
+
 ## 0.60.0 - 2026-07-22
 
 - Add a semantic interaction-design dimension to `se-review-skills` that
