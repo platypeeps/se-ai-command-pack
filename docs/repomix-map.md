@@ -200,6 +200,7 @@ tests/
   test_generate.py
   test_install_core.py
   test_install.py
+  test_installer_docs.py
   test_management.py
   test_project_check.py
   test_provenance.py
@@ -3978,7 +3979,7 @@ again with symlinks resolved at install time).
 | File | Contents |
 |---|---|
 | `manifest.json` | Verbatim copy of the installed manifest. |
-| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. A normal refresh may replace differing regular-file bytes only when they still match this prior hash. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
+| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. A normal refresh may report differing regular-file bytes as `updated` only when they still match the prior provenance hash. Targets governed by preservation semantics remain `preserved`; those policies take precedence over the vouched update path. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
 | `installed-targets.txt` | Sorted list of every installed path, including the receipts. Entries for platforms skipped in a filtered run are kept so a later remove still covers them. |
 
 Removal vouching: a candidate (union of receipt + provenance entries, or
@@ -15420,6 +15421,34 @@ result = install_ok("--root", str(home), "--platform", "claude")
 ⋮----
 targets = read_receipt_targets(home)
 codex_entries = {t for t in targets if t.startswith(".codex/")}
+````
+
+## File: tests/test_installer_docs.py
+````python
+"""Contract tests for the user-facing installer documentation."""
+⋮----
+def markdown_section(path: Path, heading: str) -> str
+⋮----
+"""Return one normalized level-two Markdown section."""
+text = path.read_text(encoding="utf-8")
+marker = f"## {heading}\n"
+⋮----
+start = text.index(marker) + len(marker)
+end = text.find("\n## ", start)
+⋮----
+end = len(text)
+⋮----
+class InstallerDocumentationContractTest(unittest.TestCase)
+⋮----
+def assert_refresh_contract(self, section: str) -> None
+⋮----
+def test_readme_install_section_uses_canonical_refresh_contract(self) -> None
+⋮----
+section = markdown_section(PACK_ROOT / "README.md", "Install")
+⋮----
+def test_operator_receipts_section_uses_canonical_refresh_contract(self) -> None
+⋮----
+section = markdown_section(
 ````
 
 ## File: tests/test_management.py
