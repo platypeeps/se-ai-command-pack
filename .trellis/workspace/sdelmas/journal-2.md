@@ -1019,3 +1019,40 @@ Added regression coverage for required blocking interactions and safe non-blocki
 ### Next Steps
 
 - None - task complete
+
+
+## Session 80: Publish bounded inventory output plan
+
+**Date**: 2026-07-23
+**Task**: Publish bounded inventory output plan
+**Branch**: `codex/se-review-skills-bounded-inventory-output`
+
+### Summary
+
+Published the planning-only Trellis task for a safe bounded-output mode in se-review-skills without starting implementation.
+
+### Main Changes
+
+- Added the bounded inventory output PRD and planning task metadata on an isolated branch.
+- Grounded implementation and verification context in the repository quality guidelines.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c567e93` | chore(tasks): plan bounded skill inventory output |
+
+### Testing
+
+- [OK] task.py validate passed for both context files.
+- [OK] 486 unit tests, Ruff, mypy, generation parity, release gate, install audit, and review preflight passed.
+- [OK] Copilot reviewed all four task files with no comments; CI is green and review threads are empty.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
