@@ -29,9 +29,13 @@ instead of quoting the session.
 - `session=<id>` is repeatable and selects a session within the same verified
   project boundary. Reject an unresolved or out-of-bound ID instead of searching
   globally.
-- Inspect at most three confirmed invocations per skill and twenty confirmed
-  invocations for the complete review. Allocate the package budget fairly by
-  round-robin across skills before adding a second or third invocation.
+- Inspect at most three distinct confirmed sessions per skill and twenty
+  distinct confirmed sessions for the complete review. A session consumes one
+  package-level slot and one per-skill slot for each reviewed skill it
+  demonstrably invoked. Multiple invocations of the same skill in one session
+  stay in one minimized skill/session evidence record and never increase either
+  budget. Allocate the package budget fairly by round-robin across skills before
+  adding a second or third session.
 - Deduplicate by history provider plus stable session ID before spending the
   budget. Prioritize explicit selectors, then the current conversation, then
   stronger invocation evidence and recency within each round-robin pass.
@@ -73,11 +77,11 @@ the containing session invoked the skill.
 
 ## Minimal evidence record
 
-For each confirmed invocation retain only:
+For each confirmed skill/session pair retain only:
 
 ```text
 session: <redacted stable locator>
-turns: <minimal turn or event range>
+turns: <minimal invocation, behavior, and outcome range or ranges>
 invocation-evidence: strong-activation | corroborated-use
 skill-provenance: current-canonical | installed-drift | historical-version | unknown
 request: <short redacted intent>

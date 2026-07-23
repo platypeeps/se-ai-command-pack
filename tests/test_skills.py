@@ -3506,7 +3506,9 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "`sessions=auto` is the default",
             "`sessions=off` disables all conversation inspection",
             "`session=<id>` is repeatable",
-            "at most three confirmed invocations per skill and twenty confirmed invocations",
+            "at most three distinct confirmed sessions per skill and twenty distinct confirmed sessions",
+            "a session consumes one package-level slot and one per-skill slot",
+            "multiple invocations of the same skill in one session stay in one minimized skill/session evidence record",
             "round-robin across skills",
             "deduplicate by history provider plus stable session id",
             "prioritize explicit selectors, then the current conversation",
@@ -3545,7 +3547,8 @@ class SkillSafetyPinsTest(unittest.TestCase):
         for phrase in (
             "`sessions=auto|off`",
             "`session=<id>`",
-            "at most three confirmed sessions per skill and twenty total",
+            "at most three distinct confirmed sessions per skill and twenty distinct sessions total",
+            "repeated invocations of one skill in one session as one skill/session record",
             "**observed-use evidence**",
         ):
             self.assertIn(phrase, text)

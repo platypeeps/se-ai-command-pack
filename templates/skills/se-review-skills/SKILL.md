@@ -114,8 +114,10 @@ an exact `skill=`, `root=`, or `installed-root=`.
    peers instead of duplicating it.
 6. When `sessions=auto`, run the bounded observed-use pass in the session
    evidence guide. Confirm actual invocation rather than counting incidental
-   name matches, inspect at most three confirmed sessions per skill and twenty
-   total with fair round-robin allocation, minimize and redact the evidence,
+   name matches, inspect at most three distinct confirmed sessions per skill and
+   twenty distinct sessions total with fair round-robin allocation, and count
+   repeated invocations of one skill in one session as one skill/session record.
+   Minimize and redact the evidence,
    establish skill-version provenance, and classify each observed mistake as
    `skill-contract`, `execution-deviation`, `tool-or-environment`,
    `user-intent-change`, or `indeterminate`. Compare a successful or neutral

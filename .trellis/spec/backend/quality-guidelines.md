@@ -683,8 +683,11 @@ session=<id>            repeatable, inside the verified project boundary
 ```
 
 Automatic review inspects the available current conversation, then bounded
-project-scoped history. It stops at three confirmed invocations per skill and
-twenty total, allocated round-robin across skills.
+project-scoped history. It stops at three distinct confirmed sessions per skill
+and twenty distinct sessions total, allocated round-robin across skills. One
+session consumes one total slot and one slot for each reviewed skill it
+demonstrably invoked; repeated invocations of the same skill stay in one
+minimized skill/session evidence record.
 
 ### 3. Contracts
 

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.53.1 - 2026-07-22
+
+- Define the observed-use collection budget in distinct sessions and keep
+  repeated invocations of one skill within one minimized skill/session record.
+
 ## 0.53.0 - 2026-07-22
 
 - Extend `se-review-skills` with bounded current and project-scoped session
