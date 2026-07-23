@@ -1098,3 +1098,38 @@ Added safe bounded inventory transport, hardened path and cross-platform behavio
 ### Next Steps
 
 - None - task complete
+
+
+## Session 82: Recover bounded inventory pull request
+
+**Date**: 2026-07-23
+**Task**: Recover bounded inventory pull request
+**Branch**: `codex/se-review-skills-bounded-inventory-output-replacement`
+
+### Summary
+
+Replaced stale PRs #100 and #101 with exact-head PR #102 on a fresh source branch after GitHub failed to synchronize CI on the reused branch.
+
+### Main Changes
+
+- Preserved the reviewed 514577f source state while creating and cross-linking the replacement pull request.
+- Verified PR #102 received exact-head CI and a fresh Copilot review with no comments or unresolved threads.
+
+
+### Git Commits
+
+(No commits - planning session)
+
+### Testing
+
+- [OK] Deterministic SD review full check
+- [OK] GitHub CI on Linux and macOS, lint, and release payload gate
+- [OK] Copilot exact-head review with zero review threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
