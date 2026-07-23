@@ -1,0 +1,5 @@
+{"file": "templates/skills/se-monitor/SKILL.md", "reason": "Apply a deterministic staleness decision before monitor-state branch selection."}
+{"file": "templates/skills/_shared/references/state-schema.md", "reason": "Own the caller-neutral explicit-policy and source-continuity staleness contract."}
+{"file": "tests/test_skills.py", "reason": "Pin fresh, explicit-policy stale, continuity-gap stale, and no-policy outcomes."}
+{"file": "manifest.json", "reason": "Synchronize the shipped payload version and generated hashes."}
+{"file": "CHANGELOG.md", "reason": "Document the deterministic monitor-state staleness release."}
