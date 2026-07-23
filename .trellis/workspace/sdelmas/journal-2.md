@@ -909,3 +909,39 @@ Defined deterministic state staleness from explicit freshness policy or unrecove
 ### Next Steps
 
 - None - task complete
+
+
+## Session 77: Review skills for structured user questions
+
+**Date**: 2026-07-22
+**Task**: Review skills for structured user questions
+**Branch**: `codex/se-review-skills-ask-user-question-review`
+
+### Summary
+
+Added semantic interaction-design review for required, optional, and inappropriate prompts; portable structured-input guidance; complete finding fields; and clarified when inappropriate prompts become findings versus rejected signals.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1510895672da75afeecbc6ac978b358806d8a8e9` | (see git log) |
+| `8c271d4c2e226f633bf7b2b237854e16b110841c` | (see git log) |
+| `cbeed6bb9abd5c7f8d7322ab0af97c53e40b07bc` | (see git log) |
+| `c83af0c3aa3be4b53f98dafb1712d37fd8605709` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
