@@ -728,3 +728,42 @@ Separated explicit request-scoped current context from durable profile evidence 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 72: Preserve unverified claims in fact-check audits
+
+**Date**: 2026-07-22
+**Task**: Preserve unverified claims in fact-check audits
+**Branch**: `codex/se-fact-check-audit-completeness`
+
+### Summary
+
+Made fact-check audits retain unsupported load-bearing claims as unverified evidence gaps while excluding them from conclusions and recommendations.
+
+### Main Changes
+
+- Separated claim-ledger retention from conclusion eligibility in the shared verification protocol and se-fact-check contract.
+- Added focused regression coverage, release 0.55.0 metadata, and the reusable audit-completeness quality scenario.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ca4de3e` | chore(task): plan fact-check audit completeness |
+| `f8d640e` | feat(fact-check): preserve unverified audit claims |
+| `11f97ee` | docs: capture complete audit ledger contract |
+
+### Testing
+
+- [OK] focused fact-check and shared-reference tests
+- [OK] make check (475 tests, Ruff, mypy, generation, release gate)
+- [OK] full review check, GitHub CI, and Copilot review with zero comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
