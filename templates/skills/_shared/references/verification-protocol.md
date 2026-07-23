@@ -29,8 +29,10 @@ the process that applies them.
 
 ## Failure handling
 
-- A claim that cannot be verified is labeled **unverified** with confidence
-  **low**, or dropped if it is load-bearing.
+- Every evaluated claim stays visible in the claim ledger or evidence-gap
+  record. A claim that cannot be verified is labeled **unverified** with
+  confidence **low**. If it is load-bearing, it is excluded from conclusions
+  and recommendations rather than deleted from the verification record.
 - Conflicting sources are presented side by side with dates, plus one
   sentence on which you weight and why.
 - Paywalled or inaccessible sources are marked inaccessible; never guess

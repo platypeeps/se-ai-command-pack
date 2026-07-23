@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.55.0 - 2026-07-22
+
+- Preserve unsupported load-bearing claims as `unverified` in claim and
+  evidence-gap ledgers instead of silently dropping them from an audit.
+- Exclude those claims from conclusions, recommendations, and corrected
+  wording while keeping their missing evidence visible.
+
 ## 0.54.0 - 2026-07-22
 
 - Let `se-ask-me` use factual current context explicitly supplied or confirmed

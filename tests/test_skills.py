@@ -513,6 +513,22 @@ class SkillSafetyPinsTest(unittest.TestCase):
             self.assertIn(verdict, text)
         self.assertIn("Assign exactly one verdict", text)
 
+    def test_fact_check_preserves_unverified_load_bearing_claims(self) -> None:
+        text = normalized("se-fact-check")
+        verification = normalized_resource(
+            "_shared", "references/verification-protocol.md"
+        )
+
+        self.assertIn(
+            "Do not remove an audited claim because it is load-bearing and unverified",
+            text,
+        )
+        self.assertIn("cannot support the summary conclusion", text)
+        self.assertIn("claim and evidence-gap ledgers", text)
+        self.assertIn("Every evaluated claim stays visible", verification)
+        self.assertIn("excluded from conclusions and recommendations", verification)
+        self.assertNotIn("or dropped if it is load-bearing", verification)
+
     def test_fact_check_is_claim_led_and_read_only(self) -> None:
         text = normalized("se-fact-check").lower()
         self.assertIn("inventory", text)
