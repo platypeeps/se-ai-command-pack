@@ -573,6 +573,31 @@ class SkillReviewInventoryTest(TempDirTestCase):
         self.assertFalse(envelope["artifactWritten"])
         self.assertEqual(envelope["status"], "error")
 
+    def test_bounded_output_succeeds_when_fchmod_is_unavailable(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+
+        with mock.patch.object(review.os, "fchmod", None, create=True):
+            code, stdout, stderr = self.run_main(
+                "inventory",
+                "--root",
+                str(root),
+                "--installed",
+                "off",
+                "--output-root",
+                str(output_root),
+                "--output",
+                "inventory.json",
+            )
+
+        self.assertEqual(code, 0)
+        self.assertEqual(stderr, "")
+        self.assertTrue((output_root / "inventory.json").is_file())
+        envelope = json.loads(stdout)
+        self.assertTrue(envelope["artifactWritten"])
+        self.assertEqual(envelope["status"], "success")
+
     def test_current_package_inventory_compares_every_skill_pair(self) -> None:
         payload = review.build_inventory(
             PACK_ROOT,

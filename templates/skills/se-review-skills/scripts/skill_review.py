@@ -1635,7 +1635,9 @@ def _atomic_write_inventory(
             suffix=".tmp",
         )
         temporary_path = Path(temporary_name)
-        os.fchmod(descriptor, 0o600)
+        fchmod = getattr(os, "fchmod", None)
+        if fchmod is not None:
+            fchmod(descriptor, 0o600)
         with os.fdopen(
             descriptor,
             "w",

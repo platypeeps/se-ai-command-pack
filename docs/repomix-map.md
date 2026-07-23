@@ -1694,7 +1694,8 @@ defaults installed discovery to `off` so callers and tests must opt in.
   below that root, cross no symlink, and remain outside reviewed repositories
   and installed roots. Existing files are replaceable only when their complete
   inventory schema and recomputed snapshot are valid.
-- Artifact writes use a mode-`0600` temporary file in the destination directory,
+- Artifact writes use the private temporary-file mode supplied by `mkstemp`,
+  reinforce mode `0600` with descriptor chmod where the platform supports it,
   flush and `fsync` before replacement, recheck the prior destination
   fingerprint, replace atomically, and remove temporary files after failure.
 
@@ -11846,6 +11847,7 @@ resolved = candidate.resolve(strict=False)
 temporary_path: Path | None = None
 ⋮----
 temporary_path = Path(temporary_name)
+fchmod = getattr(os, "fchmod", None)
 ⋮----
 current = _destination_fingerprint(destination)
 expected = prior.fingerprint if prior is not None else None
@@ -15525,6 +15527,8 @@ directory_destination = output_root / "directory.json"
 linked_destination = output_root / "linked.json"
 ⋮----
 def test_interrupted_atomic_write_leaves_no_artifact_or_temporary_file(self) -> None
+⋮----
+def test_bounded_output_succeeds_when_fchmod_is_unavailable(self) -> None
 ⋮----
 def test_current_package_inventory_compares_every_skill_pair(self) -> None
 ⋮----

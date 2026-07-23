@@ -685,7 +685,8 @@ defaults installed discovery to `off` so callers and tests must opt in.
   below that root, cross no symlink, and remain outside reviewed repositories
   and installed roots. Existing files are replaceable only when their complete
   inventory schema and recomputed snapshot are valid.
-- Artifact writes use a mode-`0600` temporary file in the destination directory,
+- Artifact writes use the private temporary-file mode supplied by `mkstemp`,
+  reinforce mode `0600` with descriptor chmod where the platform supports it,
   flush and `fsync` before replacement, recheck the prior destination
   fingerprint, replace atomically, and remove temporary files after failure.
 

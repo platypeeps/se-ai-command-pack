@@ -89,7 +89,8 @@ records, or candidate-signal details.
 
 ## Atomic Write Contract
 
-- Create a mode-`0600` temporary file in the destination directory.
+- Create a private temporary file in the destination directory and reinforce
+  mode `0600` with descriptor chmod when the platform provides it.
 - Write UTF-8 JSON, flush, and `fsync` the file.
 - Revalidate the destination state.
 - Replace with `os.replace()` only after all checks pass.
