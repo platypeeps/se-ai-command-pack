@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 85
+- **Total Sessions**: 86
 - **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1239 | Active |
+| `journal-2.md` | ~1288 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 86 | 2026-07-23 | Review receipt-aware installer refresh | `88db6e6`, `476c9a6`, `8eba360`, `9285eb9`, `b267e59` | `codex/refresh-vouched-installer-managed-files` |
 | 85 | 2026-07-23 | Receipt-aware installer refresh | `ef04c9d` | `main` |
 | 84 | 2026-07-23 | Review Claude runtime profile overlays | `335926e`, `91a1864` | `codex/add-claude-runtime-profile-overlays` |
 | 83 | 2026-07-23 | Claude runtime profile overlays | `a267be0c4fd47f6a2f1c6c352ecee326183b947c` | `main` |

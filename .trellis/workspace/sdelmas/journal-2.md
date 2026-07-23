@@ -1246,3 +1246,45 @@ Allowed provenance-vouched prior installer payloads to refresh without force whi
 ### Next Steps
 
 - None - task complete
+
+
+## Session 86: Review receipt-aware installer refresh
+
+**Date**: 2026-07-23
+**Task**: Review receipt-aware installer refresh
+**Branch**: `codex/refresh-vouched-installer-managed-files`
+
+### Summary
+
+Created PR #104, reconciled local and Copilot feedback, and verified exact-head readiness.
+
+### Main Changes
+
+- Refreshed the repository map and reconciled task and journal metadata for deterministic review.
+- Clarified prior-provenance and preservation precedence in the installer documentation.
+- Deferred destination hashing until changed-content paths and added unchanged-path regression coverage.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `88db6e6` | docs: refresh repository map |
+| `476c9a6` | fix: address local review feedback |
+| `8eba360` | fix: address remote review feedback |
+| `9285eb9` | docs: clarify preserved installer targets |
+| `b267e59` | perf: avoid hashing unchanged installer targets |
+
+### Testing
+
+- [OK] Focused installer core suite: 53 tests passed.
+- [OK] Full review check: 515 tests, Ruff, mypy, generation, release, install audit, and KB freshness passed.
+- [OK] PR #104 CI passed and exact-head Copilot review completed with all five threads resolved.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
