@@ -980,3 +980,42 @@ Made the shared monitor-state contract caller-neutral, preserved strict caller-s
 ### Next Steps
 
 - None - task complete
+
+
+## Session 79: Pin SE interaction contracts
+
+**Date**: 2026-07-22
+**Task**: Pin SE interaction contracts
+**Branch**: `codex/se-interaction-contract-regression-tests`
+
+### Summary
+
+Added regression coverage for required blocking interactions and safe non-blocking fallbacks, then published and reviewed PR #98.
+
+### Main Changes
+
+- Added phrase-level regression tests for required and non-blocking SE interaction contracts.
+- Refreshed the repository map and archived the completed interaction-contract task.
+- Grounded archived Trellis context after deterministic preflight and Copilot identified scaffold rows.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `532df96` | test(skills): pin interaction contracts |
+| `5754f33` | fix(tasks): ground interaction task context |
+
+### Testing
+
+- [OK] 486 unit tests passed in the deterministic full review check.
+- [OK] Ruff, mypy, generation parity, release payload, install audit, and scoped preflight passed.
+- [OK] Copilot current-head review produced no new comments; all review threads are resolved and CI is green.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
