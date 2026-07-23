@@ -1,0 +1,3 @@
+{"file": "tests/test_skills.py", "reason": "Run focused and full skill contract tests."}
+{"file": "manifest.json", "reason": "Verify generated hashes and release-payload version alignment."}
+{"file": "templates/skills/se-ask-me/SKILL.md", "reason": "Review the canonical safety and authority boundary."}
