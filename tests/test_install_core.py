@@ -21,6 +21,7 @@ from installer.fileops import (
     planned_result_matches_destination,
     prune_empty_parent_dirs,
     selected_files,
+    source_digest,
 )
 from installer.manifest import (
     PackFile,
@@ -290,6 +291,37 @@ class InstallFileTest(TempDirTestCase):
         self.assertIs(result.status, InstallStatus.CONFLICT)
         self.assertEqual(destination.read_text(encoding="utf-8"), "user content\n")
 
+    def test_vouched_prior_payload_updates_without_force(self) -> None:
+        file = pack_file()
+        destination = self.destination(file)
+        destination.parent.mkdir(parents=True)
+        prior_content = b"prior installer content\n"
+        destination.write_bytes(prior_content)
+
+        result = self.install(
+            file,
+            vouched_digest=f"sha256:{source_digest(prior_content)}",
+        )
+
+        self.assertIs(result.status, InstallStatus.UPDATED)
+        self.assertEqual(destination.read_bytes(), REAL_TEMPLATE.read_bytes())
+        self.assertEqual(result.destination_digest, source_digest(prior_content))
+
+    def test_if_not_exists_remains_preserved_when_vouched(self) -> None:
+        file = pack_file(install=IF_NOT_EXISTS)
+        destination = self.destination(file)
+        destination.parent.mkdir(parents=True)
+        prior_content = b"prior installer content\n"
+        destination.write_bytes(prior_content)
+
+        result = self.install(
+            file,
+            vouched_digest=f"sha256:{source_digest(prior_content)}",
+        )
+
+        self.assertIs(result.status, InstallStatus.PRESERVED)
+        self.assertEqual(destination.read_bytes(), prior_content)
+
     def test_force_overwrites_with_backup(self) -> None:
         file = pack_file()
         destination = self.destination(file)
@@ -377,6 +409,33 @@ class InstallFileTest(TempDirTestCase):
             destination.read_text(encoding="utf-8"), "appeared meanwhile\n"
         )
 
+    def test_stale_planned_update_preserves_concurrent_edit(self) -> None:
+        file = pack_file()
+        destination = self.destination(file)
+        destination.parent.mkdir(parents=True)
+        prior_content = b"prior installer content\n"
+        destination.write_bytes(prior_content)
+        vouched_digest = f"sha256:{source_digest(prior_content)}"
+        planned = self.install(
+            file,
+            dry_run=True,
+            vouched_digest=vouched_digest,
+        )
+        self.assertIs(planned.status, InstallStatus.UPDATED)
+
+        destination.write_text("user edit after preflight\n", encoding="utf-8")
+        result = self.install(
+            file,
+            planned_result=planned,
+            vouched_digest=vouched_digest,
+        )
+
+        self.assertIs(result.status, InstallStatus.CONFLICT)
+        self.assertEqual(
+            destination.read_text(encoding="utf-8"),
+            "user edit after preflight\n",
+        )
+
 
 class FileopsHelpersTest(TempDirTestCase):
     def test_next_backup_path_increments(self) -> None:
@@ -409,6 +468,23 @@ class FileopsHelpersTest(TempDirTestCase):
         self.assertFalse(
             planned_result_matches_destination(
                 destination, InstallStatus.UNCHANGED, b"y"
+            )
+        )
+        current_digest = source_digest(b"x")
+        self.assertTrue(
+            planned_result_matches_destination(
+                destination,
+                InstallStatus.UPDATED,
+                b"new",
+                current_digest,
+            )
+        )
+        self.assertFalse(
+            planned_result_matches_destination(
+                destination,
+                InstallStatus.UPDATED,
+                b"new",
+                source_digest(b"other"),
             )
         )
 

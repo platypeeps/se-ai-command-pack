@@ -37,6 +37,9 @@ boundary users exercise.
 - Validate manifest, registry, source, and destination paths before mutation.
 - Preview a multi-file lifecycle operation before applying it.
 - Use atomic writes for installed files and receipts.
+- Replace differing installed payload bytes without `--force` only when a
+  regular-file destination matches its prior provenance hash; keep preserve
+  policies authoritative and revalidate the destination digest at apply time.
 - Keep canonical skill content under `templates/skills/` and pack declarations
   in `installer/registry.py`.
 - Keep every registered skill in exactly one portable runtime profile. Apply
@@ -84,6 +87,9 @@ boundary users exercise.
   option-versus-free-form suggestion behavior.
 - Use temporary install roots; never target the developer's real home directory
   from tests.
+- For receipt-vouched refreshes, pin prior-payload upgrades, user drift,
+  untrusted receipts, preservation-policy precedence, and a destination change
+  between planning and application.
 - Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
   retaining end-to-end CLI tests for parsing, exit codes, and installed files.
 - Run `make check`: generation parity, Ruff, mypy, the unittest suite, and the
@@ -982,6 +988,9 @@ python3 install.py refresh [--user | --root PATH] [install options]
 python3 install.py update [--user | --root PATH] [install options]
 python3 install.py remove [--user | --root PATH] [removal options]
 python3 install.py --version
+install_file(..., planned_result: InstallResult | None,
+             vouched_digest: str | None) -> InstallResult
+InstallResult.destination_digest: str | None
 ```
 
 The bare invocation remains the convenient install form. Lifecycle operations
@@ -993,6 +1002,10 @@ are positional commands; do not add parallel action flags such as `--remove`.
   `installed-targets.txt` without modifying them.
 - `refresh` applies the current checkout through the normal plan-before-apply
   installer path.
+- A normal refresh reports and replaces a differing regular file as `updated`
+  only when its sha256 matches that target's prior provenance entry. Missing,
+  malformed, symlinked, or mismatched state remains a conflict, and apply
+  revalidates the planned destination hash before writing.
 - `update` trusts only the provenance-recorded `sourceRoot`, requires the
   expected pack manifest, refuses a dirty checkout, and fast-forwards with
   `git pull --ff-only`.
@@ -1015,6 +1028,9 @@ are positional commands; do not add parallel action flags such as `--remove`.
 | Source checkout is dirty | Exit before fetch, pull, or refresh. |
 | Fast-forward pull fails | Exit with the Git failure; never merge or rebase. |
 | Refreshed dry-run fails | Do not run the applying refresh. |
+| Current payload differs and destination matches prior provenance | Report `updated`; refresh atomically without `--force` or backup. |
+| Destination differs from its prior provenance or provenance is untrusted | Report a conflict; write no selected payload or receipts. |
+| Destination changes after a vouched preflight | Reclassify against the prior hash and preserve concurrent drift. |
 | Retired target is hash-vouched | Remove it during normal refresh. |
 | Retired target drifted | Preserve and report it unless `--force` is explicit. |
 
@@ -1022,6 +1038,8 @@ are positional commands; do not add parallel action flags such as `--remove`.
 
 - Good: `python3 install.py update --user` fast-forwards a clean recorded
   checkout, previews the new payload, and reapplies from a fresh process.
+- Good: a prior-version Claude or Codex skill still matches its receipt, so a
+  normal refresh upgrades it as `updated` without treating it as user drift.
 - Base: `python3 install.py --user` remains an idempotent install/refresh.
 - Bad: implementing lifecycle behavior in a skill prompt, accepting both a
   positional command and an action flag, continuing in the pre-pull Python
@@ -1038,6 +1056,9 @@ are positional commands; do not add parallel action flags such as `--remove`.
 - Retirement tests inject a prior provenance hash and assert normal refresh
   removes the vouched old target while existing drift-preservation tests stay
   green.
+- Refresh tests inject prior-version Claude and Codex payload hashes, assert
+  dry-run and apply classify them as `updated`, and pin user drift, untrusted
+  provenance, preservation-policy precedence, and preflight-race behavior.
 - Run `make check` to cover unit tests, Ruff, mypy, generated manifest parity,
   and the release payload/version gate.
 
@@ -1059,6 +1080,16 @@ python3 install.py remove --user
 ```
 
 One command surface owns removal, with an explicit preview before application.
+
+For normal refresh ownership, comparing only against the current payload is
+wrong because pristine bytes from an earlier release would look user-modified.
+Use the prior receipt and carry the observed destination digest through the
+plan:
+
+```text
+installed sha256 == prior provenance -> updated + apply-time digest recheck
+installed sha256 != prior provenance -> conflict + no writes
+```
 
 ## Scenario: Repomix Repository Map Refresh
 
