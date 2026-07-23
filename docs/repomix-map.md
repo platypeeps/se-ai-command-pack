@@ -29,7 +29,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Files matching these patterns are excluded: docs/repomix-map.md, .obsidian-kb/**, .sd-ai-command-pack/**, .agents/**, .agent/**, .claude/**, .codebuddy/**, .codex/**, .cursor/**, .devin/**, .factory/**, .gemini/**, .gito/**, .github/agents/**, .github/copilot/**, .github/copilot-instructions.md, .github/hooks/**, .github/prompts/**, .github/skills/**, .github/PULL_REQUEST_TEMPLATE.md, .kiro/**, .kilocode/**, .opencode/**, .pi/**, .prism/**, .qoder/**, .reasonix/**, .trae/**, .zcode/**, .trellis/.gitignore, .trellis/.version, .trellis/agents/**, .trellis/config.yaml, .trellis/scripts/**, .trellis/tasks/**, .trellis/workspace/**, .trellis/workflow.md, docs/SD_AI_COMMAND_PACK.md, scripts/sd-ai-command-pack-*
+- Files matching these patterns are excluded: docs/repomix-map.md, .obsidian-kb/**, .sd-ai-command-pack/**, .agents/**, .agent/**, .claude/**, .codebuddy/**, .codex/**, .cursor/**, .devin/**, .factory/**, .gemini/**, .gito/**, .github/agents/**, .github/copilot/**, .github/copilot-instructions.md, .github/hooks/**, .github/prompts/**, .github/skills/**, .github/PULL_REQUEST_TEMPLATE.md, .kiro/**, .kilocode/**, .opencode/**, .pi/**, .prism/**, .qoder/**, .reasonix/**, .trae/**, .zcode/**, .trellis/.gitignore, .trellis/.version, .trellis/agents/**, .trellis/config.yaml, .trellis/scripts/**, .trellis/tasks/**, .trellis/workspace/**, .trellis/workflow.md, generated/**, docs/SD_AI_COMMAND_PACK.md, scripts/sd-ai-command-pack-*
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Content has been formatted for parsing in markdown style
@@ -232,7 +232,7 @@ requirements-dev.txt
 
 Enforces the pack's release discipline against a base revision:
 
-1. any change under templates/** or to manifest.json requires the manifest
+1. any change under templates/**, generated/**, or to manifest.json requires the manifest
    version to differ from the base revision's, and
 2. whenever the version changed, CHANGELOG.md's first heading must be
    `## <version> - YYYY-MM-DD` with a real date.
@@ -243,7 +243,7 @@ locally before a commit and in CI against the PR base.
 """
 ⋮----
 PACK_ROOT = Path(__file__).resolve().parents[2]
-PAYLOAD_PREFIX = "templates/"
+PAYLOAD_PREFIXES = ("templates/", "generated/")
 MANIFEST_NAME = "manifest.json"
 CHANGELOG_NAME = "CHANGELOG.md"
 HEADING_PATTERN = re.compile(r"^## (?P<version>\S+) - (?P<date>\d{4}-\d{2}-\d{2})$")
@@ -375,6 +375,8 @@ from installer.registry import (  # noqa: E402
 MANIFEST_PATH = ROOT / "manifest.json"
 README_PATH = ROOT / "README.md"
 SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
+GENERATED_SKILLS_DIR = "generated/skills"
+CLAUDE_GENERATED_ROOT = ROOT / GENERATED_SKILLS_DIR / "claude"
 SHARED_DIR_NAME = "_shared"
 HELP_CATALOG_SOURCE = "_shared/references/skill-catalog.md"
 HELP_CATALOG_PATH = SKILLS_ROOT / HELP_CATALOG_SOURCE
@@ -385,6 +387,10 @@ README_CATALOG_END = "<!-- SE_SKILL_CATALOG:END -->"
 REQUIRED_SECTIONS = (
 ⋮----
 ALLOWED_FRONTMATTER_KEYS = ("name", "description")
+CLAUDE_FRONTMATTER_KEYS = (
+CLAUDE_MODEL_MAP = {
+CLAUDE_MODEL_VALUES = frozenset(CLAUDE_MODEL_MAP.values())
+CLAUDE_EFFORT_VALUES = frozenset({"low", "medium", "high", "xhigh"})
 ALLOWED_RESOURCE_SUFFIXES = {
 DESCRIPTION_PREFIX = "Use when"
 DESCRIPTION_MAX_LENGTH = 1024
@@ -467,6 +473,41 @@ basename = source_path.name
 ⋮----
 own_copy = SKILLS_ROOT / consumer / "references" / basename
 ⋮----
+"""Translate one portable profile into verified Claude skill metadata."""
+⋮----
+rendered: dict[str, object] = {
+⋮----
+model = CLAUDE_MODEL_MAP[profile.model]
+⋮----
+unsupported = sorted(set(rendered) - set(CLAUDE_FRONTMATTER_KEYS))
+⋮----
+"""Merge Claude metadata into one canonical skill without changing its body."""
+⋮----
+canonical_keys = set(frontmatter)
+⋮----
+metadata = claude_frontmatter(frontmatter, profile)
+dumped = yaml.safe_dump(
+⋮----
+def regenerated_claude_skill_texts() -> dict[Path, str]
+⋮----
+"""Return every committed Claude entrypoint keyed by generated path."""
+⋮----
+missing_profiles = sorted(set(SKILL_NAMES) - set(SKILL_RUNTIME_PROFILES))
+unknown_profiles = sorted(set(SKILL_RUNTIME_PROFILES) - set(SKILL_NAMES))
+⋮----
+rendered: dict[Path, str] = {}
+⋮----
+canonical_path = SKILLS_ROOT / name / "SKILL.md"
+⋮----
+canonical_text = canonical_path.read_text(encoding="utf-8")
+⋮----
+"""Read expected generated files and inventory stale regular files."""
+⋮----
+committed: dict[Path, str | None] = {}
+⋮----
+expected = set(regenerated)
+unexpected: dict[Path, str] = {}
+⋮----
 def skill_payload_files(name: str) -> list[str]
 ⋮----
 """Per-skill shipped file list: SKILL.md first, then sorted resources."""
@@ -484,6 +525,10 @@ shared = [
 ⋮----
 info = PLATFORM_REGISTRY[platform]
 ⋮----
+source = f"{TEMPLATES_SKILLS_DIR}/{name}/{relative}"
+⋮----
+source = f"{GENERATED_SKILLS_DIR}/claude/{name}/SKILL.md"
+⋮----
 basename = Path(source).name
 ⋮----
 seen: dict[str, str] = {}
@@ -491,6 +536,8 @@ seen: dict[str, str] = {}
 key = row["target"].casefold()
 ⋮----
 def is_derived_row(row: dict) -> bool
+⋮----
+source = str(row.get("source", ""))
 ⋮----
 def regenerated_manifest_text() -> str
 ⋮----
@@ -544,6 +591,12 @@ end = current.index(README_CATALOG_END)
 catalog = rendered_skill_catalog(metadata).rstrip("\n")
 ⋮----
 written: list[tuple[Path, str | None]] = []
+created_directories: list[Path] = []
+⋮----
+missing_parents: list[Path] = []
+current = path.parent
+⋮----
+current = current.parent
 ⋮----
 rollback_errors: list[str] = []
 ⋮----
@@ -554,6 +607,8 @@ def main(argv: list[str] | None = None) -> int
 parser = argparse.ArgumentParser(
 ⋮----
 args = parser.parse_args(argv if argv is not None else sys.argv[1:])
+⋮----
+regenerated_claude = regenerated_claude_skill_texts()
 ⋮----
 regenerated_manifest = regenerated_manifest_text()
 committed_readme = read_readme_text()
@@ -567,7 +622,9 @@ drifted = False
 ⋮----
 drifted = True
 ⋮----
-updates: list[tuple[Path, str, str | None]] = []
+updates: list[tuple[Path, str | None, str | None]] = []
+⋮----
+action = "removed" if regenerated is None else "wrote"
 ````
 
 ## File: .github/workflows/tests.yml
@@ -763,6 +820,8 @@ templates/skills/           # canonical shipped skill sources
   <skill>/SKILL.md          # required portable skill instructions
   <skill>/references/*.md   # optional directly linked progressive disclosure
   <skill>/scripts/*.py      # optional deterministic, stdlib-first helpers
+generated/skills/claude/    # generated Claude runtime-profile entrypoints
+  <skill>/SKILL.md          # canonical body plus validated host frontmatter
 manifest.json               # generated payload inventory and release version
 README.md                   # generated family-grouped catalog inside markers
 templates/skills/_shared/references/skill-catalog.md
@@ -781,6 +840,11 @@ tests/                      # unittest modules mirroring installer concerns
 - Treat canonical skill frontmatter and `installer/registry.py` as sources of
   truth. Run `make generate` to update `manifest.json`, the marker-bounded
   README catalog, and the bundled `se-help` catalog from one parsed model.
+- Keep portable runtime profiles in `installer/registry.py`. Generate Claude
+  entrypoints under `generated/skills/claude/`; never edit those derived files
+  or copy their bodies by hand. Codex and shared-agent entrypoints continue to
+  use canonical template bytes until their hosts expose equivalent validated
+  execution controls.
 - Keep skill-owned resources one level below the skill directory. Only
   `references/*.md` and `scripts/*.py` are shipped; nested resource trees and
   other file types fail generation. A bundled script must expose a bounded,
@@ -820,8 +884,8 @@ tests/                      # unittest modules mirroring installer concerns
 - Do not hand-edit generated README or `se-help` catalog rows, or move skills
   into family subdirectories; taxonomy is metadata and installed paths remain
   flat.
-- Do not add platform-specific copies of skill content; generate fan-out from
-  the registry and canonical templates.
+- Do not add hand-maintained platform-specific copies of skill content;
+  platform adapters must be generated from the registry and canonical body.
 - Do not hide semantic decisions, approvals, or unbounded external actions in a
   bundled script merely to shorten the skill text.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI
@@ -1026,6 +1090,8 @@ boundary users exercise.
 
 - Hand-editing generated `manifest.json` rows instead of changing the registry
   or canonical templates and running `make generate`.
+- Hand-editing `generated/skills/claude/` instead of changing the canonical
+  skill or its registry-owned runtime profile and running `make generate`.
 - Hand-editing the marker-bounded README skill catalog instead of changing
   `SKILLS` or canonical skill frontmatter and running `make generate`.
 - Writing outside the validated install root or following untrusted symlinked
@@ -1046,6 +1112,9 @@ boundary users exercise.
 - Use atomic writes for installed files and receipts.
 - Keep canonical skill content under `templates/skills/` and pack declarations
   in `installer/registry.py`.
+- Keep every registered skill in exactly one portable runtime profile. Apply
+  host fields only through an allowlisted generator adapter; unknown values or
+  unsupported fields fail before any output is written.
 - Keep family membership singular and canonical in `SKILLS`; derive
   `SKILL_NAMES`, preserve flat skill paths, and generate grouped catalog prose
   from validated frontmatter.
@@ -2256,6 +2325,104 @@ pack gate without creating a recursive review path.
   consumer, implying that watchlist accepts `baseline=`.
 - Correct: the shared reference names caller-neutral first-state behavior,
   maps each consumer to its own sentinel, and preserves strict cross-rejection.
+
+---
+
+## Runtime Profile And Claude Overlay Contract
+
+### 1. Scope / Trigger
+
+- Trigger: changing a skill's invocation, context, model profile, effort, or a
+  platform's verified runtime-metadata support.
+- Why: one portable recommendation crosses registry validation, generated
+  entrypoints, manifest source selection, installation hashes, and review-source
+  reconciliation.
+
+### 2. Signatures
+
+```text
+RuntimeProfile(invocation, context, model, effort)
+RUNTIME_PROFILE_ASSIGNMENTS
+SKILL_RUNTIME_PROFILES
+render_claude_skill(name, canonical_text, profile) -> str
+generated/skills/claude/<skill>/SKILL.md
+make generate
+```
+
+### 3. Contracts
+
+- Every `SKILL_NAMES` entry has exactly one portable profile. Grouped
+  assignments are validated before their ordered per-skill map is derived.
+- Canonical `SKILL.md` frontmatter stays limited to `name` and `description`;
+  its body is the only authored instruction source.
+- Claude generation maps only verified invocation controls, `context: fork`,
+  `model`, and `effort`. Allowed model values are `inherit`, `haiku`, `sonnet`,
+  and `opus`.
+- `fresh-session` never becomes `context: fork`; generation omits the context
+  key while retaining supported invocation, model, and effort fields.
+- Only Claude `SKILL.md` manifest rows use generated sources. Claude resources
+  and every Codex/shared-agent payload continue to use canonical templates.
+- The skill-review inventory compares installed bytes with the generated source
+  but reports and reviews the authored canonical template.
+- `generated/**` is a release payload and is excluded from the repository map
+  because it duplicates canonical bodies.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Missing, unknown, or duplicate skill assignment | Raise `RuntimeError` during registry validation. |
+| Unknown portable invocation, context, model, or effort | Fail generation before writing outputs. |
+| Claude adapter produces an unsupported key, model alias, or effort | Fail generation before writing outputs. |
+| Canonical body differs from the generated body | Generator parity test fails. |
+| Generated entrypoint is missing, changed, stale, or symlinked | Check mode exits nonzero with the affected path. |
+| A later coordinated write fails | Restore prior generated and catalog files; remove newly created directories. |
+| Installed Claude bytes match generated bytes | Report `canonical-match` while retaining the authored review path. |
+| Generated payload changes without a version bump | Release gate exits nonzero. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: change one registry profile, run `make generate`, and receive a Claude
+  frontmatter-only change while every canonical body and portable target stays
+  unchanged.
+- Base: rerun generation with unchanged profiles and receive no diff.
+- Bad: add `model` to a canonical skill, hand-edit a generated Claude file,
+  map `fresh-session` to `fork`, or review the generated copy as authored code.
+
+### 6. Tests Required
+
+- Pin exact registry coverage plus missing, unknown, duplicate, and invalid
+  value failures.
+- Pin each Claude translation branch, frontmatter order, canonical-body
+  preservation, generated drift, stale-output cleanup, and coordinated rollback.
+- Pin platform-specific manifest sources and installed bytes, including
+  Codex/shared-agent portable frontmatter.
+- Pin generated installed-byte drift against the authored canonical review path.
+- Run `make generate` twice, `make check`, `make repomix`, and
+  `git diff --check`.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```yaml
+# templates/skills/se-research/SKILL.md
+name: se-research
+description: Use when deep research is requested.
+context: fork
+model: opus
+```
+
+#### Correct
+
+```text
+templates/skills/se-research/SKILL.md
+  -> portable name/description plus authored body
+installer/registry.py
+  -> RuntimeProfile("both", "forked", "deep", "high")
+generated/skills/claude/se-research/SKILL.md
+  -> context: fork, model: opus, effort: high plus the canonical body
+```
 ````
 
 ## File: .trellis/spec/guides/code-reuse-thinking-guide.md
@@ -4251,6 +4418,16 @@ class SkillInfo
 name: str
 family: str
 ⋮----
+@dataclass(frozen=True)
+class RuntimeProfile
+⋮----
+"""Portable execution recommendation for one or more skills."""
+⋮----
+invocation: str
+context: str
+model: str
+effort: str
+⋮----
 # One registry row per platform id. Adding a platform means one row here;
 # `make generate` then fans every skill into its skills_dir.
 PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
@@ -4268,6 +4445,40 @@ FAMILY_DESCRIPTIONS: dict[str, str] = {
 # catalog display groups these rows through FAMILY_LABELS without moving paths.
 SKILLS: tuple[SkillInfo, ...] = (
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
+⋮----
+KNOWN_RUNTIME_INVOCATIONS = frozenset({"automatic", "user-only", "both"})
+KNOWN_RUNTIME_CONTEXTS = frozenset({"inline", "forked", "fresh-session"})
+KNOWN_RUNTIME_MODELS = frozenset({"inherit", "fast", "balanced", "deep"})
+KNOWN_RUNTIME_EFFORTS = frozenset({"low", "medium", "high", "xhigh"})
+⋮----
+CONVERSATIONAL = RuntimeProfile("both", "inline", "balanced", "medium")
+DEEP_ANALYSIS = RuntimeProfile("both", "forked", "deep", "high")
+BOUNDED_SYNTHESIS = RuntimeProfile("both", "forked", "balanced", "medium")
+PERSONAL_DIALOGUE = RuntimeProfile("user-only", "inline", "deep", "high")
+PROFILE_MUTATION = RuntimeProfile("user-only", "inline", "inherit", "high")
+ARTIFACT_AUTHORING = RuntimeProfile("user-only", "inline", "deep", "high")
+INSTRUCTIONAL = RuntimeProfile("both", "inline", "deep", "high")
+DISCOVERY_UTILITY = RuntimeProfile("both", "inline", "fast", "low")
+CAPTURE_UTILITY = RuntimeProfile("both", "inline", "fast", "medium")
+INDEPENDENT_RED_TEAM = RuntimeProfile(
+PACKAGE_REVIEW = RuntimeProfile("user-only", "inline", "deep", "xhigh")
+⋮----
+# Grouped recommendations are easier to audit than 52 repeated records. The
+# builder rejects cross-group duplication before deriving the per-skill map.
+RUNTIME_PROFILE_ASSIGNMENTS: tuple[
+⋮----
+def validate_runtime_profile(profile: RuntimeProfile) -> None
+⋮----
+"""Fail closed when a portable runtime recommendation is unknown."""
+⋮----
+"""Validate grouped membership and derive a registry-ordered skill map."""
+⋮----
+registered = set(skill_names)
+assigned: dict[str, RuntimeProfile] = {}
+⋮----
+missing = sorted(registered - set(assigned))
+⋮----
+SKILL_RUNTIME_PROFILES = build_skill_runtime_profiles(
 ⋮----
 # Shared reference source (relative to templates/skills/) -> consuming skills.
 # The generator copies each shared reference into every consumer's
@@ -4305,6 +4516,8 @@ seen_skills: set[str] = set()
 ⋮----
 name = skill.name
 family = skill.family
+⋮----
+expected_profiles = build_skill_runtime_profiles(
 ⋮----
 unknown = set(consumers) - set(SKILL_NAMES)
 ⋮----
@@ -5008,7 +5221,7 @@ retain earlier copies.
 <!-- Generated by .github/scripts/generate-skill-surfaces.py; do not edit. -->
 # SE Skill Catalog
 
-Bundled pack version: `0.62.0`
+Bundled pack version: `0.63.0`
 
 This catalog describes skills bundled with this release. Current session availability must be reconciled separately by `se-help`.
 
@@ -11092,11 +11305,15 @@ name in portable canonical frontmatter.
 ### SE package
 
 The current registry targets shared agent directories, Claude Code, and Codex.
-They consume the same canonical `templates/skills/**` body with portable
-`name` and `description` frontmatter. Claude-only context/model fields and
-Codex `agents/openai.yaml` UI metadata remain recommendations until a tested
-target overlay exists. Gemini is not currently an SE install target; adding it
-is separate package tooling work.
+They share one authored canonical `templates/skills/**` body. The pack applies
+reviewed invocation, fork, model, and effort choices through generated Claude
+frontmatter overlays; the review inventory maps those generated installed
+bytes back to the authored canonical source. Codex `agents/openai.yaml` remains
+a recommendation because it is UI metadata rather than a model or context
+execution control. Shared-agent and Codex skills retain portable frontmatter.
+Gemini and OpenCode agent adapters are separate package work because neither is
+an SE installation target and both express model and isolation choices through
+agent definitions rather than skill frontmatter.
 
 ### SD package
 
@@ -11522,6 +11739,12 @@ def _manifest_rows(context: PackageContext) -> list[dict[str, Any]]
 ⋮----
 rows = context.manifest.get("files", []) if context.manifest else []
 ⋮----
+canonical = _safe_pack_skill_source(context, source)
+⋮----
+allowed = context.allowed_template_root
+⋮----
+"""Resolve a regular manifest skill source anywhere inside the pack."""
+⋮----
 source_path = Path(source)
 ⋮----
 supplied = context.root / source_path
@@ -11529,18 +11752,28 @@ current = context.root
 ⋮----
 canonical = supplied.resolve()
 ⋮----
-allowed = context.allowed_template_root
+"""Return (authored canonical, installed-byte source) for a skill row."""
+⋮----
+expected = _safe_pack_skill_source(context, source)
+⋮----
+canonical = _safe_manifest_source(context, source)
+⋮----
+source_parts = Path(source).parts
+target_path = Path(target)
+⋮----
+skill_name = source_parts[3]
+⋮----
+authored_source = f"templates/skills/{skill_name}/SKILL.md"
+canonical = _safe_manifest_source(context, authored_source)
 ⋮----
 observed_parts = observed.resolve().parts
 ⋮----
 target = row.get("target")
 source = row.get("source")
 ⋮----
-target_path = Path(target)
-⋮----
 target_parts = target_path.parts
 ⋮----
-canonical = _safe_manifest_source(context, source)
+sources = _manifest_skill_sources(context, source, target)
 ⋮----
 platform = row.get("platform")
 ⋮----
@@ -11718,6 +11951,10 @@ def _associated_rows(item: ResolvedSkill, related: Sequence[dict[str, str]]) -> 
 ⋮----
 relative_sources = {
 ⋮----
+rows: list[dict[str, Any]] = []
+⋮----
+path = _safe_pack_skill_source(context, source)
+⋮----
 def _target_matrix(item: ResolvedSkill, rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]
 ⋮----
 platforms = set(item.context.registry.platforms)
@@ -11733,6 +11970,14 @@ command_format = "toml"
 ⋮----
 command_format = "markdown"
 adapted = any(
+frontmatter = _frontmatter_keys_for_sources(item.context, sources)
+has_fork = False
+has_model = False
+⋮----
+path = _safe_pack_skill_source(item.context, source)
+⋮----
+has_fork = metadata.get("context") == "fork"
+has_model = bool(metadata.get("model"))
 ⋮----
 def _inventory_record(item: ResolvedSkill) -> dict[str, Any]
 ⋮----
@@ -14473,6 +14718,16 @@ def test_manifest_matches_generated(self) -> None
 ⋮----
 committed = (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
 ⋮----
+def test_generated_claude_skills_match_runtime_profiles(self) -> None
+⋮----
+regenerated = gen.regenerated_claude_skill_texts()
+⋮----
+def test_claude_frontmatter_applies_reviewed_profiles(self) -> None
+⋮----
+research = (
+⋮----
+red_team = (
+⋮----
 def test_manifest_description_matches_bootstrap_default(self) -> None
 ⋮----
 committed = json.loads(
@@ -14504,6 +14759,10 @@ rows = manifest["files"]
 ⋮----
 target = f"{info.skills_dir}/{name}/SKILL.md"
 matches = [row for row in rows if row["target"] == target]
+⋮----
+expected_source = f"templates/skills/{name}/SKILL.md"
+⋮----
+expected_source = f"generated/skills/claude/{name}/SKILL.md"
 ⋮----
 def test_shared_reference_fanned_into_consumers(self) -> None
 ⋮----
@@ -14703,6 +14962,12 @@ def test_bootstrap_writes_manifest(self) -> None
 ⋮----
 manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
 ⋮----
+generated = self.claude_generated_root / "se-test" / "SKILL.md"
+⋮----
+def test_claude_translation_fails_closed(self) -> None
+⋮----
+canonical = {"name": "se-test", "description": "Use when testing."}
+⋮----
 def test_catalog_groups_skills_and_escapes_pipes(self) -> None
 ⋮----
 first = VALID_SKILL.format(name="se-test").replace(
@@ -14741,6 +15006,12 @@ committed = self.readme_path.read_text(encoding="utf-8")
 def test_check_detects_help_catalog_drift(self) -> None
 ⋮----
 committed = self.help_catalog_path.read_text(encoding="utf-8")
+⋮----
+def test_check_detects_generated_claude_drift(self) -> None
+⋮----
+def test_generate_removes_unexpected_claude_file(self) -> None
+⋮----
+unexpected = self.claude_generated_root / "retired" / "SKILL.md"
 ⋮----
 def test_header_and_static_rows_preserved(self) -> None
 ⋮----
@@ -14950,6 +15221,16 @@ MANIFEST = json.loads((PACK_ROOT / "manifest.json").read_text(encoding="utf-8"))
 ALL_TARGETS = {row["target"] for row in MANIFEST["files"]}
 RECEIPTS = {
 ⋮----
+def manifest_source(platform: str, name: str) -> str
+⋮----
+target = f"{PLATFORM_REGISTRY[platform].skills_dir}/{name}/SKILL.md"
+row = next(row for row in MANIFEST["files"] if row["target"] == target)
+⋮----
+def installed_frontmatter(path) -> dict
+⋮----
+text = path.read_text(encoding="utf-8")
+end = text.find("\n---\n")
+⋮----
 class FreshInstallTest(TempDirTestCase)
 ⋮----
 def test_all_anchors_full_install(self) -> None
@@ -14979,6 +15260,19 @@ def test_all_flag_creates_missing_anchors(self) -> None
 ⋮----
 def test_every_skill_lands_on_every_platform(self) -> None
 ⋮----
+installed = home / info.skills_dir / name / "SKILL.md"
+⋮----
+source = PACK_ROOT / manifest_source(platform, name)
+⋮----
+def test_runtime_metadata_is_claude_only(self) -> None
+⋮----
+claude_root = home / PLATFORM_REGISTRY["claude"].skills_dir
+research = installed_frontmatter(claude_root / "se-research" / "SKILL.md")
+⋮----
+red_team = installed_frontmatter(claude_root / "se-red-team" / "SKILL.md")
+⋮----
+path = home / PLATFORM_REGISTRY[platform].skills_dir / "se-research" / "SKILL.md"
+⋮----
 class ConflictTest(TempDirTestCase)
 ⋮----
 def test_conflict_exits_2_and_writes_nothing(self) -> None
@@ -14995,7 +15289,7 @@ result = install_ok("--root", str(home), "--force", "--backup")
 ⋮----
 backup = home / ".claude/skills/se-research/SKILL.md.bak"
 ⋮----
-template = PACK_ROOT / "templates/skills/se-research/SKILL.md"
+source = PACK_ROOT / manifest_source("claude", "se-research")
 ⋮----
 class ModesAndFlagsTest(TempDirTestCase)
 ⋮----
@@ -15240,6 +15534,8 @@ result = self.gate()
 def test_payload_change_without_bump_fails(self) -> None
 ⋮----
 def test_untracked_payload_file_without_bump_fails(self) -> None
+⋮----
+def test_generated_payload_change_without_bump_fails(self) -> None
 ⋮----
 def test_payload_change_with_bump_and_changelog_passes(self) -> None
 ⋮----
@@ -15612,6 +15908,21 @@ payload = self.inventory(install_root, str(observed))
 ⋮----
 drifted = self.inventory(install_root, str(observed))["skills"][0]
 ⋮----
+def test_generated_claude_copy_maps_back_to_authored_skill(self) -> None
+⋮----
+canonical = source_skill.read_text(encoding="utf-8")
+end = canonical.find("\n---\n")
+generated_text = (
+generated = (
+⋮----
+manifest_path = source_root / "manifest.json"
+manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+claude_row = next(
+⋮----
+observed = install_root / ".claude" / "skills" / "se-test" / "SKILL.md"
+⋮----
+skill = self.inventory(install_root, str(observed))["skills"][0]
+⋮----
 def initialize_verified_se_repo(self, root: Path) -> None
 ⋮----
 trellis = root / ".trellis" / "scripts" / "task.py"
@@ -15758,6 +16069,14 @@ last = index
 def test_unknown_argument_stop_rule(self) -> None
 ⋮----
 class SkillFamilyRegistryTest(unittest.TestCase)
+⋮----
+def test_runtime_profiles_cover_every_skill_once(self) -> None
+⋮----
+def test_runtime_profile_builder_rejects_membership_drift(self) -> None
+⋮----
+profile = RuntimeProfile("both", "inline", "balanced", "medium")
+⋮----
+def test_runtime_profile_builder_rejects_unknown_values(self) -> None
 ⋮----
 def test_family_labels_have_stable_outcome_order(self) -> None
 ⋮----
@@ -16769,6 +17088,14 @@ Managed by Trellis. Edits outside this block are preserved; edits inside may be 
 ````markdown
 # Changelog
 
+## 0.63.0 - 2026-07-23
+
+- Apply every reviewed SE runtime profile to generated Claude skill
+  entrypoints with validated invocation, context, model, and effort metadata.
+- Preserve portable canonical skills for Codex and shared-agent consumers,
+  distinguish fresh-session recommendations from forked subagents, and map
+  generated installed copies back to their authored source during skill review.
+
 ## 0.62.0 - 2026-07-23
 
 - Add an explicit bounded-output transport for large `se-review-skills`
@@ -17635,7 +17962,7 @@ check: test lint release-check
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.62.0",
+  "version": "0.63.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, evidence-backed personal weekly reviews, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
@@ -17670,7 +17997,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-research/SKILL.md",
+      "source": "generated/skills/claude/se-research/SKILL.md",
       "target": ".claude/skills/se-research/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -17742,7 +18069,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-brief/SKILL.md",
+      "source": "generated/skills/claude/se-brief/SKILL.md",
       "target": ".claude/skills/se-brief/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -17796,7 +18123,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-meeting-prep/SKILL.md",
+      "source": "generated/skills/claude/se-meeting-prep/SKILL.md",
       "target": ".claude/skills/se-meeting-prep/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -17850,7 +18177,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-scan/SKILL.md",
+      "source": "generated/skills/claude/se-scan/SKILL.md",
       "target": ".claude/skills/se-scan/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -17904,7 +18231,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-digest/SKILL.md",
+      "source": "generated/skills/claude/se-digest/SKILL.md",
       "target": ".claude/skills/se-digest/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -17958,7 +18285,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-decide/SKILL.md",
+      "source": "generated/skills/claude/se-decide/SKILL.md",
       "target": ".claude/skills/se-decide/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18012,7 +18339,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-status/SKILL.md",
+      "source": "generated/skills/claude/se-status/SKILL.md",
       "target": ".claude/skills/se-status/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18075,7 +18402,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-fact-check/SKILL.md",
+      "source": "generated/skills/claude/se-fact-check/SKILL.md",
       "target": ".claude/skills/se-fact-check/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18156,7 +18483,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-help/SKILL.md",
+      "source": "generated/skills/claude/se-help/SKILL.md",
       "target": ".claude/skills/se-help/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18237,7 +18564,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-profile/SKILL.md",
+      "source": "generated/skills/claude/se-profile/SKILL.md",
       "target": ".claude/skills/se-profile/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18309,7 +18636,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-action-inbox/SKILL.md",
+      "source": "generated/skills/claude/se-action-inbox/SKILL.md",
       "target": ".claude/skills/se-action-inbox/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18363,7 +18690,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-agenda/SKILL.md",
+      "source": "generated/skills/claude/se-agenda/SKILL.md",
       "target": ".claude/skills/se-agenda/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18426,7 +18753,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-ask-me/SKILL.md",
+      "source": "generated/skills/claude/se-ask-me/SKILL.md",
       "target": ".claude/skills/se-ask-me/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18498,7 +18825,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-author/SKILL.md",
+      "source": "generated/skills/claude/se-author/SKILL.md",
       "target": ".claude/skills/se-author/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18552,7 +18879,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-bookmark-triage/SKILL.md",
+      "source": "generated/skills/claude/se-bookmark-triage/SKILL.md",
       "target": ".claude/skills/se-bookmark-triage/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18606,7 +18933,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-capture/SKILL.md",
+      "source": "generated/skills/claude/se-capture/SKILL.md",
       "target": ".claude/skills/se-capture/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18660,7 +18987,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-checklist/SKILL.md",
+      "source": "generated/skills/claude/se-checklist/SKILL.md",
       "target": ".claude/skills/se-checklist/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18714,7 +19041,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-compare/SKILL.md",
+      "source": "generated/skills/claude/se-compare/SKILL.md",
       "target": ".claude/skills/se-compare/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18768,7 +19095,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-diagram/SKILL.md",
+      "source": "generated/skills/claude/se-diagram/SKILL.md",
       "target": ".claude/skills/se-diagram/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18822,7 +19149,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-distill/SKILL.md",
+      "source": "generated/skills/claude/se-distill/SKILL.md",
       "target": ".claude/skills/se-distill/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18876,7 +19203,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-evaluate/SKILL.md",
+      "source": "generated/skills/claude/se-evaluate/SKILL.md",
       "target": ".claude/skills/se-evaluate/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -18939,7 +19266,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-topic-radar/SKILL.md",
+      "source": "generated/skills/claude/se-topic-radar/SKILL.md",
       "target": ".claude/skills/se-topic-radar/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19020,7 +19347,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-technical-editor/SKILL.md",
+      "source": "generated/skills/claude/se-technical-editor/SKILL.md",
       "target": ".claude/skills/se-technical-editor/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19092,7 +19419,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-explain/SKILL.md",
+      "source": "generated/skills/claude/se-explain/SKILL.md",
       "target": ".claude/skills/se-explain/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19146,7 +19473,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-feedback/SKILL.md",
+      "source": "generated/skills/claude/se-feedback/SKILL.md",
       "target": ".claude/skills/se-feedback/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19200,7 +19527,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-handoff/SKILL.md",
+      "source": "generated/skills/claude/se-handoff/SKILL.md",
       "target": ".claude/skills/se-handoff/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19254,7 +19581,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-knowledge-capture/SKILL.md",
+      "source": "generated/skills/claude/se-knowledge-capture/SKILL.md",
       "target": ".claude/skills/se-knowledge-capture/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19308,7 +19635,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-knowledge-gap/SKILL.md",
+      "source": "generated/skills/claude/se-knowledge-gap/SKILL.md",
       "target": ".claude/skills/se-knowledge-gap/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19362,7 +19689,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-learn/SKILL.md",
+      "source": "generated/skills/claude/se-learn/SKILL.md",
       "target": ".claude/skills/se-learn/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19425,7 +19752,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-literature-map/SKILL.md",
+      "source": "generated/skills/claude/se-literature-map/SKILL.md",
       "target": ".claude/skills/se-literature-map/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19497,7 +19824,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-meeting-follow-through/SKILL.md",
+      "source": "generated/skills/claude/se-meeting-follow-through/SKILL.md",
       "target": ".claude/skills/se-meeting-follow-through/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19560,7 +19887,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-monitor/SKILL.md",
+      "source": "generated/skills/claude/se-monitor/SKILL.md",
       "target": ".claude/skills/se-monitor/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19650,7 +19977,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-paper/SKILL.md",
+      "source": "generated/skills/claude/se-paper/SKILL.md",
       "target": ".claude/skills/se-paper/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19740,7 +20067,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-plan/SKILL.md",
+      "source": "generated/skills/claude/se-plan/SKILL.md",
       "target": ".claude/skills/se-plan/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19794,7 +20121,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-postmortem/SKILL.md",
+      "source": "generated/skills/claude/se-postmortem/SKILL.md",
       "target": ".claude/skills/se-postmortem/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19848,7 +20175,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-premortem/SKILL.md",
+      "source": "generated/skills/claude/se-premortem/SKILL.md",
       "target": ".claude/skills/se-premortem/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19911,7 +20238,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-presentation/SKILL.md",
+      "source": "generated/skills/claude/se-presentation/SKILL.md",
       "target": ".claude/skills/se-presentation/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -19992,7 +20319,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-proposal/SKILL.md",
+      "source": "generated/skills/claude/se-proposal/SKILL.md",
       "target": ".claude/skills/se-proposal/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20073,7 +20400,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-publish/SKILL.md",
+      "source": "generated/skills/claude/se-publish/SKILL.md",
       "target": ".claude/skills/se-publish/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20145,7 +20472,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-red-team/SKILL.md",
+      "source": "generated/skills/claude/se-red-team/SKILL.md",
       "target": ".claude/skills/se-red-team/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20199,7 +20526,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-retro/SKILL.md",
+      "source": "generated/skills/claude/se-retro/SKILL.md",
       "target": ".claude/skills/se-retro/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20262,7 +20589,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-weekly-review/SKILL.md",
+      "source": "generated/skills/claude/se-weekly-review/SKILL.md",
       "target": ".claude/skills/se-weekly-review/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20334,7 +20661,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-runbook/SKILL.md",
+      "source": "generated/skills/claude/se-runbook/SKILL.md",
       "target": ".claude/skills/se-runbook/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20424,7 +20751,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-review-skills/SKILL.md",
+      "source": "generated/skills/claude/se-review-skills/SKILL.md",
       "target": ".claude/skills/se-review-skills/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20550,7 +20877,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-socratic-review/SKILL.md",
+      "source": "generated/skills/claude/se-socratic-review/SKILL.md",
       "target": ".claude/skills/se-socratic-review/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20604,7 +20931,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-sop/SKILL.md",
+      "source": "generated/skills/claude/se-sop/SKILL.md",
       "target": ".claude/skills/se-sop/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20658,7 +20985,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-stakeholder-map/SKILL.md",
+      "source": "generated/skills/claude/se-stakeholder-map/SKILL.md",
       "target": ".claude/skills/se-stakeholder-map/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20712,7 +21039,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-study-guide/SKILL.md",
+      "source": "generated/skills/claude/se-study-guide/SKILL.md",
       "target": ".claude/skills/se-study-guide/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20766,7 +21093,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-thread-digest/SKILL.md",
+      "source": "generated/skills/claude/se-thread-digest/SKILL.md",
       "target": ".claude/skills/se-thread-digest/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20829,7 +21156,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-tutorial/SKILL.md",
+      "source": "generated/skills/claude/se-tutorial/SKILL.md",
       "target": ".claude/skills/se-tutorial/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20901,7 +21228,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-video-notes/SKILL.md",
+      "source": "generated/skills/claude/se-video-notes/SKILL.md",
       "target": ".claude/skills/se-video-notes/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -20973,7 +21300,7 @@ check: test lint release-check
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-watchlist/SKILL.md",
+      "source": "generated/skills/claude/se-watchlist/SKILL.md",
       "target": ".claude/skills/se-watchlist/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -21616,6 +21943,7 @@ MIT — see [LICENSE](LICENSE).
       ".trellis/tasks/**",
       ".trellis/workspace/**",
       ".trellis/workflow.md",
+      "generated/**",
       "docs/SD_AI_COMMAND_PACK.md",
       "scripts/sd-ai-command-pack-*"
     ]

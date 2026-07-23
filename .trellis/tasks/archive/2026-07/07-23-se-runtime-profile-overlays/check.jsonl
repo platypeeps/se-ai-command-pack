@@ -1,0 +1,4 @@
+{"file": "tests/test_generate.py", "reason": "Pins profile rendering drift and rollback behavior"}
+{"file": "tests/test_install.py", "reason": "Pins platform-specific installed bytes"}
+{"file": "tests/test_skill_review.py", "reason": "Pins generated-to-authored review mapping"}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Documents the cross-layer runtime overlay contract"}

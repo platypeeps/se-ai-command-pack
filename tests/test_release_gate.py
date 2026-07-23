@@ -44,6 +44,8 @@ class ReleaseGateTest(TempDirTestCase):
         self.write_changelog("1.0.0")
         (self.repo / "templates").mkdir()
         (self.repo / "templates" / "skill.md").write_text("v1\n", encoding="utf-8")
+        (self.repo / "generated").mkdir()
+        (self.repo / "generated" / "skill.md").write_text("v1\n", encoding="utf-8")
         (self.repo / "README.md").write_text("readme\n", encoding="utf-8")
         git(self.repo, "add", "-A")
         git(self.repo, "commit", "-m", "initial")
@@ -76,6 +78,12 @@ class ReleaseGateTest(TempDirTestCase):
 
     def test_untracked_payload_file_without_bump_fails(self) -> None:
         (self.repo / "templates" / "new.md").write_text("new\n", encoding="utf-8")
+        result = self.gate()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("without a version bump", result.stderr)
+
+    def test_generated_payload_change_without_bump_fails(self) -> None:
+        (self.repo / "generated" / "skill.md").write_text("v2\n", encoding="utf-8")
         result = self.gate()
         self.assertEqual(result.returncode, 1)
         self.assertIn("without a version bump", result.stderr)

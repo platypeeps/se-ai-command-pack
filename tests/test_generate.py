@@ -59,6 +59,38 @@ class RealRepoGeneratorTest(unittest.TestCase):
         committed = (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
         self.assertEqual(committed, gen.regenerated_manifest_text())
 
+    def test_generated_claude_skills_match_runtime_profiles(self) -> None:
+        regenerated = gen.regenerated_claude_skill_texts()
+        self.assertEqual(len(regenerated), len(gen.SKILL_NAMES))
+        for path, expected in regenerated.items():
+            self.assertEqual(path.read_text(encoding="utf-8"), expected)
+
+    def test_claude_frontmatter_applies_reviewed_profiles(self) -> None:
+        research = (
+            gen.CLAUDE_GENERATED_ROOT / "se-research" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        research_metadata, research_body = gen.parse_frontmatter(
+            research, "generated research"
+        )
+        _, canonical_body = gen.parse_frontmatter(
+            (gen.SKILLS_ROOT / "se-research" / "SKILL.md").read_text("utf-8"),
+            "canonical research",
+        )
+        self.assertEqual(research_body, canonical_body)
+        self.assertEqual(research_metadata["context"], "fork")
+        self.assertEqual(research_metadata["model"], "opus")
+        self.assertEqual(research_metadata["effort"], "high")
+        self.assertNotIn("disable-model-invocation", research_metadata)
+
+        red_team = (
+            gen.CLAUDE_GENERATED_ROOT / "se-red-team" / "SKILL.md"
+        ).read_text(encoding="utf-8")
+        red_team_metadata, _ = gen.parse_frontmatter(red_team, "generated red team")
+        self.assertTrue(red_team_metadata["disable-model-invocation"])
+        self.assertEqual(red_team_metadata["model"], "opus")
+        self.assertEqual(red_team_metadata["effort"], "xhigh")
+        self.assertNotIn("context", red_team_metadata)
+
     def test_manifest_description_matches_bootstrap_default(self) -> None:
         committed = json.loads(
             (PACK_ROOT / "manifest.json").read_text(encoding="utf-8")
@@ -134,6 +166,10 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 self.assertEqual(matches[0]["platform"], platform)
                 self.assertEqual(matches[0]["scope"], "user")
                 self.assertEqual(matches[0]["anchor"], info.anchor)
+                expected_source = f"templates/skills/{name}/SKILL.md"
+                if platform == "claude":
+                    expected_source = f"generated/skills/claude/{name}/SKILL.md"
+                self.assertEqual(matches[0]["source"], expected_source)
 
     def test_shared_reference_fanned_into_consumers(self) -> None:
         manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
@@ -1010,6 +1046,9 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.manifest_path = self.base / "manifest.json"
         self.readme_path = self.base / "README.md"
         self.help_catalog_path = self.base / "skill-catalog.md"
+        self.claude_generated_root = (
+            self.base / "generated" / "skills" / "claude"
+        )
         self.readme_path.write_text(
             "# Fixture\n\n## Skills\n\n"
             "<!-- SE_SKILL_CATALOG:START -->\n"
@@ -1031,6 +1070,11 @@ class SandboxGeneratorTest(TempDirTestCase):
         )
         stack.enter_context(
             mock.patch.object(gen, "HELP_CATALOG_PATH", self.help_catalog_path)
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen, "CLAUDE_GENERATED_ROOT", self.claude_generated_root
+            )
         )
         stack.enter_context(
             mock.patch.object(
@@ -1058,6 +1102,20 @@ class SandboxGeneratorTest(TempDirTestCase):
         )
         stack.enter_context(
             mock.patch.object(gen, "SKILL_NAMES", ("se-test",))
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen,
+                "SKILL_RUNTIME_PROFILES",
+                {
+                    "se-test": gen.RuntimeProfile(
+                        invocation="both",
+                        context="inline",
+                        model="balanced",
+                        effort="medium",
+                    )
+                },
+            )
         )
         stack.enter_context(mock.patch.object(gen, "SHARED_REFERENCES", {}))
 
@@ -1242,6 +1300,48 @@ class SandboxGeneratorTest(TempDirTestCase):
             "Bundled pack version: `0.1.0`",
             self.help_catalog_path.read_text(encoding="utf-8"),
         )
+        generated = self.claude_generated_root / "se-test" / "SKILL.md"
+        self.assertTrue(generated.is_file())
+        metadata, body = gen.parse_frontmatter(
+            generated.read_text(encoding="utf-8"), "generated fixture"
+        )
+        self.assertEqual(metadata["model"], "sonnet")
+        self.assertEqual(metadata["effort"], "medium")
+        _, canonical_body = gen.parse_frontmatter(
+            self.write_skill().read_text(encoding="utf-8"), "canonical fixture"
+        )
+        self.assertEqual(body, canonical_body)
+
+    def test_claude_translation_fails_closed(self) -> None:
+        canonical = {"name": "se-test", "description": "Use when testing."}
+        with self.assertRaisesRegex(gen.GenerationError, "unknown invocation"):
+            gen.claude_frontmatter(
+                canonical,
+                gen.RuntimeProfile("sometimes", "inline", "balanced", "medium"),
+            )
+        with self.assertRaisesRegex(gen.GenerationError, "unknown context"):
+            gen.claude_frontmatter(
+                canonical,
+                gen.RuntimeProfile("both", "detached", "balanced", "medium"),
+            )
+        with self.assertRaisesRegex(gen.GenerationError, "unknown portable model"):
+            gen.claude_frontmatter(
+                canonical,
+                gen.RuntimeProfile("both", "inline", "mystery", "medium"),
+            )
+        with self.assertRaisesRegex(gen.GenerationError, "unsupported effort"):
+            gen.claude_frontmatter(
+                canonical,
+                gen.RuntimeProfile("both", "inline", "balanced", "maximum"),
+            )
+        with (
+            mock.patch.dict(gen.CLAUDE_MODEL_MAP, {"balanced": "unknown"}),
+            self.assertRaisesRegex(gen.GenerationError, "unsupported model alias"),
+        ):
+            gen.claude_frontmatter(
+                canonical,
+                gen.RuntimeProfile("both", "inline", "balanced", "medium"),
+            )
 
     def test_catalog_groups_skills_and_escapes_pipes(self) -> None:
         first = VALID_SKILL.format(name="se-test").replace(
@@ -1333,6 +1433,7 @@ class SandboxGeneratorTest(TempDirTestCase):
             self.readme_path.read_text(encoding="utf-8"), committed_readme
         )
         self.assertFalse(self.help_catalog_path.exists())
+        self.assertFalse(self.claude_generated_root.exists())
         self.assertFalse(self.manifest_path.exists())
 
     def test_help_catalog_write_failure_rolls_back_readme(self) -> None:
@@ -1384,6 +1485,26 @@ class SandboxGeneratorTest(TempDirTestCase):
             encoding="utf-8",
         )
         self.assertEqual(gen.main(["--check"]), 1)
+
+    def test_check_detects_generated_claude_drift(self) -> None:
+        self.write_skill()
+        self.assertEqual(gen.main([]), 0)
+        generated = self.claude_generated_root / "se-test" / "SKILL.md"
+        generated.write_text(
+            generated.read_text(encoding="utf-8") + "drift\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(gen.main(["--check"]), 1)
+
+    def test_generate_removes_unexpected_claude_file(self) -> None:
+        self.write_skill()
+        self.assertEqual(gen.main([]), 0)
+        unexpected = self.claude_generated_root / "retired" / "SKILL.md"
+        unexpected.parent.mkdir(parents=True)
+        unexpected.write_text("retired\n", encoding="utf-8")
+        self.assertEqual(gen.main(["--check"]), 1)
+        self.assertEqual(gen.main([]), 0)
+        self.assertFalse(unexpected.exists())
 
     def test_header_and_static_rows_preserved(self) -> None:
         self.write_skill()

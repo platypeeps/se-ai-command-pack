@@ -104,11 +104,15 @@ name in portable canonical frontmatter.
 ### SE package
 
 The current registry targets shared agent directories, Claude Code, and Codex.
-They consume the same canonical `templates/skills/**` body with portable
-`name` and `description` frontmatter. Claude-only context/model fields and
-Codex `agents/openai.yaml` UI metadata remain recommendations until a tested
-target overlay exists. Gemini is not currently an SE install target; adding it
-is separate package tooling work.
+They share one authored canonical `templates/skills/**` body. The pack applies
+reviewed invocation, fork, model, and effort choices through generated Claude
+frontmatter overlays; the review inventory maps those generated installed
+bytes back to the authored canonical source. Codex `agents/openai.yaml` remains
+a recommendation because it is UI metadata rather than a model or context
+execution control. Shared-agent and Codex skills retain portable frontmatter.
+Gemini and OpenCode agent adapters are separate package work because neither is
+an SE installation target and both express model and isolation choices through
+agent definitions rather than skill frontmatter.
 
 ### SD package
 

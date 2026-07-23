@@ -35,6 +35,16 @@ class SkillInfo:
     family: str
 
 
+@dataclass(frozen=True)
+class RuntimeProfile:
+    """Portable execution recommendation for one or more skills."""
+
+    invocation: str
+    context: str
+    model: str
+    effort: str
+
+
 # One registry row per platform id. Adding a platform means one row here;
 # `make generate` then fans every skill into its skills_dir.
 PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
@@ -135,6 +145,146 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-watchlist", family="operate"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
+
+KNOWN_RUNTIME_INVOCATIONS = frozenset({"automatic", "user-only", "both"})
+KNOWN_RUNTIME_CONTEXTS = frozenset({"inline", "forked", "fresh-session"})
+KNOWN_RUNTIME_MODELS = frozenset({"inherit", "fast", "balanced", "deep"})
+KNOWN_RUNTIME_EFFORTS = frozenset({"low", "medium", "high", "xhigh"})
+
+CONVERSATIONAL = RuntimeProfile("both", "inline", "balanced", "medium")
+DEEP_ANALYSIS = RuntimeProfile("both", "forked", "deep", "high")
+BOUNDED_SYNTHESIS = RuntimeProfile("both", "forked", "balanced", "medium")
+PERSONAL_DIALOGUE = RuntimeProfile("user-only", "inline", "deep", "high")
+PROFILE_MUTATION = RuntimeProfile("user-only", "inline", "inherit", "high")
+ARTIFACT_AUTHORING = RuntimeProfile("user-only", "inline", "deep", "high")
+INSTRUCTIONAL = RuntimeProfile("both", "inline", "deep", "high")
+DISCOVERY_UTILITY = RuntimeProfile("both", "inline", "fast", "low")
+CAPTURE_UTILITY = RuntimeProfile("both", "inline", "fast", "medium")
+INDEPENDENT_RED_TEAM = RuntimeProfile(
+    "user-only", "fresh-session", "deep", "xhigh"
+)
+PACKAGE_REVIEW = RuntimeProfile("user-only", "inline", "deep", "xhigh")
+
+# Grouped recommendations are easier to audit than 52 repeated records. The
+# builder rejects cross-group duplication before deriving the per-skill map.
+RUNTIME_PROFILE_ASSIGNMENTS: tuple[
+    tuple[RuntimeProfile, tuple[str, ...]], ...
+] = (
+    (
+        CONVERSATIONAL,
+        (
+            "se-brief",
+            "se-meeting-prep",
+            "se-decide",
+            "se-status",
+            "se-action-inbox",
+            "se-agenda",
+            "se-checklist",
+            "se-diagram",
+            "se-distill",
+            "se-explain",
+            "se-handoff",
+            "se-learn",
+            "se-meeting-follow-through",
+            "se-monitor",
+            "se-plan",
+            "se-presentation",
+            "se-publish",
+            "se-retro",
+        ),
+    ),
+    (
+        DEEP_ANALYSIS,
+        (
+            "se-research",
+            "se-fact-check",
+            "se-knowledge-gap",
+            "se-literature-map",
+            "se-evaluate",
+        ),
+    ),
+    (
+        BOUNDED_SYNTHESIS,
+        (
+            "se-scan",
+            "se-digest",
+            "se-compare",
+            "se-study-guide",
+            "se-video-notes",
+            "se-thread-digest",
+            "se-bookmark-triage",
+            "se-watchlist",
+            "se-feedback",
+            "se-premortem",
+        ),
+    ),
+    (PERSONAL_DIALOGUE, ("se-ask-me", "se-socratic-review")),
+    (PROFILE_MUTATION, ("se-profile", "se-knowledge-capture")),
+    (
+        ARTIFACT_AUTHORING,
+        (
+            "se-author",
+            "se-topic-radar",
+            "se-paper",
+            "se-proposal",
+            "se-stakeholder-map",
+            "se-runbook",
+            "se-postmortem",
+            "se-weekly-review",
+        ),
+    ),
+    (INSTRUCTIONAL, ("se-tutorial", "se-sop", "se-technical-editor")),
+    (DISCOVERY_UTILITY, ("se-help",)),
+    (CAPTURE_UTILITY, ("se-capture",)),
+    (INDEPENDENT_RED_TEAM, ("se-red-team",)),
+    (PACKAGE_REVIEW, ("se-review-skills",)),
+)
+
+
+def validate_runtime_profile(profile: RuntimeProfile) -> None:
+    """Fail closed when a portable runtime recommendation is unknown."""
+
+    for field_name, value, allowed in (
+        ("invocation", profile.invocation, KNOWN_RUNTIME_INVOCATIONS),
+        ("context", profile.context, KNOWN_RUNTIME_CONTEXTS),
+        ("model", profile.model, KNOWN_RUNTIME_MODELS),
+        ("effort", profile.effort, KNOWN_RUNTIME_EFFORTS),
+    ):
+        if value not in allowed:
+            raise RuntimeError(
+                f"runtime profile has unknown {field_name} value: {value!r}"
+            )
+
+
+def build_skill_runtime_profiles(
+    assignments: tuple[tuple[RuntimeProfile, tuple[str, ...]], ...],
+    skill_names: tuple[str, ...],
+) -> dict[str, RuntimeProfile]:
+    """Validate grouped membership and derive a registry-ordered skill map."""
+
+    registered = set(skill_names)
+    assigned: dict[str, RuntimeProfile] = {}
+    for profile, names in assignments:
+        validate_runtime_profile(profile)
+        for name in names:
+            if name not in registered:
+                raise RuntimeError(
+                    f"runtime profile assignment names unknown skill: {name}"
+                )
+            if name in assigned:
+                raise RuntimeError(
+                    f"duplicate runtime profile assignment for skill: {name}"
+                )
+            assigned[name] = profile
+    missing = sorted(registered - set(assigned))
+    if missing:
+        raise RuntimeError(f"skills missing runtime profile assignments: {missing}")
+    return {name: assigned[name] for name in skill_names}
+
+
+SKILL_RUNTIME_PROFILES = build_skill_runtime_profiles(
+    RUNTIME_PROFILE_ASSIGNMENTS, SKILL_NAMES
+)
 
 # Shared reference source (relative to templates/skills/) -> consuming skills.
 # The generator copies each shared reference into every consumer's
@@ -290,6 +440,13 @@ def validate_registry() -> None:
         if name in seen_skills:
             raise RuntimeError(f"duplicate skill name in registry: {name}")
         seen_skills.add(name)
+    expected_profiles = build_skill_runtime_profiles(
+        RUNTIME_PROFILE_ASSIGNMENTS, SKILL_NAMES
+    )
+    if SKILL_RUNTIME_PROFILES != expected_profiles:
+        raise RuntimeError(
+            "SKILL_RUNTIME_PROFILES must be derived from runtime assignments"
+        )
     for source, consumers in SHARED_REFERENCES.items():
         if not source.startswith("_shared/"):
             raise RuntimeError(
@@ -315,6 +472,10 @@ __all__ = [
     "IF_NOT_EXISTS",
     "INSTALLED_TARGETS_FILE",
     "KNOWN_INSTALL_MODES",
+    "KNOWN_RUNTIME_CONTEXTS",
+    "KNOWN_RUNTIME_EFFORTS",
+    "KNOWN_RUNTIME_INVOCATIONS",
+    "KNOWN_RUNTIME_MODELS",
     "KNOWN_SCOPES",
     "PACK_MANIFEST_FILE",
     "PACK_NAME",
@@ -324,12 +485,17 @@ __all__ = [
     "PlatformInfo",
     "RECEIPT_DIR",
     "ROOT",
+    "RUNTIME_PROFILE_ASSIGNMENTS",
+    "RuntimeProfile",
     "SHARED_REFERENCES",
     "SKILLS",
     "SKILL_NAMES",
+    "SKILL_RUNTIME_PROFILES",
     "SKILL_PREFIX",
     "SkillInfo",
     "TEMPLATES_SKILLS_DIR",
     "USER_SCOPE",
+    "build_skill_runtime_profiles",
     "validate_registry",
+    "validate_runtime_profile",
 ]

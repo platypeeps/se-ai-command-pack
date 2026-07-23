@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 82
+- **Total Sessions**: 84
 - **Last Active**: 2026-07-23
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1133 | Active |
+| `journal-2.md` | ~1204 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,8 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 84 | 2026-07-23 | Review Claude runtime profile overlays | `335926e`, `91a1864` | `codex/add-claude-runtime-profile-overlays` |
+| 83 | 2026-07-23 | Claude runtime profile overlays | `a267be0c4fd47f6a2f1c6c352ecee326183b947c` | `main` |
 | 82 | 2026-07-23 | Recover bounded inventory pull request | - | `codex/se-review-skills-bounded-inventory-output-replacement` |
 | 81 | 2026-07-23 | Bound se-review-skills inventory output | `c59e4a3`, `db0c106`, `998c574`, `30c4243` | `codex/se-review-skills-bounded-inventory-output` |
 | 80 | 2026-07-23 | Publish bounded inventory output plan | `c567e93` | `codex/se-review-skills-bounded-inventory-output` |

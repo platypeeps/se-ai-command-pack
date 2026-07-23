@@ -19,6 +19,8 @@ import re
 import sys
 from pathlib import Path
 
+import yaml
+
 PACK_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PACK_ROOT))
 
@@ -33,15 +35,19 @@ from installer.registry import (  # noqa: E402
     SHARED_REFERENCES,
     SKILL_NAMES,
     SKILL_PREFIX,
+    SKILL_RUNTIME_PROFILES,
     SKILLS,
     TEMPLATES_SKILLS_DIR,
     USER_SCOPE,
+    RuntimeProfile,
     SkillInfo,
 )
 
 MANIFEST_PATH = ROOT / "manifest.json"
 README_PATH = ROOT / "README.md"
 SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
+GENERATED_SKILLS_DIR = "generated/skills"
+CLAUDE_GENERATED_ROOT = ROOT / GENERATED_SKILLS_DIR / "claude"
 SHARED_DIR_NAME = "_shared"
 HELP_CATALOG_SOURCE = "_shared/references/skill-catalog.md"
 HELP_CATALOG_PATH = SKILLS_ROOT / HELP_CATALOG_SOURCE
@@ -58,6 +64,23 @@ REQUIRED_SECTIONS = (
 )
 
 ALLOWED_FRONTMATTER_KEYS = ("name", "description")
+CLAUDE_FRONTMATTER_KEYS = (
+    "name",
+    "description",
+    "disable-model-invocation",
+    "user-invocable",
+    "context",
+    "model",
+    "effort",
+)
+CLAUDE_MODEL_MAP = {
+    "inherit": "inherit",
+    "fast": "haiku",
+    "balanced": "sonnet",
+    "deep": "opus",
+}
+CLAUDE_MODEL_VALUES = frozenset(CLAUDE_MODEL_MAP.values())
+CLAUDE_EFFORT_VALUES = frozenset({"low", "medium", "high", "xhigh"})
 ALLOWED_RESOURCE_SUFFIXES = {
     "references": ".md",
     "scripts": ".py",
@@ -143,8 +166,6 @@ def parse_frontmatter(text: str, label: str) -> tuple[dict, str]:
         raise GenerationError(f"{label}: missing YAML frontmatter closing '---'")
     raw = text[len("---\n") : end + 1]
     body = text[end + len("\n---\n") :]
-    import yaml
-
     try:
         data = yaml.safe_load(raw)
     except yaml.YAMLError as error:
@@ -325,6 +346,151 @@ def validate_skills() -> dict[str, dict[str, str]]:
     return metadata
 
 
+def claude_frontmatter(
+    canonical: dict[str, str], profile: RuntimeProfile
+) -> dict[str, object]:
+    """Translate one portable profile into verified Claude skill metadata."""
+
+    rendered: dict[str, object] = {
+        "name": canonical["name"],
+        "description": canonical["description"],
+    }
+    if profile.invocation == "user-only":
+        rendered["disable-model-invocation"] = True
+    elif profile.invocation == "automatic":
+        rendered["user-invocable"] = False
+    elif profile.invocation != "both":
+        raise GenerationError(
+            f"Claude overlay has unknown invocation mode {profile.invocation!r}"
+        )
+
+    if profile.context == "forked":
+        rendered["context"] = "fork"
+    elif profile.context not in {"inline", "fresh-session"}:
+        raise GenerationError(
+            f"Claude overlay has unknown context mode {profile.context!r}"
+        )
+
+    try:
+        model = CLAUDE_MODEL_MAP[profile.model]
+    except KeyError:
+        raise GenerationError(
+            f"Claude overlay has unknown portable model profile {profile.model!r}"
+        ) from None
+    if model not in CLAUDE_MODEL_VALUES:
+        raise GenerationError(f"Claude overlay has unsupported model alias {model!r}")
+    if profile.effort not in CLAUDE_EFFORT_VALUES:
+        raise GenerationError(
+            f"Claude overlay has unsupported effort {profile.effort!r}"
+        )
+    rendered["model"] = model
+    rendered["effort"] = profile.effort
+
+    unsupported = sorted(set(rendered) - set(CLAUDE_FRONTMATTER_KEYS))
+    if unsupported:
+        raise GenerationError(
+            f"Claude overlay produced unsupported frontmatter keys {unsupported}"
+        )
+    return rendered
+
+
+def render_claude_skill(
+    name: str, canonical_text: str, profile: RuntimeProfile
+) -> str:
+    """Merge Claude metadata into one canonical skill without changing its body."""
+
+    frontmatter, body = parse_frontmatter(
+        canonical_text, f"{TEMPLATES_SKILLS_DIR}/{name}/SKILL.md"
+    )
+    canonical_keys = set(frontmatter)
+    if canonical_keys != set(ALLOWED_FRONTMATTER_KEYS):
+        raise GenerationError(
+            f"{TEMPLATES_SKILLS_DIR}/{name}/SKILL.md: canonical frontmatter keys "
+            f"must be {list(ALLOWED_FRONTMATTER_KEYS)}"
+        )
+    metadata = claude_frontmatter(frontmatter, profile)
+    dumped = yaml.safe_dump(
+        metadata,
+        allow_unicode=True,
+        sort_keys=False,
+        width=10000,
+    )
+    return f"---\n{dumped}---\n{body}"
+
+
+def regenerated_claude_skill_texts() -> dict[Path, str]:
+    """Return every committed Claude entrypoint keyed by generated path."""
+
+    missing_profiles = sorted(set(SKILL_NAMES) - set(SKILL_RUNTIME_PROFILES))
+    unknown_profiles = sorted(set(SKILL_RUNTIME_PROFILES) - set(SKILL_NAMES))
+    if missing_profiles or unknown_profiles:
+        raise GenerationError(
+            "runtime profile coverage differs from SKILL_NAMES: "
+            f"missing={missing_profiles}, unknown={unknown_profiles}"
+        )
+    rendered: dict[Path, str] = {}
+    for name in SKILL_NAMES:
+        canonical_path = SKILLS_ROOT / name / "SKILL.md"
+        try:
+            canonical_text = canonical_path.read_text(encoding="utf-8")
+        except OSError as error:
+            raise GenerationError(
+                f"cannot read {_display(canonical_path)}: {error}"
+            ) from None
+        rendered[CLAUDE_GENERATED_ROOT / name / "SKILL.md"] = render_claude_skill(
+            name, canonical_text, SKILL_RUNTIME_PROFILES[name]
+        )
+    return rendered
+
+
+def read_committed_claude_skills(
+    regenerated: dict[Path, str],
+) -> tuple[dict[Path, str | None], dict[Path, str]]:
+    """Read expected generated files and inventory stale regular files."""
+
+    if CLAUDE_GENERATED_ROOT.is_symlink():
+        raise GenerationError(
+            f"generated Claude root must not be a symlink: "
+            f"{_display(CLAUDE_GENERATED_ROOT)}"
+        )
+    committed: dict[Path, str | None] = {}
+    for path in regenerated:
+        if path.is_symlink():
+            raise GenerationError(
+                f"generated Claude skill must not be a symlink: {_display(path)}"
+            )
+        if path.exists() and not path.is_file():
+            raise GenerationError(
+                f"generated Claude skill must be a regular file: {_display(path)}"
+            )
+        try:
+            committed[path] = (
+                path.read_text(encoding="utf-8") if path.is_file() else None
+            )
+        except OSError as error:
+            raise GenerationError(
+                f"cannot read generated Claude skill {_display(path)}: {error}"
+            ) from None
+
+    expected = set(regenerated)
+    unexpected: dict[Path, str] = {}
+    if CLAUDE_GENERATED_ROOT.is_dir():
+        for path in sorted(CLAUDE_GENERATED_ROOT.rglob("*")):
+            if path.is_symlink():
+                raise GenerationError(
+                    f"generated Claude tree contains a symlink: {_display(path)}"
+                )
+            if path.is_file() and path not in expected:
+                try:
+                    unexpected[path] = path.read_text(encoding="utf-8")
+                except (OSError, UnicodeError) as error:
+                    raise GenerationError(
+                        f"cannot read unexpected generated file "
+                        f"{_display(path)}: {error}"
+                    ) from None
+    return committed, unexpected
+
+
 def skill_payload_files(name: str) -> list[str]:
     """Per-skill shipped file list: SKILL.md first, then sorted resources."""
     skill_dir = SKILLS_ROOT / name
@@ -354,12 +520,15 @@ def build_rows() -> list[dict]:
         for platform in sorted(PLATFORM_REGISTRY):
             info = PLATFORM_REGISTRY[platform]
             for relative in payload:
+                source = f"{TEMPLATES_SKILLS_DIR}/{name}/{relative}"
+                if platform == "claude" and relative == "SKILL.md":
+                    source = f"{GENERATED_SKILLS_DIR}/claude/{name}/SKILL.md"
                 rows.append(
                     {
                         "platform": platform,
                         "kind": "skill",
                         "scope": USER_SCOPE,
-                        "source": f"{TEMPLATES_SKILLS_DIR}/{name}/{relative}",
+                        "source": source,
                         "target": f"{info.skills_dir}/{name}/{relative}",
                         "anchor": info.anchor,
                         "install": IF_ANCHOR_EXISTS,
@@ -392,7 +561,10 @@ def build_rows() -> list[dict]:
 
 
 def is_derived_row(row: dict) -> bool:
-    return str(row.get("source", "")).startswith(f"{TEMPLATES_SKILLS_DIR}/")
+    source = str(row.get("source", ""))
+    return source.startswith(
+        (f"{TEMPLATES_SKILLS_DIR}/", f"{GENERATED_SKILLS_DIR}/")
+    )
 
 
 def regenerated_manifest_text() -> str:
@@ -558,14 +730,25 @@ def regenerated_readme_text(
 
 
 def write_generated_surfaces(
-    updates: list[tuple[Path, str, str | None]],
+    updates: list[tuple[Path, str | None, str | None]],
 ) -> None:
     written: list[tuple[Path, str | None]] = []
+    created_directories: list[Path] = []
     try:
         for path, regenerated, committed in updates:
-            atomic_write_text(path, regenerated)
+            if regenerated is None:
+                path.unlink()
+            else:
+                missing_parents: list[Path] = []
+                current = path.parent
+                while not current.exists():
+                    missing_parents.append(current)
+                    current = current.parent
+                path.parent.mkdir(parents=True, exist_ok=True)
+                created_directories.extend(reversed(missing_parents))
+                atomic_write_text(path, regenerated)
             written.append((path, committed))
-    except SystemExit as error:
+    except (OSError, SystemExit) as error:
         rollback_errors: list[str] = []
         for path, committed in reversed(written):
             try:
@@ -575,6 +758,16 @@ def write_generated_surfaces(
                     atomic_write_text(path, committed)
             except (OSError, SystemExit) as rollback_error:
                 rollback_errors.append(f"{_display(path)}: {rollback_error}")
+        for directory in reversed(created_directories):
+            try:
+                directory.rmdir()
+            except FileNotFoundError:
+                pass
+            except OSError:
+                if directory.exists():
+                    rollback_errors.append(
+                        f"{_display(directory)}: could not remove created directory"
+                    )
         detail = str(error).removeprefix("error: ")
         if rollback_errors:
             detail += "; rollback failed for " + ", ".join(rollback_errors)
@@ -594,6 +787,10 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         metadata = validate_skills()
+        regenerated_claude = regenerated_claude_skill_texts()
+        committed_claude, unexpected_claude = read_committed_claude_skills(
+            regenerated_claude
+        )
         regenerated_manifest = regenerated_manifest_text()
         committed_readme = read_readme_text()
         regenerated_readme = regenerated_readme_text(metadata, committed_readme)
@@ -641,15 +838,30 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             drifted = True
+        for path, regenerated in regenerated_claude.items():
+            if committed_claude[path] != regenerated:
+                print(
+                    f"error: {_display(path)} drifts from its canonical skill and "
+                    "runtime profile; run `make generate` and commit the result",
+                    file=sys.stderr,
+                )
+                drifted = True
+        for path in unexpected_claude:
+            print(
+                f"error: unexpected generated Claude skill {_display(path)}; "
+                "run `make generate` and commit the result",
+                file=sys.stderr,
+            )
+            drifted = True
         if drifted:
             return 1
         print(
-            "manifest.json, README.md, and skill-catalog.md match the "
-            "generated surfaces"
+            "manifest.json, README.md, skill-catalog.md, and Claude skills "
+            "match the generated surfaces"
         )
         return 0
 
-    updates: list[tuple[Path, str, str | None]] = []
+    updates: list[tuple[Path, str | None, str | None]] = []
     if committed_readme != regenerated_readme:
         updates.append((README_PATH, regenerated_readme, committed_readme))
     if committed_help_catalog != regenerated_help_catalog:
@@ -660,18 +872,27 @@ def main(argv: list[str] | None = None) -> int:
                 committed_help_catalog,
             )
         )
+    for path, regenerated in regenerated_claude.items():
+        if committed_claude[path] != regenerated:
+            updates.append((path, regenerated, committed_claude[path]))
+    for path, committed in unexpected_claude.items():
+        updates.append((path, None, committed))
     if committed_manifest != regenerated_manifest:
         updates.append((MANIFEST_PATH, regenerated_manifest, committed_manifest))
     if not updates:
-        print("manifest.json, README.md, and skill-catalog.md unchanged")
+        print(
+            "manifest.json, README.md, skill-catalog.md, and Claude skills "
+            "unchanged"
+        )
         return 0
     try:
         write_generated_surfaces(updates)
     except GenerationError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
-    for path, _, _ in updates:
-        print(f"wrote {_display(path)}")
+    for path, regenerated, _ in updates:
+        action = "removed" if regenerated is None else "wrote"
+        print(f"{action} {_display(path)}")
     return 0
 
 

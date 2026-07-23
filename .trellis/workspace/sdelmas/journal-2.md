@@ -1133,3 +1133,74 @@ Replaced stale PRs #100 and #101 with exact-head PR #102 on a fresh source branc
 ### Next Steps
 
 - None - task complete
+
+
+## Session 83: Claude runtime profile overlays
+
+**Date**: 2026-07-23
+**Task**: Claude runtime profile overlays
+**Branch**: `main`
+
+### Summary
+
+Added registry-owned runtime profiles and generated Claude skill frontmatter overlays, preserved portable Codex/shared-agent payloads, reconciled generated installs to authored sources, and validated the 0.63.0 release.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a267be0c4fd47f6a2f1c6c352ecee326183b947c` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 84: Review Claude runtime profile overlays
+
+**Date**: 2026-07-23
+**Task**: Review Claude runtime profile overlays
+**Branch**: `codex/add-claude-runtime-profile-overlays`
+
+### Summary
+
+Published PR #103, cleared deterministic preflight blockers, addressed Copilot frontmatter-validation feedback, and completed a clean second review round.
+
+### Main Changes
+
+- Removed generated scaffold rows from the archived task context and documented the PR tooling/generated scope.
+- Hardened installed skill frontmatter test parsing with explicit delimiter and mapping assertions plus focused malformed-input coverage.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `335926e` | fix: remove task context scaffolds |
+| `91a1864` | fix: clarify installed frontmatter failures |
+
+### Testing
+
+- [OK] 19 focused installer tests and Ruff passed.
+- [OK] Deterministic PR full-check passed with 509 tests, Ruff, mypy, generation parity, install audit, release checks, and Prism/Gito disabled.
+- [OK] Copilot round 2 produced no new comments; all review threads are resolved and CI is green.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
