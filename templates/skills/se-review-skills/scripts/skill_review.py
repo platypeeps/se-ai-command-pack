@@ -13,17 +13,22 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass, replace
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any, Sequence
 
 SCHEMA_VERSION = 3
+TRANSPORT_SCHEMA_VERSION = 1
 MINIMUM_PYTHON = (3, 9)
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
+MAX_EXISTING_INVENTORY_BYTES = 64 * 1024 * 1024
+MAX_ENVELOPE_ERROR_CHARS = 500
 MAX_DESCRIPTION_SIMILARITY_PAIRS = 10_000
 HASH_CHUNK_BYTES = 128 * 1024
 FIRST_PARTY_REMOTES = {
@@ -125,6 +130,12 @@ class InstalledCopy:
     observed_hash: str
     drift: str
     mapping_evidence: str
+
+
+@dataclass(frozen=True)
+class DestinationState:
+    path: Path
+    fingerprint: tuple[int, int, int, int, int]
 
 
 def _read_regular_text(path: Path) -> str:
@@ -1437,6 +1448,261 @@ def build_inventory(
     return payload
 
 
+def _is_within(path: Path, root: Path) -> bool:
+    try:
+        path.relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
+def _stat_fingerprint(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_size,
+        metadata.st_mtime_ns,
+        metadata.st_ctime_ns,
+    )
+
+
+def _destination_fingerprint(path: Path) -> tuple[int, int, int, int, int] | None:
+    try:
+        metadata = path.lstat()
+    except FileNotFoundError:
+        return None
+    except OSError as error:
+        raise ReviewError(f"cannot inspect output destination {path}: {error}") from None
+    if stat.S_ISLNK(metadata.st_mode):
+        raise ReviewError(f"output destination is a symlink: {path}")
+    if not stat.S_ISREG(metadata.st_mode):
+        raise ReviewError(f"output destination is not a regular file: {path}")
+    return _stat_fingerprint(metadata)
+
+
+def _snapshot_matches(payload: dict[str, Any]) -> bool:
+    snapshot = payload.get("snapshotId")
+    required = {
+        "schemaVersion",
+        "scope",
+        "selector",
+        "repositories",
+        "installationRoots",
+        "skills",
+        "candidateSignals",
+        "coverage",
+        "snapshotId",
+    }
+    if (
+        payload.get("schemaVersion") != SCHEMA_VERSION
+        or not isinstance(snapshot, str)
+        or len(snapshot) != 64
+        or not required.issubset(payload)
+        or not isinstance(payload.get("selector"), dict)
+        or not isinstance(payload.get("repositories"), list)
+        or not isinstance(payload.get("installationRoots"), list)
+        or not isinstance(payload.get("skills"), list)
+        or not isinstance(payload.get("candidateSignals"), dict)
+        or not isinstance(payload.get("coverage"), dict)
+    ):
+        return False
+    unsigned = dict(payload)
+    del unsigned["snapshotId"]
+    canonical = json.dumps(unsigned, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest() == snapshot
+
+
+def _validate_existing_inventory(path: Path) -> DestinationState | None:
+    fingerprint = _destination_fingerprint(path)
+    if fingerprint is None:
+        return None
+    if fingerprint[2] > MAX_EXISTING_INVENTORY_BYTES:
+        raise ReviewError(
+            "refusing to replace inventory artifact larger than "
+            f"{MAX_EXISTING_INVENTORY_BYTES} bytes: {path}"
+        )
+    descriptor = -1
+    try:
+        descriptor = os.open(
+            path,
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0),
+        )
+        metadata = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or _stat_fingerprint(metadata) != fingerprint
+        ):
+            raise ReviewError(f"output destination changed during validation: {path}")
+        with os.fdopen(descriptor, "rb") as handle:
+            descriptor = -1
+            raw = handle.read(fingerprint[2] + 1)
+        if len(raw) != fingerprint[2]:
+            raise ReviewError(f"output destination changed during validation: {path}")
+        value = json.loads(raw.decode("utf-8", errors="strict"))
+    except ReviewError:
+        raise
+    except (OSError, UnicodeError, ValueError) as error:
+        raise ReviewError(
+            f"refusing to replace invalid inventory artifact {path}: {error}"
+        ) from None
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+    if not isinstance(value, dict) or not _snapshot_matches(value):
+        raise ReviewError(
+            f"refusing to replace unverified inventory artifact: {path}"
+        )
+    if _destination_fingerprint(path) != fingerprint:
+        raise ReviewError(f"output destination changed during validation: {path}")
+    return DestinationState(path=path, fingerprint=fingerprint)
+
+
+def _forbidden_output_roots(payload: dict[str, Any]) -> list[Path]:
+    candidates: list[str] = []
+    for repository in payload.get("repositories", []):
+        if isinstance(repository, dict) and isinstance(repository.get("root"), str):
+            candidates.append(repository["root"])
+    for installation in payload.get("installationRoots", []):
+        if isinstance(installation, dict) and isinstance(installation.get("path"), str):
+            candidates.append(installation["path"])
+    return sorted(
+        {Path(value).expanduser().resolve(strict=False) for value in candidates},
+        key=str,
+    )
+
+
+def _validate_output_destination(
+    output: Path,
+    output_root: Path,
+    forbidden_roots: Sequence[Path],
+) -> tuple[Path, DestinationState | None]:
+    supplied_root = output_root.expanduser().absolute()
+    if supplied_root.is_symlink():
+        raise ReviewError(f"output root is a symlink: {supplied_root}")
+    if not supplied_root.exists():
+        raise ReviewError(f"output root does not exist: {supplied_root}")
+    if not supplied_root.is_dir():
+        raise ReviewError(f"output root is not a directory: {supplied_root}")
+    root = supplied_root.resolve()
+    filesystem_root = Path(root.anchor).resolve()
+    if root in {filesystem_root, Path.home().resolve()}:
+        raise ReviewError(f"refusing unsafe output root: {root}")
+
+    expanded_output = output.expanduser()
+    if ".." in expanded_output.parts:
+        raise ReviewError(f"output destination contains a parent escape: {output}")
+    candidate = expanded_output if expanded_output.is_absolute() else root / expanded_output
+    candidate = Path(os.path.abspath(str(candidate)))
+    if candidate == root or not _is_within(candidate, root):
+        raise ReviewError(f"output destination escapes output root {root}: {candidate}")
+
+    relative = candidate.relative_to(root)
+    parent = root
+    for part in relative.parts[:-1]:
+        parent = parent / part
+        if parent.is_symlink():
+            raise ReviewError(f"output destination crosses a symlink: {parent}")
+        if not parent.exists() or not parent.is_dir():
+            raise ReviewError(f"output destination parent is not a directory: {parent}")
+    if candidate.is_symlink():
+        raise ReviewError(f"output destination is a symlink: {candidate}")
+    resolved = candidate.resolve(strict=False)
+    if not _is_within(resolved, root):
+        raise ReviewError(f"output destination escapes output root {root}: {resolved}")
+    for forbidden in forbidden_roots:
+        if _is_within(resolved, forbidden):
+            raise ReviewError(
+                f"output destination is inside a reviewed or installed root: {resolved}"
+            )
+    return resolved, _validate_existing_inventory(resolved)
+
+
+def _atomic_write_inventory(
+    destination: Path,
+    content: str,
+    prior: DestinationState | None,
+) -> None:
+    descriptor = -1
+    temporary_path: Path | None = None
+    try:
+        descriptor, temporary_name = tempfile.mkstemp(
+            dir=destination.parent,
+            prefix=f".{destination.name}.",
+            suffix=".tmp",
+        )
+        temporary_path = Path(temporary_name)
+        os.fchmod(descriptor, 0o600)
+        with os.fdopen(
+            descriptor,
+            "w",
+            encoding="utf-8",
+            errors="strict",
+            newline="\n",
+        ) as handle:
+            descriptor = -1
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+
+        current = _destination_fingerprint(destination)
+        expected = prior.fingerprint if prior is not None else None
+        if current != expected:
+            raise ReviewError(f"output destination changed before replacement: {destination}")
+        os.replace(temporary_path, destination)
+        temporary_path = None
+    except ReviewError:
+        raise
+    except OSError as error:
+        raise ReviewError(f"cannot write inventory artifact {destination}: {error}") from None
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+        if temporary_path is not None:
+            try:
+                temporary_path.unlink()
+            except FileNotFoundError:
+                pass
+
+
+def _bounded_error(error: object) -> str:
+    text = " ".join(str(error).split())
+    if len(text) <= MAX_ENVELOPE_ERROR_CHARS:
+        return text
+    return text[: MAX_ENVELOPE_ERROR_CHARS - 3] + "..."
+
+
+def _transport_envelope(
+    payload: dict[str, Any] | None,
+    *,
+    status: str,
+    artifact_written: bool,
+    inventory_path: Path | None,
+    error: object | None,
+) -> dict[str, Any]:
+    coverage = payload.get("coverage", {}) if payload is not None else {}
+    return {
+        "artifactWritten": artifact_written,
+        "coverageLimits": coverage.get("limits") if payload is not None else None,
+        "error": _bounded_error(error) if error is not None else None,
+        "installedCopies": (
+            coverage.get("installedCopies") if payload is not None else None
+        ),
+        "inventoryPath": str(inventory_path) if inventory_path is not None else None,
+        "inventorySchemaVersion": (
+            payload.get("schemaVersion") if payload is not None else None
+        ),
+        "selectedSkills": coverage.get("selectedSkills") if payload is not None else None,
+        "snapshotId": payload.get("snapshotId") if payload is not None else None,
+        "status": status,
+        "transportSchemaVersion": TRANSPORT_SCHEMA_VERSION,
+    }
+
+
+def _print_json(value: dict[str, Any], pretty: bool) -> None:
+    indent = 2 if pretty else None
+    print(json.dumps(value, indent=indent, sort_keys=bool(indent)))
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1461,6 +1727,16 @@ def _parser() -> argparse.ArgumentParser:
         "--scope",
         choices=("skill", "family", "repo", "package", "all"),
     )
+    inventory.add_argument(
+        "--output",
+        type=Path,
+        help="write the complete inventory to this caller-selected bounded path",
+    )
+    inventory.add_argument(
+        "--output-root",
+        type=Path,
+        help="existing non-home root that bounds --output",
+    )
     inventory.add_argument("--pretty", action="store_true")
     return parser
 
@@ -1477,10 +1753,41 @@ def main(argv: Sequence[str] | None = None) -> int:
         return 2
     parser = _parser()
     args = parser.parse_args(argv)
+    if args.output_root is not None and args.output is None:
+        parser.error("--output-root requires --output")
+    bounded_mode = args.output is not None
+    if bounded_mode and args.output_root is None:
+        error = ReviewError("--output requires --output-root")
+        print(f"error: {error}", file=sys.stderr)
+        _print_json(
+            _transport_envelope(
+                None,
+                status="error",
+                artifact_written=False,
+                inventory_path=None,
+                error=error,
+            ),
+            args.pretty,
+        )
+        return 2
     root_was_explicit = args.root is not None
     root = (args.root or Path.cwd()).expanduser().resolve()
     if not root.exists():
-        parser.error(f"bounded root does not exist: {root}")
+        if not bounded_mode:
+            parser.error(f"bounded root does not exist: {root}")
+        error = ReviewError(f"bounded root does not exist: {root}")
+        print(f"error: {error}", file=sys.stderr)
+        _print_json(
+            _transport_envelope(
+                None,
+                status="error",
+                artifact_written=False,
+                inventory_path=None,
+                error=error,
+            ),
+            args.pretty,
+        )
+        return 2
     try:
         payload = build_inventory(
             root,
@@ -1493,9 +1800,55 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
     except ReviewError as error:
         print(f"error: {error}", file=sys.stderr)
+        if bounded_mode:
+            _print_json(
+                _transport_envelope(
+                    None,
+                    status="error",
+                    artifact_written=False,
+                    inventory_path=None,
+                    error=error,
+                ),
+                args.pretty,
+            )
         return 2
-    indent = 2 if args.pretty else None
-    print(json.dumps(payload, indent=indent, sort_keys=bool(indent)))
+    if not bounded_mode:
+        _print_json(payload, args.pretty)
+        return 0
+
+    destination: Path | None = None
+    try:
+        assert args.output is not None and args.output_root is not None
+        destination, prior = _validate_output_destination(
+            args.output,
+            args.output_root,
+            _forbidden_output_roots(payload),
+        )
+        content = json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n"
+        _atomic_write_inventory(destination, content, prior)
+    except ReviewError as error:
+        print(f"error: {error}", file=sys.stderr)
+        _print_json(
+            _transport_envelope(
+                payload,
+                status="error",
+                artifact_written=False,
+                inventory_path=destination,
+                error=error,
+            ),
+            args.pretty,
+        )
+        return 2
+    _print_json(
+        _transport_envelope(
+            payload,
+            status="success",
+            artifact_written=True,
+            inventory_path=destination,
+            error=None,
+        ),
+        args.pretty,
+    )
     return 0
 
 

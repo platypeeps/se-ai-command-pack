@@ -92,6 +92,22 @@ an exact `skill=`, `root=`, or `installed-root=`.
    assertions semantically before claiming coverage. If inventory reports
    unknown ownership, unsafe paths, missing canonical mappings, or ambiguous
    roots, stop the affected mutation path and report the exact limit.
+   Keep the analyzer's legacy full-JSON stdout mode unless tool transport cannot
+   carry the complete inventory and an explicit caller-owned temporary output
+   root is already available. In that case, opt into the bounded transport:
+
+   ```text
+   python3 scripts/skill_review.py inventory <selectors> \
+     --output-root /bounded/caller/temp --output inventory.json
+   ```
+
+   Treat stdout as a transport envelope, not as the inventory. Continue only
+   when it reports `status=success` and `artifactWritten=true`; parse the file
+   at `inventoryPath`, then verify its `snapshotId`, schema version, selected
+   skill count, installed-copy count, and coverage limits against the envelope.
+   On any mismatch, missing artifact, or error envelope, stop and report the
+   transport failure. Do not substitute partial stdout, a stale prior artifact,
+   or a guessed path.
 3. Match installed copies to repository sources only through verified manifest,
    provenance, canonical path, and Git identity evidence. When the current local
    repository contains the mapped skill, review and operate on that repository
@@ -196,6 +212,10 @@ an exact `skill=`, `root=`, or `installed-root=`.
 - Never scan global conversation history, raw home directories, or unrelated
   projects. Reject an explicit `session=` outside the verified project boundary.
 - Never scan an unbounded home directory or every installed host.
+- Do not enable inventory persistence implicitly. `--output` requires an
+  explicit pre-existing bounded `--output-root`; never select the filesystem
+  root, home directory, reviewed repository, installed-skill root, or a
+  symlinked path. An error envelope does not prove that an artifact exists.
 - Never infer an installed root by recursively searching a home directory.
   Accept only verified manifest-derived roots or explicit bounded
   `installed-root=` values, and do not follow symlinked roots or skills.
