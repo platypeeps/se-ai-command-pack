@@ -3488,6 +3488,51 @@ class SkillSafetyPinsTest(unittest.TestCase):
         ):
             self.assertIn(phrase, text)
 
+    def test_review_skills_assesses_structured_user_questions(self) -> None:
+        text = normalized("se-review-skills").lower()
+        rubric = normalized_resource(
+            "se-review-skills", "references/review-rubric.md"
+        ).lower()
+        schema = normalized_resource(
+            "se-review-skills", "references/report-schema.md"
+        ).lower()
+        for phrase in (
+            "semantic interaction-design pass",
+            "`askuserquestion` as the named structured-input capability",
+            "on targets that expose it",
+            "verified platform equivalent",
+            "concise direct-question fallback",
+            "review mode remains read-only",
+        ):
+            self.assertIn(phrase, text)
+        for phrase in (
+            "`required`",
+            "`useful-but-non-blocking`",
+            "`inappropriate`",
+            "cannot be discovered safely",
+            "scope, authority, output, cost, or downstream side effects",
+            "external, destructive, irreversible, privacy-sensitive",
+            "accepted outcome and no safe default",
+            "answer is discoverable",
+            "merely restate available context",
+            "keywords are candidate signals only",
+            "two or three mutually exclusive choices",
+            "recommended option and its tradeoff",
+            "when the user does not answer",
+            "free-form input is necessary",
+        ):
+            self.assertIn(phrase, rubric)
+        for phrase in (
+            "owning skill and exact source locator",
+            "missing decision or approval",
+            "blocking state",
+            "smallest capability-preserving instruction change",
+            "platform fallback behavior",
+            "suggested placement and prompt intent",
+            "validation method",
+        ):
+            self.assertIn(phrase, schema)
+
     def test_review_skills_routes_tasks_and_applies_from_stable_snapshots(self) -> None:
         text = normalized("se-review-skills").lower()
         for phrase in (

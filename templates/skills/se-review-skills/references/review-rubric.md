@@ -14,6 +14,7 @@ Record these before proposing deletion, compression, movement, or replacement:
 | Inputs | Required and optional inputs, defaults, ambiguity handling |
 | Output | Artifact, schema, ordering, evidence, and handoff |
 | Authority | Read/write boundary, approvals, side effects, external actions |
+| Interaction | Necessary decisions, structured questions, safe defaults, and nonresponse behavior |
 | Safety | Harm, injection, privacy, security, destructive-action, and recovery gates |
 | Verification | Preconditions, checks, read-back, evidence standard |
 | Failure | Missing, malformed, stale, inaccessible, partial, no-result states |
@@ -64,6 +65,47 @@ contract.
     limits, recurrent edge cases, and whether the smallest durable remedy
     belongs in the core workflow, a safety gate, conditional reference,
     deterministic helper, host overlay, evaluation, or recovery path.
+12. **Interaction design** — unresolved decisions or approvals, discoverability,
+    safe defaults, structured versus free-form input, blocking versus optional
+    questions, portable platform behavior, nonresponse handling, and whether
+    the question changes scope, authority, output, cost, or side effects.
+
+## Interaction-design assessment
+
+Inspect the decision point semantically. Words such as `ask`, `confirm`,
+`choose`, `approve`, or `clarify` and tool names are candidate signals only;
+they do not establish a finding.
+Question-related keywords are candidate signals only, never findings by
+themselves.
+
+Classify each candidate as exactly one of:
+
+- `required` — proceeding by assumption would materially change the result or
+  exceed authority because required input cannot be discovered safely; two or
+  more materially different choices change scope, authority, output, cost, or
+  downstream side effects; approval is required before an external,
+  destructive, irreversible, privacy-sensitive, or otherwise consequential
+  action; or a stated preference is part of the accepted outcome and no safe
+  default exists;
+- `useful-but-non-blocking` — an answer would improve the result, but the skill
+  can continue safely with a disclosed default or reversible provisional
+  assumption and accept a later correction; or
+- `inappropriate` — the answer is discoverable, an explicit safe and
+  transparent default already applies, the prompt would merely restate
+  available context, or the workflow can continue safely while accepting an
+  optional later correction.
+
+Recommend a blocking interaction only for `required`. Name `AskUserQuestion`
+on targets that expose it and use only a verified platform equivalent
+elsewhere; when no structured equivalent is verified, use a concise direct
+question. Never add unsupported tool names or host-only fields to shared
+canonical frontmatter.
+
+For a choice prompt, specify the prompt intent, two or three mutually exclusive
+choices, the recommended option and its tradeoff, and behavior when the user
+does not answer. Do not prescribe artificial choices when free-form input is
+necessary. The smallest remedy should preserve existing discovery, default,
+authority, and failure contracts.
 
 ## Harmful-instruction assessment
 

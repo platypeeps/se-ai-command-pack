@@ -52,6 +52,13 @@ boundary users exercise.
   select a stale-state recovery branch from age alone when no freshness
   horizon is part of the accepted contract; preserve source boundaries and use
   qualified comparison when continuity fails.
+- Review structured user input semantically, not from question-related
+  keywords. Require a blocking question only when undiscoverable input,
+  materially different choices, consequential-action approval, or an accepted
+  preference without a safe default makes assumption unsafe. Keep discoverable
+  answers, explicit safe defaults, and reversible optional corrections
+  non-blocking or question-free, and express host tools through portable
+  capability semantics plus verified target guidance.
 - Preserve compatibility with Python 3.10; use postponed annotations where
   modern typing syntax appears.
 - Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
@@ -67,6 +74,9 @@ boundary users exercise.
   materially ambiguous clarification path.
 - Pin fresh, explicit-policy stale, continuity-gap stale, and no-policy paths
   whenever a shared state contract selects normal versus qualified comparison.
+- For interaction-design review, pin a consequential unresolved choice, a
+  discoverable or safely defaulted non-finding, a keyword-only candidate, and
+  option-versus-free-form suggestion behavior.
 - Use temporary install roots; never target the developer's real home directory
   from tests.
 - Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
