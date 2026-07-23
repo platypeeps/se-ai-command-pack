@@ -14,9 +14,12 @@ from installer.registry import (
     FAMILY_LABELS,
     SHARED_REFERENCES,
     SKILL_NAMES,
+    SKILL_RUNTIME_PROFILES,
     SKILLS,
     TEMPLATES_SKILLS_DIR,
+    RuntimeProfile,
     SkillInfo,
+    build_skill_runtime_profiles,
     validate_registry,
 )
 
@@ -148,6 +151,41 @@ class SkillConventionsTest(unittest.TestCase):
 
 
 class SkillFamilyRegistryTest(unittest.TestCase):
+    def test_runtime_profiles_cover_every_skill_once(self) -> None:
+        self.assertEqual(tuple(SKILL_RUNTIME_PROFILES), SKILL_NAMES)
+        self.assertEqual(len(SKILL_RUNTIME_PROFILES), len(SKILL_NAMES))
+        self.assertEqual(
+            SKILL_RUNTIME_PROFILES["se-evaluate"],
+            RuntimeProfile("both", "forked", "deep", "high"),
+        )
+
+    def test_runtime_profile_builder_rejects_membership_drift(self) -> None:
+        profile = RuntimeProfile("both", "inline", "balanced", "medium")
+        with self.assertRaisesRegex(RuntimeError, "missing runtime profile"):
+            build_skill_runtime_profiles(((profile, ("se-one",)),), ("se-one", "se-two"))
+        with self.assertRaisesRegex(RuntimeError, "duplicate runtime profile"):
+            build_skill_runtime_profiles(
+                ((profile, ("se-one",)), (profile, ("se-one",))),
+                ("se-one",),
+            )
+        with self.assertRaisesRegex(RuntimeError, "unknown skill"):
+            build_skill_runtime_profiles(
+                ((profile, ("se-other",)),),
+                ("se-one",),
+            )
+
+    def test_runtime_profile_builder_rejects_unknown_values(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "unknown model"):
+            build_skill_runtime_profiles(
+                (
+                    (
+                        RuntimeProfile("both", "inline", "mystery", "medium"),
+                        ("se-one",),
+                    ),
+                ),
+                ("se-one",),
+            )
+
     def test_family_labels_have_stable_outcome_order(self) -> None:
         self.assertEqual(
             list(FAMILY_LABELS.items()),

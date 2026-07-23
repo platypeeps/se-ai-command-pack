@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import unittest
 
+import yaml
 from install_test_support import (
     PACK_ROOT,
     TempDirTestCase,
@@ -25,6 +26,18 @@ RECEIPTS = {
     ".se-ai-command-pack/provenance.json",
     ".se-ai-command-pack/installed-targets.txt",
 }
+
+
+def manifest_source(platform: str, name: str) -> str:
+    target = f"{PLATFORM_REGISTRY[platform].skills_dir}/{name}/SKILL.md"
+    row = next(row for row in MANIFEST["files"] if row["target"] == target)
+    return row["source"]
+
+
+def installed_frontmatter(path) -> dict:
+    text = path.read_text(encoding="utf-8")
+    end = text.find("\n---\n")
+    return yaml.safe_load(text[len("---\n") : end + 1])
 
 
 class FreshInstallTest(TempDirTestCase):
@@ -81,11 +94,34 @@ class FreshInstallTest(TempDirTestCase):
         home = make_home(self.base)
         install_ok("--root", str(home))
         for name in SKILL_NAMES:
-            for info in PLATFORM_REGISTRY.values():
+            for platform, info in PLATFORM_REGISTRY.items():
+                installed = home / info.skills_dir / name / "SKILL.md"
                 self.assertTrue(
-                    (home / info.skills_dir / name / "SKILL.md").is_file(),
+                    installed.is_file(),
                     f"{info.skills_dir}/{name}",
                 )
+                source = PACK_ROOT / manifest_source(platform, name)
+                self.assertEqual(installed.read_bytes(), source.read_bytes())
+
+    def test_runtime_metadata_is_claude_only(self) -> None:
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+        claude_root = home / PLATFORM_REGISTRY["claude"].skills_dir
+        research = installed_frontmatter(claude_root / "se-research" / "SKILL.md")
+        self.assertEqual(research["context"], "fork")
+        self.assertEqual(research["model"], "opus")
+        self.assertEqual(research["effort"], "high")
+        red_team = installed_frontmatter(claude_root / "se-red-team" / "SKILL.md")
+        self.assertTrue(red_team["disable-model-invocation"])
+        self.assertEqual(red_team["model"], "opus")
+        self.assertEqual(red_team["effort"], "xhigh")
+        self.assertNotIn("context", red_team)
+
+        for platform in ("agents", "codex"):
+            path = home / PLATFORM_REGISTRY[platform].skills_dir / "se-research" / "SKILL.md"
+            self.assertEqual(
+                sorted(installed_frontmatter(path)), ["description", "name"]
+            )
 
 
 class ConflictTest(TempDirTestCase):
@@ -111,8 +147,8 @@ class ConflictTest(TempDirTestCase):
         self.assertIn("overwritten", result.stdout)
         backup = home / ".claude/skills/se-research/SKILL.md.bak"
         self.assertEqual(backup.read_text(encoding="utf-8"), "mine\n")
-        template = PACK_ROOT / "templates/skills/se-research/SKILL.md"
-        self.assertEqual(conflicting.read_bytes(), template.read_bytes())
+        source = PACK_ROOT / manifest_source("claude", "se-research")
+        self.assertEqual(conflicting.read_bytes(), source.read_bytes())
 
 
 class ModesAndFlagsTest(TempDirTestCase):

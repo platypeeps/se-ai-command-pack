@@ -26,6 +26,8 @@ templates/skills/           # canonical shipped skill sources
   <skill>/SKILL.md          # required portable skill instructions
   <skill>/references/*.md   # optional directly linked progressive disclosure
   <skill>/scripts/*.py      # optional deterministic, stdlib-first helpers
+generated/skills/claude/    # generated Claude runtime-profile entrypoints
+  <skill>/SKILL.md          # canonical body plus validated host frontmatter
 manifest.json               # generated payload inventory and release version
 README.md                   # generated family-grouped catalog inside markers
 templates/skills/_shared/references/skill-catalog.md
@@ -44,6 +46,11 @@ tests/                      # unittest modules mirroring installer concerns
 - Treat canonical skill frontmatter and `installer/registry.py` as sources of
   truth. Run `make generate` to update `manifest.json`, the marker-bounded
   README catalog, and the bundled `se-help` catalog from one parsed model.
+- Keep portable runtime profiles in `installer/registry.py`. Generate Claude
+  entrypoints under `generated/skills/claude/`; never edit those derived files
+  or copy their bodies by hand. Codex and shared-agent entrypoints continue to
+  use canonical template bytes until their hosts expose equivalent validated
+  execution controls.
 - Keep skill-owned resources one level below the skill directory. Only
   `references/*.md` and `scripts/*.py` are shipped; nested resource trees and
   other file types fail generation. A bundled script must expose a bounded,
@@ -83,8 +90,8 @@ tests/                      # unittest modules mirroring installer concerns
 - Do not hand-edit generated README or `se-help` catalog rows, or move skills
   into family subdirectories; taxonomy is metadata and installed paths remain
   flat.
-- Do not add platform-specific copies of skill content; generate fan-out from
-  the registry and canonical templates.
+- Do not add hand-maintained platform-specific copies of skill content;
+  platform adapters must be generated from the registry and canonical body.
 - Do not hide semantic decisions, approvals, or unbounded external actions in a
   bundled script merely to shorten the skill text.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI

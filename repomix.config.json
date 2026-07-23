@@ -52,6 +52,7 @@
       ".trellis/tasks/**",
       ".trellis/workspace/**",
       ".trellis/workflow.md",
+      "generated/**",
       "docs/SD_AI_COMMAND_PACK.md",
       "scripts/sd-ai-command-pack-*"
     ]

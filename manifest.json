@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.62.0",
+  "version": "0.63.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, evidence-backed personal weekly reviews, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
@@ -36,7 +36,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-research/SKILL.md",
+      "source": "generated/skills/claude/se-research/SKILL.md",
       "target": ".claude/skills/se-research/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -108,7 +108,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-brief/SKILL.md",
+      "source": "generated/skills/claude/se-brief/SKILL.md",
       "target": ".claude/skills/se-brief/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -162,7 +162,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-meeting-prep/SKILL.md",
+      "source": "generated/skills/claude/se-meeting-prep/SKILL.md",
       "target": ".claude/skills/se-meeting-prep/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -216,7 +216,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-scan/SKILL.md",
+      "source": "generated/skills/claude/se-scan/SKILL.md",
       "target": ".claude/skills/se-scan/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -270,7 +270,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-digest/SKILL.md",
+      "source": "generated/skills/claude/se-digest/SKILL.md",
       "target": ".claude/skills/se-digest/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -324,7 +324,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-decide/SKILL.md",
+      "source": "generated/skills/claude/se-decide/SKILL.md",
       "target": ".claude/skills/se-decide/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -378,7 +378,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-status/SKILL.md",
+      "source": "generated/skills/claude/se-status/SKILL.md",
       "target": ".claude/skills/se-status/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -441,7 +441,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-fact-check/SKILL.md",
+      "source": "generated/skills/claude/se-fact-check/SKILL.md",
       "target": ".claude/skills/se-fact-check/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -522,7 +522,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-help/SKILL.md",
+      "source": "generated/skills/claude/se-help/SKILL.md",
       "target": ".claude/skills/se-help/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -603,7 +603,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-profile/SKILL.md",
+      "source": "generated/skills/claude/se-profile/SKILL.md",
       "target": ".claude/skills/se-profile/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -675,7 +675,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-action-inbox/SKILL.md",
+      "source": "generated/skills/claude/se-action-inbox/SKILL.md",
       "target": ".claude/skills/se-action-inbox/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -729,7 +729,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-agenda/SKILL.md",
+      "source": "generated/skills/claude/se-agenda/SKILL.md",
       "target": ".claude/skills/se-agenda/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -792,7 +792,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-ask-me/SKILL.md",
+      "source": "generated/skills/claude/se-ask-me/SKILL.md",
       "target": ".claude/skills/se-ask-me/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -864,7 +864,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-author/SKILL.md",
+      "source": "generated/skills/claude/se-author/SKILL.md",
       "target": ".claude/skills/se-author/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -918,7 +918,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-bookmark-triage/SKILL.md",
+      "source": "generated/skills/claude/se-bookmark-triage/SKILL.md",
       "target": ".claude/skills/se-bookmark-triage/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -972,7 +972,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-capture/SKILL.md",
+      "source": "generated/skills/claude/se-capture/SKILL.md",
       "target": ".claude/skills/se-capture/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1026,7 +1026,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-checklist/SKILL.md",
+      "source": "generated/skills/claude/se-checklist/SKILL.md",
       "target": ".claude/skills/se-checklist/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1080,7 +1080,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-compare/SKILL.md",
+      "source": "generated/skills/claude/se-compare/SKILL.md",
       "target": ".claude/skills/se-compare/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1134,7 +1134,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-diagram/SKILL.md",
+      "source": "generated/skills/claude/se-diagram/SKILL.md",
       "target": ".claude/skills/se-diagram/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1188,7 +1188,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-distill/SKILL.md",
+      "source": "generated/skills/claude/se-distill/SKILL.md",
       "target": ".claude/skills/se-distill/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1242,7 +1242,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-evaluate/SKILL.md",
+      "source": "generated/skills/claude/se-evaluate/SKILL.md",
       "target": ".claude/skills/se-evaluate/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1305,7 +1305,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-topic-radar/SKILL.md",
+      "source": "generated/skills/claude/se-topic-radar/SKILL.md",
       "target": ".claude/skills/se-topic-radar/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1386,7 +1386,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-technical-editor/SKILL.md",
+      "source": "generated/skills/claude/se-technical-editor/SKILL.md",
       "target": ".claude/skills/se-technical-editor/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1458,7 +1458,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-explain/SKILL.md",
+      "source": "generated/skills/claude/se-explain/SKILL.md",
       "target": ".claude/skills/se-explain/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1512,7 +1512,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-feedback/SKILL.md",
+      "source": "generated/skills/claude/se-feedback/SKILL.md",
       "target": ".claude/skills/se-feedback/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1566,7 +1566,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-handoff/SKILL.md",
+      "source": "generated/skills/claude/se-handoff/SKILL.md",
       "target": ".claude/skills/se-handoff/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1620,7 +1620,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-knowledge-capture/SKILL.md",
+      "source": "generated/skills/claude/se-knowledge-capture/SKILL.md",
       "target": ".claude/skills/se-knowledge-capture/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1674,7 +1674,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-knowledge-gap/SKILL.md",
+      "source": "generated/skills/claude/se-knowledge-gap/SKILL.md",
       "target": ".claude/skills/se-knowledge-gap/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1728,7 +1728,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-learn/SKILL.md",
+      "source": "generated/skills/claude/se-learn/SKILL.md",
       "target": ".claude/skills/se-learn/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1791,7 +1791,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-literature-map/SKILL.md",
+      "source": "generated/skills/claude/se-literature-map/SKILL.md",
       "target": ".claude/skills/se-literature-map/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1863,7 +1863,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-meeting-follow-through/SKILL.md",
+      "source": "generated/skills/claude/se-meeting-follow-through/SKILL.md",
       "target": ".claude/skills/se-meeting-follow-through/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -1926,7 +1926,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-monitor/SKILL.md",
+      "source": "generated/skills/claude/se-monitor/SKILL.md",
       "target": ".claude/skills/se-monitor/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2016,7 +2016,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-paper/SKILL.md",
+      "source": "generated/skills/claude/se-paper/SKILL.md",
       "target": ".claude/skills/se-paper/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2106,7 +2106,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-plan/SKILL.md",
+      "source": "generated/skills/claude/se-plan/SKILL.md",
       "target": ".claude/skills/se-plan/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2160,7 +2160,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-postmortem/SKILL.md",
+      "source": "generated/skills/claude/se-postmortem/SKILL.md",
       "target": ".claude/skills/se-postmortem/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2214,7 +2214,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-premortem/SKILL.md",
+      "source": "generated/skills/claude/se-premortem/SKILL.md",
       "target": ".claude/skills/se-premortem/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2277,7 +2277,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-presentation/SKILL.md",
+      "source": "generated/skills/claude/se-presentation/SKILL.md",
       "target": ".claude/skills/se-presentation/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2358,7 +2358,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-proposal/SKILL.md",
+      "source": "generated/skills/claude/se-proposal/SKILL.md",
       "target": ".claude/skills/se-proposal/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2439,7 +2439,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-publish/SKILL.md",
+      "source": "generated/skills/claude/se-publish/SKILL.md",
       "target": ".claude/skills/se-publish/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2511,7 +2511,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-red-team/SKILL.md",
+      "source": "generated/skills/claude/se-red-team/SKILL.md",
       "target": ".claude/skills/se-red-team/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2565,7 +2565,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-retro/SKILL.md",
+      "source": "generated/skills/claude/se-retro/SKILL.md",
       "target": ".claude/skills/se-retro/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2628,7 +2628,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-weekly-review/SKILL.md",
+      "source": "generated/skills/claude/se-weekly-review/SKILL.md",
       "target": ".claude/skills/se-weekly-review/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2700,7 +2700,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-runbook/SKILL.md",
+      "source": "generated/skills/claude/se-runbook/SKILL.md",
       "target": ".claude/skills/se-runbook/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2790,7 +2790,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-review-skills/SKILL.md",
+      "source": "generated/skills/claude/se-review-skills/SKILL.md",
       "target": ".claude/skills/se-review-skills/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2916,7 +2916,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-socratic-review/SKILL.md",
+      "source": "generated/skills/claude/se-socratic-review/SKILL.md",
       "target": ".claude/skills/se-socratic-review/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -2970,7 +2970,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-sop/SKILL.md",
+      "source": "generated/skills/claude/se-sop/SKILL.md",
       "target": ".claude/skills/se-sop/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -3024,7 +3024,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-stakeholder-map/SKILL.md",
+      "source": "generated/skills/claude/se-stakeholder-map/SKILL.md",
       "target": ".claude/skills/se-stakeholder-map/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -3078,7 +3078,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-study-guide/SKILL.md",
+      "source": "generated/skills/claude/se-study-guide/SKILL.md",
       "target": ".claude/skills/se-study-guide/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -3132,7 +3132,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-thread-digest/SKILL.md",
+      "source": "generated/skills/claude/se-thread-digest/SKILL.md",
       "target": ".claude/skills/se-thread-digest/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -3195,7 +3195,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-tutorial/SKILL.md",
+      "source": "generated/skills/claude/se-tutorial/SKILL.md",
       "target": ".claude/skills/se-tutorial/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -3267,7 +3267,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-video-notes/SKILL.md",
+      "source": "generated/skills/claude/se-video-notes/SKILL.md",
       "target": ".claude/skills/se-video-notes/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
@@ -3339,7 +3339,7 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
-      "source": "templates/skills/se-watchlist/SKILL.md",
+      "source": "generated/skills/claude/se-watchlist/SKILL.md",
       "target": ".claude/skills/se-watchlist/SKILL.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"

@@ -482,6 +482,20 @@ def _manifest_rows(context: PackageContext) -> list[dict[str, Any]]:
 def _safe_manifest_source(
     context: PackageContext, source: str
 ) -> Path | None:
+    canonical = _safe_pack_skill_source(context, source)
+    if canonical is None:
+        return None
+    allowed = context.allowed_template_root
+    if allowed is not None and not _is_relative_to(canonical, allowed):
+        return None
+    return canonical
+
+
+def _safe_pack_skill_source(
+    context: PackageContext, source: str
+) -> Path | None:
+    """Resolve a regular manifest skill source anywhere inside the pack."""
+
     source_path = Path(source)
     if source_path.is_absolute() or ".." in source_path.parts:
         return None
@@ -494,17 +508,48 @@ def _safe_manifest_source(
     canonical = supplied.resolve()
     if not _is_relative_to(canonical, context.root):
         return None
-    allowed = context.allowed_template_root
-    if allowed is not None and not _is_relative_to(canonical, allowed):
-        return None
     if canonical.name != "SKILL.md" or not canonical.is_file():
         return None
     return canonical
 
 
+def _manifest_skill_sources(
+    context: PackageContext, source: str, target: str
+) -> tuple[Path, Path] | None:
+    """Return (authored canonical, installed-byte source) for a skill row."""
+
+    expected = _safe_pack_skill_source(context, source)
+    if expected is None:
+        return None
+    canonical = _safe_manifest_source(context, source)
+    if canonical is not None:
+        return canonical, expected
+
+    source_parts = Path(source).parts
+    target_path = Path(target)
+    if (
+        context.name != "se-ai-command-pack"
+        or len(source_parts) != 5
+        or source_parts[:3] != ("generated", "skills", "claude")
+        or source_parts[-1] != "SKILL.md"
+        or target_path.is_absolute()
+        or ".." in target_path.parts
+        or target_path.name != "SKILL.md"
+    ):
+        return None
+    skill_name = source_parts[3]
+    if target_path.parent.name != skill_name:
+        return None
+    authored_source = f"templates/skills/{skill_name}/SKILL.md"
+    canonical = _safe_manifest_source(context, authored_source)
+    if canonical is None:
+        return None
+    return canonical, expected
+
+
 def _manifest_mapping(
     observed: Path, context: PackageContext
-) -> tuple[Path, str | None, str] | None:
+) -> tuple[Path, Path, str | None, str] | None:
     if context.owner_kind not in {"sd-upstream", "se-upstream", "repo-local"}:
         return None
     observed_parts = observed.resolve().parts
@@ -521,12 +566,14 @@ def _manifest_mapping(
             continue
         if observed_parts[-len(target_parts) :] != target_parts:
             continue
-        canonical = _safe_manifest_source(context, source)
-        if canonical is None:
+        sources = _manifest_skill_sources(context, source, target)
+        if sources is None:
             continue
+        canonical, expected = sources
         platform = row.get("platform")
         return (
             canonical,
+            expected,
             platform if isinstance(platform, str) else None,
             f"verified manifest target {target!r} in {context.root}",
         )
@@ -535,7 +582,7 @@ def _manifest_mapping(
 
 def _installed_mapping(
     observed: Path,
-) -> tuple[Path, PackageContext, str | None, str] | None:
+) -> tuple[Path, Path, PackageContext, str | None, str] | None:
     for base in observed.parents:
         for receipt_name in RECEIPT_NAMES:
             receipt_path = base / receipt_name
@@ -562,12 +609,14 @@ def _installed_mapping(
                 source = row.get("source")
                 if not isinstance(source, str):
                     continue
-                canonical = _safe_manifest_source(context, source)
-                if canonical is None:
+                sources = _manifest_skill_sources(context, source, target)
+                if sources is None:
                     continue
+                canonical, expected = sources
                 platform = row.get("platform")
                 return (
                     canonical,
+                    expected,
                     context,
                     platform if isinstance(platform, str) else None,
                     receipt_path.as_posix(),
@@ -603,11 +652,11 @@ def _resolve_path(
         _manifest_mapping(observed, context_hint) if context_hint is not None else None
     )
     if manifest_mapping:
-        canonical, mapped_platform, evidence = manifest_mapping
+        canonical, expected, mapped_platform, evidence = manifest_mapping
         context = context_hint
         drift = (
             "canonical-match"
-            if _sha256(observed) == _sha256(canonical)
+            if _sha256(observed) == _sha256(expected)
             else "installed-drift"
         )
         copy = InstalledCopy(
@@ -630,10 +679,10 @@ def _resolve_path(
 
     mapping = _installed_mapping(observed)
     if mapping:
-        canonical, context, mapped_platform, evidence = mapping
+        canonical, expected, context, mapped_platform, evidence = mapping
         drift = (
             "canonical-match"
-            if _sha256(observed) == _sha256(canonical)
+            if _sha256(observed) == _sha256(expected)
             else "installed-drift"
         )
         copy = InstalledCopy(
@@ -779,7 +828,7 @@ def _manifest_install_roots(
             or len(target_path.parts) < 3
         ):
             continue
-        if _safe_manifest_source(context, source) is None:
+        if _manifest_skill_sources(context, source, target) is None:
             continue
         install_root = (home / target_path.parent.parent).absolute()
         platform = row.get("platform")
@@ -1130,11 +1179,40 @@ def _associated_rows(item: ResolvedSkill, related: Sequence[dict[str, str]]) -> 
         Path(entry["path"]).relative_to(item.context.root).as_posix()
         for entry in related
     }
-    return [
-        row
-        for row in _manifest_rows(item.context)
-        if isinstance(row.get("source"), str) and row["source"] in relative_sources
-    ]
+    skill_name = item.canonical.parent.name
+    rows: list[dict[str, Any]] = []
+    for row in _manifest_rows(item.context):
+        source = row.get("source")
+        target = row.get("target")
+        if not isinstance(source, str):
+            continue
+        if source in relative_sources:
+            rows.append(row)
+            continue
+        if not isinstance(target, str):
+            continue
+        target_path = Path(target)
+        if (
+            not target_path.is_absolute()
+            and ".." not in target_path.parts
+            and target_path.name == "SKILL.md"
+            and target_path.parent.name == skill_name
+            and _manifest_skill_sources(item.context, source, target) is not None
+        ):
+            rows.append(row)
+    return rows
+
+
+def _frontmatter_keys_for_sources(
+    context: PackageContext, sources: Sequence[str]
+) -> list[str]:
+    for source in sources:
+        path = _safe_pack_skill_source(context, source)
+        if path is None:
+            continue
+        _, _, keys = _frontmatter(_read_regular_text(path), str(path))
+        return list(keys)
+    return []
 
 
 def _target_matrix(item: ResolvedSkill, rows: Sequence[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -1162,23 +1240,35 @@ def _target_matrix(item: ResolvedSkill, rows: Sequence[dict[str, Any]]) -> list[
             command_format = "markdown"
         adapted = any(
             source.startswith(
-                ("templates/.claude/", "templates/.gemini/", "templates/.github/")
+                (
+                    "generated/skills/",
+                    "templates/.claude/",
+                    "templates/.gemini/",
+                    "templates/.github/",
+                )
             )
             for source in sources
         )
+        frontmatter = _frontmatter_keys_for_sources(item.context, sources)
+        has_fork = False
+        has_model = False
+        for source in sources:
+            path = _safe_pack_skill_source(item.context, source)
+            if path is None:
+                continue
+            metadata, _, _ = _frontmatter(_read_regular_text(path), str(path))
+            has_fork = metadata.get("context") == "fork"
+            has_model = bool(metadata.get("model"))
+            break
         result.append(
             {
                 "target": platform,
                 "content": "adapted" if adapted else ("shared" if sources else "unknown"),
-                "frontmatter": (
-                    ["name", "description"]
-                    if item.context.name == "se-ai-command-pack"
-                    else []
-                ),
+                "frontmatter": frontmatter,
                 "commandFormat": command_format,
                 "uiMetadata": "none-observed",
-                "contextIsolation": "unknown",
-                "modelRouting": "profile-only",
+                "contextIsolation": "forked" if has_fork else "inline-or-host-default",
+                "modelRouting": "exact-supported" if has_model else "profile-only",
                 "validation": "manifest-mapped" if sources else "unknown",
                 "sources": sources,
             }

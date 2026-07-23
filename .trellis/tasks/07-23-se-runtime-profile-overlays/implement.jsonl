@@ -1,0 +1,5 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": "installer/registry.py", "reason": "Owns portable profiles and exact skill assignments"}
+{"file": ".github/scripts/generate-skill-surfaces.py", "reason": "Validates and renders Claude overlays atomically"}
+{"file": "manifest.json", "reason": "Routes Claude entrypoints to generated payloads"}
+{"file": "templates/skills/se-review-skills/scripts/skill_review.py", "reason": "Reconciles generated installed bytes with authored sources"}

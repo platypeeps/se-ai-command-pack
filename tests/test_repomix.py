@@ -48,6 +48,7 @@ REQUIRED_EXCLUSIONS = {
     ".trellis/tasks/**",
     ".trellis/workspace/**",
     ".trellis/workflow.md",
+    "generated/**",
     "docs/SD_AI_COMMAND_PACK.md",
     "scripts/sd-ai-command-pack-*",
 }
@@ -61,6 +62,7 @@ EXCLUDED_MAP_HEADERS = {
     "## File: .trellis/workflow.md",
     "## File: docs/SD_AI_COMMAND_PACK.md",
     "## File: docs/repomix-map.md",
+    "## File: generated/skills/claude/se-research/SKILL.md",
     "## File: scripts/sd-ai-command-pack-full-check.sh",
 }
 

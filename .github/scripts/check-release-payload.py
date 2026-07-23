@@ -3,7 +3,7 @@
 
 Enforces the pack's release discipline against a base revision:
 
-1. any change under templates/** or to manifest.json requires the manifest
+1. any change under templates/**, generated/**, or to manifest.json requires the manifest
    version to differ from the base revision's, and
 2. whenever the version changed, CHANGELOG.md's first heading must be
    `## <version> - YYYY-MM-DD` with a real date.
@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 PACK_ROOT = Path(__file__).resolve().parents[2]
-PAYLOAD_PREFIX = "templates/"
+PAYLOAD_PREFIXES = ("templates/", "generated/")
 MANIFEST_NAME = "manifest.json"
 CHANGELOG_NAME = "CHANGELOG.md"
 HEADING_PATTERN = re.compile(r"^## (?P<version>\S+) - (?P<date>\d{4}-\d{2}-\d{2})$")
@@ -144,7 +144,7 @@ def run_gate(repo: Path, base: str) -> str:
     payload_changed = sorted(
         path
         for path in changed
-        if path == MANIFEST_NAME or path.startswith(PAYLOAD_PREFIX)
+        if path == MANIFEST_NAME or path.startswith(PAYLOAD_PREFIXES)
     )
     current_version = working_tree_version(repo)
     base_version = base_manifest_version(repo, merge_base_sha)

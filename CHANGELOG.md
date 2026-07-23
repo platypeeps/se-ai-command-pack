@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.63.0 - 2026-07-23
+
+- Apply every reviewed SE runtime profile to generated Claude skill
+  entrypoints with validated invocation, context, model, and effort metadata.
+- Preserve portable canonical skills for Codex and shared-agent consumers,
+  distinguish fresh-session recommendations from forked subagents, and map
+  generated installed copies back to their authored source during skill review.
+
 ## 0.62.0 - 2026-07-23
 
 - Add an explicit bounded-output transport for large `se-review-skills`
