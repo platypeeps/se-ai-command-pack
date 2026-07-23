@@ -1133,3 +1133,36 @@ Replaced stale PRs #100 and #101 with exact-head PR #102 on a fresh source branc
 ### Next Steps
 
 - None - task complete
+
+
+## Session 83: Claude runtime profile overlays
+
+**Date**: 2026-07-23
+**Task**: Claude runtime profile overlays
+**Branch**: `main`
+
+### Summary
+
+Added registry-owned runtime profiles and generated Claude skill frontmatter overlays, preserved portable Codex/shared-agent payloads, reconciled generated installs to authored sources, and validated the 0.63.0 release.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a267be0c4fd47f6a2f1c6c352ecee326183b947c` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
