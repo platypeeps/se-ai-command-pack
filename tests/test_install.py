@@ -36,8 +36,33 @@ def manifest_source(platform: str, name: str) -> str:
 
 def installed_frontmatter(path) -> dict:
     text = path.read_text(encoding="utf-8")
-    end = text.find("\n---\n")
-    return yaml.safe_load(text[len("---\n") : end + 1])
+    if not text.startswith("---\n"):
+        raise AssertionError(f"{path} must start with a YAML frontmatter delimiter")
+    end = text.find("\n---\n", len("---\n"))
+    if end == -1:
+        raise AssertionError(f"{path} is missing its closing frontmatter delimiter")
+    frontmatter = yaml.safe_load(text[len("---\n") : end])
+    if not isinstance(frontmatter, dict):
+        raise AssertionError(f"{path} frontmatter must be a mapping")
+    return frontmatter
+
+
+class InstalledFrontmatterTest(TempDirTestCase):
+    def test_requires_both_frontmatter_delimiters(self) -> None:
+        path = self.base / "SKILL.md"
+        path.write_text("name: test\n---\n", encoding="utf-8")
+        with self.assertRaisesRegex(AssertionError, "must start"):
+            installed_frontmatter(path)
+
+        path.write_text("---\nname: test\n", encoding="utf-8")
+        with self.assertRaisesRegex(AssertionError, "missing its closing"):
+            installed_frontmatter(path)
+
+    def test_requires_mapping_frontmatter(self) -> None:
+        path = self.base / "SKILL.md"
+        path.write_text("---\n- test\n---\n", encoding="utf-8")
+        with self.assertRaisesRegex(AssertionError, "must be a mapping"):
+            installed_frontmatter(path)
 
 
 class FreshInstallTest(TempDirTestCase):
