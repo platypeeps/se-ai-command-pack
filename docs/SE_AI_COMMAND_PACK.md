@@ -859,7 +859,7 @@ again with symlinks resolved at install time).
 | File | Contents |
 |---|---|
 | `manifest.json` | Verbatim copy of the installed manifest. |
-| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. A normal refresh may replace differing regular-file bytes only when they still match this prior hash. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
+| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. A normal refresh may report differing regular-file bytes as `updated` only when they still match the prior provenance hash. Targets governed by preservation semantics remain `preserved`; those policies take precedence over the vouched update path. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
 | `installed-targets.txt` | Sorted list of every installed path, including the receipts. Entries for platforms skipped in a filtered run are kept so a later remove still covers them. |
 
 Removal vouching: a candidate (union of receipt + provenance entries, or

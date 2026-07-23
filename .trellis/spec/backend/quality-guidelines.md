@@ -1059,6 +1059,10 @@ are positional commands; do not add parallel action flags such as `--remove`.
 - Refresh tests inject prior-version Claude and Codex payload hashes, assert
   dry-run and apply classify them as `updated`, and pin user drift, untrusted
   provenance, preservation-policy precedence, and preflight-race behavior.
+- Documentation contract tests inspect only the contract-bearing README and
+  operator-guide sections, require prior-provenance authorization plus
+  preservation precedence and `preserved` status, and avoid pinning whole
+  paragraphs or generated repository-map output.
 - Run `make check` to cover unit tests, Ruff, mypy, generated manifest parity,
   and the release payload/version gate.
 
