@@ -1166,3 +1166,41 @@ Added registry-owned runtime profiles and generated Claude skill frontmatter ove
 ### Next Steps
 
 - None - task complete
+
+
+## Session 84: Review Claude runtime profile overlays
+
+**Date**: 2026-07-23
+**Task**: Review Claude runtime profile overlays
+**Branch**: `codex/add-claude-runtime-profile-overlays`
+
+### Summary
+
+Published PR #103, cleared deterministic preflight blockers, addressed Copilot frontmatter-validation feedback, and completed a clean second review round.
+
+### Main Changes
+
+- Removed generated scaffold rows from the archived task context and documented the PR tooling/generated scope.
+- Hardened installed skill frontmatter test parsing with explicit delimiter and mapping assertions plus focused malformed-input coverage.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `335926e` | fix: remove task context scaffolds |
+| `91a1864` | fix: clarify installed frontmatter failures |
+
+### Testing
+
+- [OK] 19 focused installer tests and Ruff passed.
+- [OK] Deterministic PR full-check passed with 509 tests, Ruff, mypy, generation parity, install audit, release checks, and Prism/Gito disabled.
+- [OK] Copilot round 2 produced no new comments; all review threads are resolved and CI is green.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
