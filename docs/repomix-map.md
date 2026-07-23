@@ -21888,7 +21888,7 @@ Useful variants:
   missing directories.
 
 The installer is plan-before-apply. When a target differs from the current
-payload but its sha256 still matches the prior install receipt, a normal
+payload but its sha256 still matches the prior provenance hash, a normal
 refresh safely reports and applies it as `updated`. If any target instead has
 unvouched changes, the installer reports the conflicts and exits with code 2
 without writing anything. Re-run with `--force` to overwrite those conflicts
