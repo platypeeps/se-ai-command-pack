@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 70
+- **Total Sessions**: 71
 - **Last Active**: 2026-07-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~690 | Active |
+| `journal-2.md` | ~728 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 71 | 2026-07-22 | Allow request-scoped context in se-ask-me drafts | `1271b0a`, `42ce88b`, `8765b48` | `codex/se-ask-me-current-context-drafts` |
 | 70 | 2026-07-22 | Resolve PR 88 merge conflict | `7ce77e8` | `codex/se-review-skills-ask-user-question-review` |
 | 69 | 2026-07-22 | Add AskUserQuestion review planning task | `faf2750` | `codex/se-review-skills-ask-user-question-review` |
 | 68 | 2026-07-22 | Create and review se-review-skills session evidence PR | `a7ad3ad`, `fcbf176` | `codex/se-review-skills-session-evidence` |
