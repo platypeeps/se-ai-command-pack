@@ -930,20 +930,20 @@ class SkillSafetyPinsTest(unittest.TestCase):
             self.assertIn(field, text)
 
     def test_author_and_tutorial_route_by_reader_outcome(self) -> None:
-        author = normalized("se-author").lower()
-        tutorial = normalized("se-tutorial").lower()
+        author_text = normalized("se-author").lower()
+        tutorial_text = normalized("se-tutorial").lower()
         for phrase in (
             "article-shaped tutorials centered on an original thesis, argument, firsthand experience, or publication contribution",
             "checkpoint-driven guide whose primary outcome is completing and verifying an observable result",
             "ask one focused question about the intended reader outcome",
         ):
-            self.assertIn(phrase, author)
+            self.assertIn(phrase, author_text)
         for phrase in (
             "ordered technical teaching whose primary outcome is completing and verifying an observable result",
             "article-shaped tutorial centered on an original thesis, argument, firsthand experience, or publication contribution",
             "ask one focused question about the intended reader outcome",
         ):
-            self.assertIn(phrase, tutorial)
+            self.assertIn(phrase, tutorial_text)
 
     def test_bookmark_triage_classifies_with_honest_coverage(self) -> None:
         text = normalized("se-bookmark-triage")
