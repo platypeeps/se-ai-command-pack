@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import unittest
 
@@ -174,6 +175,96 @@ class ConflictTest(TempDirTestCase):
         self.assertEqual(backup.read_text(encoding="utf-8"), "mine\n")
         source = PACK_ROOT / manifest_source("claude", "se-research")
         self.assertEqual(conflicting.read_bytes(), source.read_bytes())
+
+    def test_installed_user_edit_remains_a_conflict(self) -> None:
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+        conflicting = home / ".codex/skills/se-research/SKILL.md"
+        conflicting.write_text("mine\n", encoding="utf-8")
+        provenance_path = home / ".se-ai-command-pack/provenance.json"
+        provenance_before = provenance_path.read_bytes()
+
+        result = run_installer("refresh", "--root", str(home))
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn(str(conflicting.relative_to(home)), result.stdout)
+        self.assertEqual(conflicting.read_text(encoding="utf-8"), "mine\n")
+        self.assertEqual(provenance_path.read_bytes(), provenance_before)
+
+    def test_untrusted_provenance_cannot_authorize_update(self) -> None:
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+        conflicting = home / ".claude/skills/se-research/SKILL.md"
+        prior_content = b"prior installer content\n"
+        conflicting.write_bytes(prior_content)
+        provenance_path = home / ".se-ai-command-pack/provenance.json"
+        provenance_path.write_text("{broken\n", encoding="utf-8")
+
+        result = run_installer("refresh", "--root", str(home))
+
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(conflicting.read_bytes(), prior_content)
+        self.assertEqual(provenance_path.read_text(encoding="utf-8"), "{broken\n")
+
+
+class ReceiptAwareRefreshTest(TempDirTestCase):
+    def test_vouched_claude_and_codex_payloads_update_without_force(self) -> None:
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+        provenance_path = home / ".se-ai-command-pack/provenance.json"
+        provenance = read_provenance(home)
+        targets: dict[str, bytes] = {}
+        for platform in ("claude", "codex"):
+            target = (
+                f"{PLATFORM_REGISTRY[platform].skills_dir}"
+                "/se-research/SKILL.md"
+            )
+            prior_content = f"prior {platform} installer payload\n".encode()
+            (home / target).write_bytes(prior_content)
+            provenance["files"][target] = (
+                "sha256:" + hashlib.sha256(prior_content).hexdigest()
+            )
+            targets[target] = prior_content
+        provenance_path.write_text(
+            json.dumps(provenance, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+        dry_run = install_ok(
+            "refresh",
+            "--root",
+            str(home),
+            "--platform",
+            "claude",
+            "--platform",
+            "codex",
+            "--dry-run",
+        )
+        for target, prior_content in targets.items():
+            self.assertIn(f"updated     {target}", dry_run.stdout)
+            self.assertEqual((home / target).read_bytes(), prior_content)
+
+        result = install_ok(
+            "refresh",
+            "--root",
+            str(home),
+            "--platform",
+            "claude",
+            "--platform",
+            "codex",
+        )
+
+        refreshed_provenance = read_provenance(home)
+        for platform, target in zip(("claude", "codex"), targets, strict=True):
+            source = PACK_ROOT / manifest_source(platform, "se-research")
+            self.assertEqual((home / target).read_bytes(), source.read_bytes())
+            self.assertIn(f"updated     {target}", result.stdout)
+            self.assertEqual(
+                refreshed_provenance["files"][target],
+                "sha256:" + hashlib.sha256(source.read_bytes()).hexdigest(),
+            )
+        self.assertNotIn("overwritten", result.stdout)
+        self.assertFalse(any(path.endswith(".bak") for path in tree_paths(home)))
 
 
 class ModesAndFlagsTest(TempDirTestCase):

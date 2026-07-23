@@ -32,6 +32,7 @@ from installer.provenance import (
     never_vouched_targets,
     preserved_receipt_targets,
     read_existing_installed_targets,
+    read_existing_provenance_files,
 )
 from installer.registry import (
     PACK_MANIFEST_FILE,
@@ -169,6 +170,7 @@ def _install_payload(
     dry_run: bool,
     backup: bool,
     planned_results: dict[Path, InstallResult] | None = None,
+    vouched_files: dict[str, str] | None = None,
 ) -> list[InstallResult]:
     results: list[InstallResult] = []
     for file in selected:
@@ -181,6 +183,11 @@ def _install_payload(
                 backup=backup,
                 planned_result=(
                     planned_results.get(file.target) if planned_results else None
+                ),
+                vouched_digest=(
+                    vouched_files.get(file.target.as_posix())
+                    if vouched_files
+                    else None
                 ),
             )
         )
@@ -341,6 +348,12 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     selected, skipped = selected_files(files, root, args.platform, args.all)
+    never_vouched = never_vouched_targets()
+    vouched_files = {
+        target: digest
+        for target, digest in read_existing_provenance_files(root).items()
+        if target not in never_vouched
+    }
 
     print(f"{manifest_data['name']} {manifest_data['version']}")
     print(f"root: {root}")
@@ -356,6 +369,7 @@ def main(argv: list[str] | None = None) -> int:
             force=False,
             dry_run=True,
             backup=False,
+            vouched_files=vouched_files,
         )
         preflight_conflicts = _conflict_results(preflight_results)
         if preflight_conflicts:
@@ -378,6 +392,7 @@ def main(argv: list[str] | None = None) -> int:
         dry_run=args.dry_run,
         backup=args.backup,
         planned_results=planned_results,
+        vouched_files=vouched_files,
     )
 
     # Retired-target cleanup must run before the receipt files are rewritten:

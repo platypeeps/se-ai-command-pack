@@ -1110,6 +1110,9 @@ boundary users exercise.
 - Validate manifest, registry, source, and destination paths before mutation.
 - Preview a multi-file lifecycle operation before applying it.
 - Use atomic writes for installed files and receipts.
+- Replace differing installed payload bytes without `--force` only when a
+  regular-file destination matches its prior provenance hash; keep preserve
+  policies authoritative and revalidate the destination digest at apply time.
 - Keep canonical skill content under `templates/skills/` and pack declarations
   in `installer/registry.py`.
 - Keep every registered skill in exactly one portable runtime profile. Apply
@@ -1157,6 +1160,9 @@ boundary users exercise.
   option-versus-free-form suggestion behavior.
 - Use temporary install roots; never target the developer's real home directory
   from tests.
+- For receipt-vouched refreshes, pin prior-payload upgrades, user drift,
+  untrusted receipts, preservation-policy precedence, and a destination change
+  between planning and application.
 - Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
   retaining end-to-end CLI tests for parsing, exit codes, and installed files.
 - Run `make check`: generation parity, Ruff, mypy, the unittest suite, and the
@@ -2055,6 +2061,9 @@ python3 install.py refresh [--user | --root PATH] [install options]
 python3 install.py update [--user | --root PATH] [install options]
 python3 install.py remove [--user | --root PATH] [removal options]
 python3 install.py --version
+install_file(..., planned_result: InstallResult | None,
+             vouched_digest: str | None) -> InstallResult
+InstallResult.destination_digest: str | None
 ```
 
 The bare invocation remains the convenient install form. Lifecycle operations
@@ -2066,6 +2075,10 @@ are positional commands; do not add parallel action flags such as `--remove`.
   `installed-targets.txt` without modifying them.
 - `refresh` applies the current checkout through the normal plan-before-apply
   installer path.
+- A normal refresh reports and replaces a differing regular file as `updated`
+  only when its sha256 matches that target's prior provenance entry. Missing,
+  malformed, symlinked, or mismatched state remains a conflict, and apply
+  revalidates the planned destination hash before writing.
 - `update` trusts only the provenance-recorded `sourceRoot`, requires the
   expected pack manifest, refuses a dirty checkout, and fast-forwards with
   `git pull --ff-only`.
@@ -2088,6 +2101,9 @@ are positional commands; do not add parallel action flags such as `--remove`.
 | Source checkout is dirty | Exit before fetch, pull, or refresh. |
 | Fast-forward pull fails | Exit with the Git failure; never merge or rebase. |
 | Refreshed dry-run fails | Do not run the applying refresh. |
+| Current payload differs and destination matches prior provenance | Report `updated`; refresh atomically without `--force` or backup. |
+| Destination differs from its prior provenance or provenance is untrusted | Report a conflict; write no selected payload or receipts. |
+| Destination changes after a vouched preflight | Reclassify against the prior hash and preserve concurrent drift. |
 | Retired target is hash-vouched | Remove it during normal refresh. |
 | Retired target drifted | Preserve and report it unless `--force` is explicit. |
 
@@ -2095,6 +2111,8 @@ are positional commands; do not add parallel action flags such as `--remove`.
 
 - Good: `python3 install.py update --user` fast-forwards a clean recorded
   checkout, previews the new payload, and reapplies from a fresh process.
+- Good: a prior-version Claude or Codex skill still matches its receipt, so a
+  normal refresh upgrades it as `updated` without treating it as user drift.
 - Base: `python3 install.py --user` remains an idempotent install/refresh.
 - Bad: implementing lifecycle behavior in a skill prompt, accepting both a
   positional command and an action flag, continuing in the pre-pull Python
@@ -2111,6 +2129,9 @@ are positional commands; do not add parallel action flags such as `--remove`.
 - Retirement tests inject a prior provenance hash and assert normal refresh
   removes the vouched old target while existing drift-preservation tests stay
   green.
+- Refresh tests inject prior-version Claude and Codex payload hashes, assert
+  dry-run and apply classify them as `updated`, and pin user drift, untrusted
+  provenance, preservation-policy precedence, and preflight-race behavior.
 - Run `make check` to cover unit tests, Ruff, mypy, generated manifest parity,
   and the release payload/version gate.
 
@@ -2132,6 +2153,16 @@ python3 install.py remove --user
 ```
 
 One command surface owns removal, with an explicit preview before application.
+
+For normal refresh ownership, comparing only against the current payload is
+wrong because pristine bytes from an earlier release would look user-modified.
+Use the prior receipt and carry the observed destination digest through the
+plan:
+
+```text
+installed sha256 == prior provenance -> updated + apply-time digest recheck
+installed sha256 != prior provenance -> conflict + no writes
+```
 
 ## Scenario: Repomix Repository Map Refresh
 
@@ -3947,7 +3978,7 @@ again with symlinks resolved at install time).
 | File | Contents |
 |---|---|
 | `manifest.json` | Verbatim copy of the installed manifest. |
-| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
+| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. A normal refresh may replace differing regular-file bytes only when they still match this prior hash. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
 | `installed-targets.txt` | Sorted list of every installed path, including the receipts. Entries for platforms skipped in a filtered run are kept so a later remove still covers them. |
 
 Removal vouching: a candidate (union of receipt + provenance entries, or
@@ -4017,8 +4048,9 @@ prefix is reserved; document any future variable here.
 
 ## Troubleshooting
 
-- **Conflicts on install (exit 2)** — a target file exists with different
-  content. Inspect it; re-run with `--force` (and `--backup`) to overwrite.
+- **Conflicts on install (exit 2)** — a target differs from both the current
+  payload and its prior recorded install hash, or no trusted prior hash is
+  available. Inspect it; re-run with `--force` (and `--backup`) to overwrite.
 - **A platform is skipped** — its anchor directory does not exist. Pass
   `--platform <id>` or `--all`, or create the tool's directory.
 - **The updater cannot find the checkout** — `provenance.json`'s
@@ -4047,6 +4079,7 @@ backup: Path | None = None
 source_digest: str | None = None
 source_content: bytes | None = None
 source_executable: bool | None = None
+destination_digest: str | None = None
 ⋮----
 @dataclass(frozen=True)
 class RemoveResult
@@ -4134,6 +4167,8 @@ backup_path = None
 backup_path = backup_existing_file(
 ⋮----
 current = destination.read_bytes()
+⋮----
+current_digest = source_digest(current)
 ⋮----
 backup_path = next_backup_path(root, destination)
 ⋮----
@@ -5221,7 +5256,7 @@ retain earlier copies.
 <!-- Generated by .github/scripts/generate-skill-surfaces.py; do not edit. -->
 # SE Skill Catalog
 
-Bundled pack version: `0.63.0`
+Bundled pack version: `0.64.0`
 
 This catalog describes skills bundled with this release. Current session availability must be reconciled separately by `se-help`.
 
@@ -15135,6 +15170,16 @@ def test_conflict_leaves_content(self) -> None
 ⋮----
 destination = self.destination(file)
 ⋮----
+def test_vouched_prior_payload_updates_without_force(self) -> None
+⋮----
+prior_content = b"prior installer content\n"
+⋮----
+result = self.install(
+⋮----
+def test_if_not_exists_remains_preserved_when_vouched(self) -> None
+⋮----
+file = pack_file(install=IF_NOT_EXISTS)
+⋮----
 def test_force_overwrites_with_backup(self) -> None
 ⋮----
 result = self.install(file, force=True, backup=True)
@@ -15144,8 +15189,6 @@ def test_symlink_conflict(self) -> None
 linked = self.base / "elsewhere.md"
 ⋮----
 def test_if_not_exists_preserves(self) -> None
-⋮----
-file = pack_file(install=IF_NOT_EXISTS)
 ⋮----
 result = self.install(file, force=True)
 ⋮----
@@ -15170,6 +15213,11 @@ result = self.install(file, planned_result=planned)
 ⋮----
 def test_stale_planned_result_recomputes(self) -> None
 ⋮----
+def test_stale_planned_update_preserves_concurrent_edit(self) -> None
+⋮----
+vouched_digest = f"sha256:{source_digest(prior_content)}"
+planned = self.install(
+⋮----
 class FileopsHelpersTest(TempDirTestCase)
 ⋮----
 def test_next_backup_path_increments(self) -> None
@@ -15181,6 +15229,8 @@ first = next_backup_path(self.base, destination)
 second = next_backup_path(self.base, destination)
 ⋮----
 def test_planned_result_matcher(self) -> None
+⋮----
+current_digest = source_digest(b"x")
 ⋮----
 def test_prune_stops_at_occupied_dir(self) -> None
 ⋮----
@@ -15229,7 +15279,18 @@ row = next(row for row in MANIFEST["files"] if row["target"] == target)
 def installed_frontmatter(path) -> dict
 ⋮----
 text = path.read_text(encoding="utf-8")
-end = text.find("\n---\n")
+⋮----
+end = text.find("\n---\n", len("---\n"))
+⋮----
+frontmatter = yaml.safe_load(text[len("---\n") : end])
+⋮----
+class InstalledFrontmatterTest(TempDirTestCase)
+⋮----
+def test_requires_both_frontmatter_delimiters(self) -> None
+⋮----
+path = self.base / "SKILL.md"
+⋮----
+def test_requires_mapping_frontmatter(self) -> None
 ⋮----
 class FreshInstallTest(TempDirTestCase)
 ⋮----
@@ -15290,6 +15351,36 @@ result = install_ok("--root", str(home), "--force", "--backup")
 backup = home / ".claude/skills/se-research/SKILL.md.bak"
 ⋮----
 source = PACK_ROOT / manifest_source("claude", "se-research")
+⋮----
+def test_installed_user_edit_remains_a_conflict(self) -> None
+⋮----
+conflicting = home / ".codex/skills/se-research/SKILL.md"
+⋮----
+provenance_path = home / ".se-ai-command-pack/provenance.json"
+provenance_before = provenance_path.read_bytes()
+⋮----
+result = run_installer("refresh", "--root", str(home))
+⋮----
+def test_untrusted_provenance_cannot_authorize_update(self) -> None
+⋮----
+prior_content = b"prior installer content\n"
+⋮----
+class ReceiptAwareRefreshTest(TempDirTestCase)
+⋮----
+def test_vouched_claude_and_codex_payloads_update_without_force(self) -> None
+⋮----
+targets: dict[str, bytes] = {}
+⋮----
+target = (
+prior_content = f"prior {platform} installer payload\n".encode()
+⋮----
+dry_run = install_ok(
+⋮----
+result = install_ok(
+⋮----
+refreshed_provenance = read_provenance(home)
+⋮----
+source = PACK_ROOT / manifest_source(platform, "se-research")
 ⋮----
 class ModesAndFlagsTest(TempDirTestCase)
 ⋮----
@@ -17088,6 +17179,14 @@ Managed by Trellis. Edits outside this block are preserved; edits inside may be 
 ````markdown
 # Changelog
 
+## 0.64.0 - 2026-07-23
+
+- Let normal refreshes update prior-version Claude, Codex, and shared-agent
+  payloads when their installed bytes still match the prior provenance hash.
+- Preserve user drift and untrusted receipt conflicts, including destination
+  changes between preflight and apply, without requiring backups for vouched
+  updates.
+
 ## 0.63.0 - 2026-07-23
 
 - Apply every reviewed SE runtime profile to generated Claude skill
@@ -17871,6 +17970,9 @@ command = args.command
 ⋮----
 root = resolve_install_root(args)
 ⋮----
+never_vouched = never_vouched_targets()
+vouched_files = {
+⋮----
 # A normal refresh is plan-before-apply: detect every selected-file
 # conflict before the first pack-owned write.
 ⋮----
@@ -17962,7 +18064,7 @@ check: test lint release-check
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.63.0",
+  "version": "0.64.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, evidence-backed personal weekly reviews, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
@@ -21786,10 +21888,13 @@ Useful variants:
 - `python3 install.py --user --all` — install every platform, creating
   missing directories.
 
-The installer is plan-before-apply: if any target file exists with
-different content, it reports the conflicts and exits with code 2 without
-writing anything. Re-run with `--force` to overwrite (add `--backup` to
-keep `.bak` copies).
+The installer is plan-before-apply. Targets governed by preservation semantics
+remain `preserved`. Otherwise, when a target differs from the current payload
+but its sha256 still matches the prior provenance hash, a normal refresh safely
+reports and applies it as `updated`. If any target instead has unvouched
+changes, the installer reports the conflicts and exits with code 2 without
+writing anything. Re-run with `--force` to overwrite those conflicts (add
+`--backup` to keep `.bak` copies).
 
 ## Update
 

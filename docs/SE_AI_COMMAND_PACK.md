@@ -859,7 +859,7 @@ again with symlinks resolved at install time).
 | File | Contents |
 |---|---|
 | `manifest.json` | Verbatim copy of the installed manifest. |
-| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
+| `provenance.json` | `{pack, version, sourceRoot, files: {target: "sha256:..."}}`. Only vouchable results (created/updated/unchanged/overwritten) are recorded; receipts themselves are never vouched. A normal refresh may replace differing regular-file bytes only when they still match this prior hash. `sourceRoot` is the checkout the install ran from — `install.py update` uses it to run updates. |
 | `installed-targets.txt` | Sorted list of every installed path, including the receipts. Entries for platforms skipped in a filtered run are kept so a later remove still covers them. |
 
 Removal vouching: a candidate (union of receipt + provenance entries, or
@@ -929,8 +929,9 @@ prefix is reserved; document any future variable here.
 
 ## Troubleshooting
 
-- **Conflicts on install (exit 2)** — a target file exists with different
-  content. Inspect it; re-run with `--force` (and `--backup`) to overwrite.
+- **Conflicts on install (exit 2)** — a target differs from both the current
+  payload and its prior recorded install hash, or no trusted prior hash is
+  available. Inspect it; re-run with `--force` (and `--backup`) to overwrite.
 - **A platform is skipped** — its anchor directory does not exist. Pass
   `--platform <id>` or `--all`, or create the tool's directory.
 - **The updater cannot find the checkout** — `provenance.json`'s

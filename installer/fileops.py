@@ -37,6 +37,7 @@ class InstallResult:
     source_digest: str | None = None
     source_content: bytes | None = None
     source_executable: bool | None = None
+    destination_digest: str | None = None
 
 
 @dataclass(frozen=True)
@@ -194,6 +195,7 @@ def planned_result_matches_destination(
     destination: Path,
     status: InstallStatus,
     new_content: bytes,
+    destination_digest: str | None = None,
 ) -> bool:
     """Return whether a preflight result is still safe to reuse at apply time."""
     if status is InstallStatus.CREATED:
@@ -202,6 +204,12 @@ def planned_result_matches_destination(
         return False
     if status is InstallStatus.UNCHANGED:
         return destination.exists() and destination.read_bytes() == new_content
+    if status is InstallStatus.UPDATED:
+        return (
+            destination.exists()
+            and destination_digest is not None
+            and source_digest(destination.read_bytes()) == destination_digest
+        )
     if status is InstallStatus.PRESERVED:
         return destination.exists()
     return False
@@ -215,6 +223,7 @@ def install_file(
     dry_run: bool,
     backup: bool,
     planned_result: InstallResult | None = None,
+    vouched_digest: str | None = None,
 ) -> InstallResult:
     source = file.source
     if source is None:
@@ -231,6 +240,7 @@ def install_file(
         and planned_result.status
         in {
             InstallStatus.CREATED,
+            InstallStatus.UPDATED,
             InstallStatus.UNCHANGED,
             InstallStatus.PRESERVED,
         }
@@ -242,8 +252,12 @@ def install_file(
             destination,
             planned_result.status,
             new_content,
+            planned_result.destination_digest,
         ):
-            if planned_result.status is InstallStatus.CREATED:
+            if planned_result.status in {
+                InstallStatus.CREATED,
+                InstallStatus.UPDATED,
+            }:
                 if not dry_run:
                     destination.parent.mkdir(parents=True, exist_ok=True)
                     atomic_write_bytes(
@@ -253,10 +267,11 @@ def install_file(
                     )
                 return InstallResult(
                     file,
-                    InstallStatus.CREATED,
+                    planned_result.status,
                     source_digest=digest,
                     source_content=new_content,
                     source_executable=executable,
+                    destination_digest=planned_result.destination_digest,
                 )
             return InstallResult(
                 file,
@@ -325,6 +340,23 @@ def install_file(
                 source_executable=executable,
             )
         if not force:
+            current_digest = source_digest(current)
+            if vouched_digest == f"sha256:{current_digest}":
+                if not dry_run:
+                    destination.parent.mkdir(parents=True, exist_ok=True)
+                    atomic_write_bytes(
+                        destination,
+                        new_content,
+                        executable=executable,
+                    )
+                return InstallResult(
+                    file,
+                    InstallStatus.UPDATED,
+                    source_digest=digest,
+                    source_content=new_content,
+                    source_executable=executable,
+                    destination_digest=current_digest,
+                )
             return InstallResult(
                 file,
                 InstallStatus.CONFLICT,

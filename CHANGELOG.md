@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.64.0 - 2026-07-23
+
+- Let normal refreshes update prior-version Claude, Codex, and shared-agent
+  payloads when their installed bytes still match the prior provenance hash.
+- Preserve user drift and untrusted receipt conflicts, including destination
+  changes between preflight and apply, without requiring backups for vouched
+  updates.
+
 ## 0.63.0 - 2026-07-23
 
 - Apply every reviewed SE runtime profile to generated Claude skill
