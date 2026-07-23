@@ -499,9 +499,18 @@ one verdict, rationale, evidence links or locators, source dates, and confidence
   unverified, contradicted, and outdated.
 - Opinion, rhetoric, value judgment, and prediction remain visible outside the
   factual verdict totals; audit their checkable premises separately when useful.
-- Apply the shared source standards and verification protocol. Prefer primary
-  evidence, trace to origin, corroborate load-bearing claims, preserve credible
-  conflicts, and date every mutable claim against the explicit as-of date.
+- Apply the shared source standards and verification protocol. Determine
+  freshness from claim volatility, applicable version or period, supersession,
+  and any explicit domain horizon; age alone does not stale immutable or stable
+  historical evidence. Date and scope every mutable claim against the explicit
+  as-of date, jurisdiction, version, environment, or period.
+- One authoritative primary record may support an exact load-bearing claim only
+  when the record is dispositive and its identity and applicability are
+  verified. Empirical, interpretive, disputed, surprising, and interested-party
+  claims still require independent corroboration or remain low-confidence or
+  unverified. A first-party vendor assertion is not dispositive by origin alone.
+- Trace evidence to origin, preserve credible conflicts, and perform a real
+  disconfirmation pass even for a dispositive-record claim.
 - Absence of evidence is not contradiction without an authoritative
   completeness boundary. Inaccessible content is never inferred from snippets.
 - Preserve every audited factual claim through exactly one verdict. An
@@ -525,6 +534,9 @@ one verdict, rationale, evidence links or locators, source dates, and confidence
 | Evidence supports only a narrower statement | Use partially supported and offer minimal qualified wording. |
 | Stronger current evidence conflicts | Use contradicted and show the decisive dated evidence. |
 | Earlier evidence held but current evidence changed | Use outdated against the explicit as-of date. |
+| Stable historical or immutable primary evidence is old | Keep it applicable unless version, period, supersession, or a domain horizon says otherwise. |
+| One authoritative record establishes its exact bounded fact | Verify identity and applicability; it may support that claim without a redundant echo. |
+| A vendor makes an empirical or self-interested assertion | Require independent corroboration or keep it low-confidence or unverified. |
 | Available evidence cannot establish the claim | Use unverified; do not upgrade uncertainty through tone. |
 | An unverified claim is load-bearing | Keep its claim ID, verdict, and missing evidence in the ledgers; exclude it from conclusions and recommendations. |
 | Item is opinion, rhetoric, or prediction | Classify it outside factual verdict totals. |
@@ -549,6 +561,9 @@ one verdict, rationale, evidence links or locators, source dates, and confidence
   search, atomic locators, unsupported load-bearing claim retention and
   conclusion exclusion, non-fact-checkable categories, minimal correction,
   prompt-injection resistance, and read-only authority.
+- Pin claim-sensitive freshness, the narrowly dispositive authoritative-record
+  exception, and conservative corroboration for empirical, disputed,
+  interpretive, surprising, and interested-party claims.
 - Pin explicit sibling boundaries from open research and corpus synthesis.
 - Pin every required final-report field and both shared reference citations.
 - When a reference source moves, assert the canonical shared source plus every
