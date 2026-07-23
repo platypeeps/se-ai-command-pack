@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 74
+- **Total Sessions**: 75
 - **Last Active**: 2026-07-22
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~840 | Active |
+| `journal-2.md` | ~876 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 75 | 2026-07-22 | Clarify author and tutorial routing | `bbf524f6952acbc7443402a09b1419f6096ae3c5`, `d869e8d00578237fb0ca0a0a0106867964eb4b95`, `cc6a773b03d07fee445d924f2dda4f083da491a8`, `eac7ae6b019f7536a5cc2545288a0783af55ff1c` | `codex/se-author-tutorial-boundary` |
 | 74 | 2026-07-22 | Make shared evidence rules claim-sensitive | `612744356e22d286e5ebc3245eb8e0f21062937a`, `3265e2d35b3670e251e816a8085889c1aa375936`, `4d80968caa428d842749885f3b332234ce71f2c5`, `998da3fb0f2c5f0e404799b6ddf23afad9ff01db` | `codex/se-shared-evidence-claim-sensitive` |
 | 73 | 2026-07-22 | Harden skill review analyzer | `33961997071fb355960002915cff6b781ebc1e4c`, `32b7789342930647ee084b409e32a0a0966964f1`, `104fe64cb1788038350366fa3536fe07fd1b8623` | `codex/se-review-skills-analyzer-hardening` |
 | 72 | 2026-07-22 | Preserve unverified claims in fact-check audits | `ca4de3e`, `f8d640e`, `11f97ee` | `codex/se-fact-check-audit-completeness` |

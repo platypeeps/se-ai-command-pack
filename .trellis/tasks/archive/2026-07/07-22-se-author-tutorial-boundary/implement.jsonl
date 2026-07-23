@@ -1,0 +1,5 @@
+{"file": "templates/skills/se-author/SKILL.md", "reason": "Clarify publication-shaped tutorial ownership and ambiguous routing."}
+{"file": "templates/skills/se-tutorial/SKILL.md", "reason": "Clarify observable-result tutorial ownership and ambiguous routing."}
+{"file": "tests/test_skills.py", "reason": "Pin both positive routes and the reader-outcome clarification path."}
+{"file": "manifest.json", "reason": "Synchronize release version and generated payload hashes."}
+{"file": "CHANGELOG.md", "reason": "Document the routing-boundary release."}

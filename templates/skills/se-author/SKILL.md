@@ -20,6 +20,13 @@ the user wants help discovering or sharpening the topic, preserving firsthand
 contribution, gathering evidence, drafting, reviewing, and preparing a
 publication package.
 
+Article-shaped tutorials centered on an original thesis, argument, firsthand
+experience, or publication contribution stay in `se-author`. A
+checkpoint-driven guide whose primary outcome is completing and verifying an
+observable result routes to `se-tutorial`. When the word "tutorial" leaves both
+outcomes plausible, ask one focused question about the intended reader outcome
+before selecting either workflow.
+
 Do not use for research-paper methodology (`se-paper`), isolated open research
 (`se-research`), claim-only auditing (`se-fact-check`), source distillation
 (`se-distill`), final technical editing (`se-technical-editor`), or publishing
