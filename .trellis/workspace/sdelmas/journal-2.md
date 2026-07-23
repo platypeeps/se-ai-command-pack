@@ -1056,3 +1056,45 @@ Published the planning-only Trellis task for a safe bounded-output mode in se-re
 ### Next Steps
 
 - None - task complete
+
+
+## Session 81: Bound se-review-skills inventory output
+
+**Date**: 2026-07-23
+**Task**: Bound se-review-skills inventory output
+**Branch**: `codex/se-review-skills-bounded-inventory-output`
+
+### Summary
+
+Added safe bounded inventory transport, hardened path and cross-platform behavior through review, and opened PR #100 with green CI.
+
+### Main Changes
+
+- Added opt-in bounded artifact output with a compact verifiable stdout envelope while preserving legacy output.
+- Hardened destination validation against symlinked ancestors, unsafe replacement, size limits, TOCTOU changes, and unsupported descriptor chmod.
+- Updated the skill contract, release metadata, Trellis specifications, generated repository map, and review evidence.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c59e4a3` | feat: add bounded skill review inventory output |
+| `db0c106` | test: cover bounded inventory review risks |
+| `998c574` | fix: reject symlinked output root ancestors |
+| `30c4243` | fix: support bounded output on Windows |
+
+### Testing
+
+- [OK] 42 focused se-review-skills analyzer tests
+- [OK] Ruff on the analyzer and focused tests
+- [OK] Deterministic SD review full check
+- [OK] GitHub CI on Linux and macOS, lint, and release payload gate
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
