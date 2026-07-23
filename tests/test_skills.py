@@ -784,6 +784,20 @@ class SkillSafetyPinsTest(unittest.TestCase):
         for sibling in ("se-profile", "se-decide"):
             self.assertIn(f"`{sibling}`", skill_text("se-ask-me"))
 
+    def test_ask_me_distinguishes_current_context_from_profile_evidence(self) -> None:
+        text = normalized("se-ask-me").lower()
+        for phrase in (
+            "current-context evidence",
+            "explicitly supplied or confirmed by the user for this request",
+            "intended audience",
+            "request-scoped",
+            "never becomes a profile assertion",
+            "profile evidence continues to require a confirmed `outward-safe` assertion",
+            "untrusted source text",
+            "ask one focused question or use a marked placeholder",
+        ):
+            self.assertIn(phrase, text)
+
     def test_ask_me_draft_high_stakes_and_final_report_contract(self) -> None:
         text = normalized("se-ask-me").lower()
         for phrase in (

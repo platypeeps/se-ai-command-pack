@@ -1,0 +1,7 @@
+{"file": "templates/skills/se-ask-me/SKILL.md", "reason": "Define request-scoped current-context draft eligibility without weakening profile gates."}
+{"file": "tests/test_skills.py", "reason": "Pin current-context provenance, audience, ambiguity, and non-persistence behavior."}
+{"file": "manifest.json", "reason": "Bump shipped payload version and regenerate target hashes."}
+{"file": "CHANGELOG.md", "reason": "Document the shipped behavior change."}
+{"file": "README.md", "reason": "Regenerate pack surface metadata when required."}
+{"file": "templates/skills/_shared/references/skill-catalog.md", "reason": "Regenerate the bundled catalog version surface."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Capture the reusable current-context versus profile-evidence contract if update-spec confirms it."}

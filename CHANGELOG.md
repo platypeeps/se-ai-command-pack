@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.54.0 - 2026-07-22
+
+- Let `se-ask-me` use factual current context explicitly supplied or confirmed
+  for one outward draft without first persisting it to the personal profile.
+- Keep request-scoped context separate from durable profile evidence while
+  preserving audience visibility, ambiguity, anti-impersonation, and
+  confirmed `outward-safe` profile gates.
+
 ## 0.53.1 - 2026-07-22
 
 - Define the observed-use collection budget in distinct sessions and keep

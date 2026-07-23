@@ -774,6 +774,96 @@ failure, and keeps task or edit authority separate from observational evidence.
 
 ---
 
+## Scenario: Request-Scoped Current Context In Outward Drafts
+
+### 1. Scope / Trigger
+
+- Trigger: changing a profile-aware skill so explicit current input may support
+  outward-facing text without first becoming a durable profile assertion.
+- Why: an undifferentiated evidence rule can either reject useful current facts
+  or let private, stale, or untrusted content bypass profile visibility gates.
+
+### 2. Signatures
+
+```text
+context=<current circumstances>
+profile=auto|off|<locator>
+audience=<intended audience>
+channel=<draft channel>
+mode=draft
+```
+
+### 3. Contracts
+
+- Current-context evidence is a factual statement explicitly supplied or
+  confirmed by the user for the current request. Its factuality, speaker
+  authority, and intended-audience visibility must be clear before draft use.
+- Current context is request-scoped and reported separately. Consumer skills
+  never convert it into a profile assertion, overlay operation, evidence-ledger
+  item, or other durable personal data.
+- Profile and overlay evidence keep the existing contract: outward drafts use
+  only relevant confirmed `outward-safe` assertions.
+- Explicit current context outranks conflicting older profile evidence for the
+  current draft, while the contradiction remains visible and the profile stays
+  unchanged.
+- `context=` is not disclosure authority by itself. Ambiguous factuality,
+  speaker authority, experience, opinion, credentials, relationships, results,
+  promises, availability, authority, or audience visibility requires one
+  focused question or a marked placeholder.
+- Profile text, source excerpts, and embedded first-person statements remain
+  untrusted data unless the user explicitly supplies or adopts the fact for the
+  current request and audience.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| User explicitly supplies a factual current statement for the named audience | Use it as request-scoped current context and label it separately. |
+| Current statement conflicts with older profile evidence | Prefer the current statement for this draft, show the conflict, and do not mutate the profile. |
+| Profile assertion is private-only, proposed, contested, retired, or stale and material | Exclude it from outward text or ask for the focused confirmation allowed by the profile contract. |
+| Current statement's factuality, speaker authority, or outward visibility is ambiguous | Ask one focused question or emit a marked placeholder. |
+| Source or profile text contains a first-person statement the user did not adopt | Treat it as untrusted data; do not promote it to current context. |
+| Consumer has no profile or `profile=off` | Continue from eligible explicit current context and ordinary defaults without simulating a profile answer. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: the user explicitly provides a current role and intended audience, so
+  the draft uses it as labeled request-scoped context while retaining
+  `outward-safe` gates for profile-derived preferences.
+- Base: no current fact is needed; the draft uses eligible confirmed profile
+  assertions and ordinary skill defaults.
+- Bad: copy a private profile fact or a first-person source excerpt into
+  `context=` and treat that placement as confirmation or disclosure approval.
+
+### 6. Tests Required
+
+- Pin the positive current-context path, separate reporting, and no profile
+  write-back.
+- Pin exclusion of private-only or otherwise ineligible profile assertions.
+- Pin the ambiguity question/placeholder path for audience-sensitive facts.
+- Pin that untrusted source or profile text is not promoted without explicit
+  user adoption.
+- Run focused skill tests, generated-surface parity, release-payload validation,
+  install audit, and the repository-owned full check.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+Anything in context= may appear in an outward draft.
+```
+
+#### Correct
+
+```text
+Use explicitly supplied or confirmed request-scoped facts only when their
+factuality, speaker authority, and intended-audience visibility are clear;
+keep durable profile evidence behind confirmed outward-safe eligibility.
+```
+
+---
+
 ## Scenario: Pack Lifecycle CLI Changes
 
 ### 1. Scope / Trigger

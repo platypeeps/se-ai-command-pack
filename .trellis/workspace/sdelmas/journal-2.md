@@ -689,3 +689,42 @@ Merged current main into PR #88, resolved Trellis journal and index conflicts ad
 ### Next Steps
 
 - None - task complete
+
+
+## Session 71: Allow request-scoped context in se-ask-me drafts
+
+**Date**: 2026-07-22
+**Task**: Allow request-scoped context in se-ask-me drafts
+**Branch**: `codex/se-ask-me-current-context-drafts`
+
+### Summary
+
+Separated explicit request-scoped current context from durable profile evidence in outward drafts while preserving visibility and ambiguity safeguards.
+
+### Main Changes
+
+- Defined current-context eligibility, audience, authority, ambiguity, and non-persistence rules in the canonical se-ask-me skill.
+- Added focused contract coverage and synchronized release, catalog, repository-map, and reusable quality-spec surfaces.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1271b0a` | chore(task): plan se-ask-me current context |
+| `42ce88b` | feat(ask-me): allow request-scoped draft context |
+| `8765b48` | docs: capture current-context draft contract |
+
+### Testing
+
+- [OK] make check (474 tests, Ruff, mypy, generation, release gate)
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh
+- [OK] GitHub CI green and Copilot reviewed all 12 changed files with zero comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
