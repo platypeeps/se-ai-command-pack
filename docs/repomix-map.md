@@ -15482,13 +15482,20 @@ arguments = (
 ⋮----
 destination = output_root / "inventory.json"
 ⋮----
+def test_existing_inventory_size_limit_preserves_destination(self) -> None
+⋮----
+prior_content = destination.read_text("utf-8")
+⋮----
+def test_bounded_error_is_single_line_and_size_limited(self) -> None
+⋮----
+error = review._bounded_error("first line\n" + "x" * 1_000)
+⋮----
 def test_output_requires_an_explicit_output_root(self) -> None
 ⋮----
 parser_stderr = io.StringIO()
 ⋮----
 def test_destination_change_before_replace_preserves_prior_artifact(self) -> None
 ⋮----
-prior_content = destination.read_text("utf-8")
 real_fingerprint = review._destination_fingerprint
 calls = 0
 ⋮----

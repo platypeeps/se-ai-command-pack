@@ -283,6 +283,21 @@ class SkillReviewInventoryTest(TempDirTestCase):
         self.assertEqual(envelope["status"], "success")
         self.assertTrue(envelope["artifactWritten"])
         self.assertEqual(envelope["transportSchemaVersion"], 1)
+        self.assertEqual(
+            set(envelope),
+            {
+                "artifactWritten",
+                "coverageLimits",
+                "error",
+                "installedCopies",
+                "inventoryPath",
+                "inventorySchemaVersion",
+                "selectedSkills",
+                "snapshotId",
+                "status",
+                "transportSchemaVersion",
+            },
+        )
         self.assertEqual((output_root / "inventory.json").stat().st_mode & 0o777, 0o600)
 
     def test_bounded_envelope_does_not_inline_a_large_inventory(self) -> None:
@@ -357,6 +372,45 @@ class SkillReviewInventoryTest(TempDirTestCase):
         envelope = json.loads(stdout)
         self.assertFalse(envelope["artifactWritten"])
         self.assertIsNone(envelope["inventoryPath"])
+
+    def test_existing_inventory_size_limit_preserves_destination(self) -> None:
+        root, _ = self.write_se_pack()
+        output_root = self.base / "artifacts"
+        output_root.mkdir()
+        arguments = (
+            "inventory",
+            "--root",
+            str(root),
+            "--installed",
+            "off",
+            "--output-root",
+            str(output_root),
+            "--output",
+            "inventory.json",
+        )
+        first_code, _, _ = self.run_main(*arguments)
+        self.assertEqual(first_code, 0)
+        destination = output_root / "inventory.json"
+        prior_content = destination.read_text("utf-8")
+
+        with mock.patch.object(
+            review, "MAX_EXISTING_INVENTORY_BYTES", len(prior_content) - 1
+        ):
+            code, stdout, stderr = self.run_main(*arguments)
+
+        self.assertEqual(code, 2)
+        self.assertIn("larger than", stderr)
+        self.assertEqual(destination.read_text("utf-8"), prior_content)
+        envelope = json.loads(stdout)
+        self.assertFalse(envelope["artifactWritten"])
+        self.assertIsNone(envelope["inventoryPath"])
+
+    def test_bounded_error_is_single_line_and_size_limited(self) -> None:
+        error = review._bounded_error("first line\n" + "x" * 1_000)
+
+        self.assertNotIn("\n", error)
+        self.assertEqual(len(error), review.MAX_ENVELOPE_ERROR_CHARS)
+        self.assertTrue(error.endswith("..."))
 
     def test_output_requires_an_explicit_output_root(self) -> None:
         root, _ = self.write_se_pack()
