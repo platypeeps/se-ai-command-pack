@@ -20,7 +20,8 @@ from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any, Sequence
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
+MINIMUM_PYTHON = (3, 9)
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
 MAX_DESCRIPTION_SIMILARITY_PAIRS = 10_000
@@ -282,7 +283,7 @@ def _parse_registry(path: Path) -> RegistryData:
     shared_references: dict[str, tuple[str, ...]] = {}
     shared = _assignment(tree, "SHARED_REFERENCES")
     if isinstance(shared, ast.Dict):
-        for key_node, value_node in zip(shared.keys, shared.values, strict=True):
+        for key_node, value_node in zip(shared.keys, shared.values):
             key = _string_value(key_node)
             if key is None or not isinstance(value_node, (ast.Tuple, ast.List)):
                 continue
@@ -1018,11 +1019,13 @@ def _script_candidate_signals(
     return block_count, candidates
 
 
-def _pinned_tests(context: PackageContext, skill_name: str) -> list[str]:
+def _test_text_references(
+    context: PackageContext, skill_name: str
+) -> list[dict[str, Any]]:
     tests = context.root / "tests"
     if not tests.is_dir():
         return []
-    matches: list[str] = []
+    matches: list[dict[str, Any]] = []
     for path in sorted(tests.glob("test*.py")):
         try:
             lines = path.read_text(encoding="utf-8", errors="strict").splitlines()
@@ -1030,10 +1033,27 @@ def _pinned_tests(context: PackageContext, skill_name: str) -> list[str]:
             continue
         for number, line in enumerate(lines, start=1):
             if skill_name in line:
-                matches.append(f"{path.relative_to(context.root).as_posix()}:{number}")
+                matches.append(
+                    {
+                        "path": path.relative_to(context.root).as_posix(),
+                        "line": number,
+                        "classification": "substring-reference",
+                        "behavioralPinVerified": False,
+                    }
+                )
                 if len(matches) == 25:
                     return matches
     return matches
+
+
+def _is_ignored_related_path(path: Path, root: Path) -> bool:
+    try:
+        relative = path.relative_to(root)
+    except ValueError:
+        return False
+    return path.suffix.casefold() == ".pyc" or any(
+        part in IGNORED_DIRECTORIES for part in relative.parts
+    )
 
 
 def _related_templates(item: ResolvedSkill) -> list[dict[str, str]]:
@@ -1041,7 +1061,11 @@ def _related_templates(item: ResolvedSkill) -> list[dict[str, str]]:
     skill_name = item.canonical.parent.name
     candidates: dict[Path, str] = {}
     for path in item.canonical.parent.rglob("*"):
-        if path.is_file() and not path.is_symlink():
+        if (
+            path.is_file()
+            and not path.is_symlink()
+            and not _is_ignored_related_path(path, item.canonical.parent)
+        ):
             candidates[path.resolve()] = "authored-template"
     for relative, consumers in context.registry.shared_references.items():
         if skill_name not in consumers:
@@ -1165,13 +1189,17 @@ def _inventory_record(item: ResolvedSkill) -> dict[str, Any]:
     code_block_count, script_candidates = _script_candidate_signals(related)
     rows = _associated_rows(item, related)
     allowed = item.context.allowed_template_root
-    changeable = allowed is None or _is_relative_to(item.canonical, allowed)
-    trellis = item.context.root / ".trellis" / "scripts" / "task.py"
     owner_verified = item.context.owner_kind in {
         "sd-upstream",
         "se-upstream",
         "repo-local",
     }
+    changeable = bool(
+        owner_verified
+        and allowed is not None
+        and _is_relative_to(item.canonical, allowed)
+    )
+    trellis = item.context.root / ".trellis" / "scripts" / "task.py"
     references = _resource_paths(related, "references")
     scripts = _resource_paths(related, "scripts")
     links = sorted({match.group(1) for match in LINK_PATTERN.finditer(body)})
@@ -1199,7 +1227,7 @@ def _inventory_record(item: ResolvedSkill) -> dict[str, Any]:
         "sourceRole": item.source_role,
         "drift": item.drift,
         "mappingEvidence": item.mapping_evidence,
-        "reviewable": changeable,
+        "reviewable": True,
         "changeable": changeable,
         "metadataKeys": list(metadata_keys),
         "headings": headings,
@@ -1224,7 +1252,7 @@ def _inventory_record(item: ResolvedSkill) -> dict[str, Any]:
             "codeBlockCount": code_block_count,
             "scriptCandidateSignals": script_candidates,
         },
-        "pinnedTests": _pinned_tests(item.context, skill_name),
+        "testTextReferences": _test_text_references(item.context, skill_name),
         "platformTargets": _target_matrix(item, rows),
         "taskRouting": {
             "ownerKind": item.context.owner_kind,
@@ -1399,6 +1427,7 @@ def build_inventory(
                 "Metadata parsing is intentionally limited to top-level scalar fields.",
                 "Host capabilities marked unknown require current host verification.",
                 "Similarity and repetition are candidate signals, not defects.",
+                "Test-text references are substring locators, not verified behavioral pins.",
                 "Missing or symlinked automatic install roots remain coverage limits.",
             ],
         },
@@ -1437,6 +1466,15 @@ def _parser() -> argparse.ArgumentParser:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    if sys.version_info < MINIMUM_PYTHON:
+        required = ".".join(str(part) for part in MINIMUM_PYTHON)
+        current = ".".join(str(part) for part in sys.version_info[:3])
+        print(
+            f"error: skill_review.py requires Python {required}+; found {current}. "
+            "Use the documented bounded manual-coverage fallback.",
+            file=sys.stderr,
+        )
+        return 2
     parser = _parser()
     args = parser.parse_args(argv)
     root_was_explicit = args.root is not None

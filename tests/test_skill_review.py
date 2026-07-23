@@ -64,6 +64,11 @@ Report findings.
 
 
 class SkillReviewInventoryTest(TempDirTestCase):
+    def test_analyzer_keeps_the_documented_python_39_runtime_floor(self) -> None:
+        source = SCRIPT_PATH.read_text(encoding="utf-8")
+        self.assertNotIn("strict=True", source)
+        self.assertEqual(review.MINIMUM_PYTHON, (3, 9))
+
     def test_sha256_streams_instead_of_reading_the_whole_file(self) -> None:
         path = self.base / "resource.bin"
         content = b"review-skill" * (review.HASH_CHUNK_BYTES // 4)
@@ -249,7 +254,8 @@ class SkillReviewInventoryTest(TempDirTestCase):
         self.assertEqual(skill["arguments"], [])
         self.assertEqual(skill["siblingNames"], [])
         self.assertEqual(skill["sourceRole"], "authored-template")
-        self.assertTrue(skill["changeable"])
+        self.assertTrue(skill["reviewable"])
+        self.assertFalse(skill["changeable"])
         self.assertEqual(
             [target["target"] for target in skill["platformTargets"]],
             ["agents", "claude", "codex"],
@@ -259,6 +265,29 @@ class SkillReviewInventoryTest(TempDirTestCase):
                 target["frontmatter"] == ["name", "description"]
                 for target in skill["platformTargets"]
             )
+        )
+
+    def test_test_text_references_are_not_claimed_as_behavioral_pins(self) -> None:
+        root, _ = self.write_se_pack()
+        test_file = root / "tests" / "test_mentions.py"
+        test_file.parent.mkdir()
+        test_file.write_text("# se-test appears only in test text\n", encoding="utf-8")
+
+        payload = self.inventory(root, "se-test")
+        skill = payload["skills"][0]
+
+        self.assertEqual(payload["schemaVersion"], 3)
+        self.assertNotIn("pinnedTests", skill)
+        self.assertEqual(
+            skill["testTextReferences"],
+            [
+                {
+                    "path": "tests/test_mentions.py",
+                    "line": 1,
+                    "classification": "substring-reference",
+                    "behavioralPinVerified": False,
+                }
+            ],
         )
 
     def test_inventory_uses_declared_registry_order(self) -> None:
@@ -510,8 +539,30 @@ class SkillReviewInventoryTest(TempDirTestCase):
             if skill["sourceRole"] == "installed-copy-unowned"
         )
         self.assertEqual(unowned["canonicalPath"], str(installed))
+        self.assertTrue(unowned["reviewable"])
+        self.assertFalse(unowned["changeable"])
         self.assertFalse(unowned["taskRouting"]["canCreateTask"])
         self.assertEqual(unowned["drift"], "unresolved")
+
+    def test_generated_bytecode_does_not_change_related_templates_or_snapshot(self) -> None:
+        root, skill_path = self.write_se_pack()
+        first = self.inventory(root, "se-test")
+        direct_bytecode = skill_path.parent / "helper.pyc"
+        cached_bytecode = skill_path.parent / "__pycache__" / "helper.pyc"
+        direct_bytecode.write_bytes(b"first bytecode")
+        cached_bytecode.parent.mkdir()
+        cached_bytecode.write_bytes(b"cached bytecode")
+        second = self.inventory(root, "se-test")
+        direct_bytecode.write_bytes(b"changed bytecode")
+        cached_bytecode.write_bytes(b"changed cached bytecode")
+        third = self.inventory(root, "se-test")
+
+        self.assertEqual(first["snapshotId"], second["snapshotId"])
+        self.assertEqual(second["snapshotId"], third["snapshotId"])
+        self.assertEqual(
+            first["skills"][0]["relatedTemplates"],
+            third["skills"][0]["relatedTemplates"],
+        )
 
     def test_installed_discovery_can_be_disabled_or_explicitly_overridden(self) -> None:
         source_root, source_skill = self.write_se_pack()

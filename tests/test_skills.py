@@ -3445,6 +3445,20 @@ class SkillSafetyPinsTest(unittest.TestCase):
         ):
             self.assertIn(phrase, schema)
 
+    def test_review_skills_discloses_analyzer_limits_and_mutation_boundary(self) -> None:
+        text = normalized("se-review-skills").lower()
+        for phrase in (
+            "python 3.9 or newer",
+            "bounded manual fallback",
+            "`testtextreferences` as bounded substring locators",
+            "not verified behavioral pins",
+            "`__pycache__`, and `*.pyc`",
+            "unresolved installed copy reviewable as evidence",
+            "`changeable=false`",
+            "disable task routing",
+        ):
+            self.assertIn(phrase, text)
+
     def test_review_skills_requires_a_safety_verdict_for_every_skill(self) -> None:
         rubric = normalized_resource(
             "se-review-skills", "references/review-rubric.md"
