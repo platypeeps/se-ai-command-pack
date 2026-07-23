@@ -15657,6 +15657,22 @@ def test_meeting_prep_excludes_sensitive_data(self) -> None
 ⋮----
 text = normalized("se-meeting-prep")
 ⋮----
+def test_required_interactions_stop_before_assumption_or_mutation(self) -> None
+⋮----
+meeting_prep = normalized("se-meeting-prep").lower()
+⋮----
+profile = normalized("se-profile").lower()
+⋮----
+knowledge_capture = normalized("se-knowledge-capture").lower()
+⋮----
+def test_nonblocking_interactions_preserve_safe_fallbacks(self) -> None
+⋮----
+research = normalized("se-research").lower()
+⋮----
+help_text = normalized("se-help").lower()
+⋮----
+feedback = normalized("se-feedback").lower()
+⋮----
 def test_help_modes_and_shared_response_envelope(self) -> None
 ⋮----
 text = skill_text("se-help")

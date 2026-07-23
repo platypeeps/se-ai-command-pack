@@ -598,6 +598,68 @@ class SkillSafetyPinsTest(unittest.TestCase):
         self.assertIn("sensitive personal data", text)
         self.assertIn("stop and ask", text)
 
+    def test_required_interactions_stop_before_assumption_or_mutation(self) -> None:
+        meeting_prep = normalized("se-meeting-prep").lower()
+        self.assertIn(
+            "when identity remains ambiguous, stop and ask the user — never guess "
+            "which person is meant",
+            meeting_prep,
+        )
+        self.assertIn("identity ambiguity is a stop-and-ask condition", meeting_prep)
+
+        profile = normalized("se-profile").lower()
+        self.assertIn(
+            "if the operation, profile, destination, source boundary, or target ids "
+            "remain ambiguous, ask one focused question and do not mutate anything",
+            profile,
+        )
+
+        knowledge_capture = normalized("se-knowledge-capture").lower()
+        self.assertIn(
+            "when `destination=` is absent, recommend exactly one destination using "
+            "the declared routing rules, explain the evidence, and wait for override "
+            "or approval",
+            knowledge_capture,
+        )
+        self.assertIn(
+            "`mode=apply` requests a write but does not bypass preview or approval",
+            knowledge_capture,
+        )
+        self.assertIn(
+            "when no matching approved preview exists in the current context, return "
+            "the concrete preview and wait",
+            knowledge_capture,
+        )
+
+    def test_nonblocking_interactions_preserve_safe_fallbacks(self) -> None:
+        research = normalized("se-research").lower()
+        self.assertIn(
+            "if the question is underspecified (missing budget, region, time frame, "
+            "or use case that would change the answer), ask the clarifying questions "
+            "first — one round, then proceed on stated assumptions",
+            research,
+        )
+
+        help_text = normalized("se-help").lower()
+        self.assertIn(
+            "ask at most one clarifying question, and only when its answer would "
+            "change the route",
+            help_text,
+        )
+
+        feedback = normalized("se-feedback").lower()
+        self.assertIn(
+            "use `unclear` when vague feedback cannot support a diagnosis. ask a "
+            "concrete clarification question instead of inventing specificity",
+            feedback,
+        )
+        self.assertIn(
+            "recommend exactly one provisional disposition per atomic issue or "
+            "coherent theme: `accept`, `reject`, `clarify`, `test`, `defer`, or "
+            "`already-addressed`",
+            feedback,
+        )
+
     def test_help_modes_and_shared_response_envelope(self) -> None:
         text = skill_text("se-help")
         normalized_text = normalized("se-help")
