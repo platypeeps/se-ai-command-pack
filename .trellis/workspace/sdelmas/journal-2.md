@@ -371,13 +371,7 @@ Added explicit per-skill security and safety verdicts to se-review-skills, stren
 
 ### Main Changes
 
-- Threaded prior provenance hashes through installer planning and application.
-- Added receipt-vouched `updated` classification with destination digest
-  revalidation before atomic apply.
-- Preserved conflicts for user drift, malformed receipts, symlinks, and
-  preflight races; kept preservation and explicit-force behavior unchanged.
-- Added Claude and Codex end-to-end coverage, lifecycle documentation, and the
-  0.64.0 release metadata.
+- Detailed change bullets were not supplied; see the summary above.
 
 ### Git Commits
 
@@ -1224,7 +1218,13 @@ Allowed provenance-vouched prior installer payloads to refresh without force whi
 
 ### Main Changes
 
-- Detailed change bullets were not supplied; see the summary above.
+- Threaded prior provenance hashes through installer planning and application.
+- Added receipt-vouched `updated` classification with destination digest
+  revalidation before atomic apply.
+- Preserved conflicts for user drift, malformed receipts, symlinks, and
+  preflight races; kept preservation and explicit-force behavior unchanged.
+- Added Claude and Codex end-to-end coverage, lifecycle documentation, and the
+  0.64.0 release metadata.
 
 ### Git Commits
 
