@@ -874,3 +874,38 @@ Clarified outcome-based routing between publication-shaped authoring and checkpo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 76: Define deterministic monitor-state staleness
+
+**Date**: 2026-07-22
+**Task**: Define deterministic monitor-state staleness
+**Branch**: `codex/se-monitor-explicit-staleness`
+
+### Summary
+
+Defined deterministic state staleness from explicit freshness policy or unrecoverable source continuity, preserved no-policy age behavior, added focused contract coverage, and captured the reusable quality rule.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7e0d66949ed4154cb660d25b23a661e3f3451e37` | (see git log) |
+| `bf171b7a3265dc181d9e3eebc284d9f922fac407` | (see git log) |
+| `097b58e216b29399fc69db1038ec350060a46e3f` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
