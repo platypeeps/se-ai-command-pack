@@ -1,0 +1,7 @@
+{"file": "templates/skills/se-review-skills/scripts/skill_review.py", "reason": "Harden runtime, schema, ownership, and ignored-path behavior."}
+{"file": "templates/skills/se-review-skills/SKILL.md", "reason": "Document analyzer coverage, fallback, and mutation boundaries."}
+{"file": "tests/test_skill_review.py", "reason": "Pin deterministic analyzer behavior and regression edges."}
+{"file": "tests/test_skills.py", "reason": "Pin the canonical reviewer guidance contract."}
+{"file": "manifest.json", "reason": "Synchronize release version and generated hashes."}
+{"file": "CHANGELOG.md", "reason": "Document the analyzer hardening release."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Capture reusable analyzer boundaries if warranted."}

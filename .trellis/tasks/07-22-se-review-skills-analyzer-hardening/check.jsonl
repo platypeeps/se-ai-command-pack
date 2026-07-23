@@ -1,0 +1,3 @@
+{"file": "tests/test_skill_review.py", "reason": "Run focused inventory, ownership, and snapshot tests."}
+{"file": "templates/skills/se-review-skills/scripts/skill_review.py", "reason": "Review deterministic and runtime-safe analyzer behavior."}
+{"file": "templates/skills/se-review-skills/SKILL.md", "reason": "Verify conservative semantic and fallback guidance."}
