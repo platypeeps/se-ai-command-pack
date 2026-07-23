@@ -1,0 +1,4 @@
+{"file": "tests/test_skills.py", "reason": "Add and run behavior pins for claim-sensitive freshness and dispositive-source handling."}
+{"file": "tests/test_generate.py", "reason": "Verify shared references remain mapped into generated target surfaces."}
+{"file": "templates/skills/_shared/references/source-standards.md", "reason": "Review freshness and applicability boundaries."}
+{"file": "templates/skills/_shared/references/verification-protocol.md", "reason": "Review authoritative-record and corroboration boundaries."}

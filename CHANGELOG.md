@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.57.0 - 2026-07-22
+
+- Make shared freshness rules sensitive to claim volatility, applicability,
+  supersession, and explicit domain horizons instead of a universal age limit.
+- Allow one verified dispositive authoritative record for its exact bounded
+  claim while preserving corroboration and disconfirmation for empirical,
+  disputed, interpretive, surprising, and interested-party claims.
+
 ## 0.56.0 - 2026-07-22
 
 - Harden the `se-review-skills` analyzer for the documented Python 3.9 floor,

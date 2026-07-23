@@ -338,6 +338,43 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "references/verification-protocol.md", skill_text("se-research")
         )
 
+    def test_shared_evidence_rules_are_claim_sensitive(self) -> None:
+        source = " ".join(
+            (
+                SKILLS_ROOT / "_shared/references/source-standards.md"
+            ).read_text(encoding="utf-8").split()
+        ).lower()
+        verification = " ".join(
+            (
+                SKILLS_ROOT / "_shared/references/verification-protocol.md"
+            ).read_text(encoding="utf-8").split()
+        ).lower()
+
+        for phrase in (
+            "claim volatility",
+            "applicable version or period",
+            "supersession",
+            "explicit domain horizon",
+            "age alone does not make stable historical or immutable primary evidence stale",
+            "date, jurisdiction, version, environment, or period",
+        ):
+            self.assertIn(phrase, source)
+        self.assertNotIn("older than 12 months is stale", source)
+
+        for phrase in (
+            "one authoritative primary record may support a load-bearing claim only when",
+            "dispositive for the narrowly stated claim",
+            "identity and applicability are verified",
+            "empirical, interpretive, disputed, surprising, or interested-party",
+            "vendor assertion is not dispositive merely because it is first-party",
+            "independent corroboration",
+            "disconfirmation",
+        ):
+            self.assertIn(phrase, verification)
+        self.assertNotIn(
+            "load-bearing claims require two independent sources", verification
+        )
+
     def test_brief_is_read_only(self) -> None:
         self.assertIn("read-only", normalized("se-brief"))
 
