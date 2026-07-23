@@ -40,6 +40,13 @@ boundary users exercise.
 - Keep family membership singular and canonical in `SKILLS`; derive
   `SKILL_NAMES`, preserve flat skill paths, and generate grouped catalog prose
   from validated frontmatter.
+- When sibling skills intentionally share a request noun, route by the user's
+  intended outcome instead of deleting accepted capability from either skill.
+  For tutorials, original thesis, argument, firsthand experience, or publication
+  contribution belongs to `se-author`; ordered teaching that completes and
+  verifies an observable result belongs to `se-tutorial`.
+- If the intended outcome leaves those workflows materially ambiguous, ask one
+  focused routing question before selecting a skill.
 - Preserve compatibility with Python 3.10; use postponed annotations where
   modern typing syntax appears.
 - Format for Ruff's 88-character line length and selected `E4`, `E7`, `E9`,
@@ -51,6 +58,8 @@ boundary users exercise.
 
 - Add focused unittest coverage for every observable behavior change, including
   failure and preservation paths when filesystem state is involved.
+- Pin both positive sides of any overlapping-skill routing boundary plus its
+  materially ambiguous clarification path.
 - Use temporary install roots; never target the developer's real home directory
   from tests.
 - Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
