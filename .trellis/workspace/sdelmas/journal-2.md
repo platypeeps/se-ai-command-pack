@@ -945,3 +945,38 @@ Added semantic interaction-design review for required, optional, and inappropria
 ### Next Steps
 
 - None - task complete
+
+
+## Session 78: Align watchlist state sentinel terminology
+
+**Date**: 2026-07-22
+**Task**: Align watchlist state sentinel terminology
+**Branch**: `codex/se-watchlist-state-sentinel`
+
+### Summary
+
+Made the shared monitor-state contract caller-neutral, preserved strict caller-specific sentinels for monitor and watchlist, added cross-rejection coverage, released version 0.61.0, and captured the durable contract in Trellis guidance.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7fa086502d7078469eb016e8605c14ac7838e065` | (see git log) |
+| `31285ac805a1423ced688a7cf90815408e875433` | (see git log) |
+| `650e8b7901347ca85da6dd85a0714972391d2704` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
