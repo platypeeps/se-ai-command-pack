@@ -3487,11 +3487,83 @@ class SkillSafetyPinsTest(unittest.TestCase):
             text,
         )
 
+    def test_review_skills_uses_bounded_session_evidence(self) -> None:
+        text = normalized("se-review-skills").lower()
+        evidence = normalized_resource(
+            "se-review-skills", "references/session-evidence.md"
+        ).lower()
+        rubric = normalized_resource(
+            "se-review-skills", "references/review-rubric.md"
+        ).lower()
+        schema = normalized_resource(
+            "se-review-skills", "references/report-schema.md"
+        ).lower()
+        routing = normalized_resource(
+            "se-review-skills", "references/runtime-routing.md"
+        ).lower()
+
+        for phrase in (
+            "`sessions=auto` is the default",
+            "`sessions=off` disables all conversation inspection",
+            "`session=<id>` is repeatable",
+            "at most three distinct confirmed sessions per skill and twenty distinct confirmed sessions",
+            "a session consumes one package-level slot and one per-skill slot",
+            "multiple invocations of the same skill in one session stay in one minimized skill/session evidence record",
+            "round-robin across skills",
+            "deduplicate by history provider plus stable session id",
+            "prioritize explicit selectors, then the current conversation",
+            "report candidates omitted when the budget truncates coverage",
+            "never replace bounded project discovery with a global session index",
+            "reject mention-only matches",
+            "strong activation",
+            "corroborated use",
+            "current-canonical",
+            "installed-drift",
+            "historical-version",
+            "skill-contract",
+            "execution-deviation",
+            "tool-or-environment",
+            "user-intent-change",
+            "indeterminate",
+            "a transcript error alone is never a finding",
+            "successful or neutral invocation as a control",
+            "core workflow",
+            "safety gate",
+            "conditional reference",
+            "deterministic helper",
+            "host overlay",
+            "evaluation",
+            "recovery path",
+            "**trigger**",
+            "**failure**",
+            "**prevention**",
+            "**recovery**",
+            "**regression method**",
+            "do not persist raw dialogue",
+            "revalidate each selected session record",
+        ):
+            self.assertIn(phrase, evidence)
+
+        for phrase in (
+            "`sessions=auto|off`",
+            "`session=<id>`",
+            "at most three distinct confirmed sessions per skill and twenty distinct sessions total",
+            "repeated invocations of one skill in one session as one skill/session record",
+            "**observed-use evidence**",
+        ):
+            self.assertIn(phrase, text)
+        self.assertIn("**observed execution evidence**", rubric)
+        self.assertIn("every session-derived finding also includes", schema)
+        self.assertIn("revalidate selected session records", schema)
+        self.assertIn("keep conversation discovery", routing)
+        self.assertIn("never pass raw sessions to a subagent", routing)
+
     def test_review_skills_resources_and_final_report_contract(self) -> None:
         raw = skill_text("se-review-skills")
         skill_root = SKILLS_ROOT / "se-review-skills"
         for relative in (
             "references/review-rubric.md",
+            "references/session-evidence.md",
             "references/runtime-routing.md",
             "references/report-schema.md",
             "scripts/skill_review.py",

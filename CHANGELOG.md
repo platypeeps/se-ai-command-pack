@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.53.1 - 2026-07-22
+
+- Define the observed-use collection budget in distinct sessions and keep
+  repeated invocations of one skill within one minimized skill/session record.
+
+## 0.53.0 - 2026-07-22
+
+- Extend `se-review-skills` with bounded current and project-scoped session
+  evidence, explicit invocation and version-provenance checks, and causal
+  classification before observed mistakes can become findings.
+- Add privacy-aware session budgets, successful or neutral controls, structural
+  remedy guidance, repeatable edge-case gotchas, and source-plus-session
+  revalidation before task creation or application.
+
 ## 0.52.1 - 2026-07-22
 
 - Align `se-help` Create and Improve examples with their registered bundled

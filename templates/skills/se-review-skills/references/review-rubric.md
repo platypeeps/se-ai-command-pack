@@ -58,6 +58,12 @@ contract.
 10. **Evaluation coverage** — convention tests, behavior pins, negative cases,
     clean/no-findings cases, cross-target parity, isolated forward tests, and
     tests that would fail if the capability disappeared.
+11. **Observed execution evidence** — confirmed skill invocations in the current
+    or bounded project-scoped sessions, version provenance, mistakes and
+    consequences, causal attribution, successful or neutral controls, privacy
+    limits, recurrent edge cases, and whether the smallest durable remedy
+    belongs in the core workflow, a safety gate, conditional reference,
+    deterministic helper, host overlay, evaluation, or recovery path.
 
 ## Harmful-instruction assessment
 
@@ -151,6 +157,29 @@ Create a finding only when evidence supports all of these:
 Keep unsupported suspicions in coverage limits. Put generator, installer,
 manifest, documentation, test, or consumer-copy symptoms outside a first-party
 skill batch when no allowed template change can remedy them.
+
+For a session-derived finding, also require:
+
+- confirmed invocation rather than an incidental skill-name match;
+- `current-canonical`, `installed-drift`, `historical-version`, or `unknown`
+  provenance, with old or unknown evidence treated as recurrence context rather
+  than proof about current source;
+- one causal class: `skill-contract`, `execution-deviation`,
+  `tool-or-environment`, `user-intent-change`, or `indeterminate`;
+- the observed consequence, confidence, and a minimal redacted session locator;
+- an exact current canonical source locator that still contains the cause; and
+- a successful or neutral control comparison when one is available.
+
+A transcript error alone is not a finding. Execution deviation warrants a
+source change only when evidence shows that the skill's structure contributes
+to recurrence. Tool or environment failure warrants a change only when the
+skill lacks the necessary stop, fallback, or recovery contract. User intent
+changes and indeterminate cases remain limits, not skill defects.
+
+For every proposed gotcha, name its trigger, failure, prevention, recovery, and
+regression method. Reject anecdote-specific prose that does not generalize to a
+testable edge case. Successful sessions do not erase verified mistakes, and a
+single failed session does not prove a general contract defect.
 
 ## Script extraction test
 
