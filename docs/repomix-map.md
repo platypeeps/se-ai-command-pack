@@ -1689,11 +1689,11 @@ defaults installed discovery to `off` so callers and tests must opt in.
   inventory schema, selected-skill and installed-copy counts, coverage limits,
   and a bounded error. It never embeds skill, repository, installation, or
   candidate-signal records.
-- Output roots must be real non-home directories. Destinations must remain
-  lexically and canonically below that root, cross no symlink, and remain
-  outside reviewed repositories and installed roots. Existing files are
-  replaceable only when their complete inventory schema and recomputed snapshot
-  are valid.
+- Output roots must be real non-home directories whose supplied path contains
+  no symlink component. Destinations must remain lexically and canonically
+  below that root, cross no symlink, and remain outside reviewed repositories
+  and installed roots. Existing files are replaceable only when their complete
+  inventory schema and recomputed snapshot are valid.
 - Artifact writes use a mode-`0600` temporary file in the destination directory,
   flush and `fsync` before replacement, recheck the prior destination
   fingerprint, replace atomically, and remove temporary files after failure.
@@ -11478,6 +11478,8 @@ def _validate_bounded_root(root: Path) -> Path
 resolved = root.expanduser().resolve()
 filesystem_root = Path(resolved.anchor).resolve()
 ⋮----
+def _crosses_symlink(path: Path) -> bool
+⋮----
 def _walk_skill_files(root: Path) -> list[Path]
 ⋮----
 found: list[Path] = []
@@ -15508,6 +15510,11 @@ def test_output_destination_rejects_escapes_roots_and_symlinks(self) -> None
 payload = self.inventory(root, "se-test")
 ⋮----
 linked_root = self.base / "linked-artifacts"
+⋮----
+real_root_parent = self.base / "real-root-parent"
+nested_root = real_root_parent / "artifacts"
+⋮----
+linked_root_parent = self.base / "linked-root-parent"
 ⋮----
 real_parent = output_root / "real"
 ⋮----

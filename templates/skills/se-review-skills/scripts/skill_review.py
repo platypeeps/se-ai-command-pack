@@ -365,6 +365,10 @@ def _validate_bounded_root(root: Path) -> Path:
     return resolved
 
 
+def _crosses_symlink(path: Path) -> bool:
+    return path.is_symlink() or any(parent.is_symlink() for parent in path.parents)
+
+
 def _walk_skill_files(root: Path) -> list[Path]:
     found: list[Path] = []
     for current, directories, files in os.walk(root, followlinks=False):
@@ -790,7 +794,7 @@ def _manifest_install_roots(
 
 def _validate_installed_root(path: Path) -> Path:
     supplied = path.expanduser().absolute()
-    if supplied.is_symlink() or any(parent.is_symlink() for parent in supplied.parents):
+    if _crosses_symlink(supplied):
         raise ReviewError(f"installed skill root crosses a symlink boundary: {supplied}")
     resolved = _validate_bounded_root(supplied)
     if not resolved.exists():
@@ -1577,8 +1581,8 @@ def _validate_output_destination(
     forbidden_roots: Sequence[Path],
 ) -> tuple[Path, DestinationState | None]:
     supplied_root = output_root.expanduser().absolute()
-    if supplied_root.is_symlink():
-        raise ReviewError(f"output root is a symlink: {supplied_root}")
+    if _crosses_symlink(supplied_root):
+        raise ReviewError(f"output root crosses a symlink boundary: {supplied_root}")
     if not supplied_root.exists():
         raise ReviewError(f"output root does not exist: {supplied_root}")
     if not supplied_root.is_dir():

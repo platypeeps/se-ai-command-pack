@@ -510,9 +510,19 @@ class SkillReviewInventoryTest(TempDirTestCase):
 
         linked_root = self.base / "linked-artifacts"
         linked_root.symlink_to(output_root, target_is_directory=True)
-        with self.assertRaisesRegex(review.ReviewError, "output root is a symlink"):
+        with self.assertRaisesRegex(review.ReviewError, "symlink boundary"):
             review._validate_output_destination(
                 Path("inventory.json"), linked_root, []
+            )
+
+        real_root_parent = self.base / "real-root-parent"
+        nested_root = real_root_parent / "artifacts"
+        nested_root.mkdir(parents=True)
+        linked_root_parent = self.base / "linked-root-parent"
+        linked_root_parent.symlink_to(real_root_parent, target_is_directory=True)
+        with self.assertRaisesRegex(review.ReviewError, "symlink boundary"):
+            review._validate_output_destination(
+                Path("inventory.json"), linked_root_parent / "artifacts", []
             )
 
         real_parent = output_root / "real"

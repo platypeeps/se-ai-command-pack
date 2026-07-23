@@ -73,7 +73,8 @@ records, or candidate-signal details.
 
 - The output root must already exist, be a real directory, and be neither the
   filesystem root nor the user's home directory.
-- The root, destination parent chain, and destination must not be symlinks.
+- No component of the supplied root path, destination parent chain, or
+  destination may be a symlink.
 - The destination must remain lexically and canonically below the output root;
   `..` escapes are rejected before resolution.
 - The destination must be outside every reviewed repository and installed root
