@@ -1,0 +1,5 @@
+{"file": "templates/skills/_shared/references/state-schema.md", "reason": "Describe caller-specific new-state sentinels without treating them as aliases."}
+{"file": "templates/skills/se-watchlist/SKILL.md", "reason": "Pin checkpoint=new ownership and baseline= rejection on the strict watchlist surface."}
+{"file": "tests/test_skills.py", "reason": "Pin both accepted names, cross-rejections, and preserved recovery behavior."}
+{"file": "manifest.json", "reason": "Synchronize the shipped payload version and generated hashes."}
+{"file": "CHANGELOG.md", "reason": "Document the sentinel terminology release."}
