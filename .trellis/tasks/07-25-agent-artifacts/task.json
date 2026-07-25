@@ -1,0 +1,32 @@
+{
+  "id": "agent-artifacts",
+  "name": "agent-artifacts",
+  "title": "Ship SE capabilities as cross-platform sub-agents",
+  "description": "",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-07-25",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "07-25-runtime-profile-gaps",
+    "07-25-dispatch-pilot",
+    "07-25-dispatch-rollout",
+    "07-25-agent-artifact-kind",
+    "07-25-worker-agents"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

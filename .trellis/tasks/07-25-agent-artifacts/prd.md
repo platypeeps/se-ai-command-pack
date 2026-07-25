@@ -1,0 +1,96 @@
+# Ship SE capabilities as cross-platform sub-agents
+
+Status: ACCEPTED as parent task (user, 2026-07-25). Requirements R1-R7 are binding.
+Delivery is decomposed into child tasks (see Task map); the parent owns the source
+requirement set, cross-child acceptance criteria, and final integration review. The parent
+has no direct implementation work and must not be started; start children instead.
+
+## Goal
+
+Let SE skills delegate bounded units of work (per source, per claim, per document, per
+attack lens) to sub-agents on platforms that support them, and ship the agent definitions
+through the existing SE installer - without breaking platform neutrality or degrading
+behavior on platforms without sub-agent support.
+
+## Requirements
+
+- R1 (cross-platform, settled): The design MUST incorporate the findings and recommendation
+  in `research/cross-platform-agent-support.md`: canonical agents authored once as neutral
+  MD + frontmatter; per-platform renderers (Claude MD, Codex TOML); NO agent artifacts for
+  the Amp/`agents` anchor, which stays skills-only.
+- R2 (no new layer): Agent shipping extends the existing registry -> generator -> manifest ->
+  installer chain (new manifest kind `agent`); no separate install mechanism.
+- R3 (graceful degradation): Every skill that gains a dispatch step MUST keep a
+  capability-first inline fallback so behavior on non-dispatch platforms is unchanged in
+  outcome (sequential single-context execution).
+- R4 (neutrality preserved): Canonical skill bodies and canonical agent sources pass the
+  existing neutrality lint; host names appear only in generated overlays/renderers.
+- R5 (governance): Dispatch instructions follow the existing runtime-routing doctrine
+  (bounded inputs, explicit exclusions, concurrency cap, no recursive spawning, parent
+  verifies and owns the final report).
+- R6 (fresh-session gap): The `fresh-session` runtime context (se-red-team) gets an explicit,
+  documented encoding instead of silently degrading at generation time.
+- R7 (pilot scope): First wave limits dispatch protocols to a small pilot set (proposed:
+  se-research, se-fact-check) before broader rollout.
+
+## Acceptance Criteria
+
+- [ ] `installer/manifest.py` accepts kind `agent`; installer round-trip (install, status,
+      remove) works for agent rows on claude and codex anchors; `agents` anchor receives none.
+- [ ] Generator renders canonical agent sources to Claude MD and Codex TOML; `--check`
+      drift gate covers them; release-payload version gate passes.
+- [ ] Pilot skills contain a dispatch section with inline fallback; canonical bodies still
+      pass the neutrality lint.
+- [ ] `fresh-session` encoding decision implemented and documented (docs/SE_AI_COMMAND_PACK.md).
+- [ ] Runtime-profile/overlay system documented in docs/SE_AI_COMMAND_PACK.md (existing gap).
+- [ ] Tests updated: generator, install, skills suites cover the new kind and overlays.
+
+## Task map (parent-owned)
+
+Recommended order below; dependencies are restated inside each child's `prd.md` (tree
+position is not a dependency system).
+
+1. `07-25-runtime-profile-gaps` (Tier 3) - fresh-session encoding + runtime-profile docs.
+   No dependencies; do first.
+2. `07-25-dispatch-pilot` (Tier 1) - dispatch sections in se-research and se-fact-check.
+   No dependencies.
+3. `07-25-dispatch-rollout` (Tier 1) - se-digest, se-feedback, se-scan, se-video-notes,
+   se-red-team. Blocked by 2; composes with 1 for se-red-team.
+4. `07-25-agent-artifact-kind` (Tier 2) - manifest kind `agent`, renderer hook, Claude MD
+   + Codex TOML renderers, Amp exclusion. Blocks 5.
+5. `07-25-worker-agents` (Tier 2) - se-source-reader, se-claim-verifier, delegation
+   mapping. Blocked by 4; coordinates with 2.
+
+Cross-child acceptance (parent integration review, run when all children archive):
+
+- [ ] Full `make check` green with all child changes merged.
+- [ ] One se-research run on a sub-agent-dispatch platform and one on an inline platform
+      produce contract-identical final reports (execution strategy differs, outcome does not).
+- [ ] Operator docs match shipped behavior (profiles, agents, dispatch).
+
+## Open questions (delegated)
+
+- Worker-role granularity -> `07-25-worker-agents`.
+- User- vs project-scope installs and the Codex trust-gate verification ->
+  `07-25-agent-artifact-kind`.
+- Pilot skill set -> RESOLVED (2026-07-25): se-research + se-fact-check.
+
+## Notes
+
+- Keep `prd.md` focused on requirements, constraints, and acceptance criteria.
+- Complex task: `design.md` and `implement.md` required before `task.py start`.
+
+## Cross-program coordination (2026-07-25 review; additive — does not alter R1-R7)
+
+- Audit-backlog interlock: land the cheap audit gate tasks first —
+  `07-25-audit-release-gate-scope` (A-035/A-040), `07-25-audit-lint-shipped-payload`
+  (A-036), `07-25-audit-coverage-floor` (A-020), `07-25-audit-shared-reference-closure`
+  (A-007) — they directly protect this program's payload waves.
+- Registry consumer: `07-25-audit-registry-snapshot-contract` (A-002) must precede or ship
+  with `07-25-agent-artifact-kind` (see that child's coordination note).
+- Twin-pack consistency: before the parent integration review closes, compare with
+  sd-ai-command-pack `.trellis/tasks/07-25-agent-artifacts/` for drift in the shared
+  settled design.
+- Clarification for cross-child acceptance: "contract-identical final reports" means
+  identical section structure, field vocabulary, and evidence rules — not identical
+  content.
