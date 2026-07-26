@@ -7,7 +7,7 @@ The shipped skill_review.py has one path-containment predicate and one authorita
 ## Requirements
 
 - Collapse _is_relative_to (:211) and _is_within (:1545) into one helper used at every call site. [A-009]
-- Declare the generator's YAML grammar authoritative; make the shipped dependency-free parser a strict subset that rejects (rather than reinterprets) constructs outside it. [A-10]
+- Declare the generator's YAML grammar authoritative; make the shipped dependency-free parser a strict subset that rejects (rather than reinterprets) constructs outside it. [A-010]
 - Add a shared conformance test asserting both parsers agree over all canonical and generated SKILL.md frontmatter in the repo.
 - Payload change: version bump + changelog per release discipline.
 
