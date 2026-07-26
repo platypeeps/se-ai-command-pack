@@ -45,6 +45,9 @@ The content is organized as follows:
   workflows/
     tests.yml
 .trellis/
+  audit/
+    ledger.md
+    report-2026-07-25.md
   spec/
     backend/
       database-guidelines.md
@@ -725,6 +728,1000 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: python3 .github/scripts/create-release-tag.py --push
+````
+
+## File: .trellis/audit/ledger.md
+````markdown
+# Audit ledger
+Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack; managed by sd-audit-repo.
+
+## A-001 — Trellis gitignore rule defeats SD-pack re-includes, leaving .claude dogfood surface untracked while receipts claim it
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: architecture
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .gitignore:27 — Trellis rule `.claude/` ignores the directory, defeating the managed re-includes at lines 92–95.
+  - .sd-ai-command-pack/installed-targets.txt:1 — receipt claims 21 .claude/* targets; git ls-files .claude → 0.
+  - scripts/sd-ai-command-pack-install-audit.py:489 — pack's own audit flags the mismatch on a fresh clone.
+- why: Dogfood state irreproducible for the primary platform; receipts claim files a fresh clone lacks.
+- fix: Pick one owner: narrow .gitignore:27 so re-includes work, or stop claiming .claude in receipts.
+
+## A-002 — Shipped skill payload AST-parses installer/registry.py, making an internal module an unversioned cross-repo contract
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: architecture
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - templates/skills/se-review-skills/scripts/skill_review.py:325 — _parse_registry AST-parses the pack checkout's internal module.
+  - templates/skills/se-review-skills/scripts/skill_review.py:341 — hard-codes both repos' layouts plus sibling internals (:403).
+- why: Registry/layout refactors silently break already-installed copies (fleet version skew).
+- fix: Export a versioned machine-readable registry snapshot; have skill_review.py consume it.
+
+## A-003 — Generated catalog lives inside the declared source-of-truth tree
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: architecture
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .github/scripts/generate-skill-surfaces.py:52 — HELP_CATALOG_PATH points into templates/skills/_shared/references/.
+  - templates/skills/_shared/references/skill-catalog.md:1 — do-not-edit banner committed under templates/.
+- why: Source/generated boundary inverted for one file; hand edits get clobbered by make generate.
+- fix: Emit under generated/ (repoint manifest row) or document the exception where the boundary is declared.
+
+## A-004 — Repo-own tooling interleaved with vendored SD-pack and Trellis files
+- status: open
+- severity: P3 · effort: M · confidence: Plausible
+- dimension: architecture
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/se-ai-command-pack-skill-review.py:1 — 17 of 19 scripts/ files are SD-pack-installed; only 2 repo-own.
+  - Makefile:14 — build pipeline lives in .github/scripts beside installed prompts and Trellis files.
+  - CONTRIBUTING.md:1 — no editable-source vs vendored distinction documented.
+- why: Contributors cannot tell source from installed product; local edits to vendored files get clobbered.
+- fix: One home for repo-own tooling; list vendored do-not-edit path families in CONTRIBUTING.md.
+
+## A-005 — Parallel sd:* and trellis:* entry points for the same workflows with divergent routing guidance
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: architecture
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - AGENTS.md:13 — routing block names only /trellis:finish-work, /trellis:continue.
+  - .agents/skills/sd-finish-work/SKILL.md:11 — sd wrapper overrides the trellis journal step.
+- why: Agents following AGENTS.md bypass the SD pack's recording/gating steps; session records diverge by entry point.
+- fix: Make one entry point canonical per platform (amend routing doc or suppress the shadowed surface).
+
+## A-006 — Same skill-argument names carry conflicting meanings and vocabularies across 53 skills
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: design
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - templates/skills/se-research/SKILL.md:37 — sources=N is a count; ~20 siblings use sources= for locator lists.
+  - templates/skills/se-monitor/SKILL.md:46 — one verbosity axis spelled length=/detail=/depth=/format= across 40+ skills.
+  - tests/test_skills.py:144 — unknown-argument stop rule turns cross-skill transfer into hard errors.
+- why: The key=value surface is the pack's primary UI; identical concepts differ per skill and one name changes type.
+- fix: Pack-wide argument vocabulary enforced in generator validation; rename sources=N → min_sources=.
+
+## A-007 — SHARED_REFERENCES fan-out is a hand-maintained opt-in list with no citation-closure validation
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: design
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - installer/registry.py:292 — source-standards.md consumers enumerate 50 of 53 skills individually.
+  - .github/scripts/generate-skill-surfaces.py:326 — validate_skills never checks citation closure.
+  - tests/test_skills.py:365 — only the forward direction enforced; reverse closure holds by discipline.
+- why: A forgotten registry append ships a skill citing a references/ file that never installs; no gate fails.
+- fix: Fail validate_skills on unregistered citations, or invert to an opt-out exclusion set.
+
+## A-008 — --platform promise not honored for always/if-not-exists manifest rows
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: design
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - install.py:100 — help promises platform-only install.
+  - installer/fileops.py:137 — ALWAYS_INSTALL/IF_NOT_EXISTS rows selected before platform_filter (latent: all 378 rows are if-anchor-exists).
+- why: First static row added through the preserved generator seam ignores --platform unnoticed.
+- fix: Apply platform filter before the install-mode shortcut, or amend the help text.
+
+## A-009 — skill_review.py defines the same path-containment predicate twice under two names
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: design
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - templates/skills/se-review-skills/scripts/skill_review.py:211 — _is_relative_to.
+  - templates/skills/se-review-skills/scripts/skill_review.py:1545 — _is_within, byte-identical; both load-bearing (:509, :1690).
+- why: Two names for one concept in a security-sensitive module invite divergence.
+- fix: Keep one helper for all call sites.
+
+## A-010 — Two divergent frontmatter grammars parse the same SKILL.md artifacts
+- status: open
+- severity: P3 · effort: M · confidence: Plausible
+- dimension: design
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .github/scripts/generate-skill-surfaces.py:161 — YAML grammar gates what ships.
+  - templates/skills/se-review-skills/scripts/skill_review.py:412 — hand-rolled parser applied to the same files on consumer machines.
+- why: Parallel grammars can classify metadata differently from what the generator validated.
+- fix: Declare YAML authoritative; shipped parser becomes a rejecting strict subset with a conformance test.
+
+## A-011 — default_file_mode mutates process umask as a hidden side effect
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: design
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - installer/fileops.py:68 — query-named helper executes os.umask(0)/restore per installed file (called from :106).
+- why: Thread-hostile: a concurrent open during the window could create 0666/0777 files.
+- fix: Read umask once into a module constant, or document the mutation.
+
+## A-012 — Stale-lock recovery race can let two work-loop runs acquire the same exclusive lock
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: correctness
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-work-loop.py:937 — stale judgment → unlink by path → recreate, no identity re-check at unlink time.
+  - scripts/sd-ai-command-pack-work-loop.py:1011 — same pattern for the terminal lock.
+  - .agents/skills/sd-work-backlog/SKILL.md:108 — shipped skill instructs --recover-stale-lock, making concurrent recovery realistic.
+- why: The slower unlink removes the winner's fresh lock; both processes run autonomous sessions until the next heartbeat check.
+- fix: Identity-verified delete (rename+content check or st_ino compare) before recreate; upstream fix in pack source.
+- notes: tracked upstream in sd-ai-command-pack task 07-25-fix-work-loop-lock-race (2026-07-25); SE-side task retired.
+
+## A-013 — install.py update runs network git with no timeout — only unbounded subprocess path in the pack
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: correctness
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - installer/management.py:110 — _run_git without timeout; fetch/pull at :164/:190.
+  - scripts/sd_ai_command_pack_lib.py:10 — every other wrapper bounds subprocesses (60s/20s).
+- why: A stalled network hangs install.py update forever; inconsistency invites inherited hangs.
+- fix: timeout=60 + convert TimeoutExpired to the clean error message.
+
+## A-014 — create-release-tag.py crashes with a raw traceback on git timeout or missing git
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: correctness
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .github/scripts/create-release-tag.py:21 — nothing catches TimeoutExpired/FileNotFoundError (used with --push in tests.yml:95).
+  - .github/scripts/check-release-payload.py:47 — sibling script shows the clean GateError pattern.
+- why: Transient stall during tagging fails CI with a stack trace instead of the documented error contract.
+- fix: Mirror check-release-payload.py's exception handling.
+
+## A-015 — Housekeeping review-thread pagination loop is unbounded on a repeating GraphQL cursor
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: correctness
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-housekeeping.sh:529 — while hasNextPage with no page cap.
+  - scripts/sd-ai-command-pack-housekeeping.sh:554 — only the empty-cursor case guarded.
+- why: One pagination glitch turns auto-merge gating into an infinite network loop.
+- fix: Cap pages or break on repeated endCursor; treat overflow as inspection failure (skip auto-merge); upstream fix.
+- notes: tracked upstream in sd-ai-command-pack task 07-25-harden-toolchain-failure-paths (2026-07-25); SE-side task retired.
+
+## A-016 — work-loop atomic_write_json failure path double-closes a descriptor already closed by fdopen
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: correctness
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-work-loop.py:570 — except-cleanup closes an fd fdopen already owned/closed (e.g. failed os.replace at :564).
+  - templates/skills/se-review-skills/scripts/skill_review.py:1738 — correct descriptor=-1 handoff exists in-repo.
+- why: In threaded embeddings the stale close can shut an unrelated reused fd.
+- fix: Adopt the skill_review.py ownership handoff; upstream fix.
+- notes: tracked upstream in sd-ai-command-pack task 07-25-harden-toolchain-failure-paths (2026-07-25); SE-side task retired.
+
+## A-017 — install.py update runs git and executes install.py from an unverified receipt-recorded path
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: security
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - installer/management.py:96 — source_root from provenance.json sourceRoot, no integrity protection.
+  - installer/management.py:190 — git pull on that path, then executes its install.py (:192, :209).
+  - install.py:324 — update dispatches before manifest load/validation.
+- why: One writable JSON file under the install root escalates to arbitrary code execution on next update; pull also runs the checkout's git hooks/config.
+- fix: Require sourceRoot == running checkout unless explicitly confirmed; refuse non-owned/non-git paths.
+
+## A-018 — Toolchain resolver points Python bytecode and uv tool dirs at shared, non-user-scoped /tmp paths
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: security
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-toolchain.sh:392 — PYTHONPYCACHEPREFIX/UV_CACHE_DIR/UV_TOOL_DIR/RUFF_CACHE_DIR at ${TMPDIR:-/tmp}/sd-ai-command-pack-* unqualified.
+  - scripts/sd-ai-command-pack-shell-lib.sh:165 — sibling helper UID-qualifies the same pattern; update_repomix:12 too.
+  - docs/SD_AI_COMMAND_PACK.md:1290 — unqualified pattern documented fleet-wide.
+- why: Another local user can pre-create the fixed /tmp paths and have planted bytecode/tools executed under this user's identity.
+- fix: UID-qualify the fallback, create 0700, fail on foreign ownership; upstream fix + doc update.
+- notes: tracked upstream in sd-ai-command-pack task 07-25-user-scope-toolchain-caches (2026-07-25); SE-side task retired.
+
+## A-019 — --backup copies follow symlinks and drop the source file's permission bits
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: security
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - installer/fileops.py:409 — shutil.copyfile follows symlinks; .bak gets umask-default mode.
+  - installer/fileops.py:181 — check-then-use window at the .bak path.
+- why: A 0600 file gets a 0644 .bak; a symlink planted in the window redirects the write outside the install root (not reachable today).
+- fix: O_CREAT|O_EXCL|O_NOFOLLOW backup open; copy into the descriptor; preserve source mode.
+
+## A-020 — No coverage measurement or floor in any gate
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: testing
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - Makefile:24 — bare unittest discover.
+  - .github/workflows/tests.yml:32 — no coverage step/threshold in any lane; requirements-dev.txt:3 has no coverage tool.
+- why: Untested branches in installer/scripts merge green silently under heavy autonomous development.
+- fix: coverage.py with a floor scoped to installer/, install.py, .github/scripts; fail CI below it.
+
+## A-021 — Subprocess git tests inherit the developer's global git config
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: testing
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - tests/test_release_gate.py:17 — git() helper with no env scrubbing; commits and pushes in tests.
+  - tests/test_skill_review.py:904 — raw git init with inherited user config; no isolation anywhere in tests/.
+- why: make test fails or runs user hooks under common git configs (gpgsign, hooksPath) while CI stays green.
+- fix: GIT_CONFIG_GLOBAL=/dev/null, GIT_CONFIG_SYSTEM=/dev/null (or HOME=temp) in the git helpers.
+
+## A-022 — `update` is the only installer lifecycle command with no real end-to-end test
+- status: open
+- severity: P3 · effort: M · confidence: Plausible
+- dimension: testing
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - tests/test_management.py:108 — update tests assert only mock call sequences.
+  - installer/management.py:146 — real flow mutates the user checkout and re-execs install.py; install/remove have subprocess e2e, update none.
+- why: Regressions in real git interplay or the re-exec handshake pass CI.
+- fix: One e2e: temp clone + bare origin one commit ahead → run update → assert pull + refresh.
+
+## A-023 — generated/skills/ payload surface undocumented; manifest schema and CONTRIBUTING payload definition stale
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: documentation
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - docs/SE_AI_COMMAND_PACK.md:848 — schema says source is "under templates/" — false for 52 generated/ rows (manifest.json:39).
+  - README.md:430 — regenerated-surfaces list omits generated/; Layout table has no generated/ row.
+  - CONTRIBUTING.md:14 — payload definition omits generated/** though the gate enforces it since a267be0.
+- why: 52 shipped payload files and the runtime-overlay mechanism are invisible in maintainer docs; the schema reference is wrong.
+- fix: Add layout row; correct schema row, surface lists, payload definition; extend never-hand-edit rule.
+- notes: merged from documentation + release-hygiene reviewers.
+
+## A-024 — Contributor docs omit the `make setup` prerequisite; documented flow fails on a fresh clone
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: documentation
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - README.md:440 — maintaining steps start at make generate; CONTRIBUTING never mentions make setup.
+  - .github/scripts/generate-skill-surfaces.py:22 — fresh clone → ModuleNotFoundError: yaml; Makefile:2 falls back to system python3.
+- why: The first documented contributor command crashes without the never-mentioned setup target.
+- fix: Add step 0 "make setup" to README + CONTRIBUTING.
+
+## A-025 — Committed 1 MB generated repomix map: ~45% of history weight, freshness by manual chore only
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: bloat
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - docs/repomix-map.md:1 — 983.7 KB generated file; 114 blobs, 23.06 MiB compressed of 51 MB .git; 50/475 commits touch it.
+  - .trellis/spec/backend/quality-guidelines.md:1130 — spec mandates regenerate+commit with no --check gate (tests assert scope only).
+  - scripts/sd-ai-command-pack-install-audit.py:246 — tooling treats the map as optional context.
+- why: One regenerable artifact dominates clone cost, grows ~1 MB per regeneration, and drifts silently when the manual step is skipped.
+- fix: Gitignore + generate on demand (preferred) or add a --check drift gate; update quality-guidelines + README.
+- notes: merged from bloat + improvements reviewers.
+
+## A-026 — Unreferenced repo-root wrapper scripts/se-ai-command-pack-skill-review.py is dead code
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: bloat
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/se-ai-command-pack-skill-review.py:9 — runpy forwarder; only references are an archived task and the generated map.
+- why: Dead entry point nothing installs, tests, or documents; drifts silently.
+- fix: Delete, or document + test if repo-root invocation is wanted.
+
+## A-027 — Fleet status collects each consumer repo serially
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: performance
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-status.py:1547 — collect_fleet iterates consumers, no concurrency.
+  - scripts/sd-ai-command-pack-status.py:967 — 2+ serial gh calls per repo, 20s timeout each (:23); ~12 git subprocesses per repo.
+- why: 10–20 repo fleet takes 15–40s; degraded network stacks 20s timeouts serially.
+- fix: ThreadPoolExecutor over consumers, output in registry order; upstream fix.
+- notes: tracked upstream in sd-ai-command-pack task 07-25-parallelize-fleet-status (2026-07-25); SE-side task retired.
+
+## A-028 — review-learnings fetches Copilot comments with one gh GraphQL subprocess per PR (N+1)
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: performance
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-review-learnings.py:1174 — per-PR gh api graphql spawn.
+  - .agents/skills/sd-review-learnings/SKILL.md:39 — documented --github-days 2 --update at measured cadence → ~30–45 serial spawns per run.
+- why: Dozens of serial network subprocesses per run, growing toward secondary-rate-limit territory.
+- fix: Alias-batched GraphQL (15–25 PRs per query); upstream fix.
+- notes: primary route: absorbed by sd-ai-command-pack 07-25-generalize-review-learnings-across-reviewers; tactical task 07-25-batch-review-learnings-github filed upstream (2026-07-25); SE-side task retired.
+
+## A-029 — review-preflight recomputes changed-path and base-ref discovery per check
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: performance
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-review-preflight.mjs:2040 — unmemoized discovery called at :485, :598, :935, :1281 (+ base-ref at :1113, :1889, :2000).
+  - scripts/sd-ai-command-pack-review-preflight.mjs:15 — per-run memoization is the established pattern for other caches.
+- why: ~14–24 redundant git spawns per run recomputing identical results.
+- fix: Per-run module caches reset in runReviewPreflight(); upstream fix.
+- notes: tracked upstream in sd-ai-command-pack task 07-25-reduce-review-tooling-spawns (2026-07-25); SE-side task retired.
+
+## A-030 — review-scope classifier forks a grep plus subshells per changed file
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: performance
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/sd-ai-command-pack-review-scope.sh:127 — per-file grep -Fxq + ~3 subshells (:259–273).
+  - scripts/sd-ai-command-pack-full-check.sh:466 — run twice per full check; 378-target refresh diffs pay ~1.5–3s each pass.
+- why: Routine rollout branches pay seconds of fork overhead for a one-process membership test.
+- fix: Associative array or single grep -Fxf pass; upstream fix.
+- notes: tracked upstream in sd-ai-command-pack task 07-25-reduce-review-tooling-spawns (2026-07-25); SE-side task retired.
+
+## A-031 — No dependency-update or CVE-audit path; dogfooded sd-update-deps workflow is inert
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: dependencies
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - requirements-dev.txt:3 — exact pins committed once, never moved; no audit tooling repo-wide.
+  - .agents/skills/sd-update-deps/SKILL.md:14 — workflow triages bot PRs only; no dependabot/renovate config exists.
+- why: Pins age silently, CVEs unseen, and the pack's own update workflow can never fire here.
+- fix: .github/dependabot.yml for pip + npm; optionally a scheduled pip-audit lane.
+
+## A-032 — .opencode/package.json declares an unused, floating @opencode-ai/plugin with no lockfile
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: dependencies
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .opencode/package.json:3 — "^1.14.39", no lockfile; all .opencode JS imports only node builtins.
+  - .gitignore:52 — node_modules ignored, so OpenCode auto-installs fresh floating 1.x per machine.
+- why: Unpinned npm fetch on every machine for a package nothing imports.
+- fix: Remove; or pin exact + commit lockfile if kept for editor types.
+
+## A-033 — requirements-dev.txt pins only top-level packages; transitives float unpinned and unhashed
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: dependencies
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - requirements-dev.txt:5 — 3 pins; 5 unpinned transitives via mypy (local freeze).
+  - .github/workflows/tests.yml:43 — plain pip install across 3.10/3.13 matrix; no hashes.
+- why: Bad transitive release breaks CI non-reproducibly; no integrity hashes. Dev-only blast radius.
+- fix: Fully pinned (hash-locked) compiled requirements for CI and make setup.
+
+## A-034 — repomix refresh executes npx --yes with unlocked transitives and install scripts enabled
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: dependencies
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - scripts/update_repomix:24 — npx --yes repomix@1.16.1; transitives fresh, lifecycle scripts on.
+  - README.md:463 — pattern documented as intentional; transitive/scripts exposure unaddressed.
+- why: Maintainer machines run a freshly resolved unlocked npm tree with scripts enabled.
+- fix: --ignore-scripts, or committed package-lock + npm ci, or record risk as accepted.
+
+## A-035 — Local release-payload gate goes vacuous once changes are committed
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: tooling
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - Makefile:32 — release-check runs check-release-payload.py with no --base (default HEAD = uncommitted only, per its help at :176).
+  - .github/workflows/tests.yml:60 — CI checks the full PR range local runs skip; vendored full-check version gate self-skips on manifest-name mismatch (full-check.sh:595).
+- why: Committed payload change without a bump passes make check green and fails only at PR CI.
+- fix: Pass --base origin/main (or merge-base) when resolvable, else HEAD.
+
+## A-036 — Shipped payload Python (skill_review.py) sits outside every ruff/mypy gate; tools find real defects
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: tooling
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - Makefile:27 — lint scope excludes templates/…/skill_review.py (1952 lines, only shipped executable); tests.yml:44–45 mirrors.
+  - templates/skills/se-review-skills/scripts/skill_review.py:297 — ruff B905; mypy errors at :673 and :268.
+- why: The one Python file that runs on consumer machines is the least-guarded Python surface in the repo.
+- fix: Add path to ruff+mypy in Makefile and tests.yml; fix the three findings.
+- notes: merged from tooling + improvements reviewers.
+
+## A-037 — Release-payload gate is PR-only while auto-tag-release fires on any push to main
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: tooling
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .github/workflows/tests.yml:48 — gate if: pull_request; auto-tag-release (:88) needs [unittest, lint] only.
+  - .github/scripts/create-release-tag.py:57 — existing tag left in place; consumers pull main HEAD (installer/management.py:190).
+- why: Direct push (if permitted) or same-version concurrent merges ship payload whose version no longer identifies content; latent today.
+- fix: Run the gate on push (base = last release tag) before auto-tag; and/or require up-to-date branches / document branch protection.
+- notes: merged from tooling + consumer-impact reviewers.
+
+## A-038 — No pip caching in any of the five CI jobs
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: tooling
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .github/workflows/tests.yml:28 — setup-python steps (:28, :40, :55) without cache: pip.
+- why: Five cold installs per PR run at heavy cadence — wasted runner minutes.
+- fix: cache: pip + cache-dependency-path: requirements-dev.txt on each step.
+
+## A-039 — No concurrency group — superseded PR runs execute to completion
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: tooling
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .github/workflows/tests.yml:1 — no concurrency: block.
+- why: Rapid successive pushes leave stale 5-job pipelines running, delaying current results.
+- fix: concurrency group on workflow+ref, cancel-in-progress for PRs.
+
+## A-040 — Release payload gate omits install.py/installer/; installer behavior can ship without bump or changelog
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: release-hygiene
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - .github/scripts/check-release-payload.py:27 — PAYLOAD_PREFIXES = templates/, generated/, manifest.json only.
+  - CHANGELOG.md:3 — 0.64.0 entry documents installer behavior — treated as release-worthy by convention.
+- why: Installer flags/receipts/exit codes are declared consumer contract; a silent fix ships under an already-tagged version.
+- fix: Add install.py + installer/ to PAYLOAD_PREFIXES (registry-metadata carve-out); update CONTRIBUTING.
+
+## A-041 — Changelog version 0.53.0 has no git tag; multi-bump PRs leave intermediate releases unfetchable
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: release-hygiene
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - CHANGELOG.md:91 — 0.53.0 heading; 65 tags vs 66 changelog versions (only 0.53.0 missing).
+  - manifest.json history — PR #89 bumped twice in one branch; auto-tag tags only merged HEAD.
+- why: Tags-match-changelog broken; gate checks only the top heading so recurrence is unguarded.
+- fix: Gate base→head to exactly one version step, or collapse intra-PR bumps; document the policy.
+
+## A-042 — No documented bump policy: perpetual 0.x with no minor-vs-patch rule or breaking-change signal
+- status: open
+- severity: P3 · effort: S · confidence: Plausible
+- dimension: release-hygiene
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - docs/SE_AI_COMMAND_PACK.md:837 — "Semver; bound to CHANGELOG.md" is the only scheme statement.
+  - CHANGELOG.md:129 — 0.50.0 removes public behavior indistinguishably from feature minors.
+- why: Fleet consumers must read every entry to spot removals; bump choice is undocumented convention.
+- fix: Document bump rules + Removed/Breaking convention in CONTRIBUTING.md, or state 1.0 criteria.
+
+## A-043 — 42 hand-copied per-skill shared-reference tests instead of the registry-driven form beside them
+- status: open
+- severity: P2 · effort: M · confidence: Plausible
+- dimension: improvements
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - tests/test_generate.py:218 — ~790-line block of identical per-skill methods (42 copies).
+  - tests/test_generate.py:174 — generic registry-driven precedent already exists in-file.
+- why: Every skill addition (highest-frequency operation) pays a manual copy; forgotten copies are silently uncovered.
+- fix: Snapshot dict + one subTest-driven test over SKILL_NAMES; retire per-skill methods.
+
+## A-044 — README promises $CODEX_HOME support the installer never implements
+- status: open
+- severity: P2 · effort: S · confidence: Plausible
+- dimension: consumer-impact
+- first-seen: 2026-07-25 @ 4067caa
+- last-seen: 2026-07-25 @ 4067caa
+- evidence:
+  - README.md:360 — codex row claims "(honors `$CODEX_HOME`)".
+  - installer/registry.py:61 — hard-coded .codex/skills; zero environ reads in install.py/installer/.
+  - docs/SE_AI_COMMAND_PACK.md:927 — operator guide states "No environment variables are read in v0.1."
+- why: Relocated-CODEX_HOME consumers get skills where Codex never reads them; the pack's two docs contradict each other.
+- fix: Implement CODEX_HOME resolution (with test), or delete the README claim and document the --root/symlink workaround.
+- notes: merged — found independently by architecture, documentation, improvements, and consumer-impact reviewers.
+````
+
+## File: .trellis/audit/report-2026-07-25.md
+````markdown
+# Repo Audit — platypeeps/se-ai-command-pack @ 4067caa — 2026-07-25
+Mode: full · Depth: standard · Dimensions: architecture, design, correctness, security, testing, documentation, bloat, performance, dependencies, tooling, release-hygiene, improvements, consumer-impact (observability and accessibility-i18n skipped by fingerprint)
+
+## Verdict
+
+A healthy, unusually well-automated repository: 13 read-only reviewers found no P0 or P1 issue — nothing broken, exploitable in the default setup, or blocking a core guarantee. The 44 open findings (19 P2 · 25 P3, deduplicated from 51 raw) cluster into four themes: documentation/code contract drift (the `$CODEX_HOME` claim, the undocumented `generated/` payload surface, the missing `make setup` step), gate-scope gaps (shipped payload outside lint, installer outside the release gate, no coverage floor, vacuous local release-check), robustness debt in the automation toolchain (lock-recovery race, unbounded loops/timeouts, N+1 GitHub calls, serial fleet collection), and ownership-boundary friction between the three cohabiting systems (repo-own vs SD-pack vs Trellis: the `.claude/` gitignore fight, interleaved tooling, dual entry points).
+
+Counts: P0 0 · P1 0 · P2 19 · P3 25 · total 44 (all confidence Plausible — see Coverage & limits).
+
+## Findings
+
+### architecture
+
+#### [A-001] P2 · S · Plausible — Two config owners fight over `.claude/`: Trellis gitignore rule defeats the SD-pack managed re-includes
+- evidence:
+  - .gitignore:27 — Trellis rule `.claude/` ignores the whole directory.
+  - .gitignore:92 — SD-pack managed block re-includes `.claude/commands/sd/*.md` (lines 93–95), defeated by line 27.
+  - .sd-ai-command-pack/installed-targets.txt:1 — receipt claims 21 `.claude/*` targets; `git ls-files .claude` → 0 (vs 21 tracked `.gemini` twins).
+  - scripts/sd-ai-command-pack-install-audit.py:489 — pack's own audit flags this receipts-vs-worktree mismatch on a fresh clone.
+- why: Dogfood state is irreproducible for the primary platform; fresh clones lack all Claude sd/trellis surfaces yet carry receipts claiming them.
+- fix: Pick one owner: narrow .gitignore:27 so managed re-includes work, or stop claiming `.claude` in the install receipts.
+
+#### [A-002] P2 · M · Plausible — Shipped skill payload AST-parses `installer/registry.py` of reviewed checkouts, making an internal module an unversioned cross-repo contract
+- evidence:
+  - templates/skills/se-review-skills/scripts/skill_review.py:325 — `_parse_registry(package_root / "installer" / "registry.py")` AST-parses internal module shapes.
+  - templates/skills/se-review-skills/scripts/skill_review.py:341 — hard-codes both repos' template layouts plus sibling-repo internals (:403) and FIRST_PARTY_REMOTES (:34).
+- why: Any refactor of registry.py or either repo's layout silently breaks already-installed copies (fleet version skew).
+- fix: Export a machine-readable registry snapshot (versioned JSON) and have skill_review.py consume that instead of parsing module source.
+
+#### [A-003] P3 · S · Plausible — Generated catalog lives inside the declared source-of-truth tree
+- evidence:
+  - .github/scripts/generate-skill-surfaces.py:52 — HELP_CATALOG_PATH points into templates/skills/_shared/references/.
+  - templates/skills/_shared/references/skill-catalog.md:1 — "Generated … do not edit" banner committed under templates/.
+  - README.md:426 — README declares templates/skills/ "the only place skills are edited".
+- why: Source/generated boundary is inverted for one file; hand edits under the "edit here" tree get clobbered by `make generate`.
+- fix: Emit the catalog under generated/ (and repoint the se-help manifest row), or document the single exception where the boundary is declared.
+
+#### [A-004] P3 · M · Plausible — Repo-own tooling has no directory of its own; interleaved with vendored SD-pack and Trellis files
+- evidence:
+  - scripts/se-ai-command-pack-skill-review.py:1 — cross-check vs installed-targets.txt: 17 of 19 scripts/ files are SD-pack-installed; only 2 are repo-own.
+  - Makefile:14 — core build pipeline lives at .github/scripts/ beside 21 SD-installed prompts and Trellis-owned files.
+  - CONTRIBUTING.md:1 — contribution workflow never distinguishes editable source from installed vendored files.
+- why: Contributors cannot tell editable source from installed product; local edits to vendored files are silently clobbered by the next pack update.
+- fix: Give repo-own tooling one home and list the vendored do-not-edit path families in CONTRIBUTING.md.
+
+#### [A-005] P3 · S · Plausible — Two vendored workflow systems expose parallel entry points for the same workflows with divergent routing guidance
+- evidence:
+  - AGENTS.md:13 — Trellis-managed block routes to /trellis:finish-work, /trellis:continue; never mentions sd:* wrappers.
+  - .agents/skills/sd-finish-work/SKILL.md:11 — sd-finish-work wraps trellis-finish-work and overrides its journal step.
+  - .gemini/commands/sd/finish-work.toml:1 — both sd/ and trellis/ command surfaces installed side by side on every platform.
+- why: An agent following AGENTS.md bypasses the SD pack's added recording/gating steps, so session records diverge by entry point.
+- fix: Make one entry point canonical per platform (amend the routing doc from the SD install or suppress the shadowed trellis surface).
+
+### design
+
+#### [A-006] P2 · M · Plausible — Same skill-argument names carry conflicting meanings and vocabularies across the 53-skill interface
+- evidence:
+  - templates/skills/se-research/SKILL.md:37 — `sources=N` is a count here; ~20 sibling skills use `sources=` for a locator list; se-digest calls it `inputs=`, se-technical-editor `input=`.
+  - templates/skills/se-monitor/SKILL.md:46 — one verbosity axis spelled `length=`, `detail=` (se-watchlist:48), `depth=` (se-handoff:38), `format=` (se-thread-digest:38) with ~10 value vocabularies across 40+ skills.
+  - tests/test_skills.py:144 — unknown-argument stop rule makes a name learned on one skill a hard error on the next.
+- why: The key=value surface is the pack's primary UI; identical concepts differ per skill and one name changes type, while the stop rule punishes transfer.
+- fix: Define a pack-wide argument vocabulary (one name + value set per axis; rename `sources=N` → `min_sources=`) and enforce reserved names in generator validation.
+
+#### [A-007] P2 · S · Plausible — SHARED_REFERENCES fan-out is a hand-maintained 50-name opt-in list with no citation-closure validation
+- evidence:
+  - installer/registry.py:292 — source-standards.md consumer tuple enumerates 50 of 53 skills individually; every skill addition must remember the append.
+  - .github/scripts/generate-skill-surfaces.py:326 — validate_skills never checks that a skill citing references/<basename>.md is registered to receive it.
+  - tests/test_skills.py:365 — only the forward direction is enforced; reverse closure holds today by discipline (ad-hoc scan: no dangling citations).
+- why: Forgetting the registry append is silent: the skill ships fleet-wide citing a references/ file that never installs, and no gate fails.
+- fix: In validate_skills, fail on citations that are neither own resources nor registered fan-out; or invert to an opt-out exclusion set.
+
+#### [A-008] P3 · S · Plausible — `--platform` promise not honored for always/if-not-exists manifest rows
+- evidence:
+  - install.py:100 — --platform help promises "Install only this platform's skills".
+  - installer/fileops.py:137 — selected_files selects every ALWAYS_INSTALL/IF_NOT_EXISTS row before consulting platform_filter.
+  - .github/scripts/generate-skill-surfaces.py:594 — generator preserves static rows — the seam where such rows will arrive (mismatch latent today: all 378 rows are if-anchor-exists).
+- why: Declared flag contract and selection logic diverge; the first static row added will ignore --platform unnoticed.
+- fix: Apply the platform filter before the install-mode shortcut, or amend the --platform help text.
+
+#### [A-009] P3 · S · Plausible — skill_review.py defines the same path-containment predicate twice under two names
+- evidence:
+  - templates/skills/se-review-skills/scripts/skill_review.py:211 — _is_relative_to(path, parent).
+  - templates/skills/se-review-skills/scripts/skill_review.py:1545 — _is_within(path, root) — byte-identical body; both load-bearing (:509, :1690).
+- why: Two names for one concept in a 1950-line security-sensitive module invite divergence and complicate audit.
+- fix: Keep one helper and use it at every call site.
+
+#### [A-010] P3 · M · Plausible — Two divergent frontmatter grammars parse the same SKILL.md artifacts
+- evidence:
+  - .github/scripts/generate-skill-surfaces.py:161 — parse_frontmatter: yaml.safe_load + strict validation — the grammar that gates what ships.
+  - templates/skills/se-review-skills/scripts/skill_review.py:412 — hand-rolled parser (first-colon split, ast.literal_eval unquoting) applied to the same files on consumer machines.
+  - templates/skills/se-review-skills/scripts/skill_review.py:1532 — divergence only partially disclosed as a coverage limit.
+- why: Parallel grammars can classify metadata differently from what the generator validated, so the shipped reviewer may misreport guaranteed keys/values.
+- fix: Declare the YAML grammar authoritative; make the shipped parser a strict subset that rejects out-of-grammar constructs, with a shared conformance test.
+
+#### [A-011] P3 · S · Plausible — default_file_mode mutates process umask as a hidden side effect
+- evidence:
+  - installer/fileops.py:68 — query-named exported helper executes os.umask(0) then restores it; called per installed file from atomic_write_bytes (:106).
+- why: A getter-shaped helper briefly zeroes the umask on every write — thread-hostile (concurrent open could create 0666/0777 files).
+- fix: Read the umask once at process start into a module constant, or document the temporary mutation.
+
+### correctness
+
+#### [A-012] P2 · M · Plausible — Stale-lock recovery race can delete a competitor's fresh lock, letting two work-loop runs acquire the same exclusive lock
+- evidence:
+  - scripts/sd-ai-command-pack-work-loop.py:937 — acquire_lock judges the lock stale, unlink()s by path, then re-creates — no identity re-check at unlink time.
+  - scripts/sd-ai-command-pack-work-loop.py:1011 — acquire_terminal_lock repeats the same unlink-by-path-then-recreate pattern.
+  - .agents/skills/sd-work-backlog/SKILL.md:108 — shipped skill instructs --recover-stale-lock, making concurrent recovery realistic.
+- why: Two processes reading the same stale lock race: the slower unlink removes the winner's fresh lock, so both run autonomous sessions until the next heartbeat check.
+- fix: Verify identity at delete time (rename + content check, or st_ino compare) before recreating. Upstream fix in the sd-ai-command-pack source.
+
+#### [A-013] P3 · S · Plausible — install.py update runs network git (fetch/pull) with no timeout — the only unbounded subprocess path in the pack
+- evidence:
+  - installer/management.py:110 — _run_git: subprocess.run with no timeout.
+  - installer/management.py:190 — update_pack runs fetch (:164) and pull --ff-only — can block indefinitely on a wedged remote.
+  - scripts/sd_ai_command_pack_lib.py:10 — every other subprocess wrapper sets a bound (60s/20s), making management.py the outlier.
+- why: A stalled network hangs `install.py update` forever; the inconsistency is an easy hang to inherit in automation.
+- fix: Add timeout=60 and convert TimeoutExpired into the existing clean SystemExit error message.
+
+#### [A-014] P3 · S · Plausible — create-release-tag.py crashes with a raw traceback on git timeout or missing git in the CI auto-tag job
+- evidence:
+  - .github/scripts/create-release-tag.py:21 — run_git passes a timeout but nothing catches TimeoutExpired/FileNotFoundError.
+  - .github/scripts/check-release-payload.py:47 — sibling gate script converts both into its clean GateError contract — the tag script diverges.
+  - .github/workflows/tests.yml:95 — runs with --push on every main push, so the ugly failure surfaces in CI.
+- why: A transient stall during tagging fails the job with a stack trace instead of the documented `error:` message.
+- fix: Mirror check-release-payload.py's exception handling.
+
+#### [A-015] P3 · S · Plausible — Housekeeping review-thread pagination loop is unbounded and can spin forever on a repeating GraphQL cursor
+- evidence:
+  - scripts/sd-ai-command-pack-housekeeping.sh:529 — `while [ "$has_next_page" = "true" ]` with no page cap.
+  - scripts/sd-ai-command-pack-housekeeping.sh:554 — only the empty-cursor case is guarded; a repeated non-empty endCursor loops indefinitely.
+- why: One API pagination glitch turns auto-merge gating into an infinite network loop.
+- fix: Cap pages or break on repeated endCursor, treating overflow as "failed to inspect review threads" (skip auto-merge). Upstream fix.
+
+#### [A-016] P3 · S · Plausible — work-loop atomic_write_json failure path double-closes a descriptor already closed by fdopen
+- evidence:
+  - scripts/sd-ai-command-pack-work-loop.py:570 — except-cleanup calls os.close(descriptor) even after fdopen took ownership and closed it (e.g. failed os.replace at :564).
+  - templates/skills/se-review-skills/scripts/skill_review.py:1738 — the repo's own shipped code demonstrates the correct descriptor=-1 handoff.
+- why: Benign single-threaded, but in any threaded embedding the stale close can shut an unrelated reused fd; misstates the ownership invariant.
+- fix: Adopt the skill_review.py handoff (mark descriptor unowned once fdopen succeeds). Upstream fix.
+
+### security
+
+#### [A-017] P2 · S · Plausible — install.py update runs git and executes install.py from an unverified path recorded in the install receipt
+- evidence:
+  - installer/management.py:96 — source_root comes straight from provenance.json sourceRoot, a plain JSON file with no integrity protection.
+  - installer/management.py:98 — only forgeable checks before use (install.py exists, manifest parses, name matches).
+  - installer/management.py:190 — git pull on that path, then subprocess-executes its install.py (:192, :209); dispatch at install.py:324 bypasses other validation.
+- why: Anyone able to write one JSON file under the install root (or hand the CLI a crafted --root) escalates to arbitrary code execution on the next update; the pull also runs that checkout's git hooks/config.
+- fix: Require recorded sourceRoot to equal the running checkout unless explicitly confirmed; refuse paths not a git repo owned by the current user.
+
+#### [A-018] P2 · S · Plausible — Toolchain resolver points Python bytecode and uv tool dirs at shared, non-user-scoped /tmp paths
+- evidence:
+  - scripts/sd-ai-command-pack-toolchain.sh:392 — PYTHONPYCACHEPREFIX/UV_CACHE_DIR/UV_TOOL_DIR/RUFF_CACHE_DIR set to ${TMPDIR:-/tmp}/sd-ai-command-pack-* with no UID qualification.
+  - scripts/sd-ai-command-pack-shell-lib.sh:165 — sibling helper does it correctly (…-${UID:-unknown}); update_repomix:12 too — toolchain.sh is the outlier.
+  - docs/SD_AI_COMMAND_PACK.md:1290 — the unqualified pattern is documented for every consumer repo.
+- why: On a multi-user host another local user can pre-create /tmp/sd-ai-command-pack-pycache and have planted bytecode or tool binaries executed under this user's identity.
+- fix: Qualify the /tmp fallback with ${UID} as prepare_gito_uv_env does; create dirs 0700 and fail on foreign ownership. Upstream fix + doc update.
+
+#### [A-019] P3 · S · Plausible — --backup copies follow symlinks and drop the source file's permission bits
+- evidence:
+  - installer/fileops.py:409 — shutil.copyfile follows symlinks and creates the .bak with umask-default mode, never the source's.
+  - installer/fileops.py:181 — check-then-use window between next_backup_path validation and the later open.
+  - installer/fileops.py:309 — with --force --backup a symlinked target's content is copied into a pack-owned path.
+- why: A 0600 file gets a 0644 .bak, and a symlink planted in the window redirects the write; not reachable today but the one non-symlink-safe write in the installer.
+- fix: Open the backup with O_CREAT|O_EXCL|O_NOFOLLOW and copy into the descriptor; apply the source's mode.
+
+### testing
+
+#### [A-020] P2 · M · Plausible — No coverage measurement or floor in any gate (make test and CI run bare unittest)
+- evidence:
+  - Makefile:24 — test target is bare `unittest discover`.
+  - .github/workflows/tests.yml:32 — CI likewise; no coverage step or threshold in any lane.
+  - requirements-dev.txt:3 — no coverage tool in dev deps.
+- why: With heavy autonomous development, CI gives zero signal when new branches land untested; untested code merges green silently.
+- fix: Add coverage.py with a floor scoped to installer/, install.py, and .github/scripts; fail CI below it.
+
+#### [A-021] P3 · S · Plausible — Subprocess git tests inherit the developer's global git config (signing, templates, hooks)
+- evidence:
+  - tests/test_release_gate.py:17 — git() helper with no env scrubbing; setUp commits and pushes to a bare origin.
+  - tests/test_skill_review.py:904 — raw `git init -q` (also :1238); no GIT_CONFIG_GLOBAL/SYSTEM/HOME isolation anywhere in tests/.
+- why: make test fails or runs user hooks on machines with common git configs while CI stays green.
+- fix: Set GIT_CONFIG_GLOBAL=/dev/null and GIT_CONFIG_SYSTEM=/dev/null (or HOME=temp) in the git helpers.
+
+#### [A-022] P3 · M · Plausible — `update` is the only installer lifecycle command with no real end-to-end test
+- evidence:
+  - tests/test_management.py:108 — update tests patch _run_git/subprocess.run and assert only mock call args.
+  - installer/management.py:146 — real flow mutates the user's checkout and re-execs install.py — never exercised against a real repo, unlike install/remove e2e.
+- why: Regressions in the real git interplay or re-exec handshake pass CI because only mock sequencing is asserted.
+- fix: Add one e2e in the ReleaseTagTest style: temp clone + local bare origin one commit ahead, run update, assert pull + refresh.
+
+### documentation
+
+#### [A-023] P2 · S · Plausible — `generated/skills/` payload surface undocumented; manifest schema and CONTRIBUTING payload definition are stale (merged: documentation + release-hygiene)
+- evidence:
+  - docs/SE_AI_COMMAND_PACK.md:848 — schema claims `source` is "under templates/" — false for 52 manifest rows sourcing generated/skills/claude/.
+  - README.md:430 — "make generate regenerates … " lists three surfaces, omitting generated/; Layout table has no generated/ row.
+  - CONTRIBUTING.md:14 — payload definition says "templates/** or manifest.json", missing generated/** which the gate has enforced since a267be0.
+  - manifest.json:39 — `"source": "generated/skills/claude/…"` (52 rows); the overlay commit touched only .trellis spec docs.
+- why: 52 shipped payload files and their runtime-overlay mechanism are invisible in every maintainer-facing doc, and the schema reference is factually wrong.
+- fix: Add a generated/skills/ layout row, correct the schema `source` row and surface lists, extend CONTRIBUTING's payload definition and never-hand-edit rule.
+
+#### [A-024] P2 · S · Plausible — Contributor docs omit the `make setup` prerequisite, so the documented maintainer flow fails on a fresh clone
+- evidence:
+  - README.md:440 — "Maintaining the pack" steps start at editing + make generate; CONTRIBUTING.md workflow never mentions make setup.
+  - .github/scripts/generate-skill-surfaces.py:22 — fresh-clone run → ModuleNotFoundError: yaml (PyYAML only via make setup).
+  - Makefile:2 — RUN_PYTHON falls back to system python3 when .venv is absent.
+- why: The first documented contributor command crashes on any machine that has not run the never-mentioned setup target.
+- fix: Add step 0 "make setup" to README's maintaining section and CONTRIBUTING's workflow.
+
+### bloat
+
+#### [A-025] P2 · M · Plausible — Committed 1 MB generated repomix map: ~45% of history weight, freshness enforced only by manual chore (merged: bloat + improvements)
+- evidence:
+  - docs/repomix-map.md:1 — 983.7 KB generated file; largest tracked blob (~16% of worktree bytes).
+  - docs/repomix-map.md — history: 114 blobs, 23.06 MiB compressed of a 51 MB .git (~45%); 50 of 475 commits touch it.
+  - .trellis/spec/backend/quality-guidelines.md:1130 — spec mandates regenerating + committing it, with no --check gate (tests/test_repomix.py asserts scope only).
+  - scripts/sd-ai-command-pack-install-audit.py:246 — tooling already treats the map as optional context; consumers read it only "when present".
+- why: One regenerable artifact dominates clone/fetch cost and grows ~1 MB per regeneration, while drifting silently whenever the manual step is skipped.
+- fix: Decide the policy: gitignore it and generate on demand via make repomix (preferred), or add a --check freshness gate; update quality-guidelines.md + README either way.
+
+#### [A-026] P3 · S · Plausible — Unreferenced repo-root wrapper scripts/se-ai-command-pack-skill-review.py is dead code
+- evidence:
+  - scripts/se-ai-command-pack-skill-review.py:9 — 18-line runpy forwarder, never wired anywhere since 2026-07-21.
+  - git grep — only hits are an archived task and the generated repomix map; zero in manifest, Makefile, CI, docs, or any SKILL.md; tests load skill_review.py directly.
+- why: A dead entry point nothing installs, tests, or documents; drifts silently and misleads readers about invocation.
+- fix: Delete it, or document + test it if repo-root invocation is wanted.
+
+### performance
+
+#### [A-027] P2 · M · Plausible — Fleet status collects each consumer repo serially, stacking subprocess and network latency
+- evidence:
+  - scripts/sd-ai-command-pack-status.py:1547 — collect_fleet iterates consumers with no concurrency.
+  - scripts/sd-ai-command-pack-status.py:967 — 2 serial gh calls per repo plus up to 3 more on feature branches; 20s timeout each (:23); ~12 git subprocesses per repo (:242–311).
+- why: A 10–20 repo fleet takes 15–40s, and degraded network stacks 20s timeouts serially per repo.
+- fix: Run collect_local per consumer in a small ThreadPoolExecutor; keep output in registry order. Upstream fix.
+
+#### [A-028] P2 · M · Plausible — review-learnings fetches Copilot comments with one gh GraphQL subprocess per PR (N+1)
+- evidence:
+  - scripts/sd-ai-command-pack-review-learnings.py:1174 — per-PR gh api graphql spawn (120s timeout each).
+  - .agents/skills/sd-review-learnings/SKILL.md:39 — documented invocation runs --github-days 2 --update every run; measured merge cadence (15–29/day) → ~30–45 serial spawns per run.
+- why: Dozens of serial network subprocesses per run at the repo's own cadence, growing toward secondary-rate-limit territory.
+- fix: Batch PR numbers into one GraphQL request via aliases (15–25 per query). Upstream fix.
+
+#### [A-029] P3 · S · Plausible — review-preflight recomputes changed-path discovery and base-ref resolution for every check
+- evidence:
+  - scripts/sd-ai-command-pack-review-preflight.mjs:2040 — currentChangedPaths() spawns 3 git diffs + ls-files per call; called independently at :485, :598, :935, :1281; base-ref discovery repeated at :1113, :1889, :2000.
+  - scripts/sd-ai-command-pack-review-preflight.mjs:15 — per-run memoization is the established pattern for other caches.
+- why: Every review-local/full-check run pays ~14–24 redundant git spawns recomputing byte-identical results.
+- fix: Memoize base-ref and changed-paths in per-run module caches, reset in runReviewPreflight(). Upstream fix.
+
+#### [A-030] P3 · S · Plausible — review-scope classifier forks a grep plus subshells per changed file against installed-targets.txt
+- evidence:
+  - scripts/sd-ai-command-pack-review-scope.sh:127 — per-file `grep -Fxq` plus ~3 command-substitution subshells per file (:259–273).
+  - scripts/sd-ai-command-pack-full-check.sh:466 — full-check runs it directly and again via review-preflight, doubling cost; 378-target refresh diffs pay ~1.5–3s twice.
+- why: Routine pack-refresh branches pay seconds of pure fork overhead for a membership test one process could answer.
+- fix: Load installed-targets.txt once into an associative array (or one grep -Fxf pass). Upstream fix.
+
+### dependencies
+
+#### [A-031] P2 · S · Plausible — No dependency-update or CVE-audit path; dogfooded sd-update-deps workflow is inert without a bot config
+- evidence:
+  - requirements-dev.txt:3 — exact pins committed once, never moved; no pip-audit/osv anywhere.
+  - .agents/skills/sd-update-deps/SKILL.md:14 — workflow triages bot PRs only, but no .github/dependabot.yml or renovate config exists.
+  - .github/workflows/tests.yml:31 — CI installs pins with no audit lane.
+- why: Pinned dev deps age silently and toolchain CVEs go unseen; the pack's own update workflow can never fire here.
+- fix: Add .github/dependabot.yml for pip (requirements-dev.txt) and npm (.opencode); optionally a scheduled pip-audit lane.
+
+#### [A-032] P3 · S · Plausible — .opencode/package.json declares an unused, floating @opencode-ai/plugin with no lockfile
+- evidence:
+  - .opencode/package.json:3 — "^1.14.39", no lockfile tracked.
+  - .opencode/lib/session-utils.js:2 — all tracked .opencode JS imports only node builtins; nothing references the package.
+  - .gitignore:52 — node_modules ignored, so OpenCode auto-installs a fresh floating 1.x per machine.
+- why: Every machine opening the repo in OpenCode fetches an unpinned package nothing imports — needless supply-chain surface.
+- fix: Remove the dependency; if kept for editor types, pin exact + commit the lockfile.
+
+#### [A-033] P3 · S · Plausible — requirements-dev.txt pins only top-level packages; mypy transitives float unpinned and unhashed
+- evidence:
+  - requirements-dev.txt:5 — 3 top-level pins; local freeze shows 5 unpinned transitives via mypy.
+  - .github/workflows/tests.yml:43 — plain pip install across a 3.10/3.13 matrix — transitive sets differ per lane and per day.
+- why: A bad transitive release breaks CI non-reproducibly; installs have no integrity hashes. Dev-only blast radius.
+- fix: Compile a fully pinned (ideally hash-locked) requirements file and use it in CI and make setup.
+
+#### [A-034] P3 · S · Plausible — repomix docs refresh executes npx --yes with unlocked transitive tree and install scripts enabled
+- evidence:
+  - scripts/update_repomix:24 — `npx --yes repomix@1.16.1` — direct pin, but transitives resolve fresh with lifecycle scripts on.
+  - README.md:463 — the pattern is documented as intentional; only the transitive/scripts exposure is unaddressed.
+- why: Maintainer machines run a freshly resolved, unlocked npm tree with install scripts enabled; the direct pin does not make it reproducible.
+- fix: Add --ignore-scripts, or move behind a committed package-lock + npm ci; otherwise record the risk as accepted.
+
+### tooling
+
+#### [A-035] P2 · S · Plausible — Local release-payload gate goes vacuous once changes are committed; CI is the first real check
+- evidence:
+  - Makefile:32 — release-check runs check-release-payload.py with no --base (default HEAD = uncommitted work only).
+  - .github/scripts/check-release-payload.py:176 — help text confirms; after a commit the local gate passes vacuously.
+  - .github/workflows/tests.yml:60 — CI passes the PR base, checking the range local runs skip; the vendored full-check version gate self-skips on manifest-name mismatch (full-check.sh:595).
+- why: A payload change committed without a version bump passes make check / npm run check:full green and fails only at PR CI, costing round-trips.
+- fix: Pass --base origin/main (or merge-base) in make release-check when resolvable, falling back to HEAD.
+
+#### [A-036] P2 · S · Plausible — Shipped payload Python (skill_review.py) sits outside every ruff/mypy gate — tools find real defects immediately (merged: tooling + improvements)
+- evidence:
+  - Makefile:27 — ruff scope is install.py installer tests .github/scripts (mypy narrower); tests.yml:44–45 mirrors it; skill_review.py (1952 lines, the pack's only shipped executable) is in neither.
+  - templates/skills/se-review-skills/scripts/skill_review.py:297 — ruff finds B905 (zip without strict).
+  - templates/skills/se-review-skills/scripts/skill_review.py:673 — mypy finds 2 real type errors (:673, :268).
+- why: The one Python file that runs on consumer machines is the least-guarded Python surface in the repo; each tool immediately finds real issues.
+- fix: Add the path (and its wrapper, if kept) to ruff + mypy in Makefile and tests.yml, then fix the three findings.
+
+#### [A-037] P3 · S · Plausible — Release-payload gate is PR-only while auto-tag-release fires on any push to main (merged: tooling + consumer-impact)
+- evidence:
+  - .github/workflows/tests.yml:48 — release-payload-gate has `if: github.event_name == 'pull_request'`.
+  - .github/workflows/tests.yml:88 — auto-tag-release runs on push with needs [unittest, lint] only.
+  - .github/scripts/create-release-tag.py:57 — an existing tag is left in place, so a second payload change under the same version ships untagged; consumers pull main HEAD (installer/management.py:190).
+  - history — all recent main commits came via PRs; the bypass is latent, contingent on branch protection.
+- why: A direct push (if permitted) or same-version concurrent merges ship payload whose recorded version no longer identifies its content.
+- fix: Run check-release-payload on push (base = last release tag) as a prerequisite of auto-tag-release, and/or require up-to-date branches; or document that branch protection must forbid direct pushes.
+
+#### [A-038] P3 · S · Plausible — No pip caching in any of the five CI jobs
+- evidence:
+  - .github/workflows/tests.yml:28 — setup-python steps (:28, :40, :55) have no `cache: pip`; 5 cold installs per PR run.
+- why: Under the heavy autonomous PR cadence, repeated cold installs add real runner minutes and slow feedback.
+- fix: Add `cache: pip` with cache-dependency-path: requirements-dev.txt to each setup-python step.
+
+#### [A-039] P3 · S · Plausible — No concurrency group — superseded PR runs execute to completion
+- evidence:
+  - .github/workflows/tests.yml:1 — no `concurrency:` block in the workflow.
+- why: The work loop pushes rapid successive updates; stale 5-job pipelines waste runners and delay current results.
+- fix: Add a concurrency group keyed on workflow+ref with cancel-in-progress for PRs.
+
+### release-hygiene
+
+#### [A-040] P2 · S · Plausible — Release payload gate omits install.py/installer/, so consumer-visible installer behavior can ship without a version bump or changelog entry
+- evidence:
+  - .github/scripts/check-release-payload.py:27 — PAYLOAD_PREFIXES = templates/, generated/, manifest.json only.
+  - CHANGELOG.md:3 — the 0.64.0 entry itself documents installer behavior — the project treats installer semantics as release-worthy.
+  - history — installer-touching merges also changed manifest.json in all but one case; discipline holds by convention, not enforcement.
+- why: install.py flags, receipts, and exit codes are declared consumer contract; a silent installer fix would ship under an already-tagged version.
+- fix: Add install.py and installer/ to PAYLOAD_PREFIXES (with the registry-metadata carve-out) and update CONTRIBUTING.md.
+
+#### [A-041] P3 · S · Plausible — Changelog version 0.53.0 has no git tag; multi-bump PRs leave intermediate releases unfetchable
+- evidence:
+  - CHANGELOG.md:91 — 0.53.0 heading exists; tag comparison: 65 tags vs 66 changelog versions, only 0.53.0 missing.
+  - manifest.json history — PR #89 bumped 0.53.0 then 0.53.1 in one branch; auto-tag only tags merged main HEAD.
+- why: Breaks tags-match-changelog: an upgrader cannot check out 0.53.0; nothing prevents recurrence.
+- fix: Gate base→head to exactly one new changelog heading/version step, or collapse intra-PR bumps; optionally document the policy.
+
+#### [A-042] P3 · S · Plausible — No documented bump policy: perpetual 0.x semver with no minor-vs-patch rule and no breaking-change signal
+- evidence:
+  - docs/SE_AI_COMMAND_PACK.md:837 — "Semver; bound to CHANGELOG.md" is the only scheme statement.
+  - CHANGELOG.md:129 — 0.50.0 removes public behavior; removals are indistinguishable from feature minors (only 2 patch releases in 66).
+- why: For a fleet-installed pack, 0.x promises nothing; consumers must read every entry to spot removals.
+- fix: Document the bump rule and a Removed/Breaking bullet convention in CONTRIBUTING.md, or state 1.0 criteria.
+
+### improvements
+
+#### [A-043] P2 · M · Plausible — 42 hand-copied per-skill shared-reference tests instead of the registry-driven form already used beside them
+- evidence:
+  - tests/test_generate.py:218 — ~790-line block of structurally identical per-skill methods; 42 copies of the same comprehension.
+  - tests/test_generate.py:174 — in-repo precedent already iterates SHARED_REFERENCES × PLATFORM_REGISTRY generically.
+  - docs/SE_AI_COMMAND_PACK.md:871 — adding a skill is the highest-frequency operation (52 in ~5 weeks); each pays the manual copy.
+- why: Every new skill hand-writes the same assertion; a forgotten copy is silently uncovered — literal duplication a small shared capability removes.
+- fix: One expected-shared-sources snapshot dict plus a single subTest-driven test over SKILL_NAMES; retire the per-skill methods.
+
+### consumer-impact
+
+#### [A-044] P2 · S · Plausible — README promises `$CODEX_HOME` support the installer never implements (merged: consumer-impact + architecture + documentation + improvements — found independently by 4 reviewers)
+- evidence:
+  - README.md:360 — platform table: "codex … (honors `$CODEX_HOME`)".
+  - installer/registry.py:61 — codex PlatformInfo hard-codes .codex/skills relative to the install root; zero environ/getenv reads in install.py or installer/ (grep).
+  - docs/SE_AI_COMMAND_PACK.md:927 — operator guide states the opposite: "No environment variables are read in v0.1."
+- why: A consumer with a relocated CODEX_HOME installs skills where Codex never reads them — silent non-functionality — and the pack's two docs contradict each other.
+- fix: Implement CODEX_HOME resolution in platform selection (with a test), or delete the README claim (+ regenerate the repomix map) and document the --root/symlink workaround.
+
+## Trellis reconciliation (audit-run snapshot)
+
+- tracked-accurate at evidence collection: none — the Trellis backlog was empty (task.py list: 0 active/in-progress/planned tasks; no prd.md files to reconcile against).
+- tracked-stale at evidence collection: none.
+- untracked at evidence collection: all 44 findings. Per policy, prd-ready task proposals were drafted for the 19 untracked P2 findings, bundled into 16 proposals below. No task was created before explicit user consent.
+- post-audit disposition: after approval, this change set created the remediation planning records under `.trellis/tasks/` and archived the records superseded by upstream SD work. Use the task PRDs for the accepted finding-to-work mapping and `.trellis/audit/ledger.md` for current finding status.
+
+Proposals (title · slug · summary · acceptance sketch):
+1. Fix .claude dogfood tracking conflict · `07-25-audit-claude-gitignore-owner` · Resolve the .gitignore:27 vs managed-block fight (A-001). · Fresh clone has the receipt-claimed .claude surfaces tracked (or receipts stop claiming them); install-audit passes on a fresh clone.
+2. Resolve $CODEX_HOME contract drift · `07-25-audit-codex-home-contract` · Implement or retract the README's CODEX_HOME claim (A-044). · README, operator guide, and installer agree; if implemented, a test covers relocated CODEX_HOME.
+3. Versioned registry snapshot for skill_review · `07-25-audit-registry-snapshot-contract` · Stop AST-parsing installer/registry.py across repos (A-002). · skill_review.py consumes a committed, versioned JSON snapshot; registry refactors don't break installed copies.
+4. Pack-wide argument vocabulary · `07-25-audit-skill-arg-vocabulary` · One name + value set per argument axis across 53 skills (A-006). · Vocabulary documented; generator validation enforces reserved names; sources=N collision renamed.
+5. Shared-reference citation-closure gate · `07-25-audit-shared-reference-closure` · validate_skills fails on citations that never ship (A-007). · A skill citing an unregistered references/ file fails make generate --check and a test proves it.
+6. Fix work-loop lock recovery race · `07-25-audit-work-loop-lock-identity` · Identity-checked stale-lock deletion (A-012). · Concurrent recovery cannot delete a fresh competitor lock; regression test or documented manual verification.
+7. Harden install.py update source trust · `07-25-audit-update-source-trust` · Validate provenance sourceRoot before git/exec (A-017). · Update refuses a sourceRoot differing from the running checkout without explicit confirmation; test covers the refusal.
+8. User-scoped toolchain /tmp caches · `07-25-audit-user-scoped-tmp-caches` · UID-qualify toolchain.sh cache paths (A-018). · Cache dirs are per-UID and 0700; foreign-owned pre-existing dirs are rejected; SD doc updated.
+9. Coverage floor in CI · `07-25-audit-coverage-floor` · Measure and gate coverage for installer/, install.py, .github/scripts (A-020). · CI fails below the agreed floor; local make test prints coverage.
+10. Maintainer docs catch-up · `07-25-audit-maintainer-docs-accuracy` · Document generated/ surface, fix schema row + payload definition, add make setup step (A-023, A-024). · Fresh-clone documented flow succeeds; schema table matches manifest reality; CONTRIBUTING matches the enforced gate.
+11. Repomix map policy decision · `07-25-audit-repomix-map-policy` · Stop committing the 1 MB map or gate its freshness (A-025). · Either gitignored + on-demand generation with docs updated, or a --check drift gate wired into full-check.
+12. Fleet status parallel collection · `07-25-audit-fleet-status-parallelism` · ThreadPoolExecutor over consumers (A-027). · 10-repo fleet status wall time drops ~Nx; output order unchanged; upstream pack change rolled out.
+13. Batch review-learnings GraphQL · `07-25-audit-review-learnings-batching` · Alias-batched PR comment fetch (A-028). · One gh spawn per 15–25 PRs; identical output on a recorded fixture window.
+14. Lint gate for shipped payload Python · `07-25-audit-lint-shipped-payload` · Add skill_review.py to ruff/mypy and fix the 3 findings (A-036). · make lint + CI cover the path; B905 and both mypy errors fixed.
+15. Dependency bot + audit lane · `07-25-audit-dependabot-config` · Enable the inert sd-update-deps workflow (A-031). · dependabot.yml covers pip + npm; first bot PRs triaged through the documented workflow.
+16. Widen release gates · `07-25-audit-release-gate-scope` · Local --base default + installer payload prefixes (A-035, A-040; optionally A-037's push lane). · Committed payload change without bump fails make release-check locally; installer-only PRs require bump + changelog.
+
+## Prioritized actions
+
+1. [A-017] P2·S — Validate provenance sourceRoot before `install.py update` runs git/exec on it.
+2. [A-018] P2·S — UID-qualify the toolchain /tmp cache dirs (mode 0700) as sibling helpers already do.
+3. [A-001] P2·S — Resolve the `.claude/` gitignore ownership fight so dogfood state is reproducible.
+4. [A-044] P2·S — Implement or retract the `$CODEX_HOME` README claim; align the two contradicting docs.
+5. [A-007] P2·S — Add citation-closure validation for SHARED_REFERENCES fan-out.
+6. [A-024] P2·S — Document `make setup` in README + CONTRIBUTING (fresh-clone flow currently crashes).
+7. [A-023] P2·S — Document the generated/ payload surface; fix the stale manifest schema + payload definition.
+8. [A-035] P2·S — Make local release-check range-aware (--base origin/main) so it stops passing vacuously.
+9. [A-040] P2·S — Add install.py/installer/ to the release-payload gate.
+10. [A-036] P2·S — Put shipped skill_review.py under ruff/mypy and fix the 3 real defects found.
+11. [A-031] P2·S — Add dependabot config (pip + npm) so the dogfooded sd-update-deps workflow can fire.
+12. [A-012] P2·M — Fix the stale-lock recovery race in the work loop (identity-checked delete).
+13. [A-006] P2·M — Define and enforce a pack-wide skill-argument vocabulary.
+14. [A-002] P2·M — Replace cross-repo AST parsing of registry.py with a versioned snapshot.
+15. [A-020] P2·M — Add a coverage floor to test gates.
+16. [A-025] P2·M — Decide the repomix-map policy (stop committing, or gate freshness).
+17. [A-027] P2·M — Parallelize fleet status collection.
+18. [A-028] P2·M — Batch review-learnings GraphQL fetches.
+19. [A-043] P2·M — Replace 42 hand-copied per-skill tests with one registry-driven test.
+20. P3 items (A-003…A-005, A-008…A-011, A-013…A-016, A-019, A-021, A-022, A-026, A-029, A-030, A-032…A-034, A-037…A-039, A-041, A-042) — address opportunistically alongside adjacent work; all carried in the ledger.
+
+## Ledger delta
+
+- new: 44 (A-001 … A-044)
+- still-open: 0 (first audit — no prior ledger)
+- fixed: 0
+- regressed: 0
+
+## Coverage & limits
+
+- Dimensions skipped: observability (charter applies only to deployed services; this repo is a command pack with local scripts) · accessibility-i18n (charter applies only to user-facing frontends; none exists).
+- Verification caps: standard depth verifies P0/P1 only; zero P0/P1 findings were returned, so zero refuter agents ran and no finding could earn confidence Verified — all 44 findings carry confidence Plausible (evidenced but not adversarially verified).
+- Refuted-finding log: empty (no refutation pass was in scope).
+- Dedup log: 51 raw findings → 44 after merging 5 cross-dimension clusters — $CODEX_HOME (architecture+documentation+improvements+consumer-impact → A-044), skill_review lint gap (tooling+improvements → A-036), PR-only release gate (tooling+consumer-impact → A-037), repomix map (bloat+improvements → A-025), generated/ docs staleness (documentation+release-hygiene → A-023).
+- Reviewer health: 13/13 reviewers completed; none failed; every finding carries file:line evidence (none dropped for missing evidence).
+- Network: reviewers worked offline against the local tree; CVE status of pinned dependencies was not verifiable in-run (noted in A-031/A-033).
+- Run note: the first workflow launch aborted instantly on an orchestration args-typing bug (no reviewer had started); it was fixed and relaunched with no coverage impact.
+- Out of scope by brief: .venv/ and cache directories; committed platform copies were judged for drift/process, not flagged for being committed.
 ````
 
 ## File: .trellis/spec/backend/database-guidelines.md

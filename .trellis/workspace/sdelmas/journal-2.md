@@ -1365,3 +1365,125 @@ Created PR #105, corrected its generated-scope metadata, addressed Copilot feedb
 ### Next Steps
 
 - None - task complete
+
+
+## Session 89: First repo audit, cross-repo reconciliation, and backlog build-out
+
+**Date**: 2026-07-25
+**Task**: First repo audit, cross-repo reconciliation, and backlog build-out
+**Branch**: `codex/audit-planning-backlog`
+
+### Summary
+
+Ran the first formal sd-audit-repo pass (13 charter reviewers, 44 findings, 0 P0/P1), created the audit ledger and a 23-task remediation backlog, reconciled it with the parallel session's agent-artifacts and routed-review planning across sd-ai-command-pack and sd-github-review (coordination notes, PARKED markers, 6 tasks superseded upstream with SD-side mirrors), cleared stale work-loop and session-pointer state, and committed all three repos' planning artifacts locally.
+
+### Main Changes
+
+- Audit: .trellis/audit/report-2026-07-25.md + ledger.md — 44 findings (19 P2, 25 P3), all covered by active tasks across the two packs
+- Backlog: 23 audit-* tasks created (planning, no-start), including audit-cross-pack-defect-alignment; 6 upstream-vendored tasks archived as superseded, mirrored in sd-ai-command-pack
+- Cross-program coordination notes added to agent-artifacts PRDs here and in sd-ai-command-pack; PARKED convention applied to blocked review-ops tasks; sd-github-review cheap tree brought to dependency discipline with intended-start-order notes
+- Runtime hygiene: cleared stale work-loop states (3 repos), stale fleet-timing record, and stale current-task session bindings in both packs
+- Recorded local commits in sd-ai-command-pack (d97244e) and sd-github-review (2eeca60, stacked on qwen branch)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5e08377` | chore: record first repo audit and planning backlog (2026-07-25) |
+
+### Testing
+
+- [OK] sd-status collector exit 0 (healthy) before and after changes
+- [OK] ledger-to-task coverage check: 44/44 findings mapped to active tasks, zero orphans
+- [OK] dependency-reference check across edited PRDs: all task slugs resolve, no dangling references
+- [OK] task.py list clean in all three repos; no active task; working trees committed clean
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 90: Create and review audit planning backlog PR
+
+**Date**: 2026-07-25
+**Task**: Create and review audit planning backlog PR
+**Branch**: `codex/audit-planning-backlog`
+
+### Summary
+
+Created PR #106 for the first repository audit and remediation backlog, repaired task scaffolds and audit-ID traceability, and converged local, Copilot, and CI review gates.
+
+### Main Changes
+
+- Refreshed docs/repomix-map.md and the 429-file Obsidian knowledge-base copy for the audit artifacts.
+- Removed generated _example rows from 70 planning-task context files so Trellis review preflight passes.
+- Normalized the A-010 audit reference, replied to and resolved the Copilot thread, and completed a clean exact-head review.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6fa42aa` | docs: refresh repository map for audit backlog |
+| `ee161b2` | fix: remove generated task scaffold rows |
+| `a0436ec` | fix: normalize audit finding reference |
+
+### Testing
+
+- [OK] Deterministic review full-check passed with 517 tests, Ruff, mypy, generation, release, install-audit, KB, and scope gates.
+- [OK] Preflight validated 35 task metadata records and 70 task context files; no boundary-risk categories applied.
+- [OK] Copilot round 1 produced no new comments on a0436ec; all review threads resolved and GitHub CI passed.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 91: Review audit planning backlog PR
+
+**Date**: 2026-07-25
+**Task**: Review audit planning backlog PR
+**Branch**: `codex/audit-planning-backlog`
+
+### Summary
+
+Converged PR #106 through four exact-head Copilot review rounds, correcting audit reconciliation timing, proposal-to-task identifiers, and the journal backlog count; all review threads are resolved and CI is green.
+
+### Main Changes
+
+- Time-scoped the audit reconciliation section and pointed current readers to the accepted task PRDs and ledger.
+- Aligned all 16 audit proposal slugs with the exact active or archived Trellis task directory IDs and regenerated the repository map.
+- Corrected the Session 89 remediation-backlog count and made the cross-pack task's inclusion explicit.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `752f4b8` | fix: clarify audit reconciliation timeline |
+| `61899a0` | fix: align audit proposal task ids |
+| `2be2eab` | fix: correct audit backlog count |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh (517 tests, lint, mypy, generated surfaces, install audit, KB freshness, and scope checks)
+- [OK] Copilot round 4 reviewed exact head 2be2eab with no new comments after the settle window
+- [OK] GitHub CI green and GraphQL reviewThreads returned no unresolved threads on exact head 2be2eab
+- [OK] review-learnings dry-run captured four historical comments and recommended deterministic task-metadata validation
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
