@@ -22,12 +22,12 @@ Install and verify the immutable sd-ai-command-pack 0.54.0 release for SE AI Com
 ## Acceptance Criteria
 
 - [ ] Installation provenance reports version `0.54.0`, and the install audit
-      passes for Claude, Gemini, GitHub, and OpenCode.
+  passes for Claude, Gemini, GitHub, and OpenCode.
 - [ ] The housekeeping self-test passes for the installed candidate.
 - [ ] `make check` passes for the exact candidate.
 - [ ] Review findings and required CI checks converge on the published PR head.
 - [ ] Finish-work validates the completion bundle, archives this task, records
-      the session journal, and leaves the merged repository clean and synced.
+  the session journal, and leaves the merged repository clean and synced.
 
 ## Notes
 
