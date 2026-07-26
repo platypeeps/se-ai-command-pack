@@ -1406,3 +1406,43 @@ Ran the first formal sd-audit-repo pass (13 charter reviewers, 44 findings, 0 P0
 ### Next Steps
 
 - None - task complete
+
+
+## Session 90: Create and review audit planning backlog PR
+
+**Date**: 2026-07-25
+**Task**: Create and review audit planning backlog PR
+**Branch**: `codex/audit-planning-backlog`
+
+### Summary
+
+Created PR #106 for the first repository audit and remediation backlog, repaired task scaffolds and audit-ID traceability, and converged local, Copilot, and CI review gates.
+
+### Main Changes
+
+- Refreshed docs/repomix-map.md and the 429-file Obsidian knowledge-base copy for the audit artifacts.
+- Removed generated _example rows from 70 planning-task context files so Trellis review preflight passes.
+- Normalized the A-010 audit reference, replied to and resolved the Copilot thread, and completed a clean exact-head review.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6fa42aa` | docs: refresh repository map for audit backlog |
+| `ee161b2` | fix: remove generated task scaffold rows |
+| `a0436ec` | fix: normalize audit finding reference |
+
+### Testing
+
+- [OK] Deterministic review full-check passed with 517 tests, Ruff, mypy, generation, release, install-audit, KB, and scope gates.
+- [OK] Preflight validated 35 task metadata records and 70 task context files; no boundary-risk categories applied.
+- [OK] Copilot round 1 produced no new comments on a0436ec; all review threads resolved and GitHub CI passed.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
