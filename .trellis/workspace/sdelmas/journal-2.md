@@ -1375,12 +1375,12 @@ Created PR #105, corrected its generated-scope metadata, addressed Copilot feedb
 
 ### Summary
 
-Ran the first formal sd-audit-repo pass (13 charter reviewers, 44 findings, 0 P0/P1), created the audit ledger and a 24-task remediation backlog, reconciled it with the parallel session's agent-artifacts and routed-review planning across sd-ai-command-pack and sd-github-review (coordination notes, PARKED markers, 6 tasks superseded upstream with SD-side mirrors), cleared stale work-loop and session-pointer state, and committed all three repos' planning artifacts locally.
+Ran the first formal sd-audit-repo pass (13 charter reviewers, 44 findings, 0 P0/P1), created the audit ledger and a 23-task remediation backlog, reconciled it with the parallel session's agent-artifacts and routed-review planning across sd-ai-command-pack and sd-github-review (coordination notes, PARKED markers, 6 tasks superseded upstream with SD-side mirrors), cleared stale work-loop and session-pointer state, and committed all three repos' planning artifacts locally.
 
 ### Main Changes
 
 - Audit: .trellis/audit/report-2026-07-25.md + ledger.md — 44 findings (19 P2, 25 P3), all covered by active tasks across the two packs
-- Backlog: 23 audit-* tasks + audit-cross-pack-defect-alignment created (planning, no-start); 6 upstream-vendored tasks archived as superseded, mirrored in sd-ai-command-pack
+- Backlog: 23 audit-* tasks created (planning, no-start), including audit-cross-pack-defect-alignment; 6 upstream-vendored tasks archived as superseded, mirrored in sd-ai-command-pack
 - Cross-program coordination notes added to agent-artifacts PRDs here and in sd-ai-command-pack; PARKED convention applied to blocked review-ops tasks; sd-github-review cheap tree brought to dependency discipline with intended-start-order notes
 - Runtime hygiene: cleared stale work-loop states (3 repos), stale fleet-timing record, and stale current-task session bindings in both packs
 - Recorded local commits in sd-ai-command-pack (d97244e) and sd-github-review (2eeca60, stacked on qwen branch)
