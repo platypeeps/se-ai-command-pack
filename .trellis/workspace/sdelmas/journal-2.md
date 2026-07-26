@@ -1487,3 +1487,44 @@ Converged PR #106 through four exact-head Copilot review rounds, correcting audi
 ### Next Steps
 
 - None - task complete
+
+
+## Session 92: Refresh sd-ai-command-pack to 0.54.0
+
+**Date**: 2026-07-26
+**Task**: Refresh sd-ai-command-pack to 0.54.0
+**Branch**: `codex/refresh-sd-ai-command-pack-0-54-0`
+
+### Summary
+
+Installed the immutable v0.54.0 command-pack payload across all configured adapters, validated the consumer, and prepared PR #107 for the fleet merge tail.
+
+### Main Changes
+
+- Created and activated a dedicated Trellis task bound to the refresh branch before installation.
+- Refreshed Claude, Gemini, GitHub, and OpenCode managed surfaces to vouched sd-ai-command-pack v0.54.0 payloads.
+- Published PR #107 with explicit tooling/generated scope and completed exact-head review convergence.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `20a4c7ecaf40d9631a3cf9a12907f72b428164ef` | chore(task): start command pack refresh |
+| `fc25638b1eb1a1ad21c175fb0f891b35cec87970` | chore: refresh sd-ai-command-pack to 0.54.0 |
+
+### Testing
+
+- [OK] Install audit passed for 174 targets with v0.54.0 provenance.
+- [OK] Housekeeping self-test passed all merge-guard scenarios.
+- [OK] make check passed 517 tests, Ruff, mypy, generated surfaces, and release payload validation.
+- [OK] Typed sd-check passed 7/7 checks after refreshing the ignored Obsidian KB.
+- [OK] GitHub CI passed and reviewThreads returned no unresolved threads.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
