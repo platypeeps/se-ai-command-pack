@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 90
+- **Total Sessions**: 91
 - **Last Active**: 2026-07-25
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1446 | Active |
+| `journal-2.md` | ~1486 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 91 | 2026-07-25 | Review audit planning backlog PR | `752f4b8`, `61899a0`, `2be2eab` | `codex/audit-planning-backlog` |
 | 90 | 2026-07-25 | Create and review audit planning backlog PR | `6fa42aa`, `ee161b2`, `a0436ec` | `codex/audit-planning-backlog` |
 | 89 | 2026-07-25 | First repo audit, cross-repo reconciliation, and backlog build-out | `5e08377` | `codex/audit-planning-backlog` |
 | 88 | 2026-07-23 | Review installer documentation contract PR | `4e4d91f`, `3d6d5d4` | `codex/installer-documentation-contract-checks` |

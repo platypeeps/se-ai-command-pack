@@ -1446,3 +1446,44 @@ Created PR #106 for the first repository audit and remediation backlog, repaired
 ### Next Steps
 
 - None - task complete
+
+
+## Session 91: Review audit planning backlog PR
+
+**Date**: 2026-07-25
+**Task**: Review audit planning backlog PR
+**Branch**: `codex/audit-planning-backlog`
+
+### Summary
+
+Converged PR #106 through four exact-head Copilot review rounds, correcting audit reconciliation timing, proposal-to-task identifiers, and the journal backlog count; all review threads are resolved and CI is green.
+
+### Main Changes
+
+- Time-scoped the audit reconciliation section and pointed current readers to the accepted task PRDs and ledger.
+- Aligned all 16 audit proposal slugs with the exact active or archived Trellis task directory IDs and regenerated the repository map.
+- Corrected the Session 89 remediation-backlog count and made the cross-pack task's inclusion explicit.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `752f4b8` | fix: clarify audit reconciliation timeline |
+| `61899a0` | fix: align audit proposal task ids |
+| `2be2eab` | fix: correct audit backlog count |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-full-check.sh (517 tests, lint, mypy, generated surfaces, install audit, KB freshness, and scope checks)
+- [OK] Copilot round 4 reviewed exact head 2be2eab with no new comments after the settle window
+- [OK] GitHub CI green and GraphQL reviewThreads returned no unresolved threads on exact head 2be2eab
+- [OK] review-learnings dry-run captured four historical comments and recommended deterministic task-metadata validation
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
