@@ -1528,3 +1528,40 @@ Installed the immutable v0.54.0 command-pack payload across all configured adapt
 ### Next Steps
 
 - None - task complete
+
+
+## Session 93: Refresh sd-ai-command-pack to 0.55.2
+
+**Date**: 2026-07-27
+**Task**: Refresh sd-ai-command-pack to 0.55.2
+**Branch**: `codex/refresh-sd-ai-command-pack-0-55-2`
+
+### Summary
+
+Installed and verified immutable sd-ai-command-pack 0.55.2, completed exact-head review, and prepared the consumer for guarded merge.
+
+### Main Changes
+
+- Refreshed installer-managed payload and provenance from 0.54.0 to 0.55.2.
+- Validated and resolved the exact-head Copilot classifier observation through source follow-up task 07-27-align-review-scope-gemini-settings.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `11c45f6957bd97ccdd62e889a1ec1c6db65eb3d8` | chore: refresh sd-ai-command-pack to 0.55.2 |
+
+### Testing
+
+- [OK] Immutable install audit passed for 174 targets.
+- [OK] Housekeeping self-test and make check passed, including 517 tests.
+- [OK] Typed sd-check, CI, and final review-thread verification passed.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
