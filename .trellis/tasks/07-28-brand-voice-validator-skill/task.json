@@ -2,7 +2,7 @@
   "id": "brand-voice-validator-skill",
   "name": "brand-voice-validator-skill",
   "title": "Create brand voice validator skill",
-  "description": "",
+  "description": "Add a suggest-only pack skill that validates content against a repo-local brand voice definition (tone, terminology, style), with an explicit bootstrap mode when no guidelines exist.",
   "status": "planning",
   "dev_type": null,
   "scope": null,

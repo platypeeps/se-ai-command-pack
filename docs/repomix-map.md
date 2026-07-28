@@ -5996,10 +5996,34 @@ DEFAULT_COMMAND_TIMEOUT = 60
 DEFAULT_GIT_TIMEOUT = 60
 DEFAULT_GH_TIMEOUT = 120
 DEFAULT_TRELLIS_TIMEOUT = 120
+REVIEW_FAMILY_TASK_METADATA = "task-metadata"
+REVIEW_FAMILY_BOUNDARY_VALIDATION = "boundary-validation"
+REVIEW_FAMILY_CONTRACT_DOCUMENTATION = "contract-documentation-drift"
+REVIEW_FAMILY_GENERATED_SURFACES = "generated-surfaces"
+REVIEW_FAMILY_REVIEWER_TEST_HARNESS = "reviewer-test-harness-quality"
+REVIEW_FAMILY_OTHER = "other"
+REVIEW_FINDING_FAMILY_IDS = (
+CACHE_ROOT_ENV = "SD_AI_COMMAND_PACK_CACHE_ROOT"
+CACHE_ENV_KEYS = (
+CACHE_DIRECTORY_NAMES = {
 ⋮----
 class CommandError(RuntimeError)
 ⋮----
 """Raised when a required external command cannot complete cleanly."""
+⋮----
+class CacheSetupError(CommandError)
+⋮----
+"""Raised when a private external tool cache cannot be prepared safely."""
+⋮----
+@dataclass(frozen=True)
+class ToolExecutionPlan
+⋮----
+"""An argv-safe command and the validated environment used to run it."""
+⋮----
+command: tuple[str, ...]
+environment: dict[str, str]
+cache_paths: dict[str, Path]
+cache_namespace: Path
 ⋮----
 def command_display(command: Iterable[str]) -> str
 ⋮----
@@ -6011,7 +6035,91 @@ stderr = result.stderr if isinstance(result.stderr, str) else ""
 ⋮----
 detail = stream.strip()
 ⋮----
+def _path_from_environment(value: str, *, variable: str) -> Path
+⋮----
+path = Path(value).expanduser()
+⋮----
+def _is_within(path: Path, parent: Path) -> bool
+⋮----
+def _repository_boundary(repository: Path) -> Path
+⋮----
+"""Return the nearest conservative worktree boundary for a repository path."""
+⋮----
+marker = candidate / ".git"
+⋮----
+def _validate_external_path(path: Path, *, repo: Path, label: str) -> Path
+⋮----
+resolved = path.resolve(strict=False)
+⋮----
+metadata = path.lstat()
+⋮----
+def _ensure_private_directory(path: Path, *, label: str) -> Path
+⋮----
+def _cache_namespace_name(repo: Path) -> str
+⋮----
+uid = str(os.getuid()) if hasattr(os, "getuid") else "user"
+digest = hashlib.sha256(os.fsencode(str(repo))).hexdigest()[:16]
+⋮----
+def _prepare_namespace(base: Path, *, repo: Path, source: str) -> Path
+⋮----
+validated_base = _validate_external_path(base, repo=repo, label=source)
+⋮----
+namespace = validated_base / _cache_namespace_name(repo)
+namespace = _validate_external_path(namespace, repo=repo, label="pack cache namespace")
+⋮----
+explicit_root = environment.get(CACHE_ROOT_ENV, "")
+⋮----
+candidates: list[tuple[Path, str, bool]] = []
+inherited_xdg = environment.get("XDG_CACHE_HOME", "")
+⋮----
+xdg_path = _path_from_environment(inherited_xdg, variable="XDG_CACHE_HOME")
+⋮----
+namespace_name = _cache_namespace_name(repo)
+⋮----
+inherited_namespace = xdg_path.parent
+⋮----
+xdg_path = inherited_namespace.parent
+⋮----
+temp_values = [
+⋮----
+# This is only a validated parent; _prepare_namespace creates mode 0700.
+temp_values.append(str(Path("/tmp").resolve()))  # nosec B108
+seen: set[str] = set()
+⋮----
+path = _path_from_environment(value, variable="temporary cache root")
+⋮----
+key = os.path.normcase(str(path))
+⋮----
+"""Return inherited environment with safe external tool caches configured."""
+⋮----
+environment = dict(os.environ if environ is None else environ)
+repository = Path.cwd() if repo is None else Path(repo)
+⋮----
+repository = repository.resolve(strict=True)
+⋮----
+repository = _repository_boundary(repository)
+⋮----
+namespace: Path | None = None
+failures: list[str] = []
+candidates = _cache_root_candidates(environment, repo=repository)
+⋮----
+namespace = _prepare_namespace(base, repo=repository, source=source)
+⋮----
+detail = failures[-1] if failures else "no absolute writable cache root is available"
+⋮----
+cache_paths: dict[str, Path] = {}
+⋮----
+inherited_override = environment.get(variable, "") if variable != "XDG_CACHE_HOME" else ""
+⋮----
+override = _path_from_environment(inherited_override, variable=variable)
+cache_path = _validate_external_path(
+cache_path = _ensure_private_directory(
+⋮----
+"""Build an argv-safe command plan with the shared cache environment."""
+⋮----
 """Run a command with a timeout and convert expected failures to messages."""
+⋮----
+plan = build_tool_execution_plan(command, cwd=cwd, environ=env)
 ⋮----
 allowed_returncodes = {0}
 ⋮----
@@ -6029,6 +6137,8 @@ stripped = result.stdout.strip()
 def repo_root(*, fallback_to_cwd: bool = False) -> Path
 ⋮----
 toplevel = git_stdout(
+⋮----
+def _cache_env_main(argv: Sequence[str]) -> int
 ````
 
 ## File: scripts/se-ai-command-pack-skill-review.py
@@ -18065,15 +18175,12 @@ sd-ai-command-pack-uv-tools/
 .agent/**/logs/
 .agent/**/tmp/
 .agent/**/*.log
-.claude/**
-!.claude/commands/
-!.claude/commands/sd/
-!.claude/commands/sd/*.md
 .claude/settings.local.json
 .claude/**/*.local.*
 .claude/**/.cache/
 .claude/**/cache/
 .claude/**/logs/
+.claude/**/tmp/
 .claude/**/*.log
 .codebuddy/**/*.local.*
 .codebuddy/**/.cache/
