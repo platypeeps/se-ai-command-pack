@@ -106,6 +106,7 @@ come directly from canonical skill frontmatter.
 | `se-feedback` | Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions. |
 | `se-postmortem` | Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions. |
 | `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
+| `se-propose-skills` | Use when the user wants the current session reviewed for recurring friction, repeated steps, and hard-won gotchas, and high-bar skill proposals drafted into a configurable Obsidian Skill Proposals destination for later accept or decline. |
 | `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
 | `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
 | `se-weekly-review` | Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct. |

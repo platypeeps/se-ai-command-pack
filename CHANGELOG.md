@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.65.0 - 2026-08-03
+
+- Add `se-propose-skills`: reviews the current session for recurring friction and
+  drafts high-bar skill proposals into a configurable Obsidian Skill Proposals
+  destination (`target=`/`profile=auto|off|<locator>`), destination-neutral by
+  default. Writes only `status: proposed`; never files or overwrites.
+
 ## 0.64.0 - 2026-07-23
 
 - Let normal refreshes update prior-version Claude, Codex, and shared-agent

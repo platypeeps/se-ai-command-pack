@@ -698,6 +698,26 @@ available. Formal incident causal and safeguard analysis remains with
 task, contacts participants, publishes a report, changes systems, or executes a
 follow-up.
 
+### Propose-skills workflow boundary
+
+`se-propose-skills` owns end-of-session review of the current session for
+recurring friction, repeated steps, and hard-won gotchas, drafting only the
+survivors of a deliberately strict bar into skill proposals. The bar is
+three-part: a pattern must recur, have a mechanical repeatable core, and carry
+a real silent-failure cost; zero survivors is an expected result rather than a
+prompt to invent one. It reviews only the session in context and never reads
+past sessions or external transcripts.
+
+Destination is resolved before drafting: an explicit `target`, then a
+`profile=auto` host-configured locator, else inline-only reporting; `profile=off`
+forces inline and writes nothing. Each survivor is written once, deduplicated
+against existing proposal notes and installed skills, as a native note carrying
+`status: proposed` and an inline-select control the user flips to accept or
+decline. `se-propose-skills` never advances that status, never files a task,
+never overwrites an existing note, and never embeds the private destination
+path. Improving an existing skill is editing, not proposing, and stays out of
+scope.
+
 ### Weekly-review workflow boundary
 
 `se-weekly-review` owns personal cross-stream synthesis for one explicit local
