@@ -1607,3 +1607,42 @@ Created the 07-28-brand-voice-validator-skill planning task, hardened its metada
 ### Next Steps
 
 - None - task complete
+
+
+## Session 95: Add se-propose-skills pack skill
+
+**Date**: 2026-08-03
+**Task**: Add se-propose-skills pack skill
+**Branch**: `chore/archive-propose-skills-task`
+
+### Summary
+
+Authored, registered, generated, tested, and shipped se-propose-skills: a CONVERSATIONAL/improve-family skill that reviews the current session and drafts high-bar skill proposals into a user-configurable Obsidian destination (target= or profile=auto|off|<locator>), with no hardcoded path and no implicit writes. Merged via PR #114 at 0.65.0.
+
+### Main Changes
+
+- New skill templates/skills/se-propose-skills/SKILL.md, registered in installer/registry.py (SKILLS + CONVERSATIONAL profile, family=improve)
+- Regenerated manifest.json (0.64.0->0.65.0), README catalog, skill-catalog, and Claude skill surface; added operator-guide boundary section
+- Synced test_skills.py golden SKILL_NAMES tuple and family map; removed superseded ~/.claude prototype skill
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `12ffecb` | feat(skills): add se-propose-skills pack skill (0.65.0) |
+
+### Testing
+
+- [OK] make test: Ran 517 tests, OK
+- [OK] generator drift --check: surfaces match (exit 0)
+- [OK] behavioral target=<tmpdir> wrote conformant note; profile=off wrote 0 files
+- [OK] PR #114 CI: lint, release-payload-gate, 4x unittest matrix all pass; merged
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
