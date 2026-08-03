@@ -59,8 +59,14 @@ reinterpret them as shell text.
    Git stash count, cached upstream divergence, default/local/remote branches,
    installed pack and Trellis versions, relevant PR, open PRs/issues, current
    and queued Trellis work, completed tasks stranded outside the Trellis
-   archive, the user-local autonomous work-loop state, anomalies, selectable
-   follow-ups, every unarchived task, and numbered next steps. Follow-ups also
+   archive, the user-local autonomous work-loop state, pack recovery-artifact
+   classifications, anomalies, selectable follow-ups, every unarchived task, and
+   numbered next steps. Recovery artifacts are reported read-only: preserve the
+   collector's `active`, `safe-cleanable`, `needs-review`, `missing-artifact`,
+   and `unowned-artifact` classifications and never create, repair, or delete a
+   receipt or Git artifact. See
+   [`../sd-help/references/recovery-artifacts.md`](../sd-help/references/recovery-artifacts.md)
+   for the shared ownership lifecycle. Follow-ups also
    include task-like items from bounded roadmap sources when no unarchived
    Trellis task represents them. Loop state includes run ID, mode,
    selector/focus, iteration, phase, task, PR, counters, heartbeat, context
@@ -131,8 +137,11 @@ cached or refreshed and whether GitHub inventory was queried. Do not claim the
 repository or fleet is clean when the report marks any member dirty, stale,
 missing, behind, or diverged.
 
-If the user later supplies an F/T/R identifier, treat it as a report-local
+If the user later supplies an F/T identifier, treat it as a report-local
 selector for this snapshot and resolve it back to the durable row contents. A
 selection is a new request; it does not retroactively authorize `sd-status` to
 mutate the repository or bypass the selected workflow's task, approval, and
 safety gates.
+
+A selector that is not an `F-*` or `T-*` row of this snapshot is unsupported
+input: report it as unresolved against the current report and take no action.

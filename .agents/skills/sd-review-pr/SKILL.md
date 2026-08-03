@@ -22,6 +22,19 @@ reviewer. This does not authorize unrelated or ambiguous files, force pushes,
 default-branch pushes, scope or risk expansion, extra rounds beyond the
 configured limit, destructive actions, or bypassing any gate.
 
+## Completion boundary
+
+Review readiness is pre-archive evidence, not a merge; this skill never performs
+the post-archive handoff. Its standalone finish-work archives at the completion
+boundary once the loop is clean. An acceptance criterion is any outcome that must
+be true before Trellis archives the task; every such criterion is checked before
+`task.py archive` marks the task `completed`. Merge, branch deletion,
+default-branch synchronization, superseded-PR closure, and post-merge fleet
+checks are the **Post-archive handoff**, never left as unchecked acceptance
+criteria. See
+[`../sd-help/references/completion-lifecycle.md`](../sd-help/references/completion-lifecycle.md)
+for the shared ownership sequence and authoring examples.
+
 ## Sandbox-safe tool execution
 
 Run every `gh`, `uv`, `pip`, `ruff`, or `npm` command shown in this workflow
@@ -424,6 +437,13 @@ Track these states separately:
   trigger timestamp for the recorded head SHA. Re-read the PR head before
   accepting the evidence; use review/comment commit ids where available, and
   accept a top-level comment only when the head remained unchanged.
+- **Review of a stale commit:** the review event's `commit_id` is not the
+  recorded head. A remote reviewer can submit against an earlier commit while a
+  newer one is already the head, and its body still reports full coverage
+  ("reviewed N out of N changed files") because N is counted against the commit
+  it actually read. Compare `commit_id` to the head for every review event
+  before counting a round; a mismatch means the current head is unreviewed, so
+  do not credit the round or treat the result as coverage of the head.
 - **Ambiguous/no materialization:** the bounded polls and one-time full fetch
   found no qualifying author-matched activity, even if the reviewer request
   disappeared.
@@ -543,7 +563,22 @@ If checks fail, inspect failed logs with `gh run view --log-failed` or the
 workflow link, identify the root cause, fix it if appropriate, and include it
 in the same review-response commit.
 
-Classify all unresolved, non-outdated threads and any top-level bot comments:
+A review body that reports no new comments is not by itself a clean round. Some
+reviewers (GitHub Copilot in particular) withhold observations they scored as
+low confidence and disclose them only inside a collapsed block in the review
+body, typically `<details><summary>Comments suppressed due to low confidence
+(N)</summary>`. Those observations never become inline comments or review
+threads, so a loop that reads only thread state never sees them. Low confidence
+is the reviewer's confidence in its own scoring, not evidence that the
+observation is wrong.
+
+So parse every review body for such a block, and classify each entry it contains
+with the same rules as an inline comment. Report the count found and the
+disposition of each. A round is clean only when the body reports no new comments
+AND no suppressed entry survives verification against the code.
+
+Classify all unresolved, non-outdated threads, any top-level bot comments, and
+any suppressed low-confidence entries:
 
 - **Valid actionable issue**: implement the smallest correct fix and add/update
   tests when behavior changes.
