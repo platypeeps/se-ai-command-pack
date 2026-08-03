@@ -1565,3 +1565,45 @@ Installed and verified immutable sd-ai-command-pack 0.55.2, completed exact-head
 ### Next Steps
 
 - None - task complete
+
+
+## Session 94: Brand voice validator task and PR publication
+
+**Date**: 2026-07-28
+**Task**: Brand voice validator task and PR publication
+**Branch**: `codex/add-brand-voice-validator-task`
+
+### Summary
+
+Created the 07-28-brand-voice-validator-skill planning task, hardened its metadata after the publish preflight caught scaffold defects, refreshed the repository map and knowledge base, and published PR #109 through the sd-create-pr/sd-review-pr loop with a clean Copilot round. Also filed the upstream sd-enhance-skills task in sd-ai-command-pack.
+
+### Main Changes
+
+- Created Trellis task 07-28-brand-voice-validator-skill (P2, planning) with PRD for a suggest-only brand-voice validation skill including bootstrap mode and coordination notes to A-006/A-007 audit tasks
+- Filled task.json description and emptied _example scaffold rows in implement.jsonl/check.jsonl after the review preflight blocked publication
+- Refreshed docs/repomix-map.md via make repomix and .obsidian-kb (438 copies) via the sd-update-spec KB helper
+- Published PR #109 from codex/add-brand-voice-validator-task with the auto-appended tooling/generated scope section
+- Created upstream task 07-28-enhance-skills-workflow in sd-ai-command-pack for the sd-enhance-skills session-driven skill improvement workflow
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fca7edc` | chore(task): add 07-28-brand-voice-validator-skill |
+| `6c245f3` | chore: fill brand-voice task metadata and refresh repository map |
+
+### Testing
+
+- [OK] sd-check typed aggregate passed (7/7 rows, state guard clean) at head 6c245f3
+- [OK] review preflight: 0 failures after task-metadata fix
+- [OK] PR #109 CI green: lint, unittest x3, release-payload-gate
+- [OK] Copilot review round 1 of 5: no actionable comments, 0 review threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
