@@ -3,7 +3,7 @@
   "name": "validate-permission-config",
   "title": "Validate permission config files across every settings tier",
   "description": "",
-  "status": "planning",
+  "status": "abandoned",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -11,7 +11,7 @@
   "creator": "sdelmas",
   "assignee": "sdelmas",
   "createdAt": "2026-07-31",
-  "completedAt": null,
+  "completedAt": "2026-08-03",
   "branch": null,
   "base_branch": "main",
   "worktree_path": null,
@@ -21,6 +21,6 @@
   "children": [],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Abandoned 2026-08-03: permission config stabilized; sdelmas-llm-wiki routine no longer needed. Never implemented.",
   "meta": {}
 }
