@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.66.2 - 2026-08-04
+
+- Bring the bundled skill-review analyzer
+  (`templates/skills/se-review-skills/scripts/skill_review.py`) under the same
+  ruff and mypy gate as the rest of the repo's Python, in both `make lint` and
+  CI, and fix the three defects the tools reported: drop a `zip()` in favor of a
+  Python 3.9-safe indexed traversal (B905), rename a scope-leaked loop variable,
+  and narrow a guard so a non-optional context is passed where required.
+
 ## 0.66.1 - 2026-08-04
 
 - Retract the README claim that the `codex` platform honors `$CODEX_HOME`

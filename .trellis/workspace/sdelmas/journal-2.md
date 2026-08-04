@@ -1927,3 +1927,43 @@ Added .github/dependabot.yml (pip ecosystem, weekly, open-pull-requests-limit 5,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 103: Lint gate for shipped payload Python (audit-lint-shipped-payload, A-036)
+
+**Date**: 2026-08-04
+**Task**: Lint gate for shipped payload Python (audit-lint-shipped-payload, A-036)
+**Branch**: `audit/lint-shipped-payload`
+
+### Summary
+
+Brought the bundled skill-review analyzer under the repo ruff+mypy gate in Makefile and CI, fixed its three reported defects (B905 via a 3.9-safe indexed traversal, a scope-leaked assignment, and an optional-context arg-type), and shipped it as a 0.66.2 payload bump. Review-fix renamed the confusing _parse_registry comprehension bindings.
+
+### Main Changes
+
+- Add templates/skills/se-review-skills/scripts/skill_review.py to ruff+mypy in the Makefile lint target and the CI lint lane
+- Fix three defects: replace zip() with a Python 3.9-safe indexed traversal (B905), rename a comprehension-scope-leaked value (mypy assignment), narrow a guard so a non-optional PackageContext is passed (mypy arg-type)
+- Rename the three _parse_registry comprehension bindings (family_key/platform_key/consumer) for clarity after review feedback
+- Bump manifest.json 0.66.1 -> 0.66.2, add CHANGELOG heading, regenerate skill-catalog.md via make generate
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `390efe3` | feat(lint): gate the shipped skill-review analyzer and fix its defects |
+| `a374474` | refactor(skill-review): name the parsed registry values in _parse_registry |
+
+### Testing
+
+- [OK] make check green: coverage 87.7%, ruff+mypy clean over widened scope, generate --check surfaces match, release payload gate 0.66.1 -> 0.66.2
+- [OK] CI all green on PR #128: 3 unittest lanes + lint + release-payload-gate SUCCESS
+- [OK] test_analyzer_keeps_the_documented_python_39_runtime_floor passes (no strict= introduced)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

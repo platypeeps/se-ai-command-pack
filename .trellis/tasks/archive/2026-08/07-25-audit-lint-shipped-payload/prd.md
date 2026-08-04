@@ -12,9 +12,9 @@ The pack's only consumer-shipped executable, templates/skills/se-review-skills/s
 
 ## Acceptance Criteria
 
-- [ ] `make lint` covers skill_review.py and passes.
-- [ ] CI lint lane mirrors the scope.
-- [ ] The three known defects are fixed (payload change: version bump + changelog).
+- [x] `make lint` covers skill_review.py and passes.
+- [x] CI lint lane mirrors the scope.
+- [x] The three known defects are fixed (payload change: version bump + changelog).
 
 ## Notes
 

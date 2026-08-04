@@ -254,9 +254,9 @@ def _parse_registry(path: Path) -> RegistryData:
     labels = _assignment(tree, "FAMILY_LABELS")
     if isinstance(labels, ast.Dict):
         family_order = [
-            value
-            for key in labels.keys
-            if (value := _string_value(key)) is not None
+            family_key
+            for key_node in labels.keys
+            if (family_key := _string_value(key_node)) is not None
         ]
 
     families: dict[str, str] = {}
@@ -265,10 +265,10 @@ def _parse_registry(path: Path) -> RegistryData:
         ("SKILLS", "SkillInfo", 1),
         ("COMMAND_REGISTRY", "CommandInfo", 2),
     ):
-        value = _assignment(tree, assignment_name)
-        if not isinstance(value, (ast.Tuple, ast.List)):
+        assignment_node = _assignment(tree, assignment_name)
+        if not isinstance(assignment_node, (ast.Tuple, ast.List)):
             continue
-        for entry in value.elts:
+        for entry in assignment_node.elts:
             if not isinstance(entry, ast.Call):
                 continue
             function = entry.func
@@ -286,22 +286,23 @@ def _parse_registry(path: Path) -> RegistryData:
     registry = _assignment(tree, "PLATFORM_REGISTRY")
     if isinstance(registry, ast.Dict):
         platforms = [
-            value
-            for key in registry.keys
-            if (value := _string_value(key)) is not None
+            platform_key
+            for key_node in registry.keys
+            if (platform_key := _string_value(key_node)) is not None
         ]
 
     shared_references: dict[str, tuple[str, ...]] = {}
     shared = _assignment(tree, "SHARED_REFERENCES")
     if isinstance(shared, ast.Dict):
-        for key_node, value_node in zip(shared.keys, shared.values):
+        for index, key_node in enumerate(shared.keys):
+            value_node = shared.values[index]
             key = _string_value(key_node)
             if key is None or not isinstance(value_node, (ast.Tuple, ast.List)):
                 continue
             consumers = tuple(
-                value
+                consumer
                 for entry in value_node.elts
-                if (value := _string_value(entry)) is not None
+                if (consumer := _string_value(entry)) is not None
             )
             shared_references[key] = consumers
     return RegistryData(
@@ -651,7 +652,7 @@ def _resolve_path(
     manifest_mapping = (
         _manifest_mapping(observed, context_hint) if context_hint is not None else None
     )
-    if manifest_mapping:
+    if manifest_mapping and context_hint is not None:
         canonical, expected, mapped_platform, evidence = manifest_mapping
         context = context_hint
         drift = (
