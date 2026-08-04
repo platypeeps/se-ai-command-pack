@@ -335,17 +335,17 @@ class RealRepoGeneratorTest(unittest.TestCase):
         platform. Failure output names the offending skill and reference."""
         rows = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))["files"]
         target_counts = Counter(row["target"] for row in rows)
+        # Invert the registry once so each skill's sources are a single lookup
+        # rather than a full SHARED_REFERENCES scan per skill.
+        sources_by_skill: dict[str, list[str]] = {}
+        for source, consumers in gen.SHARED_REFERENCES.items():
+            for consumer in consumers:
+                sources_by_skill.setdefault(consumer, []).append(source)
         stale = sorted(set(EXPECTED_SHARED_SOURCES) - set(gen.SKILL_NAMES))
         self.assertEqual(stale, [], f"snapshot names absent from SKILL_NAMES: {stale}")
         for name in gen.SKILL_NAMES:
             with self.subTest(skill=name):
-                actual = tuple(
-                    sorted(
-                        source
-                        for source, consumers in gen.SHARED_REFERENCES.items()
-                        if name in consumers
-                    )
-                )
+                actual = tuple(sorted(sources_by_skill.get(name, [])))
                 # Sort the snapshot too so the golden literal is order-free:
                 # a maintainer may list a skill's sources in any order.
                 expected = tuple(sorted(EXPECTED_SHARED_SOURCES.get(name, ())))
