@@ -3,14 +3,24 @@
 
 Enforces the pack's release discipline against a base revision:
 
-1. any change under templates/**, generated/**, or to manifest.json requires the manifest
-   version to differ from the base revision's, and
+1. any change under templates/**, generated/**, installer/**, or to
+   install.py or manifest.json requires the manifest version to differ from
+   the base revision's, and
 2. whenever the version changed, CHANGELOG.md's first heading must be
    `## <version> - YYYY-MM-DD` with a real date.
 
 Changes are measured from the merge-base of --base and HEAD to the working
 tree (uncommitted and untracked files included), so the gate works both
 locally before a commit and in CI against the PR base.
+
+The carve-out is diff-based: a change that leaves every shipped payload path
+byte-identical never appears in the diff, so it needs no bump.
+
+Passing `--base auto` resolves the base to origin/main when that ref exists,
+falling back to HEAD otherwise. This makes a local `make release-check`
+range-aware (committed branch work is measured, not only uncommitted files);
+it is best-effort, since a stale origin/main can mask a missing bump. CI passes
+the real PR base SHA and remains authoritative.
 """
 
 from __future__ import annotations
@@ -24,8 +34,13 @@ import sys
 from pathlib import Path
 
 PACK_ROOT = Path(__file__).resolve().parents[2]
-PAYLOAD_PREFIXES = ("templates/", "generated/")
+PAYLOAD_PREFIXES = ("templates/", "generated/", "installer/")
 MANIFEST_NAME = "manifest.json"
+# Exact repo-relative paths that are payload on their own. `install.py` is the
+# root installer entry point; nested `install.py` files are covered only when
+# they fall under a PAYLOAD_PREFIXES directory. The exact set and the prefixes
+# never overlap: `install.py` does not start with `installer/`.
+PAYLOAD_EXACT = frozenset((MANIFEST_NAME, "install.py"))
 CHANGELOG_NAME = "CHANGELOG.md"
 HEADING_PATTERN = re.compile(r"^## (?P<version>\S+) - (?P<date>\d{4}-\d{2}-\d{2})$")
 GIT_TIMEOUT_SECONDS = 60
@@ -120,6 +135,20 @@ def check_changelog_heading(repo: Path, version: str) -> None:
     raise GateError(f"{CHANGELOG_NAME} has no '## ' heading")
 
 
+def resolve_base(repo: Path, base: str) -> str:
+    """Resolve the ``auto`` base sentinel to a concrete revision.
+
+    ``auto`` becomes ``origin/main`` when that ref resolves in ``repo``,
+    otherwise ``HEAD`` (fresh clones without the remote fall back gracefully).
+    Any explicit revision is returned unchanged, so CI's explicit base SHA is
+    unaffected.
+    """
+    if base != "auto":
+        return base
+    origin = run_git(repo, "rev-parse", "--verify", "origin/main^{commit}")
+    return "origin/main" if origin.returncode == 0 else "HEAD"
+
+
 def run_gate(repo: Path, base: str) -> str:
     head = run_git(repo, "rev-parse", "--verify", "HEAD")
     if head.returncode != 0:
@@ -144,7 +173,7 @@ def run_gate(repo: Path, base: str) -> str:
     payload_changed = sorted(
         path
         for path in changed
-        if path == MANIFEST_NAME or path.startswith(PAYLOAD_PREFIXES)
+        if path in PAYLOAD_EXACT or path.startswith(PAYLOAD_PREFIXES)
     )
     current_version = working_tree_version(repo)
     base_version = base_manifest_version(repo, merge_base_sha)
@@ -177,13 +206,14 @@ def main(argv: list[str] | None = None) -> int:
         default="HEAD",
         help=(
             "Base revision to measure changes from (CI passes the PR base "
-            "SHA; the default HEAD checks uncommitted work only)."
+            "SHA; the default HEAD checks uncommitted work only). Pass 'auto' "
+            "to use origin/main when it resolves, falling back to HEAD."
         ),
     )
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
     repo = Path(args.repo).resolve()
     try:
-        summary = run_gate(repo, args.base)
+        summary = run_gate(repo, resolve_base(repo, args.base))
     except GateError as error:
         print(f"error: release payload gate: {error}", file=sys.stderr)
         return 1

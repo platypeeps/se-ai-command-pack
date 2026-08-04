@@ -161,3 +161,43 @@ Filed the three follow-up backlog tasks noted in the archived 07-25-audit-regist
 ### Next Steps
 
 - None - task complete
+
+
+## Session 108: Widen release payload gate to installer surface; make local check range-aware
+
+**Date**: 2026-08-04
+**Task**: Widen release payload gate to installer surface; make local check range-aware
+**Branch**: `audit/release-gate-scope`
+
+### Summary
+
+Closed audit findings A-035 + A-040. Gated install.py (exact) and installer/ (prefix) alongside templates/generated/manifest; added --base auto so make release-check measures the committed branch range against origin/main (best-effort; CI PR-base authoritative). Documented the diff-based carve-out and the installer/registry.py family-metadata bump consequence. PR #133 review: gito clean; prism's 4 recurring nits verified false-positive/covered (medium now test-proven) and rebutted with evidence.
+
+### Main Changes
+
+- Widened PAYLOAD surface: PAYLOAD_EXACT={manifest.json, install.py}, PAYLOAD_PREFIXES+=installer/
+- Added resolve_base(): --base auto -> origin/main when it resolves, else HEAD
+- Makefile release-check now passes --base auto; CONTRIBUTING + quality-guidelines updated
+- Added 8 gate tests + 2 exact/prefix boundary tests (nested install.py and installerX.py not gated)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d29f864` | feat(release): widen payload gate to installer surface and make it range-aware |
+| `13df277` | test(release): cover exact/prefix payload boundary; clarify constant intent |
+
+### Testing
+
+- [OK] unittest discover tests/test_release_gate.py: 26 passed
+- [OK] ruff check on edited files: clean
+- [OK] make release-check + installer probe: gate trips on payload-without-bump, passes clean
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
