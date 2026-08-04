@@ -720,6 +720,20 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.write_skill(text=self._cite("<file>.md"))
         gen.validate_skills()
 
+    def test_every_citation_in_a_body_is_checked(self) -> None:
+        # A body citing several references (one own-delivered, one dangling)
+        # must still fail on the dangling one — the scan checks each citation,
+        # not just the first.
+        text = VALID_SKILL.format(name="se-test").replace(
+            "## Workflow\n\nText.",
+            "## Workflow\n\nUse references/local.md and references/missing.md.",
+        )
+        self.write_skill(text=text)
+        own = self.skills_root / "se-test" / "references"
+        own.mkdir()
+        (own / "local.md").write_text("- Local note.\n", encoding="utf-8")
+        self.assert_validation_error("references/missing.md")
+
     def test_banned_phrase(self) -> None:
         text = VALID_SKILL.format(name="se-test").replace(
             "Intro paragraph.", "Ask Claude to do it."

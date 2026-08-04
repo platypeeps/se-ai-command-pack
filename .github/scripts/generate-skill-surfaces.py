@@ -386,6 +386,9 @@ def validate_skills() -> dict[str, dict[str, str]]:
         skill_dir = SKILLS_ROOT / name
         own_refs = skill_dir / "references"
         if own_refs.is_dir():
+            # references/ is flat by contract (validate_skill above rejects any
+            # nested directory), and citations are flat references/<basename>.md,
+            # so a non-recursive iterdir() over regular files is complete.
             for entry in own_refs.iterdir():
                 if entry.is_file():
                     delivered.setdefault(name, set()).add(entry.name)
