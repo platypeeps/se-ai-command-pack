@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 108
+- **Total Sessions**: 109
 - **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~201 | Active |
+| `journal-3.md` | ~238 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 109 | 2026-08-04 | audit-shared-reference-closure: reverse citation-closure gate | `3acdf13` | `audit/shared-reference-closure` |
 | 108 | 2026-08-04 | Widen release payload gate to installer surface; make local check range-aware | `d29f864`, `13df277` | `audit/release-gate-scope` |
 | 107 | 2026-08-04 | File registry-snapshot follow-up backlog tasks | `d811d48` | `chore/registry-snapshot-followup-tasks` |
 | 106 | 2026-08-04 | Versioned registry snapshot for skill_review (PR #131) | `54d56b6`, `f791c8e`, `9c4b3bf`, `59ed8b6`, `739b4d8` | `audit/registry-snapshot-contract` |

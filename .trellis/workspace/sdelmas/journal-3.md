@@ -201,3 +201,39 @@ Closed audit findings A-035 + A-040. Gated install.py (exact) and installer/ (pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 109: audit-shared-reference-closure: reverse citation-closure gate
+
+**Date**: 2026-08-04
+**Task**: audit-shared-reference-closure: reverse citation-closure gate
+**Branch**: `audit/shared-reference-closure`
+
+### Summary
+
+Added a reverse shared-reference citation-closure check to validate_skills() in generate-skill-surfaces.py: a SKILL.md body citing references/<file>.md that ships neither as an own resource nor a registered SHARED_REFERENCES fan-out now fails make generate --check (A-007).
+
+### Main Changes
+
+- generate-skill-surfaces.py: CITATION_PATTERN + per-skill delivered-reference map (own refs union registered fan-out basenames, keyed on membership so generated sources count); dangling citation raises.
+- tests/test_generate.py: reverse-direction coverage (dangling fails; own-ref and fan-out closure pass; placeholder ignored; multi-citation body fully scanned).
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3acdf13` | test(generate): cover multi-citation bodies; note flat-references invariant |
+
+### Testing
+
+- [OK] run-python -m unittest discover -s tests -p test_generate.py: reverse-closure tests pass
+- [OK] make generate --check exit 0; ruff clean; gito clean
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
