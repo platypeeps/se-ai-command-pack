@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 100
+- **Total Sessions**: 101
 - **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1842 | Active |
+| `journal-2.md` | ~1886 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 101 | 2026-08-04 | Coverage measurement and floor in gates (A-020) | `bdbf14c`, `b5893d9`, `538c0b6`, `7265896` | `audit/coverage-floor` |
 | 100 | 2026-08-04 | Resolve CODEX_HOME contract drift (A-044) | `75f896c`, `9f21063` | `audit/codex-home-contract` |
 | 99 | 2026-08-04 | Resolve A-001: track .claude sd-adapters (gitignore ownership) | `5be1d39`, `eca05be`, `f5b3d10`, `7ca77a7` | `audit/claude-gitignore-owner` |
 | 98 | 2026-08-04 | Registry-driven shared-reference tests (dedupe-generate-tests) | `595a008`, `26fd265`, `2c24021`, `d83984f`, `ed416cb` | `audit/dedupe-generate-tests` |
