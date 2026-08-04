@@ -366,10 +366,12 @@ A platform whose anchor is missing is skipped with a hint; pass
 row in `installer/registry.py`.
 
 The installer reads no environment variables (see the operator guide): every
-platform's directories are fixed relative to your home directory, and `codex`
-targets `~/.codex` regardless of `$CODEX_HOME`. To install under a different
-root, pass `install.py --root <dir>` (skills land under `<dir>/.codex/skills`)
-or symlink `~/.codex` to the location Codex actually reads.
+platform's directories are fixed relative to your home directory, and Codex
+always reads `~/.codex` regardless of `$CODEX_HOME`. To make Codex load skills
+from another location, symlink `~/.codex` to it (or relocate your home
+directory). `install.py --root <dir>` changes only where the installer *writes*
+(`<dir>/.codex/skills`), not where Codex looks — on its own it does not
+redirect Codex's lookup.
 
 ## Install
 
