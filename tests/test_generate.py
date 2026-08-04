@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import unittest
+from collections import Counter
 from contextlib import ExitStack
 from pathlib import Path
 from unittest import mock
@@ -333,6 +334,7 @@ class RealRepoGeneratorTest(unittest.TestCase):
         every registered reference must fan into a manifest target on every
         platform. Failure output names the offending skill and reference."""
         rows = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))["files"]
+        target_counts = Counter(row["target"] for row in rows)
         stale = sorted(set(EXPECTED_SHARED_SOURCES) - set(gen.SKILL_NAMES))
         self.assertEqual(stale, [], f"snapshot names absent from SKILL_NAMES: {stale}")
         for name in gen.SKILL_NAMES:
@@ -359,12 +361,12 @@ class RealRepoGeneratorTest(unittest.TestCase):
                         target = f"{info.skills_dir}/{name}/references/{basename}"
                         # Assert exactly one manifest row per platform target,
                         # preserving the retired per-skill uniqueness coverage.
-                        matches = [r for r in rows if r["target"] == target]
                         self.assertEqual(
-                            len(matches),
+                            target_counts[target],
                             1,
                             f"{name}: shared reference {basename} expected one "
-                            f"manifest target for {platform}, got {len(matches)}",
+                            f"manifest target for {platform}, got "
+                            f"{target_counts[target]}",
                         )
 
     def test_verification_protocol_preserves_registered_targets(self) -> None:
