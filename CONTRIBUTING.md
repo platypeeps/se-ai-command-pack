@@ -36,15 +36,25 @@ of this code runs via subprocess under test, so `.coveragerc` enables
 
 ## Release discipline
 
-Any change to the shipped payload (`templates/**`, `generated/**`, or
-`manifest.json`) must:
+Any change to the shipped payload — `templates/**`, `generated/**`,
+`installer/**`, `install.py`, or `manifest.json` — must:
 
 - bump `version` in `manifest.json`, and
 - add a matching top heading to `CHANGELOG.md` in the form
   `## <version> - YYYY-MM-DD`.
 
-CI enforces this via the release payload gate. Merges to `main` are tagged
-`v<version>` automatically when the version changes.
+The gate is diff-based, so the carve-out is simply this: a change that leaves
+every shipped payload path byte-identical (no git diff) needs no bump. Note that
+`generated/registry-snapshot.json` is itself shipped payload, and family
+descriptions now live in gated installer code (`installer/registry.py`), so a
+family-description source edit does require a bump.
+
+CI enforces this via the release payload gate against the real PR base and is
+authoritative. Locally, `make release-check` passes `--base auto`, which
+measures your branch against `origin/main` (not just uncommitted work); it is
+best-effort — a stale `origin/main` can mask a missing bump, so `git fetch`
+first if in doubt. Merges to `main` are tagged `v<version>` automatically when
+the version changes.
 
 ## Dependency updates
 

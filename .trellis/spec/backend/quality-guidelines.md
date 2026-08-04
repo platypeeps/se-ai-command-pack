@@ -154,8 +154,12 @@ manifest/install order, and grouping must not reorder generated manifest rows.
   the generated `registry-snapshot.json` results before writing any of them. A
   later write failure rolls earlier surfaces back to their committed state.
   README content outside one ordered marker pair is preserved.
-- Family-only metadata and catalog changes do not require a release bump when
-  `manifest.json` and shipped payload bytes remain unchanged.
+- Family-only metadata and catalog changes do not require a release bump only
+  when every shipped payload path stays byte-identical. The gated surface is
+  `templates/**`, `generated/**`, `installer/**`, `install.py`, and
+  `manifest.json`. Because `FAMILY_DESCRIPTIONS` and `FAMILY_LABELS` live in
+  `installer/registry.py` (gated), a family-description or family-label source
+  edit does require a bump.
 
 ### 4. Validation & Error Matrix
 
@@ -169,8 +173,8 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
 | Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
 | Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
-| Family metadata changes that also alter the generated registry snapshot (family order, skill membership, platforms, or shared references) | The snapshot is shipped payload under `generated/`; the release gate requires a version bump and dated CHANGELOG heading. |
-| Family metadata changes that touch no shipped payload byte (e.g. a family-description edit that only re-renders non-payload prose) | Manifest and changelog stay unchanged; release gate passes without a bump. |
+| Family metadata edited at its source in `installer/registry.py` (`FAMILY_DESCRIPTIONS`, `FAMILY_LABELS`), or a change that alters `generated/registry-snapshot.json`, `manifest.json`, or any `templates/**`/`generated/**`/`installer/**`/`install.py` byte | The source and snapshot are shipped payload; the release gate requires a version bump and dated CHANGELOG heading. |
+| A change that touches no shipped payload byte at all (no diff under `templates/**`, `generated/**`, `installer/**`, `install.py`, or `manifest.json`) | Manifest and changelog stay unchanged; release gate passes without a bump. |
 
 ### 5. Good/Base/Bad Cases
 

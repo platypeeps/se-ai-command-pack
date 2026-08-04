@@ -32,6 +32,6 @@ lint:
 
 release-check:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check
-	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py
+	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py --base auto
 
 check: test lint release-check

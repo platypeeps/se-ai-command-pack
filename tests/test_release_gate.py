@@ -131,6 +131,84 @@ class ReleaseGateTest(TempDirTestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("without a version bump", result.stderr)
 
+    def rev_parse(self, ref: str) -> str:
+        proc = subprocess.run(
+            ["git", "-C", str(self.repo), "rev-parse", ref],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return proc.stdout.strip()
+
+    def test_installer_dir_change_without_bump_fails(self) -> None:
+        installer = self.repo / "installer"
+        installer.mkdir()
+        (installer / "registry.py").write_text("x = 1\n", encoding="utf-8")
+        result = self.gate()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("without a version bump", result.stderr)
+
+    def test_install_py_change_without_bump_fails(self) -> None:
+        (self.repo / "install.py").write_text("print('x')\n", encoding="utf-8")
+        result = self.gate()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("without a version bump", result.stderr)
+
+    def test_install_py_change_with_bump_passes(self) -> None:
+        (self.repo / "install.py").write_text("print('x')\n", encoding="utf-8")
+        self.write_manifest("1.1.0")
+        self.write_changelog("1.1.0")
+        result = self.gate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("1.0.0 -> 1.1.0", result.stdout)
+
+    def test_installer_change_with_bump_passes(self) -> None:
+        installer = self.repo / "installer"
+        installer.mkdir()
+        (installer / "registry.py").write_text("x = 1\n", encoding="utf-8")
+        self.write_manifest("1.1.0")
+        self.write_changelog("1.1.0")
+        result = self.gate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_no_payload_diff_passes_without_bump(self) -> None:
+        # Widened surface present and committed; a non-payload edit alongside a
+        # byte-identical payload tree must still pass without a bump (carve-out).
+        (self.repo / "install.py").write_text("print('x')\n", encoding="utf-8")
+        installer = self.repo / "installer"
+        installer.mkdir()
+        (installer / "registry.py").write_text("x = 1\n", encoding="utf-8")
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-m", "add installer payload")
+        (self.repo / "README.md").write_text("changed prose\n", encoding="utf-8")
+        result = self.gate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_base_auto_falls_back_to_head_without_origin(self) -> None:
+        # No origin/main ref exists, so auto degrades to HEAD (uncommitted only).
+        git(self.repo, "checkout", "-b", "feature")
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        git(self.repo, "commit", "-am", "payload change, no bump")
+        committed = self.gate(base="auto")
+        self.assertEqual(committed.returncode, 0, committed.stderr)
+        # An uncommitted payload change is still caught under the HEAD fallback.
+        (self.repo / "templates" / "skill.md").write_text("v3\n", encoding="utf-8")
+        uncommitted = self.gate(base="auto")
+        self.assertEqual(uncommitted.returncode, 1)
+        self.assertIn("without a version bump", uncommitted.stderr)
+
+    def test_base_auto_uses_origin_main_when_present(self) -> None:
+        # Synthesize the remote-tracking ref without any network, then commit a
+        # payload change on a branch: auto must measure the branch range.
+        main_sha = self.rev_parse("main")
+        git(self.repo, "update-ref", "refs/remotes/origin/main", main_sha)
+        git(self.repo, "checkout", "-b", "feature")
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        git(self.repo, "commit", "-am", "payload change, no bump")
+        result = self.gate(base="auto")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("without a version bump", result.stderr)
+
     def test_unknown_base_fails_cleanly(self) -> None:
         result = self.gate(base="does-not-exist")
         self.assertEqual(result.returncode, 1)
