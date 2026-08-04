@@ -4,4 +4,4 @@
 PyYAML==6.0.3
 ruff==0.15.21
 mypy==2.3.0
-coverage==7.6.10
+coverage==7.15.2
