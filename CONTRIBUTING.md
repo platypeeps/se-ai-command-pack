@@ -2,10 +2,13 @@
 
 ## Workflow
 
+0. Run `make setup` once per fresh clone to create the virtualenv and install
+   the dev dependencies (PyYAML, ruff, mypy, coverage); `make generate` and
+   `make check` import PyYAML and crash without it.
 1. Branch from `main`; open a PR for every change.
 2. Edit canonical skills under `templates/skills/` and canonical agents under
    `templates/agents/`, never the generated `manifest.json` rows or
-   `generated/**` overlays by hand.
+   `generated/**` overlays (including `generated/skills/`) by hand.
 3. Run `make generate` after any skill, agent, or registry change so the
    manifest and generated overlays stay in sync (`make release-check` verifies
    this).

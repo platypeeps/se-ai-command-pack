@@ -448,6 +448,9 @@ directories are pruned.
 
 ## Maintaining the pack
 
+0. `make setup` once per fresh clone to create the virtualenv and install the
+   dev dependencies (PyYAML, ruff, mypy, coverage); `make generate` and
+   `make check` import PyYAML and fail without it.
 1. Edit or add skills under `templates/skills/` (see
    [docs/SE_AI_COMMAND_PACK.md](docs/SE_AI_COMMAND_PACK.md) for the
    add-a-skill checklist).
