@@ -44,13 +44,18 @@ receipt + GitHub CI) does not share the same nested-subprocess path.
 
 ## Acceptance Criteria
 
-- [ ] A regression test reproduces the pre-fix divergence: `check.py` direct
-      passes while `review.py`-nested fails on an identical live tree.
-- [ ] After the fix, `review.py` and direct `check.py` return identical
-      pass/fail for `knowledge.obsidian-kb` and `pack.review-scope` on the same
-      tree, including the post-finalization (archived-task + journal) state.
-- [ ] The genuine-failure paths (stale KB, absent scope section) still block in
-      both direct and nested invocation.
+- [x] A regression test reproduces the pre-fix divergence: `check.py` direct
+      passes while `review.py`-nested fails on an identical live tree. Root
+      cause is check-report memoization at `review.py:1796` keyed on an identity
+      that excludes both checks' live inputs; fix recomputes via
+      `_resolve_check`. (test: `test_review_coordinator.ResolveCheckTest.test_stale_cached_failure_is_recomputed_fresh`,
+      proven to FAIL against the restored pre-fix caching, PASS after fix)
+- [x] After the fix, `review.py` and direct `check.py` return identical
+      pass/fail on the same tree because the report is recomputed live every
+      invocation. (test: `test_nested_result_matches_direct_for_pass_and_fail`,
+      `test_resume_does_not_regress_phase_or_cached_stages`)
+- [x] The genuine-failure paths (stale KB, absent scope section) still block in
+      both direct and nested invocation. (test: `test_genuine_failure_still_blocks`)
 
 ## Notes
 
