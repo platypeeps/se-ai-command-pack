@@ -9,8 +9,12 @@ from contextlib import ExitStack
 from pathlib import Path
 from unittest import mock
 
-import tomllib
 from install_test_support import PACK_ROOT, TempDirTestCase
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python < 3.11
+    tomllib = None
 
 GENERATOR_PATH = PACK_ROOT / ".github" / "scripts" / "generate-skill-surfaces.py"
 
@@ -1062,6 +1066,7 @@ class RealRepoAgentTest(unittest.TestCase):
                     row["target"],
                 )
 
+    @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
     def test_smoke_agent_round_trips_through_both_dialects(self) -> None:
         name = "se-smoke"
         canonical = (gen.AGENTS_ROOT / f"{name}.md").read_text("utf-8")
@@ -1111,6 +1116,7 @@ class AgentRendererTest(unittest.TestCase):
         _, canonical_body = gen.parse_frontmatter(self.CANONICAL, "canonical")
         self.assertEqual(body, canonical_body)
 
+    @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
     def test_codex_toml_escapes_and_preserves_body(self) -> None:
         rendered = gen.render_codex_agent("se-fixture", self.CANONICAL)
         parsed = tomllib.loads(rendered)
@@ -1121,6 +1127,7 @@ class AgentRendererTest(unittest.TestCase):
         _, canonical_body = gen.parse_frontmatter(self.CANONICAL, "canonical")
         self.assertEqual(parsed["developer_instructions"], canonical_body)
 
+    @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
     def test_codex_omits_absent_optional_hints(self) -> None:
         minimal = (
             "---\n"

@@ -6,7 +6,6 @@ import hashlib
 import json
 import unittest
 
-import tomllib
 import yaml
 from install_test_support import (
     PACK_ROOT,
@@ -20,6 +19,11 @@ from install_test_support import (
 )
 
 from installer.registry import PLATFORM_REGISTRY, SKILL_NAMES
+
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python < 3.11
+    tomllib = None
 
 MANIFEST = json.loads((PACK_ROOT / "manifest.json").read_text(encoding="utf-8"))
 ALL_TARGETS = {row["target"] for row in MANIFEST["files"]}
@@ -364,6 +368,7 @@ class AgentInstallTest(TempDirTestCase):
         self.assertFalse(claude_agent.exists())
         self.assertFalse(codex_agent.exists())
 
+    @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
     def test_installed_codex_agent_is_valid_toml(self) -> None:
         home = make_home(self.base, anchors=("codex",))
         install_ok("--root", str(home))
