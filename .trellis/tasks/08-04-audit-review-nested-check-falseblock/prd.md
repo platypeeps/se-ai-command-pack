@@ -26,9 +26,9 @@ receipt + GitHub CI) does not share the same nested-subprocess path.
   - GitHub CI: unittest (ubuntu 3.10/3.13, macOS 3.13), lint, release-payload-gate, ci-result all SUCCESS.
 - Only `review.py` -> `check.py` (doubly-nested under `toolchain.sh run-python`)
   reports the stale 470 / missing-section state, across 5 fresh attempt ids.
-- `.obsidian-kb` is a directory **symlink** to the user's Obsidian vault
-  (`~/Documents/sdelmas-llm-wiki/raw/se-ai-command-pack`); the KB "copies"
-  drift is the archived task's prd doc.
+- `.obsidian-kb` is a directory **symlink** to an external Obsidian vault
+  (outside the repo tree); the KB "copies" drift is the archived task's prd
+  doc.
 
 ## Requirements
 
