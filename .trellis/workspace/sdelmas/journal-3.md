@@ -126,3 +126,38 @@ Added a generated generated/registry-snapshot.json (schemaVersion 1) produced by
 ### Next Steps
 
 - None - task complete
+
+
+## Session 107: File registry-snapshot follow-up backlog tasks
+
+**Date**: 2026-08-04
+**Task**: File registry-snapshot follow-up backlog tasks
+**Branch**: `chore/registry-snapshot-followup-tasks`
+
+### Summary
+
+Filed the three follow-up backlog tasks noted in the archived 07-25-audit-registry-snapshot-contract implement.md after PR #131 merged: SD-pack twin producer (P2), AST-fallback removal (P3, blocked on the twin), and layout-assumptions evaluation (P3). Task stubs only, no code changes.
+
+### Main Changes
+
+- Created 08-04-audit-registry-snapshot-sd-twin, -ast-removal, and -layout-assumptions planning tasks
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d811d48` | chore(task): file registry-snapshot follow-up backlog tasks |
+
+### Testing
+
+- [OK] review preflight: 0 failures (task metadata valid)
+- [OK] PR #132 CI green; 0 unresolved review threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 106
+- **Total Sessions**: 107
 - **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~125 | Active |
+| `journal-3.md` | ~162 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 107 | 2026-08-04 | File registry-snapshot follow-up backlog tasks | `d811d48` | `chore/registry-snapshot-followup-tasks` |
 | 106 | 2026-08-04 | Versioned registry snapshot for skill_review (PR #131) | `54d56b6`, `f791c8e`, `9c4b3bf`, `59ed8b6`, `739b4d8` | `audit/registry-snapshot-contract` |
 | 105 | 2026-08-04 | File sd-review nested-check false-block backlog task (PR #130) | `9154098`, `dca1199` | `chore/file-review-nested-check-task` |
 | 104 | 2026-08-04 | Ship audit-maintainer-docs-accuracy (PR #129) | `4f3b9f8`, `9e9f392`, `e0d8540` | `audit/maintainer-docs-accuracy` |
