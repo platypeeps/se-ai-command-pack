@@ -684,6 +684,42 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.write_skill(text=text)
         self.assert_validation_error("out of order")
 
+    @staticmethod
+    def _cite(basename: str) -> str:
+        return VALID_SKILL.format(name="se-test").replace(
+            "## Workflow\n\nText.",
+            f"## Workflow\n\nSee references/{basename} for the protocol.",
+        )
+
+    def test_dangling_citation_fails(self) -> None:
+        # Cited reference is neither an own resource nor a registered fan-out.
+        self.write_skill(text=self._cite("nonexistent.md"))
+        self.assert_validation_error("will not ship to this skill")
+
+    def test_citation_satisfied_by_own_reference(self) -> None:
+        self.write_skill(text=self._cite("local.md"))
+        own = self.skills_root / "se-test" / "references"
+        own.mkdir()
+        (own / "local.md").write_text("- Local note.\n", encoding="utf-8")
+        gen.validate_skills()
+
+    def test_citation_satisfied_by_registered_fanout(self) -> None:
+        self.write_skill(text=self._cite("shared.md"))
+        shared = self.skills_root / "_shared" / "references"
+        shared.mkdir(parents=True)
+        (shared / "shared.md").write_text("- Shared note.\n", encoding="utf-8")
+        with mock.patch.object(
+            gen,
+            "SHARED_REFERENCES",
+            {"_shared/references/shared.md": ("se-test",)},
+        ):
+            gen.validate_skills()
+
+    def test_placeholder_citation_is_ignored(self) -> None:
+        # An angle-bracketed documentation placeholder is not a real citation.
+        self.write_skill(text=self._cite("<file>.md"))
+        gen.validate_skills()
+
     def test_banned_phrase(self) -> None:
         text = VALID_SKILL.format(name="se-test").replace(
             "Intro paragraph.", "Ask Claude to do it."
