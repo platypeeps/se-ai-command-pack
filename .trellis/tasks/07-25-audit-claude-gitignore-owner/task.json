@@ -12,7 +12,7 @@
   "assignee": "sdelmas",
   "createdAt": "2026-07-25",
   "completedAt": null,
-  "branch": null,
+  "branch": "audit/claude-gitignore-owner",
   "base_branch": "main",
   "worktree_path": null,
   "commit": null,
