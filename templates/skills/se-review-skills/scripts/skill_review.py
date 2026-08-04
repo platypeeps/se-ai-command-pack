@@ -254,9 +254,9 @@ def _parse_registry(path: Path) -> RegistryData:
     labels = _assignment(tree, "FAMILY_LABELS")
     if isinstance(labels, ast.Dict):
         family_order = [
-            value
-            for key in labels.keys
-            if (value := _string_value(key)) is not None
+            family_key
+            for key_node in labels.keys
+            if (family_key := _string_value(key_node)) is not None
         ]
 
     families: dict[str, str] = {}
@@ -286,9 +286,9 @@ def _parse_registry(path: Path) -> RegistryData:
     registry = _assignment(tree, "PLATFORM_REGISTRY")
     if isinstance(registry, ast.Dict):
         platforms = [
-            value
-            for key in registry.keys
-            if (value := _string_value(key)) is not None
+            platform_key
+            for key_node in registry.keys
+            if (platform_key := _string_value(key_node)) is not None
         ]
 
     shared_references: dict[str, tuple[str, ...]] = {}
@@ -300,9 +300,9 @@ def _parse_registry(path: Path) -> RegistryData:
             if key is None or not isinstance(value_node, (ast.Tuple, ast.List)):
                 continue
             consumers = tuple(
-                value
+                consumer
                 for entry in value_node.elts
-                if (value := _string_value(entry)) is not None
+                if (consumer := _string_value(entry)) is not None
             )
             shared_references[key] = consumers
     return RegistryData(
