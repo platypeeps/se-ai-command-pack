@@ -1887,3 +1887,43 @@ Add an 80% statement-coverage floor for repo-own Python (installer/, install.py,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 102: audit-dependabot-config (A-031): pip Dependabot config + triage docs
+
+**Date**: 2026-08-04
+**Task**: audit-dependabot-config (A-031): pip Dependabot config + triage docs
+**Branch**: `audit/dependabot-config`
+
+### Summary
+
+Added .github/dependabot.yml (pip ecosystem, weekly, open-pull-requests-limit 5, chore(deps) prefix) so dependency-update PRs actually arrive and the dogfooded sd-update-deps triage stops being inert. Documented the triage path, enablement model, and npm/pip-audit deferrals in CONTRIBUTING.md. Pip-only (npm deferred per A-032; no scheduled pip-audit lane). Shipped via PR #125 through the sd-work-backlog loop (iteration 5); planning converged through 3 adversarial-review rounds and review addressed local + Copilot findings.
+
+### Main Changes
+
+- New .github/dependabot.yml: pip ecosystem, directory /, weekly schedule, open-pull-requests-limit 5, chore(deps) commit prefix; strict offline field check asserts exact key set and every value
+- CONTRIBUTING.md 'Dependency updates' section: sd-update-deps triage path, enablement model (non-fork = committing the config to the default branch enables version updates; repo- or org-level Dependabot disablement can suppress), npm + pip-audit deferrals
+- Review: rebutted 3 false-positive prism findings (YAML hyphen, .md extension, requirements reference) with evidence; fixed 5 Copilot findings (repo-level disablement acknowledgement across prd/design/implement/CONTRIBUTING; design Scope deliverable-vs-planning-artifact wording)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d230190` | feat(ci): add pip Dependabot config and dependency-update triage docs |
+| `07b52a9` | docs(task): strict-check asserts exact pip-entry key set (review) |
+| `5a73003` | docs(dependabot): correct enablement/scope claims (Copilot review) |
+
+### Testing
+
+- [OK] make check green: coverage 87.7% (floor 80), ruff clean, mypy clean, generate --check matches, release payload gate no-change
+- [OK] dependabot.yml strict field check prints 'dependabot.yml strict field check OK'
+- [OK] sd-review scope=pr ready/clean at head 5a73003 (gito clean, 0 outstanding); 5 Copilot threads resolved (0 unresolved)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
