@@ -1,15 +1,15 @@
 # Implement: Add `agent` artifact kind to installer and generator
 
 Execution plan for the design in `design.md`. Complex task — do not `task.py start` until
-this and `design.md` are reviewed, and precondition P0 below is satisfied.
+this and `design.md` are reviewed.
 
-## P0 — Blocking precondition (verify BEFORE start)
+## Non-blocking note — A-002 (decoupled, verified 2026-08-03)
 
-- [ ] `07-25-audit-registry-snapshot-contract` (A-002) is merged, OR its snapshot-schema
-      version bump is folded into this task's first commit. Rationale: this task adds an
-      `agents_dir` field to `PlatformInfo`, changing the shape `skill_review.py` AST-parses
-      on consumer machines. Without the schema bump, installed copies misparse instead of
-      detecting incompatibility. If unmet, **park this task** with a note pointing at A-002.
+`07-25-audit-registry-snapshot-contract` (A-002) is **not** a precondition. Verified: the
+shipped consumer parser `skill_review.py:286` reads only `PLATFORM_REGISTRY` dict keys, not
+`PlatformInfo` field values, so adding an optional `agents_dir` field is invisible to it —
+no misparse, no incompatibility. There is no versioned snapshot pinning the field shape
+(that is A-002's own deliverable). Proceed without waiting on A-002.
 
 ## Ordered checklist
 
@@ -17,12 +17,15 @@ this and `design.md` are reviewed, and precondition P0 below is satisfied.
    - [ ] Add optional `agents_dir: str | None = None` to `PlatformInfo`.
    - [ ] Set `claude.agents_dir=".claude/agents"`, `codex.agents_dir=".codex/agents"`,
          leave `agents` (Amp) at `None`.
-   - [ ] Bump the registry snapshot schema version (per P0) so the new field is detected.
+   - [ ] No consumer-parser change needed for this field (see A-002 note); if
+         `07-25-audit-registry-snapshot-contract` later introduces a snapshot schema,
+         include `agents_dir` in it then.
 
 2. **Canonical source** (`templates/agents/`)
-   - [ ] Create `templates/agents/<smoke-name>.md` — neutral MD + frontmatter
+   - [ ] Create `templates/agents/se-smoke.md` — neutral MD + frontmatter
          (`name`, `description`, optional `tools`, `model`); body is a minimal system prompt.
-   - [ ] Decide OQ1 (smoke vs. first real agent) with the reviewer before authoring content.
+         Throwaway smoke agent (OQ1 resolved); keep minimal, mark for removal when
+         `07-25-worker-agents` ships the first real role.
 
 3. **Generator** (`.github/scripts/generate-skill-surfaces.py`)
    - [ ] Replace the hardcoded `if platform == "claude" and relative == "SKILL.md"` branch
@@ -76,6 +79,7 @@ catches drift, full suite green, version bumped + changelog dated.
 
 - `generate-skill-surfaces.py build_rows()` — the renderer-hook refactor must not change any
   existing skill row; `test_generate` golden comparison is the tripwire.
-- `installer/registry.py PlatformInfo` — shape change gated by P0 (registry snapshot).
+- `installer/registry.py PlatformInfo` — adding optional `agents_dir` is consumer-safe
+  (parser reads only `PLATFORM_REGISTRY` keys; see A-002 note).
 - Rollback: delete `templates/agents/**` + regenerate; agent rows vanish; `remove`/`update`
   prune installed files via provenance. No migration.

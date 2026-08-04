@@ -43,6 +43,19 @@ skill-body dispatch protocols and the `fresh-session` encoding decision
   `generate-skill-surfaces.py:524` (`if platform == "claude" and relative == "SKILL.md"`)
   is generalized into a per-`(platform, kind)` renderer lookup. Skill rows keep their
   current behavior byte-for-byte; agent rows are added by a sibling `build_agent_rows()`.
+- **D7 — throwaway smoke agent (resolves OQ1).** A single minimal `se-smoke` agent ships
+  solely to exercise render → manifest → install → status → remove, and is removed when
+  `07-25-worker-agents` lands the first real role. This honors binding parent R6 (wave-1
+  role content belongs to `07-25-worker-agents`) and keeps this task pure plumbing. Keep
+  the smoke source minimal and clearly marked for removal.
+- **D8 — A-002 is decoupled, not a precondition (resolves OQ2).** Verified: the shipped
+  consumer parser `skill_review.py:286` reads only the `PLATFORM_REGISTRY` *dict keys*
+  (platform names) and never inspects `PlatformInfo` field values, so adding an optional
+  `agents_dir` field is invisible to it — no misparse, no incompatibility to signal. There
+  is also no versioned registry snapshot to pin the field shape (creating one is A-002's
+  own deliverable). The new `agent` kind lives in `installer/manifest.py`, not the registry
+  the consumer parses. `07-25-audit-registry-snapshot-contract` therefore does **not** gate
+  this task; it stays independently valuable but decoupled.
 
 ## 3. Data flow
 
@@ -66,12 +79,10 @@ with `name`, `description`, `developer_instructions` (= body), and optional `mod
 
 ## 4. Contracts and compatibility
 
-- **Registry-snapshot precondition (A-002).** `skill_review.py` AST-parses
-  `installer/registry.py` on consumer machines. Adding an `agents_dir` field to
-  `PlatformInfo` changes that shape. Therefore `07-25-audit-registry-snapshot-contract`
-  must land first (or its snapshot-schema bump must be folded into this task), so installed
-  copies detect incompatibility instead of misparsing. **This is a hard precondition, recorded
-  as a blocking checklist item in `implement.md`.**
+- **Registry-snapshot / A-002 (decoupled — see D8).** The consumer `skill_review.py:286`
+  parses only `PLATFORM_REGISTRY` dict keys, not `PlatformInfo` field values, so the new
+  optional `agents_dir` field introduces no consumer incompatibility. `A-002` is **not** a
+  precondition; recorded in `implement.md` as a non-blocking note, not a gate.
 - **Catalog special-case (A-003).** The existing `GENERATED_SHARED_REFERENCES` /
   skill-catalog one-off is absorbed into the same renderer-hook refactor rather than left as
   a parallel exception; coordinate with `07-25-audit-generated-catalog-location`.
@@ -93,10 +104,11 @@ with `name`, `description`, `developer_instructions` (= body), and optional `mod
   rows, and `install.py remove`/`update` prune the installed files via provenance. No data
   migration.
 
-## 6. Open questions for reviewer
+## 6. Open questions — resolved (user, 2026-08-03)
 
-- OQ1: ship the smoke agent as `se-smoke` (throwaway, later removed) or make wave-1
-  `se-source-reader` the first real agent here instead of in `07-25-worker-agents`?
-  Recommendation: throwaway smoke agent — keeps this task pure plumbing per R6.
-- OQ2: confirm the registry-snapshot-contract sequencing (precondition vs. fold-in). If it
-  is not yet designed, this task parks until it is.
+- OQ1 → **throwaway `se-smoke` agent** (see D7). Wave-1 role content stays in
+  `07-25-worker-agents` per binding R6.
+- OQ2 → **A-002 decoupled** (see D8). Verified the consumer parser ignores `PlatformInfo`
+  fields; no precondition. This task no longer parks on `07-25-audit-registry-snapshot-contract`.
+
+No open questions remain; the design is ready for a Phase 2 `task.py start`.
