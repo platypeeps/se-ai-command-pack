@@ -1240,8 +1240,8 @@ def main(argv: list[str] | None = None) -> int:
         if drifted:
             return 1
         print(
-            "manifest.json, README.md, skill-catalog.md, and Claude skills "
-            "match the generated surfaces"
+            "manifest.json, README.md, skill-catalog.md, registry-snapshot.json, "
+            "Claude skills, and agent overlays match the generated surfaces"
         )
         return 0
 
@@ -1278,8 +1278,8 @@ def main(argv: list[str] | None = None) -> int:
         )
     if not updates:
         print(
-            "manifest.json, README.md, skill-catalog.md, and Claude skills "
-            "unchanged"
+            "manifest.json, README.md, skill-catalog.md, registry-snapshot.json, "
+            "Claude skills, and agent overlays unchanged"
         )
         return 0
     try:

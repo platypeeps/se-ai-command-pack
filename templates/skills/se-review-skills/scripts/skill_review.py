@@ -298,7 +298,10 @@ def _registry_from_snapshot(payload: dict, path: Path) -> RegistryData:
         families,
         tuple(family_order),
         tuple(skill_order),
-        tuple(platforms),
+        # Sort to mirror _parse_registry's tuple(sorted(platforms)) exactly, so
+        # snapshot-derived and AST-derived RegistryData stay identical (and
+        # snapshot identity stable) even if a producer emits unsorted platforms.
+        tuple(sorted(platforms)),
         shared_references,
     )
 
