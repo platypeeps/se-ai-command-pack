@@ -11,11 +11,40 @@ README, operator guide, and installer agree on whether the codex platform honors
 - If retracted: remove the "(honors `$CODEX_HOME`)" parenthetical, document the `--root`/symlink workaround, and regenerate derived surfaces (repomix map).
 - Either way, the operator guide's environment-variables statement must remain true.
 
+## Decision (2026-08-04, user-approved)
+
+Resolve by **retracting** the README claim, not implementing `$CODEX_HOME`.
+Rationale: code is the source of truth — `installer/registry.py` hard-codes the
+codex row (`.codex/skills`/`.codex`), no code path reads `$CODEX_HOME`, and the
+operator guide (`docs/SE_AI_COMMAND_PACK.md`) already states "No environment
+variables are read". The README parenthetical is the lone incorrect outlier.
+Implementing resolution would add unshipped consumer-facing behavior and, per
+the cross-program note, double the codex-surface contract question — out of
+scope for a consistency fix. Retract keeps this lightweight and low-risk. This
+selects the "retract" branch already enumerated in Requirements/AC.
+
 ## Acceptance Criteria
 
-- [ ] `grep -r CODEX_HOME README.md docs/ install.py installer/` shows only mutually consistent statements (and code, if implemented).
-- [ ] If implemented: test proves skills land under a relocated `$CODEX_HOME`.
+- [ ] The hand-authored sources — README.md, docs/SE_AI_COMMAND_PACK.md,
+      install.py, installer/ — carry only mutually consistent `$CODEX_HOME`
+      statements (codex reads a fixed `~/.codex`; no env resolution).
+- [ ] README documents the relocation workaround (`install.py --root` /
+      symlink `~/.codex`) in place of the retracted claim.
 - [ ] Changelog entry (consumer-visible contract).
+
+### Deferred / out of scope (planning review, C-1 / C-2)
+
+- `docs/repomix-map.md` embeds a packed copy of the README table (line ~23355)
+  and of the audit report/ledger text. It is a generated repomix snapshot that
+  is **not** freshness-gated (`make check` does not verify it) and is refreshed
+  in bulk at version-refresh time — it is already ~28 commits stale on `main`.
+  A full `make repomix` regen here would fold ~28 commits of unrelated repo
+  drift into an A-044 doc fix (and trip the pr-body/review-scope gates), so the
+  map regen is **deferred** to the next scheduled bulk `make repomix` refresh,
+  which will pick up the corrected README table automatically. The grep-
+  consistency AC above therefore scopes to hand-authored sources, excluding the
+  generated `docs/repomix-map.md` snapshot and the historical `.trellis/audit/`
+  records (which correctly describe the pre-fix drift).
 
 ## Notes
 

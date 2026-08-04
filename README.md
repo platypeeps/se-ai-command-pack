@@ -358,12 +358,18 @@ home directory:
 | Platform | Skills directory | Gating anchor | Used by |
 |---|---|---|---|
 | `claude` | `~/.claude/skills/` | `~/.claude` | Claude Code / Cowork |
-| `codex` | `~/.codex/skills/` | `~/.codex` | OpenAI Codex (honors `$CODEX_HOME`) |
+| `codex` | `~/.codex/skills/` | `~/.codex` | OpenAI Codex |
 | `agents` | `~/.config/agents/skills/` | `~/.config/agents` | Amp and compatible tools |
 
 A platform whose anchor is missing is skipped with a hint; pass
 `--platform <id>` or `--all` to install it anyway. Adding a platform is one
 row in `installer/registry.py`.
+
+The installer reads no environment variables (see the operator guide): every
+platform's directories are fixed relative to your home directory, and `codex`
+targets `~/.codex` regardless of `$CODEX_HOME`. To install under a different
+root, pass `install.py --root <dir>` (skills land under `<dir>/.codex/skills`)
+or symlink `~/.codex` to the location Codex actually reads.
 
 ## Install
 
