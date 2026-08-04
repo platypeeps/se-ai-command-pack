@@ -332,8 +332,7 @@ class RealRepoGeneratorTest(unittest.TestCase):
         skill's registered shared sources must match the golden snapshot, and
         every registered reference must fan into a manifest target on every
         platform. Failure output names the offending skill and reference."""
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
+        rows = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))["files"]
         stale = sorted(set(EXPECTED_SHARED_SOURCES) - set(gen.SKILL_NAMES))
         self.assertEqual(stale, [], f"snapshot names absent from SKILL_NAMES: {stale}")
         for name in gen.SKILL_NAMES:
@@ -345,7 +344,9 @@ class RealRepoGeneratorTest(unittest.TestCase):
                         if name in consumers
                     )
                 )
-                expected = EXPECTED_SHARED_SOURCES.get(name, ())
+                # Sort the snapshot too so the golden literal is order-free:
+                # a maintainer may list a skill's sources in any order.
+                expected = tuple(sorted(EXPECTED_SHARED_SOURCES.get(name, ())))
                 self.assertEqual(
                     actual,
                     expected,
@@ -356,11 +357,14 @@ class RealRepoGeneratorTest(unittest.TestCase):
                     basename = Path(source).name
                     for platform, info in gen.PLATFORM_REGISTRY.items():
                         target = f"{info.skills_dir}/{name}/references/{basename}"
-                        self.assertIn(
-                            target,
-                            targets,
-                            f"{name}: shared reference {basename} missing "
-                            f"manifest target for {platform}",
+                        # Assert exactly one manifest row per platform target,
+                        # preserving the retired per-skill uniqueness coverage.
+                        matches = [r for r in rows if r["target"] == target]
+                        self.assertEqual(
+                            len(matches),
+                            1,
+                            f"{name}: shared reference {basename} expected one "
+                            f"manifest target for {platform}, got {len(matches)}",
                         )
 
     def test_verification_protocol_preserves_registered_targets(self) -> None:
