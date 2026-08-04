@@ -86,8 +86,8 @@ Add a **Dependency updates** section to `CONTRIBUTING.md`: Dependabot opens
 weekly pip PRs; triage them with `sd-update-deps` (classify, merge the safe
 class under the housekeeping gate, park the rest). Record the npm and pip-audit
 deferrals and the enablement model (D6: committing to the default branch enables
-version updates on this non-fork; org-level disablement is the only blocker) in
-the same section.
+version updates on this non-fork; a repository- or org-level Dependabot
+disablement can still suppress it) in the same section.
 
 ### D6 — Enablement model and post-archive handoff
 
@@ -97,9 +97,10 @@ live `gh repo view` → `"isFork": false`):
 - For a non-fork repository, **committing `dependabot.yml` to the default branch
   is itself the enablement** — version updates turn on automatically; there is
   no separate repo-level "enable version updates" toggle to flip.
-- A separate manual enable step exists only for **forks**, and version updates
-  can be suppressed by an **org-level** Dependabot disablement. Org-level policy
-  is the only realistic blocker here, and it is observable only post-merge.
+- A separate manual enable step exists only for **forks**. Once enabled, version
+  updates can still be suppressed by disabling Dependabot at the **repository or
+  organization level** (Settings → Code security). Such a disablement is the
+  realistic blocker here, and it is observable only post-merge.
 
 So the earlier "must be enabled in repo/org settings, unverifiable offline"
 framing was wrong for this repo.
@@ -120,8 +121,10 @@ after housekeeping merges the PR, and is explicitly not acceptance evidence:
 
 ## Scope / compatibility
 
-- Additive only, and exactly two committed files change: a new
-  `.github/dependabot.yml` and a CONTRIBUTING section.
+- Additive only. Two **deliverable** files change: a new
+  `.github/dependabot.yml` and a CONTRIBUTING section. The PR also commits this
+  task's Trellis planning artifacts (`prd.md`, `design.md`, `implement.md`,
+  `task.json`) as every task does — bookkeeping, not the deliverable.
 - No shipped-payload change (`templates/**`, `generated/**`, `manifest.json`
   untouched) → no version bump; release gate stays green.
 - No runtime/consumer surface change.
@@ -135,6 +138,6 @@ refresh. This task adds no manual KB write of its own.
 
 ## Rollback
 
-Delete `.github/dependabot.yml` and the CONTRIBUTING section — the only two
-committed artifacts. Nothing else depends on them. No KB or external-path
+Delete `.github/dependabot.yml` and the CONTRIBUTING section — the two committed
+deliverable artifacts. Nothing else depends on them. No KB or external-path
 accounting is needed because this task commits no such change.

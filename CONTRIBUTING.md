@@ -54,8 +54,9 @@ sanctioned source that hands a classified dependency PR to housekeeping.
 
 Enablement: this repository is not a fork, so committing `dependabot.yml` to the
 default branch is itself the enablement — version updates start automatically,
-with no separate repo-level toggle. The only thing that can suppress them is an
-org-level Dependabot disablement, which is observable after the config lands on
+with no separate repo-level toggle needed to turn them on. They can still be
+suppressed by disabling Dependabot at the repository or organization level
+(Settings → Code security), which is observable only after the config lands on
 `main`.
 
 Deliberately out of scope for now:

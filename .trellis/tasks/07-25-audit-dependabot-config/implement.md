@@ -55,8 +55,9 @@ Branch `audit/dependabot-config` off `main`.
    deferred (root has no deps; `.opencode` unused + removal-pending A-032);
    no scheduled pip-audit lane (considered, deferred); and the enablement model
    — committing `dependabot.yml` to the default branch enables version updates
-   on this non-fork repo (no separate repo toggle), with org-level Dependabot
-   disablement the only possible blocker.
+   on this non-fork repo (no separate repo toggle to turn them on), which can
+   still be suppressed by disabling Dependabot at the repository or organization
+   level.
 
    Do not add a manual `.obsidian-kb` step: KB mirroring of CONTRIBUTING.md is a
    routine local-only side effect owned by the ship lifecycle (sd-create-pr's
