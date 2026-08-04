@@ -1843,3 +1843,47 @@ Retract the README claim that the codex platform honors $CODEX_HOME (no code rea
 ### Next Steps
 
 - None - task complete
+
+
+## Session 101: Coverage measurement and floor in gates (A-020)
+
+**Date**: 2026-08-04
+**Task**: Coverage measurement and floor in gates (A-020)
+**Branch**: `audit/coverage-floor`
+
+### Summary
+
+Add an 80% statement-coverage floor for repo-own Python (installer/, install.py, .github/scripts) enforced by make test and the CI unittest lane, with subprocess coverage capture; shipped via PR #124.
+
+### Main Changes
+
+- coverage==7.6.10 dev dep; .coveragerc (parallel, precision=1) scoped to installer/install/.github/scripts
+- tests/_coverage_subprocess/sitecustomize.py bootstraps subprocess coverage (COVERAGE_PROCESS_START); make test + CI run erase->run->combine->report --fail-under=80
+- Absolute COVERAGE_PROCESS_START and appended PYTHONPATH (Copilot review hardening)
+- CONTRIBUTING 'Test coverage floor' documents floor/baseline/scope/rounding/ratchet
+- Floor set to 80% conservatively; real CI matrix min 87.6% (ubuntu-3.10), 87.7% on 3.13 lanes
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bdbf14c` | feat(ci): coverage floor for repo-own Python (A-020) |
+| `b5893d9` | fix(ci): harden subprocess coverage wiring (Copilot review) |
+| `538c0b6` | docs(task): mark A-020 acceptance criteria met with CI evidence |
+| `7265896` | chore(task): archive 07-25-audit-coverage-floor |
+
+### Testing
+
+- [OK] make test -> TOTAL 87.7%, exit 0
+- [OK] make check green (ruff, mypy, generate --check, release-payload)
+- [OK] AC1 CI red demo: run 30917091981 failed at fail-under=99 (total 87.6), reverted 677d330
+- [OK] CI green all 3 matrix lanes on head b5893d9; Copilot no new comments; sd-review ready
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

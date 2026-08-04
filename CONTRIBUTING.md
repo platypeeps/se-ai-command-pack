@@ -11,6 +11,26 @@
    this).
 4. Run `make check` (tests, lint, release gates) before requesting review.
 
+## Test coverage floor
+
+`make test` and the CI `unittest` lane measure statement coverage of repo-own
+Python and fail below a floor. Scope is `installer/`, `install.py`, and
+`.github/scripts/` (vendored `scripts/` and `.trellis/` are out of scope). Much
+of this code runs via subprocess under test, so `.coveragerc` enables
+`parallel` mode and `tests/_coverage_subprocess/sitecustomize.py` (activated by
+`COVERAGE_PROCESS_START`) measures those child processes; the run is
+`coverage erase → run → combine → report --fail-under`.
+
+- **Current floor: 80%.** It was introduced deliberately below the measured
+  baseline (~88% on Python 3.13; the ubuntu-3.10 lane is lower because
+  `tomllib`-gated tests skip there) so the gate lands green with margin.
+- **Raising it:** read the real per-lane totals from a green CI `unittest` run,
+  take the minimum across the 3.10/3.13 × ubuntu/macOS matrix, and raise
+  `--fail-under` in both the `Makefile` `test` target and
+  `.github/workflows/tests.yml` to just under that minimum.
+- The gate compares `round(total, precision)` (`[report] precision = 1`) against
+  the floor, so a value that rounds to the floor passes.
+
 ## Release discipline
 
 Any change to the shipped payload (`templates/**`, `generated/**`, or

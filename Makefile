@@ -21,7 +21,10 @@ sync:
 	"$(RUN_PYTHON)" install.py --user
 
 test:
-	"$(RUN_PYTHON)" -m unittest discover -s tests -v
+	"$(RUN_PYTHON)" -m coverage erase
+	COVERAGE_PROCESS_START="$(CURDIR)/.coveragerc" PYTHONPATH="$(CURDIR)/tests/_coverage_subprocess$${PYTHONPATH:+:$$PYTHONPATH}" "$(RUN_PYTHON)" -m coverage run -m unittest discover -s tests
+	"$(RUN_PYTHON)" -m coverage combine
+	"$(RUN_PYTHON)" -m coverage report --fail-under=80
 
 lint:
 	"$(RUN_PYTHON)" -m ruff check install.py installer tests .github/scripts
