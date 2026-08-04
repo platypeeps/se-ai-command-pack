@@ -13,9 +13,9 @@ Maintainer-facing docs match reality: the fresh-clone contributor flow works as 
 
 ## Acceptance Criteria
 
-- [ ] A fresh clone following only the documented steps gets through `make check`.
-- [ ] Schema table matches manifest reality (326 templates/ + 52 generated/ rows).
-- [ ] CONTRIBUTING payload definition matches check-release-payload.py PAYLOAD_PREFIXES.
+- [x] A fresh clone following only the documented steps gets through `make check`. (`make setup` added as step 0 to README "Maintaining the pack" and the CONTRIBUTING workflow.)
+- [x] Schema table matches manifest reality. Live counts drifted since PRD authoring: now 328 templates/ + 55 generated/ (was 326 + 52). Source row (docs/SE_AI_COMMAND_PACK.md) now names both prefixes with a dated 328/55 snapshot anchored to v0.66.2.
+- [x] CONTRIBUTING payload definition matches check-release-payload.py PAYLOAD_PREFIXES (`templates/**`, `generated/**`, `manifest.json`) — already aligned; never-hand-edit rule extended to name `generated/skills/`.
 
 ## Notes
 
