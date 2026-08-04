@@ -1802,3 +1802,44 @@ Replaced the wholesale .claude/ gitignore rule (external trellis init) with an i
 ### Next Steps
 
 - None - task complete
+
+
+## Session 100: Resolve CODEX_HOME contract drift (A-044)
+
+**Date**: 2026-08-04
+**Task**: Resolve CODEX_HOME contract drift (A-044)
+**Branch**: `audit/codex-home-contract`
+
+### Summary
+
+Retract the README claim that the codex platform honors $CODEX_HOME (no code reads it; installer hard-codes ~/.codex). Document the install.py --root / symlink ~/.codex relocation workaround, clarifying --root changes only the install write path. Ship as 0.66.1 docs-only contract correction.
+
+### Main Changes
+
+- README: removed the '(honors $CODEX_HOME)' parenthetical from the codex platform row; codex reads a fixed ~/.codex regardless of $CODEX_HOME
+- README: added relocation-workaround paragraph (symlink ~/.codex or relocate home); clarified install.py --root changes only where the installer writes, not Codex's read path (Copilot review fix)
+- manifest.json 0.66.0->0.66.1; CHANGELOG 0.66.1 entry; regenerated skill-catalog version stamp via make generate
+- repomix-map regen deferred to next bulk refresh (planning-review C-1, documented in prd.md); AC scoped to hand-authored sources
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `75f896c` | fix(docs): retract codex $CODEX_HOME claim (A-044) |
+| `9f21063` | docs: clarify Codex reads a fixed ~/.codex; --root only affects install path (review) |
+
+### Testing
+
+- [OK] deterministic sd-check coordinator ready at head 9f21063 (attempt 2)
+- [OK] CI green on PR #123: lint, release-payload-gate, unittest matrix (3.10/3.13 ubuntu, 3.13 macos), ci-result all pass
+- [OK] AC1 grep: hand-authored sources carry only the explicit ~/.codex retraction, no residual honor claim
+- [OK] pre-archive gate valid (pre_archive_valid) after AC checkboxes marked
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
