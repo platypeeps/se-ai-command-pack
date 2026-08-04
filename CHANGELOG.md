@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.66.3 - 2026-08-04
+
+- Emit a versioned machine-readable `generated/registry-snapshot.json` from
+  `make generate` (drift-gated). se-review-skills' `skill_review.py` now prefers
+  this snapshot over AST-parsing `installer/registry.py` in reviewed checkouts,
+  with a retained AST fallback so both packs keep byte-identical review output;
+  a version-incompatible or malformed snapshot fails closed.
+
 ## 0.66.2 - 2026-08-04
 
 - Bring the bundled skill-review analyzer

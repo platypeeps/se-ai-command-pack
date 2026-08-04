@@ -219,6 +219,114 @@ class SkillReviewInventoryTest(TempDirTestCase):
         payload["snapshotId"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
         return payload
 
+    # --- registry snapshot consumption (A-002) ---
+
+    SE_SNAPSHOT = {
+        "schemaVersion": 1,
+        "familyOrder": ["improve"],
+        "skills": [{"name": "se-test", "family": "improve"}],
+        "platforms": ["agents", "claude", "codex"],
+        "sharedReferences": {},
+    }
+
+    def write_snapshot(self, root: Path, payload: object) -> Path:
+        path = root / "generated" / "registry-snapshot.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        if isinstance(payload, (dict, list)):
+            path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+        else:
+            path.write_text(str(payload), encoding="utf-8")
+        return path
+
+    def test_snapshot_preferred_matches_ast_fallback(self) -> None:
+        # A present, valid snapshot and the AST fallback derive an identical
+        # RegistryData for the same registry, so the emitted snapshotId is equal.
+        root, _ = self.write_se_pack()
+        fallback = self.inventory(root, "se-test")["snapshotId"]
+        self.write_snapshot(root, dict(self.SE_SNAPSHOT))
+        preferred = self.inventory(root, "se-test")["snapshotId"]
+        self.assertEqual(preferred, fallback)
+
+    def test_absent_snapshot_falls_back_to_ast(self) -> None:
+        root, _ = self.write_se_pack()
+        self.assertFalse((root / "generated" / "registry-snapshot.json").exists())
+        # No raise; families resolved via the retained AST parser.
+        skill = self.inventory(root, "se-test")["skills"][0]
+        self.assertEqual(skill["family"], "improve")
+
+    def test_symlinked_snapshot_is_not_followed_and_falls_back(self) -> None:
+        root, _ = self.write_se_pack()
+        external = self.base / "external-snapshot.json"
+        external.write_text(json.dumps(dict(self.SE_SNAPSHOT)), encoding="utf-8")
+        link = root / "generated" / "registry-snapshot.json"
+        link.parent.mkdir(parents=True, exist_ok=True)
+        link.symlink_to(external)
+        result = review._load_registry_snapshot(link)
+        self.assertIsNone(result)
+        # End-to-end still succeeds via the AST fallback.
+        self.assertEqual(
+            self.inventory(root, "se-test")["skills"][0]["family"], "improve"
+        )
+
+    def test_symlinked_parent_directory_is_not_followed(self) -> None:
+        # A regular snapshot file reached through a symlinked `generated/`
+        # directory still crosses a symlink boundary and must not be trusted.
+        root, _ = self.write_se_pack()
+        real_generated = self.base / "real-generated"
+        real_generated.mkdir(parents=True, exist_ok=True)
+        (real_generated / "registry-snapshot.json").write_text(
+            json.dumps(dict(self.SE_SNAPSHOT)), encoding="utf-8"
+        )
+        link_dir = root / "generated"
+        link_dir.symlink_to(real_generated, target_is_directory=True)
+        snapshot = link_dir / "registry-snapshot.json"
+        self.assertTrue(snapshot.is_file())
+        self.assertFalse(snapshot.is_symlink())
+        self.assertIsNone(review._load_registry_snapshot(snapshot))
+        self.assertEqual(
+            self.inventory(root, "se-test")["skills"][0]["family"], "improve"
+        )
+
+    def test_snapshot_version_not_in_supported_set_fails_closed(self) -> None:
+        root, _ = self.write_se_pack()
+        for version in (0, 2):
+            payload = dict(self.SE_SNAPSHOT)
+            payload["schemaVersion"] = version
+            path = self.write_snapshot(root, payload)
+            with self.subTest(version=version):
+                with self.assertRaises(review.ReviewError):
+                    review._load_registry_snapshot(path)
+
+    def test_snapshot_version_wrong_type_fails_closed(self) -> None:
+        # True == 1 and 1.0 == 1 would pass naive set membership; they must not.
+        root, _ = self.write_se_pack()
+        for version in (True, 1.0, "1"):
+            payload = dict(self.SE_SNAPSHOT)
+            payload["schemaVersion"] = version
+            path = self.write_snapshot(root, payload)
+            with self.subTest(version=version):
+                with self.assertRaises(review.ReviewError):
+                    review._load_registry_snapshot(path)
+
+    def test_malformed_snapshot_fails_closed(self) -> None:
+        root, _ = self.write_se_pack()
+        path = self.write_snapshot(root, "{ not json")
+        with self.assertRaises(review.ReviewError):
+            review._load_registry_snapshot(path)
+
+    def test_snapshot_missing_or_mistyped_field_fails_closed(self) -> None:
+        root, _ = self.write_se_pack()
+        broken = dict(self.SE_SNAPSHOT)
+        del broken["skills"]
+        path = self.write_snapshot(root, broken)
+        with self.assertRaises(review.ReviewError):
+            review._load_registry_snapshot(path)
+        mistyped = dict(self.SE_SNAPSHOT)
+        mistyped["platforms"] = "claude"
+        path = self.write_snapshot(root, mistyped)
+        with self.assertRaises(review.ReviewError):
+            review._load_registry_snapshot(path)
+
     def test_bounded_output_preserves_full_inventory_and_reports_same_snapshot(self) -> None:
         root, _ = self.write_se_pack()
         output_root = self.base / "artifacts"

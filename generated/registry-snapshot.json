@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "familyOrder": [
+    "understand",
+    "decide",
+    "create",
+    "coordinate",
+    "operate",
+    "improve"
+  ],
+  "skills": [
+    {
+      "name": "se-research",
+      "family": "understand"
+    },
+    {
+      "name": "se-brief",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-meeting-prep",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-scan",
+      "family": "understand"
+    },
+    {
+      "name": "se-digest",
+      "family": "understand"
+    },
+    {
+      "name": "se-decide",
+      "family": "decide"
+    },
+    {
+      "name": "se-status",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-fact-check",
+      "family": "understand"
+    },
+    {
+      "name": "se-help",
+      "family": "operate"
+    },
+    {
+      "name": "se-profile",
+      "family": "operate"
+    },
+    {
+      "name": "se-action-inbox",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-agenda",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-ask-me",
+      "family": "understand"
+    },
+    {
+      "name": "se-author",
+      "family": "create"
+    },
+    {
+      "name": "se-bookmark-triage",
+      "family": "operate"
+    },
+    {
+      "name": "se-capture",
+      "family": "operate"
+    },
+    {
+      "name": "se-checklist",
+      "family": "operate"
+    },
+    {
+      "name": "se-compare",
+      "family": "understand"
+    },
+    {
+      "name": "se-diagram",
+      "family": "create"
+    },
+    {
+      "name": "se-distill",
+      "family": "understand"
+    },
+    {
+      "name": "se-evaluate",
+      "family": "improve"
+    },
+    {
+      "name": "se-topic-radar",
+      "family": "create"
+    },
+    {
+      "name": "se-technical-editor",
+      "family": "improve"
+    },
+    {
+      "name": "se-explain",
+      "family": "understand"
+    },
+    {
+      "name": "se-feedback",
+      "family": "improve"
+    },
+    {
+      "name": "se-handoff",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-knowledge-capture",
+      "family": "operate"
+    },
+    {
+      "name": "se-knowledge-gap",
+      "family": "understand"
+    },
+    {
+      "name": "se-learn",
+      "family": "understand"
+    },
+    {
+      "name": "se-literature-map",
+      "family": "understand"
+    },
+    {
+      "name": "se-meeting-follow-through",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-monitor",
+      "family": "understand"
+    },
+    {
+      "name": "se-paper",
+      "family": "create"
+    },
+    {
+      "name": "se-plan",
+      "family": "decide"
+    },
+    {
+      "name": "se-postmortem",
+      "family": "improve"
+    },
+    {
+      "name": "se-premortem",
+      "family": "improve"
+    },
+    {
+      "name": "se-presentation",
+      "family": "create"
+    },
+    {
+      "name": "se-proposal",
+      "family": "create"
+    },
+    {
+      "name": "se-propose-skills",
+      "family": "improve"
+    },
+    {
+      "name": "se-publish",
+      "family": "create"
+    },
+    {
+      "name": "se-red-team",
+      "family": "improve"
+    },
+    {
+      "name": "se-retro",
+      "family": "improve"
+    },
+    {
+      "name": "se-weekly-review",
+      "family": "improve"
+    },
+    {
+      "name": "se-runbook",
+      "family": "operate"
+    },
+    {
+      "name": "se-review-skills",
+      "family": "improve"
+    },
+    {
+      "name": "se-socratic-review",
+      "family": "understand"
+    },
+    {
+      "name": "se-sop",
+      "family": "operate"
+    },
+    {
+      "name": "se-stakeholder-map",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-study-guide",
+      "family": "understand"
+    },
+    {
+      "name": "se-thread-digest",
+      "family": "coordinate"
+    },
+    {
+      "name": "se-tutorial",
+      "family": "create"
+    },
+    {
+      "name": "se-video-notes",
+      "family": "understand"
+    },
+    {
+      "name": "se-watchlist",
+      "family": "operate"
+    }
+  ],
+  "platforms": [
+    "agents",
+    "claude",
+    "codex"
+  ],
+  "sharedReferences": {
+    "_shared/references/source-standards.md": [
+      "se-research",
+      "se-brief",
+      "se-meeting-prep",
+      "se-scan",
+      "se-digest",
+      "se-decide",
+      "se-status",
+      "se-fact-check",
+      "se-profile",
+      "se-action-inbox",
+      "se-agenda",
+      "se-ask-me",
+      "se-author",
+      "se-bookmark-triage",
+      "se-capture",
+      "se-checklist",
+      "se-compare",
+      "se-diagram",
+      "se-distill",
+      "se-evaluate",
+      "se-topic-radar",
+      "se-technical-editor",
+      "se-explain",
+      "se-feedback",
+      "se-handoff",
+      "se-knowledge-capture",
+      "se-knowledge-gap",
+      "se-learn",
+      "se-literature-map",
+      "se-meeting-follow-through",
+      "se-monitor",
+      "se-paper",
+      "se-plan",
+      "se-postmortem",
+      "se-premortem",
+      "se-presentation",
+      "se-proposal",
+      "se-publish",
+      "se-red-team",
+      "se-retro",
+      "se-weekly-review",
+      "se-runbook",
+      "se-socratic-review",
+      "se-sop",
+      "se-stakeholder-map",
+      "se-study-guide",
+      "se-thread-digest",
+      "se-tutorial",
+      "se-video-notes",
+      "se-watchlist"
+    ],
+    "_shared/references/state-schema.md": [
+      "se-monitor",
+      "se-watchlist"
+    ],
+    "_shared/references/verification-protocol.md": [
+      "se-research",
+      "se-fact-check",
+      "se-literature-map",
+      "se-paper"
+    ],
+    "_shared/references/skill-catalog.md": [
+      "se-help"
+    ],
+    "_shared/references/personal-profile-contract.md": [
+      "se-profile",
+      "se-ask-me",
+      "se-topic-radar",
+      "se-technical-editor",
+      "se-paper",
+      "se-presentation",
+      "se-proposal",
+      "se-publish",
+      "se-tutorial",
+      "se-watchlist",
+      "se-weekly-review"
+    ]
+  }
+}

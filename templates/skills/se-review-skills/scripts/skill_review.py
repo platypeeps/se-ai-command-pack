@@ -20,10 +20,15 @@ import tempfile
 from dataclasses import dataclass, replace
 from difflib import SequenceMatcher
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any, NoReturn, Sequence
 
 SCHEMA_VERSION = 3
 TRANSPORT_SCHEMA_VERSION = 1
+# Registry snapshot schema versions this consumer understands. A present
+# snapshot whose schemaVersion is not in this set fails closed so installed
+# copies detect incompatibility instead of misparsing. Kept in lockstep with
+# the generator's REGISTRY_SNAPSHOT_SCHEMA_VERSION.
+SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS = frozenset({1})
 MINIMUM_PYTHON = (3, 9)
 GIT_TIMEOUT_SECONDS = 15
 MAX_TEXT_BYTES = 2_000_000
@@ -242,6 +247,96 @@ def _call_value(call: ast.Call, name: str, position: int) -> str | None:
     return None
 
 
+def _registry_from_snapshot(payload: dict, path: Path) -> RegistryData:
+    """Build RegistryData from a validated snapshot object, mirroring
+    _parse_registry's field semantics. Any structural defect fails closed."""
+
+    def _fail(message: str) -> NoReturn:
+        raise ReviewError(f"invalid registry snapshot {path}: {message}")
+
+    family_order = payload.get("familyOrder")
+    skills = payload.get("skills")
+    platforms = payload.get("platforms")
+    shared = payload.get("sharedReferences")
+    if not isinstance(family_order, list) or not all(
+        isinstance(item, str) for item in family_order
+    ):
+        _fail("familyOrder must be a list of strings")
+    if not isinstance(skills, list):
+        _fail("skills must be a list")
+    if not isinstance(platforms, list) or not all(
+        isinstance(item, str) for item in platforms
+    ):
+        _fail("platforms must be a list of strings")
+    if not isinstance(shared, dict):
+        _fail("sharedReferences must be an object")
+
+    families: dict[str, str] = {}
+    skill_order: list[str] = []
+    for entry in skills:
+        if not isinstance(entry, dict):
+            _fail("each skills entry must be an object")
+        name = entry.get("name")
+        family = entry.get("family")
+        if not isinstance(name, str) or not isinstance(family, str):
+            _fail("each skills entry needs string name and family")
+        if name not in families:
+            skill_order.append(name)
+        families[name] = family
+
+    shared_references: dict[str, tuple[str, ...]] = {}
+    for key, consumers in shared.items():
+        if (
+            not isinstance(key, str)
+            or not isinstance(consumers, list)
+            or not all(isinstance(item, str) for item in consumers)
+        ):
+            _fail("sharedReferences must map a string to a list of strings")
+        shared_references[key] = tuple(consumers)
+
+    return RegistryData(
+        families,
+        tuple(family_order),
+        tuple(skill_order),
+        # Sort to mirror _parse_registry's tuple(sorted(platforms)) exactly, so
+        # snapshot-derived and AST-derived RegistryData stay identical (and
+        # snapshot identity stable) even if a producer emits unsorted platforms.
+        tuple(sorted(platforms)),
+        shared_references,
+    )
+
+
+def _load_registry_snapshot(path: Path) -> RegistryData | None:
+    """Load the versioned generated registry snapshot.
+
+    Returns RegistryData for a valid snapshot, or None when there is no usable
+    snapshot to consume (absent, or crossing a symlink boundary we refuse to
+    follow) so the caller falls back to _parse_registry. A
+    present-but-incompatible or malformed snapshot raises ReviewError: it must
+    never silently fall through and mask a shipped-snapshot defect."""
+    if _crosses_symlink(path) or not path.is_file():
+        return None
+    text = _read_regular_text(path)
+    try:
+        payload = json.loads(text)
+    except ValueError as error:
+        raise ReviewError(f"malformed registry snapshot {path}: {error}") from None
+    if not isinstance(payload, dict):
+        raise ReviewError(f"registry snapshot {path} must be a JSON object")
+    version = payload.get("schemaVersion")
+    # type(version) is int excludes bool (True/False are ints) and float 1.0,
+    # which would otherwise satisfy set membership via == 1.
+    if (
+        type(version) is not int
+        or version not in SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS
+    ):
+        raise ReviewError(
+            f"unsupported registry snapshot schemaVersion {version!r} in {path}; "
+            f"supported: {sorted(SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS)}"
+        )
+    return _registry_from_snapshot(payload, path)
+
+
 def _parse_registry(path: Path) -> RegistryData:
     if not path.is_file() or path.is_symlink():
         return RegistryData({}, (), (), (), {})
@@ -323,7 +418,14 @@ def _package_context(root: Path) -> PackageContext:
     version_value = manifest.get("version") if manifest else None
     name = name_value if isinstance(name_value, str) else None
     version = version_value if isinstance(version_value, str) else None
-    registry = _parse_registry(package_root / "installer" / "registry.py")
+    # Prefer the versioned generated snapshot; fall back to AST-parsing the
+    # checkout's registry.py when no usable snapshot is present (transitional,
+    # until every pack ships a snapshot). A present-but-broken snapshot raises.
+    registry = _load_registry_snapshot(
+        package_root / "generated" / "registry-snapshot.json"
+    )
+    if registry is None:
+        registry = _parse_registry(package_root / "installer" / "registry.py")
     remote = _run_git(package_root, "config", "--get", "remote.origin.url")
     normalized = _normalized_remote(remote)
 

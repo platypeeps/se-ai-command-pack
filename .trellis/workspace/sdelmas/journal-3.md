@@ -83,3 +83,46 @@ Filed the audit-review-nested-check-falseblock backlog PRD documenting the sd-re
 ### Next Steps
 
 - None - task complete
+
+
+## Session 106: Versioned registry snapshot for skill_review (PR #131)
+
+**Date**: 2026-08-04
+**Task**: Versioned registry snapshot for skill_review (PR #131)
+**Branch**: `audit/registry-snapshot-contract`
+
+### Summary
+
+Added a generated generated/registry-snapshot.json (schemaVersion 1) produced by generate-skill-surfaces.py and switched the shipped skill_review.py to prefer it over AST-parsing installer/registry.py, retaining the AST parse as a legacy fallback and failing closed on version-incompatible or malformed snapshots. Converged three Copilot review rounds (symlinked-parent bypass, platform sort parity, surface-message accuracy).
+
+### Main Changes
+
+- Producer: registry-snapshot.json surface with --check drift gate and coordinated write-all-or-rollback in the generator
+- Consumer: SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS, _load_registry_snapshot (via _crosses_symlink), _registry_from_snapshot; call site prefers snapshot, falls back to AST; platforms sorted to mirror _parse_registry
+- Release: manifest 0.66.2 -> 0.66.3 with matching CHANGELOG heading; code-spec quality-guidelines.md snapshot-preferred contract
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `54d56b6` | feat(review): consume versioned registry snapshot in skill_review |
+| `f791c8e` | fix(review): reject snapshot reached through a symlinked parent directory |
+| `9c4b3bf` | fix(review): sort snapshot platforms and clarify generator surface messages |
+| `59ed8b6` | chore(task): record branch for audit-registry-snapshot-contract finalization |
+| `739b4d8` | chore(task): archive 07-25-audit-registry-snapshot-contract |
+
+### Testing
+
+- [OK] make check: 503 tests pass, mypy clean, ruff clean, generator --check clean, release payload gate 0.66.2 -> 0.66.3
+- [OK] New consumer tests: snapshot-preferred parity, absent/symlink/symlinked-parent fallback, fail-closed version/type/malformed cases
+- [OK] New generator tests: snapshot write + --check drift + coordinated write-failure rollback
+- [OK] PR #131 CI green (lint, release-payload-gate, unittest x3); 3 Copilot rounds, 0 unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

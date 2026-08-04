@@ -45,6 +45,12 @@ from installer.registry import (  # noqa: E402
 
 MANIFEST_PATH = ROOT / "manifest.json"
 README_PATH = ROOT / "README.md"
+# Versioned machine-readable registry snapshot consumed by se-review-skills'
+# skill_review.py instead of AST-parsing installer/registry.py in reviewed
+# checkouts. Bump REGISTRY_SNAPSHOT_SCHEMA_VERSION only alongside the consumer's
+# supported set (skill_review.SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS).
+REGISTRY_SNAPSHOT_PATH = ROOT / "generated" / "registry-snapshot.json"
+REGISTRY_SNAPSHOT_SCHEMA_VERSION = 1
 SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
 GENERATED_SKILLS_DIR = "generated/skills"
 CLAUDE_GENERATED_ROOT = ROOT / GENERATED_SKILLS_DIR / "claude"
@@ -927,6 +933,24 @@ def regenerated_manifest_text() -> str:
     return json.dumps(manifest, indent=2) + "\n"
 
 
+def regenerated_registry_snapshot_text() -> str:
+    """Serialize the registry facts skill_review reconstructs, from the real
+    imported objects (authoritative). Field ordering is load-bearing: it must
+    match _parse_registry so a snapshot-derived RegistryData is byte-identical
+    to the AST-derived one (skills in SKILLS order, familyOrder in FAMILY_LABELS
+    order, platforms sorted, sharedReferences in SHARED_REFERENCES order)."""
+    payload = {
+        "schemaVersion": REGISTRY_SNAPSHOT_SCHEMA_VERSION,
+        "familyOrder": list(FAMILY_LABELS.keys()),
+        "skills": [{"name": skill.name, "family": skill.family} for skill in SKILLS],
+        "platforms": sorted(PLATFORM_REGISTRY.keys()),
+        "sharedReferences": {
+            source: list(consumers) for source, consumers in SHARED_REFERENCES.items()
+        },
+    }
+    return json.dumps(payload, indent=2) + "\n"
+
+
 def _catalog_table_cell(value: str) -> str:
     return value.replace("|", "\\|")
 
@@ -1129,6 +1153,7 @@ def main(argv: list[str] | None = None) -> int:
         regenerated_help_catalog = regenerated_help_catalog_text(
             metadata, regenerated_manifest
         )
+        regenerated_registry_snapshot = regenerated_registry_snapshot_text()
     except GenerationError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
@@ -1142,6 +1167,11 @@ def main(argv: list[str] | None = None) -> int:
         committed_help_catalog = (
             HELP_CATALOG_PATH.read_text(encoding="utf-8")
             if HELP_CATALOG_PATH.is_file()
+            else None
+        )
+        committed_registry_snapshot = (
+            REGISTRY_SNAPSHOT_PATH.read_text(encoding="utf-8")
+            if REGISTRY_SNAPSHOT_PATH.is_file()
             else None
         )
     except OSError as error:
@@ -1166,6 +1196,13 @@ def main(argv: list[str] | None = None) -> int:
         if committed_help_catalog != regenerated_help_catalog:
             print(
                 "error: skill-catalog.md drifts from the generated surfaces; "
+                "run `make generate` and commit the result",
+                file=sys.stderr,
+            )
+            drifted = True
+        if committed_registry_snapshot != regenerated_registry_snapshot:
+            print(
+                "error: registry-snapshot.json drifts from installer/registry.py; "
                 "run `make generate` and commit the result",
                 file=sys.stderr,
             )
@@ -1203,8 +1240,8 @@ def main(argv: list[str] | None = None) -> int:
         if drifted:
             return 1
         print(
-            "manifest.json, README.md, skill-catalog.md, and Claude skills "
-            "match the generated surfaces"
+            "manifest.json, README.md, skill-catalog.md, registry-snapshot.json, "
+            "Claude skills, and agent overlays match the generated surfaces"
         )
         return 0
 
@@ -1231,10 +1268,18 @@ def main(argv: list[str] | None = None) -> int:
         updates.append((path, None, committed))
     if committed_manifest != regenerated_manifest:
         updates.append((MANIFEST_PATH, regenerated_manifest, committed_manifest))
+    if committed_registry_snapshot != regenerated_registry_snapshot:
+        updates.append(
+            (
+                REGISTRY_SNAPSHOT_PATH,
+                regenerated_registry_snapshot,
+                committed_registry_snapshot,
+            )
+        )
     if not updates:
         print(
-            "manifest.json, README.md, skill-catalog.md, and Claude skills "
-            "unchanged"
+            "manifest.json, README.md, skill-catalog.md, registry-snapshot.json, "
+            "Claude skills, and agent overlays unchanged"
         )
         return 0
     try:

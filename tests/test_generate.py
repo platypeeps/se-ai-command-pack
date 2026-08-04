@@ -507,6 +507,9 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.manifest_path = self.base / "manifest.json"
         self.readme_path = self.base / "README.md"
         self.help_catalog_path = self.base / "skill-catalog.md"
+        self.registry_snapshot_path = (
+            self.base / "generated" / "registry-snapshot.json"
+        )
         self.claude_generated_root = (
             self.base / "generated" / "skills" / "claude"
         )
@@ -533,6 +536,11 @@ class SandboxGeneratorTest(TempDirTestCase):
         )
         stack.enter_context(
             mock.patch.object(gen, "HELP_CATALOG_PATH", self.help_catalog_path)
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen, "REGISTRY_SNAPSHOT_PATH", self.registry_snapshot_path
+            )
         )
         stack.enter_context(
             mock.patch.object(
@@ -980,6 +988,47 @@ class SandboxGeneratorTest(TempDirTestCase):
             encoding="utf-8",
         )
         self.assertEqual(gen.main(["--check"]), 1)
+
+    def test_generate_writes_registry_snapshot(self) -> None:
+        self.write_skill()
+        self.assertEqual(gen.main([]), 0)
+        self.assertTrue(self.registry_snapshot_path.is_file())
+        payload = json.loads(
+            self.registry_snapshot_path.read_text(encoding="utf-8")
+        )
+        self.assertEqual(payload["schemaVersion"], gen.REGISTRY_SNAPSHOT_SCHEMA_VERSION)
+        self.assertIn(
+            {"name": "se-test", "family": "understand"}, payload["skills"]
+        )
+        self.assertEqual(gen.main(["--check"]), 0)
+
+    def test_check_detects_registry_snapshot_drift(self) -> None:
+        self.write_skill()
+        self.assertEqual(gen.main([]), 0)
+        committed = json.loads(
+            self.registry_snapshot_path.read_text(encoding="utf-8")
+        )
+        committed["skills"].append({"name": "drift", "family": "improve"})
+        self.registry_snapshot_path.write_text(
+            json.dumps(committed, indent=2) + "\n", encoding="utf-8"
+        )
+        self.assertEqual(gen.main(["--check"]), 1)
+
+    def test_registry_snapshot_write_failure_rolls_back(self) -> None:
+        self.write_skill()
+        atomic_write_text = gen.atomic_write_text
+
+        def fail_snapshot(path: Path, content: str) -> None:
+            if path == self.registry_snapshot_path:
+                raise SystemExit(f"error: cannot write {path}: read-only fixture")
+            atomic_write_text(path, content)
+
+        with mock.patch.object(
+            gen, "atomic_write_text", side_effect=fail_snapshot
+        ):
+            self.assertEqual(gen.main([]), 1)
+        self.assertFalse(self.registry_snapshot_path.exists())
+        self.assertFalse(self.manifest_path.exists())
 
     def test_generate_removes_unexpected_claude_file(self) -> None:
         self.write_skill()
