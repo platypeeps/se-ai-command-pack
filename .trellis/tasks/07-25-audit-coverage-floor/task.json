@@ -2,7 +2,7 @@
   "id": "audit-coverage-floor",
   "name": "audit-coverage-floor",
   "title": "Coverage measurement and floor in gates",
-  "description": "",
+  "description": "Measure statement coverage of repo-own Python (installer/, install.py, .github/scripts) and fail make test and the CI unittest lane below an 80% floor, using subprocess coverage capture. Audit finding A-020.",
   "status": "in_progress",
   "dev_type": null,
   "scope": null,
