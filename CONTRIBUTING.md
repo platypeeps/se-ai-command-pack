@@ -43,6 +43,31 @@ Any change to the shipped payload (`templates/**`, `generated/**`, or
 CI enforces this via the release payload gate. Merges to `main` are tagged
 `v<version>` automatically when the version changes.
 
+## Dependency updates
+
+`.github/dependabot.yml` configures Dependabot to open weekly `pip` pull
+requests for the pins in `requirements-dev.txt` (PyYAML, ruff, mypy, coverage),
+one PR per package, with a `chore(deps)` commit prefix. Triage each with the
+`sd-update-deps` workflow: it classifies the bump, merges the safe class through
+the housekeeping gate, and parks the rest for review. Dependabot is the only
+sanctioned source that hands a classified dependency PR to housekeeping.
+
+Enablement: this repository is not a fork, so committing `dependabot.yml` to the
+default branch is itself the enablement — version updates start automatically,
+with no separate repo-level toggle needed to turn them on. They can still be
+suppressed by disabling Dependabot at the repository or organization level
+(Settings → Code security), which is observable only after the config lands on
+`main`.
+
+Deliberately out of scope for now:
+
+- **npm.** The root `package.json` declares no dependencies, and the only npm
+  manifest with any (`.opencode/package.json`) is unused and slated for removal.
+  Add an `npm` ecosystem block only if a real npm dependency is introduced.
+- **A scheduled CVE / `pip-audit` lane.** The four dev-only pins have a small
+  blast radius and Dependabot already surfaces version bumps. Revisit if the
+  pack ever ships runtime (non-dev) Python dependencies.
+
 ## Dogfooding
 
 `make sync` installs the pack into your own home directory (`install.py
