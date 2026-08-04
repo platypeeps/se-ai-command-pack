@@ -35,12 +35,12 @@ this repo-local task's scope and is recorded as a separate follow-up task.
 
 ## Acceptance Criteria
 
-- [ ] `git check-ignore .claude/commands/sd/start.md` no longer matches (adapters
+- [x] `git check-ignore .claude/commands/sd/start.md` no longer matches (adapters
       tracked); a local-only skill (e.g. `.claude/skills/caveman/SKILL.md`) is
       still ignored (no over-capture).
-- [ ] `scripts/sd-ai-command-pack-install-audit.py` reports no missing-target
+- [x] `scripts/sd-ai-command-pack-install-audit.py` reports no missing-target
       failures/warnings for the `.claude/*` targets.
-- [ ] In-repo stability: this repo's `install.py` does not rewrite `.gitignore`
+- [x] In-repo stability: this repo's `install.py` does not rewrite `.gitignore`
       (verified), so the sd-pack side does not oscillate. The `trellis init` side
       is documented in `CONTRIBUTING.md` and tracked as a follow-up; it cannot be
       enforced in-repo against an external binary. (AC re-scoped 2026-08-04 from
