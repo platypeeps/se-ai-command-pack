@@ -12,9 +12,9 @@ Replace the ~790-line block of 42 hand-copied per-skill shared-reference test me
 
 ## Acceptance Criteria
 
-- [ ] A seeded registry omission fails the generic test, naming the skill.
-- [ ] The duplicated per-skill methods are gone; suite stays green with equivalent-or-better coverage.
-- [ ] Adding a skill requires no new hand-written shared-reference test.
+- [x] A seeded registry omission fails the generic test, naming the skill.
+- [x] The duplicated per-skill methods are gone; suite stays green with equivalent-or-better coverage.
+- [x] Adding a skill requires no new hand-written shared-reference test.
 
 ## Notes
 
