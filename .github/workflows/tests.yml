@@ -48,8 +48,8 @@ jobs:
         with:
           python-version: "3.13"
       - run: python -m pip install -r requirements-dev.txt
-      - run: python -m ruff check install.py installer tests .github/scripts
-      - run: python -m mypy installer install.py
+      - run: python -m ruff check install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
+      - run: python -m mypy installer install.py templates/skills/se-review-skills/scripts/skill_review.py
 
   release-payload-gate:
     if: github.event_name == 'pull_request'

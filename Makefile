@@ -27,8 +27,8 @@ test:
 	"$(RUN_PYTHON)" -m coverage report --fail-under=80
 
 lint:
-	"$(RUN_PYTHON)" -m ruff check install.py installer tests .github/scripts
-	"$(RUN_PYTHON)" -m mypy installer install.py
+	"$(RUN_PYTHON)" -m ruff check install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
+	"$(RUN_PYTHON)" -m mypy installer install.py templates/skills/se-review-skills/scripts/skill_review.py
 
 release-check:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check

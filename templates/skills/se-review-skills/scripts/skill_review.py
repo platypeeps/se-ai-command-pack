@@ -265,10 +265,10 @@ def _parse_registry(path: Path) -> RegistryData:
         ("SKILLS", "SkillInfo", 1),
         ("COMMAND_REGISTRY", "CommandInfo", 2),
     ):
-        value = _assignment(tree, assignment_name)
-        if not isinstance(value, (ast.Tuple, ast.List)):
+        assignment_node = _assignment(tree, assignment_name)
+        if not isinstance(assignment_node, (ast.Tuple, ast.List)):
             continue
-        for entry in value.elts:
+        for entry in assignment_node.elts:
             if not isinstance(entry, ast.Call):
                 continue
             function = entry.func
@@ -294,7 +294,8 @@ def _parse_registry(path: Path) -> RegistryData:
     shared_references: dict[str, tuple[str, ...]] = {}
     shared = _assignment(tree, "SHARED_REFERENCES")
     if isinstance(shared, ast.Dict):
-        for key_node, value_node in zip(shared.keys, shared.values):
+        for index, key_node in enumerate(shared.keys):
+            value_node = shared.values[index]
             key = _string_value(key_node)
             if key is None or not isinstance(value_node, (ast.Tuple, ast.List)):
                 continue
@@ -651,7 +652,7 @@ def _resolve_path(
     manifest_mapping = (
         _manifest_mapping(observed, context_hint) if context_hint is not None else None
     )
-    if manifest_mapping:
+    if manifest_mapping and context_hint is not None:
         canonical, expected, mapped_platform, evidence = manifest_mapping
         context = context_hint
         drift = (
