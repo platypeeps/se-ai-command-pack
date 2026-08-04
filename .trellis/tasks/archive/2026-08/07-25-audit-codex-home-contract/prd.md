@@ -25,12 +25,12 @@ selects the "retract" branch already enumerated in Requirements/AC.
 
 ## Acceptance Criteria
 
-- [ ] The hand-authored sources — README.md, docs/SE_AI_COMMAND_PACK.md,
+- [x] The hand-authored sources — README.md, docs/SE_AI_COMMAND_PACK.md,
       install.py, installer/ — carry only mutually consistent `$CODEX_HOME`
       statements (codex reads a fixed `~/.codex`; no env resolution).
-- [ ] README documents the relocation workaround (`install.py --root` /
+- [x] README documents the relocation workaround (`install.py --root` /
       symlink `~/.codex`) in place of the retracted claim.
-- [ ] Changelog entry (consumer-visible contract).
+- [x] Changelog entry (consumer-visible contract).
 
 ### Deferred / out of scope (planning review, C-1 / C-2)
 
