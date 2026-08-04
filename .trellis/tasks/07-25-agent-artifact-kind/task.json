@@ -3,7 +3,7 @@
   "name": "agent-artifact-kind",
   "title": "Add agent artifact kind to installer and generator",
   "description": "Tier 2 plumbing: manifest kind agent, per-platform overlay/renderer hook, Claude MD + Codex TOML renderers, drift gates, tests",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

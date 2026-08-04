@@ -11,6 +11,11 @@ from unittest import mock
 
 from install_test_support import PACK_ROOT, TempDirTestCase
 
+try:
+    import tomllib
+except ModuleNotFoundError:  # Python < 3.11
+    tomllib = None
+
 GENERATOR_PATH = PACK_ROOT / ".github" / "scripts" / "generate-skill-surfaces.py"
 
 spec = importlib.util.spec_from_file_location(
@@ -1036,6 +1041,106 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 )
 
 
+class RealRepoAgentTest(unittest.TestCase):
+    """Agent artifact kind: committed overlays, rows, and Amp exclusion."""
+
+    def test_committed_agent_overlays_match_canonical(self) -> None:
+        regenerated = gen.regenerated_agent_texts()
+        self.assertTrue(regenerated, "expected at least one canonical agent")
+        for path, expected in regenerated.items():
+            self.assertEqual(path.read_text(encoding="utf-8"), expected)
+
+    def test_agent_rows_only_on_agent_capable_platforms(self) -> None:
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        agent_rows = [r for r in manifest["files"] if r["kind"] == "agent"]
+        self.assertTrue(agent_rows)
+        platforms = {r["platform"] for r in agent_rows}
+        self.assertEqual(platforms, {"claude", "codex"})
+
+    def test_amp_receives_no_agent_rows(self) -> None:
+        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
+        for row in manifest["files"]:
+            if row["kind"] == "agent":
+                self.assertFalse(
+                    row["target"].startswith(".config/agents/"),
+                    row["target"],
+                )
+
+    @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
+    def test_smoke_agent_round_trips_through_both_dialects(self) -> None:
+        name = "se-smoke"
+        canonical = (gen.AGENTS_ROOT / f"{name}.md").read_text("utf-8")
+        _, canonical_body = gen.parse_frontmatter(canonical, "canonical smoke")
+
+        claude = gen.render_claude_agent(name, canonical)
+        claude_meta, claude_body = gen.parse_frontmatter(claude, "claude smoke")
+        self.assertEqual(claude_meta["name"], name)
+        self.assertNotIn("sandbox_mode", claude_meta)
+        self.assertEqual(claude_body, canonical_body)
+
+        codex = gen.render_codex_agent(name, canonical)
+        parsed = tomllib.loads(codex)
+        self.assertEqual(parsed["name"], name)
+        self.assertEqual(parsed["developer_instructions"], canonical_body)
+
+
+class AgentRendererTest(unittest.TestCase):
+    """Dialect and escaping guarantees for the agent renderers."""
+
+    CANONICAL = (
+        "---\n"
+        "name: se-fixture\n"
+        "description: Use tabs and quotes to stress the renderer.\n"
+        "tools:\n"
+        "  - read\n"
+        "  - write\n"
+        "model: fast\n"
+        "sandbox_mode: workspace-write\n"
+        "---\n"
+        "\n"
+        '# Fixture\n'
+        "\n"
+        'Body has "double quotes", a \\ backslash, a\ttab,\n'
+        'and a triple """ quote sequence that must not close early.\n'
+    )
+
+    def test_claude_keeps_portable_keys_and_drops_sandbox_mode(self) -> None:
+        rendered = gen.render_claude_agent("se-fixture", self.CANONICAL)
+        meta, body = gen.parse_frontmatter(rendered, "claude fixture")
+        self.assertEqual(
+            sorted(meta), ["description", "model", "name", "tools"]
+        )
+        self.assertEqual(meta["tools"], ["read", "write"])
+        self.assertEqual(meta["model"], "fast")
+        self.assertNotIn("sandbox_mode", meta)
+        _, canonical_body = gen.parse_frontmatter(self.CANONICAL, "canonical")
+        self.assertEqual(body, canonical_body)
+
+    @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
+    def test_codex_toml_escapes_and_preserves_body(self) -> None:
+        rendered = gen.render_codex_agent("se-fixture", self.CANONICAL)
+        parsed = tomllib.loads(rendered)
+        self.assertEqual(parsed["name"], "se-fixture")
+        self.assertEqual(parsed["model"], "fast")
+        self.assertEqual(parsed["sandbox_mode"], "workspace-write")
+        self.assertNotIn("tools", parsed)
+        _, canonical_body = gen.parse_frontmatter(self.CANONICAL, "canonical")
+        self.assertEqual(parsed["developer_instructions"], canonical_body)
+
+    @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
+    def test_codex_omits_absent_optional_hints(self) -> None:
+        minimal = (
+            "---\n"
+            "name: se-min\n"
+            "description: No optional hints here.\n"
+            "---\n"
+            "\n"
+            "# Min\n"
+        )
+        parsed = tomllib.loads(gen.render_codex_agent("se-min", minimal))
+        self.assertEqual(sorted(parsed), ["description", "developer_instructions", "name"])
+
+
 class SandboxGeneratorTest(TempDirTestCase):
     """Generator behavior against a synthetic skills tree."""
 
@@ -1049,6 +1154,8 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.claude_generated_root = (
             self.base / "generated" / "skills" / "claude"
         )
+        self.agents_root = self.base / "templates" / "agents"
+        self.generated_agents_root = self.base / "generated" / "agents"
         self.readme_path.write_text(
             "# Fixture\n\n## Skills\n\n"
             "<!-- SE_SKILL_CATALOG:START -->\n"
@@ -1074,6 +1181,28 @@ class SandboxGeneratorTest(TempDirTestCase):
         stack.enter_context(
             mock.patch.object(
                 gen, "CLAUDE_GENERATED_ROOT", self.claude_generated_root
+            )
+        )
+        stack.enter_context(
+            mock.patch.object(gen, "AGENTS_ROOT", self.agents_root)
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen, "GENERATED_AGENTS_ROOT", self.generated_agents_root
+            )
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen,
+                "CLAUDE_AGENTS_GENERATED_ROOT",
+                self.generated_agents_root / "claude",
+            )
+        )
+        stack.enter_context(
+            mock.patch.object(
+                gen,
+                "CODEX_AGENTS_GENERATED_ROOT",
+                self.generated_agents_root / "codex",
             )
         )
         stack.enter_context(
@@ -1505,6 +1634,71 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.assertEqual(gen.main(["--check"]), 1)
         self.assertEqual(gen.main([]), 0)
         self.assertFalse(unexpected.exists())
+
+    def write_agent(self, name: str = "se-agent", text: str | None = None) -> Path:
+        self.agents_root.mkdir(parents=True, exist_ok=True)
+        agent_md = self.agents_root / f"{name}.md"
+        agent_md.write_text(
+            text
+            if text is not None
+            else (
+                f"---\nname: {name}\n"
+                "description: Fixture agent for the generator.\n---\n\n"
+                f"# {name}\n\nBody.\n"
+            ),
+            encoding="utf-8",
+        )
+        return agent_md
+
+    def test_generate_writes_agent_overlays_and_rows(self) -> None:
+        self.write_skill()
+        self.write_agent()
+        self.assertEqual(gen.main([]), 0)
+        self.assertTrue(
+            (self.generated_agents_root / "claude" / "se-agent.md").is_file()
+        )
+        self.assertTrue(
+            (self.generated_agents_root / "codex" / "se-agent.toml").is_file()
+        )
+        manifest = json.loads(self.manifest_path.read_text(encoding="utf-8"))
+        agent_rows = [r for r in manifest["files"] if r["kind"] == "agent"]
+        self.assertEqual(
+            {r["platform"] for r in agent_rows}, {"claude", "codex"}
+        )
+
+    def test_check_detects_agent_drift(self) -> None:
+        self.write_skill()
+        self.write_agent()
+        self.assertEqual(gen.main([]), 0)
+        overlay = self.generated_agents_root / "codex" / "se-agent.toml"
+        overlay.write_text(
+            overlay.read_text(encoding="utf-8") + "\nextra = 1\n",
+            encoding="utf-8",
+        )
+        self.assertEqual(gen.main(["--check"]), 1)
+
+    def test_generate_removes_unexpected_agent_file(self) -> None:
+        self.write_skill()
+        self.write_agent()
+        self.assertEqual(gen.main([]), 0)
+        unexpected = self.generated_agents_root / "codex" / "retired.toml"
+        unexpected.write_text('name = "retired"\n', encoding="utf-8")
+        self.assertEqual(gen.main(["--check"]), 1)
+        self.assertEqual(gen.main([]), 0)
+        self.assertFalse(unexpected.exists())
+
+    def test_agent_with_banned_phrase_is_rejected(self) -> None:
+        self.write_skill()
+        self.write_agent(
+            text=(
+                "---\nname: se-agent\n"
+                "description: Fixture agent for the generator.\n---\n\n"
+                "# se-agent\n\nAsk Claude to help.\n"
+            )
+        )
+        with self.assertRaises(gen.GenerationError) as caught:
+            gen.validate_agents()
+        self.assertIn("framework-neutrality", str(caught.exception))
 
     def test_header_and_static_rows_preserved(self) -> None:
         self.write_skill()

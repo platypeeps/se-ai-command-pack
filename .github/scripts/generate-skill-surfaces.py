@@ -55,6 +55,26 @@ GENERATED_SHARED_REFERENCES = frozenset({HELP_CATALOG_SOURCE})
 README_CATALOG_START = "<!-- SE_SKILL_CATALOG:START -->"
 README_CATALOG_END = "<!-- SE_SKILL_CATALOG:END -->"
 
+# Agent artifact kind. Canonical sources are neutral MD + frontmatter under
+# templates/agents/; the generator renders one overlay per platform whose
+# PlatformInfo.agents_dir is set (Claude MD, Codex TOML). The shared Amp anchor
+# has agents_dir=None and therefore receives no agent rows.
+AGENTS_SUBDIR = "templates/agents"
+AGENTS_ROOT = ROOT / AGENTS_SUBDIR
+GENERATED_AGENTS_DIR = "generated/agents"
+GENERATED_AGENTS_ROOT = ROOT / GENERATED_AGENTS_DIR
+CLAUDE_AGENTS_GENERATED_ROOT = GENERATED_AGENTS_ROOT / "claude"
+CODEX_AGENTS_GENERATED_ROOT = GENERATED_AGENTS_ROOT / "codex"
+# Canonical frontmatter allowlist; the optional hints are the source of the
+# per-platform overlay fields (see design D2).
+ALLOWED_AGENT_FRONTMATTER_KEYS = (
+    "name",
+    "description",
+    "tools",
+    "model",
+    "sandbox_mode",
+)
+
 REQUIRED_SECTIONS = (
     "## When to use",
     "## Arguments",
@@ -508,6 +528,307 @@ def skill_payload_files(name: str) -> list[str]:
     return ["SKILL.md", *resources]
 
 
+def agent_names() -> list[str]:
+    """Sorted canonical agent names discovered under templates/agents/."""
+
+    if not AGENTS_ROOT.is_dir():
+        return []
+    return sorted(
+        path.stem
+        for path in AGENTS_ROOT.glob("*.md")
+        if path.is_file() and not path.is_symlink()
+    )
+
+
+def _agent_frontmatter(name: str, canonical_text: str) -> tuple[dict, str]:
+    """Parse and allowlist one canonical agent's frontmatter and body."""
+
+    label = f"{AGENTS_SUBDIR}/{name}.md"
+    frontmatter, body = parse_frontmatter(canonical_text, label)
+    extra_keys = sorted(set(frontmatter) - set(ALLOWED_AGENT_FRONTMATTER_KEYS))
+    if extra_keys:
+        raise GenerationError(
+            f"{label}: frontmatter keys {extra_keys} are not allowed "
+            f"(allowed: {', '.join(ALLOWED_AGENT_FRONTMATTER_KEYS)})"
+        )
+    return frontmatter, body
+
+
+def validate_agent(name: str) -> list[str]:
+    errors: list[str] = []
+    agent_md = AGENTS_ROOT / f"{name}.md"
+    label = _display(agent_md)
+    text = agent_md.read_text(encoding="utf-8")
+    try:
+        frontmatter, body = parse_frontmatter(text, label)
+    except GenerationError as error:
+        return [str(error)]
+
+    extra_keys = sorted(set(frontmatter) - set(ALLOWED_AGENT_FRONTMATTER_KEYS))
+    if extra_keys:
+        errors.append(
+            f"{label}: frontmatter keys {extra_keys} are not allowed "
+            f"(allowed: {', '.join(ALLOWED_AGENT_FRONTMATTER_KEYS)})"
+        )
+    if frontmatter.get("name") != name:
+        errors.append(
+            f"{label}: frontmatter name {frontmatter.get('name')!r} must equal "
+            f"the agent file stem {name!r}"
+        )
+    description = frontmatter.get("description")
+    if not isinstance(description, str) or not description.strip():
+        errors.append(f"{label}: frontmatter description is missing or empty")
+    else:
+        if '"' in description:
+            errors.append(f"{label}: description must not contain double quotes")
+        if "\n" in description.strip():
+            errors.append(f"{label}: description must be a single line")
+        if len(description) > DESCRIPTION_MAX_LENGTH:
+            errors.append(
+                f"{label}: description exceeds {DESCRIPTION_MAX_LENGTH} characters"
+            )
+    tools = frontmatter.get("tools")
+    if tools is not None and not (
+        isinstance(tools, list) and all(isinstance(item, str) for item in tools)
+    ):
+        errors.append(f"{label}: tools hint must be a list of strings")
+    for key in ("model", "sandbox_mode"):
+        value = frontmatter.get(key)
+        if value is not None and not isinstance(value, str):
+            errors.append(f"{label}: {key} hint must be a string")
+
+    if not text.endswith("\n"):
+        errors.append(f"{label}: file must end with a newline")
+    if not body.lstrip("\n").startswith("# "):
+        errors.append(f"{label}: body must open with an H1 title")
+    banned = sorted(
+        {match.group(0) for match in BANNED_PHRASE_PATTERN.finditer(text)}
+    )
+    if banned:
+        errors.append(
+            f"{label}: framework-neutrality lint: replace brand names {banned} "
+            "with capability phrasing (e.g. 'your web search tooling')"
+        )
+    return errors
+
+
+def validate_agents() -> None:
+    if not AGENTS_ROOT.is_dir():
+        return
+    errors: list[str] = []
+    for path in sorted(AGENTS_ROOT.iterdir()):
+        if path.is_dir():
+            errors.append(
+                f"{AGENTS_SUBDIR}/{path.name}/ is unexpected "
+                "(only flat *.md agent sources are shipped in this pack version)"
+            )
+            continue
+        if path.is_symlink() or path.suffix != ".md" or not path.is_file():
+            errors.append(
+                f"{_display(path)} is unexpected (only regular *.md agent "
+                "sources are shipped in this pack version)"
+            )
+    for name in agent_names():
+        errors.extend(validate_agent(name))
+    if errors:
+        raise GenerationError(
+            "agent validation failed:\n"
+            + "\n".join(f"- {error}" for error in errors)
+        )
+
+
+def _toml_basic_string(value: str) -> str:
+    """Encode a scalar as a TOML single-line basic string with full escaping."""
+
+    out: list[str] = []
+    for ch in value:
+        if ch == "\\":
+            out.append("\\\\")
+        elif ch == '"':
+            out.append('\\"')
+        elif ch == "\n":
+            out.append("\\n")
+        elif ch == "\t":
+            out.append("\\t")
+        elif ch == "\r":
+            out.append("\\r")
+        elif ord(ch) < 0x20 or ord(ch) == 0x7F:
+            out.append(f"\\u{ord(ch):04X}")
+        else:
+            out.append(ch)
+    return '"' + "".join(out) + '"'
+
+
+def _toml_multiline_string(value: str) -> str:
+    """Encode a body as a TOML multiline basic string.
+
+    Every double quote is escaped, so no accidental ``\"\"\"`` can terminate the
+    string early; backslashes are doubled; newlines and tabs stay literal. A
+    newline is emitted right after the opening delimiter (TOML trims exactly one
+    such newline), so the body is preserved byte-for-byte on parse.
+    """
+
+    out: list[str] = []
+    for ch in value:
+        if ch == "\\":
+            out.append("\\\\")
+        elif ch == '"':
+            out.append('\\"')
+        elif ch in ("\n", "\t"):
+            out.append(ch)
+        elif ch == "\r":
+            out.append("\\r")
+        elif ord(ch) < 0x20 or ord(ch) == 0x7F:
+            out.append(f"\\u{ord(ch):04X}")
+        else:
+            out.append(ch)
+    return '"""\n' + "".join(out) + '"""'
+
+
+def render_claude_agent(name: str, canonical_text: str) -> str:
+    """Near-passthrough MD overlay: keep portable keys Claude reads, drop the
+    Codex-only ``sandbox_mode`` hint, keep the body verbatim."""
+
+    frontmatter, body = _agent_frontmatter(name, canonical_text)
+    metadata: dict[str, object] = {
+        "name": frontmatter["name"],
+        "description": frontmatter["description"],
+    }
+    for key in ("tools", "model"):
+        if key in frontmatter:
+            metadata[key] = frontmatter[key]
+    dumped = yaml.safe_dump(
+        metadata,
+        allow_unicode=True,
+        sort_keys=False,
+        width=10000,
+    )
+    return f"---\n{dumped}---\n{body}"
+
+
+def render_codex_agent(name: str, canonical_text: str) -> str:
+    """Transform the canonical MD into Codex agent TOML: scalar fields first,
+    then the body as ``developer_instructions``."""
+
+    frontmatter, body = _agent_frontmatter(name, canonical_text)
+    lines = [
+        f"name = {_toml_basic_string(frontmatter['name'])}",
+        f"description = {_toml_basic_string(frontmatter['description'])}",
+    ]
+    for key in ("model", "sandbox_mode"):
+        if key in frontmatter:
+            lines.append(f"{key} = {_toml_basic_string(frontmatter[key])}")
+    lines.append(
+        f"developer_instructions = {_toml_multiline_string(body)}"
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _agent_generated_path(platform: str, name: str) -> tuple[Path, str]:
+    """Return the generated overlay path and manifest source for one agent."""
+
+    if platform == "codex":
+        source = f"{GENERATED_AGENTS_DIR}/codex/{name}.toml"
+        return CODEX_AGENTS_GENERATED_ROOT / f"{name}.toml", source
+    source = f"{GENERATED_AGENTS_DIR}/claude/{name}.md"
+    return CLAUDE_AGENTS_GENERATED_ROOT / f"{name}.md", source
+
+
+def regenerated_agent_texts() -> dict[Path, str]:
+    """Every committed agent overlay keyed by its generated path."""
+
+    rendered: dict[Path, str] = {}
+    for name in agent_names():
+        canonical_path = AGENTS_ROOT / f"{name}.md"
+        try:
+            canonical_text = canonical_path.read_text(encoding="utf-8")
+        except OSError as error:
+            raise GenerationError(
+                f"cannot read {_display(canonical_path)}: {error}"
+            ) from None
+        for platform, info in PLATFORM_REGISTRY.items():
+            if info.agents_dir is None:
+                continue
+            path, _ = _agent_generated_path(platform, name)
+            if platform == "codex":
+                rendered[path] = render_codex_agent(name, canonical_text)
+            else:
+                rendered[path] = render_claude_agent(name, canonical_text)
+    return rendered
+
+
+def read_committed_agents(
+    regenerated: dict[Path, str],
+) -> tuple[dict[Path, str | None], dict[Path, str]]:
+    """Read expected agent overlays and inventory stale generated files."""
+
+    if GENERATED_AGENTS_ROOT.is_symlink():
+        raise GenerationError(
+            f"generated agents root must not be a symlink: "
+            f"{_display(GENERATED_AGENTS_ROOT)}"
+        )
+    committed: dict[Path, str | None] = {}
+    for path in regenerated:
+        if path.is_symlink():
+            raise GenerationError(
+                f"generated agent must not be a symlink: {_display(path)}"
+            )
+        if path.exists() and not path.is_file():
+            raise GenerationError(
+                f"generated agent must be a regular file: {_display(path)}"
+            )
+        try:
+            committed[path] = (
+                path.read_text(encoding="utf-8") if path.is_file() else None
+            )
+        except OSError as error:
+            raise GenerationError(
+                f"cannot read generated agent {_display(path)}: {error}"
+            ) from None
+
+    expected = set(regenerated)
+    unexpected: dict[Path, str] = {}
+    if GENERATED_AGENTS_ROOT.is_dir():
+        for path in sorted(GENERATED_AGENTS_ROOT.rglob("*")):
+            if path.is_symlink():
+                raise GenerationError(
+                    f"generated agents tree contains a symlink: {_display(path)}"
+                )
+            if path.is_file() and path not in expected:
+                try:
+                    unexpected[path] = path.read_text(encoding="utf-8")
+                except (OSError, UnicodeError) as error:
+                    raise GenerationError(
+                        f"cannot read unexpected generated file "
+                        f"{_display(path)}: {error}"
+                    ) from None
+    return committed, unexpected
+
+
+def build_agent_rows() -> list[dict]:
+    """One manifest row per (agent, platform-with-agents_dir)."""
+
+    rows: list[dict] = []
+    for name in agent_names():
+        for platform in sorted(PLATFORM_REGISTRY):
+            info = PLATFORM_REGISTRY[platform]
+            if info.agents_dir is None:
+                continue
+            path, source = _agent_generated_path(platform, name)
+            rows.append(
+                {
+                    "platform": platform,
+                    "kind": "agent",
+                    "scope": USER_SCOPE,
+                    "source": source,
+                    "target": f"{info.agents_dir}/{path.name}",
+                    "anchor": info.anchor,
+                    "install": IF_ANCHOR_EXISTS,
+                }
+            )
+    return rows
+
+
 def build_rows() -> list[dict]:
     rows: list[dict] = []
     for name in SKILL_NAMES:
@@ -548,6 +869,8 @@ def build_rows() -> list[dict]:
                     }
                 )
 
+    rows.extend(build_agent_rows())
+
     seen: dict[str, str] = {}
     for row in rows:
         key = row["target"].casefold()
@@ -563,7 +886,11 @@ def build_rows() -> list[dict]:
 def is_derived_row(row: dict) -> bool:
     source = str(row.get("source", ""))
     return source.startswith(
-        (f"{TEMPLATES_SKILLS_DIR}/", f"{GENERATED_SKILLS_DIR}/")
+        (
+            f"{TEMPLATES_SKILLS_DIR}/",
+            f"{GENERATED_SKILLS_DIR}/",
+            f"{GENERATED_AGENTS_DIR}/",
+        )
     )
 
 
@@ -787,9 +1114,14 @@ def main(argv: list[str] | None = None) -> int:
 
     try:
         metadata = validate_skills()
+        validate_agents()
         regenerated_claude = regenerated_claude_skill_texts()
         committed_claude, unexpected_claude = read_committed_claude_skills(
             regenerated_claude
+        )
+        regenerated_agents = regenerated_agent_texts()
+        committed_agents, unexpected_agents = read_committed_agents(
+            regenerated_agents
         )
         regenerated_manifest = regenerated_manifest_text()
         committed_readme = read_readme_text()
@@ -853,6 +1185,21 @@ def main(argv: list[str] | None = None) -> int:
                 file=sys.stderr,
             )
             drifted = True
+        for path, regenerated in regenerated_agents.items():
+            if committed_agents[path] != regenerated:
+                print(
+                    f"error: {_display(path)} drifts from its canonical agent; "
+                    "run `make generate` and commit the result",
+                    file=sys.stderr,
+                )
+                drifted = True
+        for path in unexpected_agents:
+            print(
+                f"error: unexpected generated agent {_display(path)}; "
+                "run `make generate` and commit the result",
+                file=sys.stderr,
+            )
+            drifted = True
         if drifted:
             return 1
         print(
@@ -876,6 +1223,11 @@ def main(argv: list[str] | None = None) -> int:
         if committed_claude[path] != regenerated:
             updates.append((path, regenerated, committed_claude[path]))
     for path, committed in unexpected_claude.items():
+        updates.append((path, None, committed))
+    for path, regenerated in regenerated_agents.items():
+        if committed_agents[path] != regenerated:
+            updates.append((path, regenerated, committed_agents[path]))
+    for path, committed in unexpected_agents.items():
         updates.append((path, None, committed))
     if committed_manifest != regenerated_manifest:
         updates.append((MANIFEST_PATH, regenerated_manifest, committed_manifest))

@@ -10,11 +10,13 @@ process. User-facing install/update/remove instructions live in the
 | Path | Role |
 |---|---|
 | `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional flat `references/*.md` and `scripts/*.py`). The only place skills are edited. |
+| `templates/agents/<name>.md` | Canonical agent definitions (neutral MD + frontmatter allowlist `name`, `description`, optional `tools`, `model`, `sandbox_mode`). The only place agents are edited. |
+| `generated/agents/claude/<name>.md`, `generated/agents/codex/<name>.toml` | Per-platform agent overlays rendered by the generator (Claude Markdown, Codex TOML); never hand-edit. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
 | `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
 | `templates/skills/_shared/references/personal-profile-contract.md` | Portable `se-personal-profile/v1` schema and privacy/consumer contract fanned into profile workflows. |
 | `templates/skills/_shared/references/state-schema.md` | Portable `se-monitor-state/v1` schema fanned into compatible bounded-delta workflows. |
-| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY`, ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
+| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY` (incl. per-platform `agents_dir`), ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
 | `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |
@@ -924,12 +926,39 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
    vouched leftovers from user scopes automatically.
 4. Version bump + changelog.
 
+## Adding an agent
+
+1. Create `templates/agents/se-<name>.md`:
+   - frontmatter allowlist: `name` (equal to the file stem) and `description`
+     (single line, no double quotes) are required; `tools`, `model`, and
+     `sandbox_mode` are optional portable renderer hints;
+   - body: H1 title, then the neutral system prompt (the generator lints for
+     brand names just like skills).
+2. `make generate` renders one overlay per agent-capable platform — Claude
+   Markdown (`tools`/`model` kept, `sandbox_mode` dropped) and Codex TOML
+   (`model`/`sandbox_mode` emitted when present, body as
+   `developer_instructions`) — into `generated/agents/` and adds `kind: agent`,
+   `scope: user`, `install: if-anchor-exists` manifest rows. Then run
+   `make check`. Never hand-edit generated overlays.
+3. Agents install to `PlatformInfo.agents_dir` (`~/.claude/agents/<name>.md`,
+   `~/.codex/agents/<name>.toml`); platforms whose `agents_dir` is `None` (the
+   shared Amp anchor) receive no agent rows.
+4. Version bump + changelog when the shipped payload changes.
+
+## Retiring an agent
+
+1. Delete its `templates/agents/<name>.md`; `make generate` drops the overlays
+   and rows, and refreshes prune installed files via provenance.
+2. Version bump + changelog.
+
 ## Adding a platform
 
 1. Verify the tool's real user-level skills directory — never guess.
-2. Add one `PlatformInfo(skills_dir=..., anchor=..., display=...)` row to
-   `PLATFORM_REGISTRY`.
-3. `make generate` (fans every skill into the new platform), `make check`.
+2. Add one `PlatformInfo(skills_dir=..., anchor=..., display=..., agents_dir=...)`
+   row to `PLATFORM_REGISTRY`. Set `agents_dir` only if the platform has a real
+   user-level agents directory; leave it unset (`None`) otherwise.
+3. `make generate` (fans every skill, and every agent when `agents_dir` is set,
+   into the new platform), `make check`.
 4. Version bump + changelog.
 
 ## Release process

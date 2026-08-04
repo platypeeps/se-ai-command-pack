@@ -20,11 +20,15 @@ class PlatformInfo:
     skills_dir: home-relative directory skills install into.
     anchor: home-relative directory whose existence selects the platform.
     display: human-readable name for hints and messages.
+    agents_dir: home-relative directory agents install into, or None when the
+        platform has no agent surface (e.g. the shared Amp anchor). Reuses the
+        existing anchor; no new anchor is introduced for agents.
     """
 
     skills_dir: str
     anchor: str
     display: str
+    agents_dir: str | None = None
 
 
 @dataclass(frozen=True)
@@ -57,11 +61,13 @@ PLATFORM_REGISTRY: dict[str, PlatformInfo] = {
         skills_dir=".claude/skills",
         anchor=".claude",
         display="Claude Code / Cowork",
+        agents_dir=".claude/agents",
     ),
     "codex": PlatformInfo(
         skills_dir=".codex/skills",
         anchor=".codex",
         display="OpenAI Codex",
+        agents_dir=".codex/agents",
     ),
 }
 
@@ -424,6 +430,21 @@ def validate_registry() -> None:
                 f"registry platform {platform} anchor {info.anchor!r} does not "
                 f"contain skills_dir {info.skills_dir!r}"
             )
+        if info.agents_dir is not None:
+            agents_path = Path(info.agents_dir)
+            if agents_path.is_absolute() or ".." in agents_path.parts:
+                raise RuntimeError(
+                    f"registry platform {platform} has unsafe agents_dir: "
+                    f"{info.agents_dir}"
+                )
+            if not (
+                info.agents_dir == info.anchor
+                or info.agents_dir.startswith(info.anchor + "/")
+            ):
+                raise RuntimeError(
+                    f"registry platform {platform} anchor {info.anchor!r} does "
+                    f"not contain agents_dir {info.agents_dir!r}"
+                )
     expected_names = tuple(skill.name for skill in SKILLS)
     if SKILL_NAMES != expected_names:
         raise RuntimeError("SKILL_NAMES must be derived from SKILLS without reordering")
