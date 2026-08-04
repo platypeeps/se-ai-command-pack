@@ -25,10 +25,12 @@ skill-body dispatch protocols and the `fresh-session` encoding decision
   A-044 codex-home concern for this surface (the agents dir is a fixed home-relative path,
   not `$CODEX_HOME`-derived, keeping parity with the existing `.codex/skills` anchor).
 - **D2 — one canonical source format.** `templates/agents/<name>.md`: YAML frontmatter with
-  an allowlist (`name`, `description`, and portable hints `tools`, `model`), body = system
-  prompt. Same shape as Trellis `.trellis/agents/*.md`. The neutrality lint
-  (`BANNED_PHRASE_PATTERN`) applies to the body; host product names never appear in
-  canonical source, only in generated overlays.
+  an allowlist — `name`, `description`, and optional portable renderer hints `tools`,
+  `model`, `sandbox_mode` — body = system prompt. The optional hints are the *source* of the
+  corresponding Codex TOML fields (§3); when a hint is absent the renderer omits that field,
+  so no renderer invents an undocumented value. Same shape as Trellis
+  `.trellis/agents/*.md`. The neutrality lint (`BANNED_PHRASE_PATTERN`) applies to the body;
+  host product names never appear in canonical source, only in generated overlays.
 - **D3 — anchor reuse, new sub-directory.** No new anchor. Agents gate on the *existing*
   `.claude` / `.codex` anchors (`install: if-anchor-exists`), targeting an `agents/`
   sub-directory. `PlatformInfo` gains an optional `agents_dir`; `claude` →`.claude/agents`,
@@ -73,9 +75,10 @@ install.py → ~/.claude/agents/<name>.md   (anchor .claude present)
 ```
 
 Claude renderer: near-passthrough — strip portable-only frontmatter hints Claude does not
-read, keep `name`/`description`/`tools`/`model`, body verbatim. Codex renderer: emit TOML
-with `name`, `description`, `developer_instructions` (= body), and optional `model`,
-`sandbox_mode`, with correct TOML string escaping (multiline basic strings for the body).
+read, keep `name`/`description`/`tools`/`model`, body verbatim. Codex renderer: transform
+the canonical MD into TOML with `name`, `description`, `developer_instructions` (= body),
+plus `model` and `sandbox_mode` only when present as frontmatter hints (D2), with correct
+TOML string escaping (multiline basic strings for the body).
 
 ## 4. Contracts and compatibility
 

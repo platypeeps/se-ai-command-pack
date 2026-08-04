@@ -35,8 +35,8 @@ no misparse, no incompatibility. There is no versioned snapshot pinning the fiel
          `agents_dir` is not `None`, emit a `kind: agent`, `scope: user`,
          `install: if-anchor-exists` row sourced from the generated overlay.
    - [ ] Add `render_claude_agent()` (near-passthrough MD → `generated/agents/claude/<name>.md`)
-         and `render_codex_agent()` (TOML → `generated/agents/codex/<name>.toml`, correct
-         escaping, body as `developer_instructions`).
+         and `render_codex_agent()` (canonical MD → TOML at `generated/agents/codex/<name>.toml`,
+         correct escaping, body as `developer_instructions`).
    - [ ] Extend the case-folded duplicate-target guard to the merged skill+agent row set.
    - [ ] Absorb the `GENERATED_SHARED_REFERENCES` catalog special-case into the same hook
          (A-003 coordination) rather than leaving a parallel exception.
@@ -67,9 +67,9 @@ no misparse, no incompatibility. There is no versioned snapshot pinning the fiel
 .venv/bin/python .github/scripts/generate-skill-surfaces.py --check   # drift gate, exit 0
 PYTHON=.venv/bin/python make test                                      # full suite
 # behavioral round-trip against a throwaway root:
-python3 install.py install --root <tmp> --platform claude --platform codex
-python3 install.py status  --root <tmp>
-python3 install.py remove  --root <tmp>
+.venv/bin/python install.py install --root <tmp> --platform claude --platform codex
+.venv/bin/python install.py status  --root <tmp>
+.venv/bin/python install.py remove  --root <tmp>
 ```
 
 Acceptance: agent round-trip works on claude+codex, Amp gets none (test-asserted), `--check`
