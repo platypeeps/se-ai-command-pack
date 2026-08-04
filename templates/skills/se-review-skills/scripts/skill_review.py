@@ -307,11 +307,11 @@ def _load_registry_snapshot(path: Path) -> RegistryData | None:
     """Load the versioned generated registry snapshot.
 
     Returns RegistryData for a valid snapshot, or None when there is no usable
-    snapshot to consume (absent, or a symlink we refuse to follow) so the caller
-    falls back to _parse_registry. A present-but-incompatible or malformed
-    snapshot raises ReviewError: it must never silently fall through and mask a
-    shipped-snapshot defect."""
-    if path.is_symlink() or not path.is_file():
+    snapshot to consume (absent, or crossing a symlink boundary we refuse to
+    follow) so the caller falls back to _parse_registry. A
+    present-but-incompatible or malformed snapshot raises ReviewError: it must
+    never silently fall through and mask a shipped-snapshot defect."""
+    if _crosses_symlink(path) or not path.is_file():
         return None
     text = _read_regular_text(path)
     try:

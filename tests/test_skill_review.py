@@ -268,6 +268,25 @@ class SkillReviewInventoryTest(TempDirTestCase):
             self.inventory(root, "se-test")["skills"][0]["family"], "improve"
         )
 
+    def test_symlinked_parent_directory_is_not_followed(self) -> None:
+        # A regular snapshot file reached through a symlinked `generated/`
+        # directory still crosses a symlink boundary and must not be trusted.
+        root, _ = self.write_se_pack()
+        real_generated = self.base / "real-generated"
+        real_generated.mkdir(parents=True, exist_ok=True)
+        (real_generated / "registry-snapshot.json").write_text(
+            json.dumps(dict(self.SE_SNAPSHOT)), encoding="utf-8"
+        )
+        link_dir = root / "generated"
+        link_dir.symlink_to(real_generated, target_is_directory=True)
+        snapshot = link_dir / "registry-snapshot.json"
+        self.assertTrue(snapshot.is_file())
+        self.assertFalse(snapshot.is_symlink())
+        self.assertIsNone(review._load_registry_snapshot(snapshot))
+        self.assertEqual(
+            self.inventory(root, "se-test")["skills"][0]["family"], "improve"
+        )
+
     def test_snapshot_version_not_in_supported_set_fails_closed(self) -> None:
         root, _ = self.write_se_pack()
         for version in (0, 2):

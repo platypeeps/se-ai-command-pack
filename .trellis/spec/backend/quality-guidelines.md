@@ -674,7 +674,8 @@ defaults installed discovery to `off` so callers and tests must opt in.
 - Resolve the registry (families, family order, skill order, platforms, and
   `SHARED_REFERENCES`) by preferring the generated
   `generated/registry-snapshot.json` payload, falling back to a static AST parse
-  of `installer/registry.py` only when the snapshot is absent or a symlink. The
+  of `installer/registry.py` only when the snapshot is absent or crosses a
+  symlink boundary (the leaf or any parent component, via `_crosses_symlink`). The
   snapshot's `schemaVersion` must be an exact `int` in
   `SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS` before use — `bool`, `float`, or
   a string version, an unsupported integer, malformed JSON, or a mistyped field
