@@ -169,7 +169,8 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
 | Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
 | Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
-| Family metadata changes but payload does not | Manifest and changelog stay unchanged; release gate passes without a bump. |
+| Family metadata changes that also alter the generated registry snapshot (family order, skill membership, platforms, or shared references) | The snapshot is shipped payload under `generated/`; the release gate requires a version bump and dated CHANGELOG heading. |
+| Family metadata changes that touch no shipped payload byte (e.g. a family-description edit that only re-renders non-payload prose) | Manifest and changelog stay unchanged; release gate passes without a bump. |
 
 ### 5. Good/Base/Bad Cases
 
