@@ -22,7 +22,7 @@ sync:
 
 test:
 	"$(RUN_PYTHON)" -m coverage erase
-	COVERAGE_PROCESS_START=.coveragerc PYTHONPATH=tests/_coverage_subprocess "$(RUN_PYTHON)" -m coverage run -m unittest discover -s tests
+	COVERAGE_PROCESS_START="$(CURDIR)/.coveragerc" PYTHONPATH="$(CURDIR)/tests/_coverage_subprocess$${PYTHONPATH:+:$$PYTHONPATH}" "$(RUN_PYTHON)" -m coverage run -m unittest discover -s tests
 	"$(RUN_PYTHON)" -m coverage combine
 	"$(RUN_PYTHON)" -m coverage report --fail-under=80
 

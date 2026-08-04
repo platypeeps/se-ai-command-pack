@@ -32,7 +32,8 @@ jobs:
       - name: Run tests under coverage with floor
         run: |
           python -m coverage erase
-          COVERAGE_PROCESS_START=.coveragerc PYTHONPATH=tests/_coverage_subprocess \
+          COVERAGE_PROCESS_START="$GITHUB_WORKSPACE/.coveragerc" \
+          PYTHONPATH="$GITHUB_WORKSPACE/tests/_coverage_subprocess${PYTHONPATH:+:$PYTHONPATH}" \
             python -m coverage run -m unittest discover -s tests
           python -m coverage combine
           python -m coverage report --fail-under=80
