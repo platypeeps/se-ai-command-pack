@@ -1760,3 +1760,45 @@ Replaced the ~790-line block of hand-copied per-skill shared-reference test meth
 ### Next Steps
 
 - None - task complete
+
+
+## Session 99: Resolve A-001: track .claude sd-adapters (gitignore ownership)
+
+**Date**: 2026-08-04
+**Task**: Resolve A-001: track .claude sd-adapters (gitignore ownership)
+**Branch**: `audit/claude-gitignore-owner`
+
+### Summary
+
+Replaced the wholesale .claude/ gitignore rule (external trellis init) with an ignore-by-default + sd-* re-include allowlist so the 59 sd-ai-command-pack Claude adapters are tracked (parity with .gemini twins); documented the .claude tracking policy in CONTRIBUTING.md. Neither generator is vendored in-repo, so AC3 was re-scoped to in-repo stability + an upstream trellis-init follow-up.
+
+### Main Changes
+
+- gitignore: .claude/* ignore-by-default with sd-* re-include allowlist; git-track 59 sd adapters
+- CONTRIBUTING.md: .claude tracking policy + do-not-re-add-wholesale rule + upstream follow-up pointer
+- PRD AC3 re-scoped after verifying both generators are external (not in-repo)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5be1d39` | fix(gitignore): track .claude sd-adapters, resolve A-001 ownership conflict |
+| `eca05be` | chore(task): record branch for audit-claude-gitignore-owner finalization |
+| `f5b3d10` | chore(task): mark audit-claude-gitignore-owner acceptance criteria complete |
+| `7ca77a7` | chore(task): archive 07-25-audit-claude-gitignore-owner |
+
+### Testing
+
+- [OK] git check-ignore: sd adapters tracked, caveman/claude-mem/trellis/settings ignored (AC1)
+- [OK] install-audit passed: 210 targets checked, 0 warnings (AC2)
+- [OK] make check green: ruff/mypy/generate --check/release-payload
+- [OK] Copilot review: APPROVED, 0 findings
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

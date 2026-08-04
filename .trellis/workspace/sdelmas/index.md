@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 98
+- **Total Sessions**: 99
 - **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1760 | Active |
+| `journal-2.md` | ~1801 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 99 | 2026-08-04 | Resolve A-001: track .claude sd-adapters (gitignore ownership) | `5be1d39`, `eca05be`, `f5b3d10`, `7ca77a7` | `audit/claude-gitignore-owner` |
 | 98 | 2026-08-04 | Registry-driven shared-reference tests (dedupe-generate-tests) | `595a008`, `26fd265`, `2c24021`, `d83984f`, `ed416cb` | `audit/dedupe-generate-tests` |
 | 97 | 2026-08-04 | Add agent artifact kind (0.66.0) | `52f04ad`, `8253095` | `chore/archive-agent-artifact-kind` |
 | 96 | 2026-08-03 | Refresh sd-ai-command-pack to 0.64.3 | `5047f2c2e93073e96e72cabbbc47d764baaac228` | `refresh-sd-ai-command-pack-0.64.3` |
