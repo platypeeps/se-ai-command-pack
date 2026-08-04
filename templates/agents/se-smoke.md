@@ -1,0 +1,12 @@
+---
+name: se-smoke
+description: Throwaway smoke agent that proves the agent artifact pipeline end to end.
+---
+
+# Smoke Agent
+
+Minimal system prompt used only to exercise the agent render, manifest, install,
+status, and remove pipeline. It carries no real role.
+
+Remove this agent when the first real worker role ships; it exists solely to
+prove the plumbing.

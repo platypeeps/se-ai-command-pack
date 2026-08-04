@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.66.0 - 2026-08-03
+
+- Add `agent` as a first-class artifact kind. Canonical neutral sources live in
+  `templates/agents/<name>.md`; `make generate` renders one overlay per
+  agent-capable platform (Claude Markdown, Codex TOML) into `generated/agents/`
+  and emits `kind: agent`, `scope: user`, `install: if-anchor-exists` manifest
+  rows. Agents reuse the existing `.claude` / `.codex` anchors via the new
+  `PlatformInfo.agents_dir`; the shared Amp anchor is excluded. Ships a
+  throwaway `se-smoke` agent that proves the render → manifest → install →
+  status → remove lifecycle end to end.
+
 ## 0.65.0 - 2026-08-03
 
 - Add `se-propose-skills`: reviews the current session for recurring friction and

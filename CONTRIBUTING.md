@@ -3,15 +3,18 @@
 ## Workflow
 
 1. Branch from `main`; open a PR for every change.
-2. Edit canonical skills under `templates/skills/`, never the generated
-   `manifest.json` rows by hand.
-3. Run `make generate` after any skill or registry change so the manifest
-   stays in sync (`make release-check` verifies this).
+2. Edit canonical skills under `templates/skills/` and canonical agents under
+   `templates/agents/`, never the generated `manifest.json` rows or
+   `generated/**` overlays by hand.
+3. Run `make generate` after any skill, agent, or registry change so the
+   manifest and generated overlays stay in sync (`make release-check` verifies
+   this).
 4. Run `make check` (tests, lint, release gates) before requesting review.
 
 ## Release discipline
 
-Any change to the shipped payload (`templates/**` or `manifest.json`) must:
+Any change to the shipped payload (`templates/**`, `generated/**`, or
+`manifest.json`) must:
 
 - bump `version` in `manifest.json`, and
 - add a matching top heading to `CHANGELOG.md` in the form

@@ -12,6 +12,7 @@ from install_test_support import PACK_ROOT
 from installer.registry import (
     FAMILY_DESCRIPTIONS,
     FAMILY_LABELS,
+    PLATFORM_REGISTRY,
     SHARED_REFERENCES,
     SKILL_NAMES,
     SKILL_RUNTIME_PROFILES,
@@ -147,6 +148,28 @@ class SkillConventionsTest(unittest.TestCase):
                 "Unknown argument names are an error",
                 skill_text(name),
                 name,
+            )
+
+
+class PlatformAgentsDirTest(unittest.TestCase):
+    def test_agents_dir_is_set_for_claude_and_codex_only(self) -> None:
+        self.assertEqual(
+            PLATFORM_REGISTRY["claude"].agents_dir, ".claude/agents"
+        )
+        self.assertEqual(
+            PLATFORM_REGISTRY["codex"].agents_dir, ".codex/agents"
+        )
+        # The shared Amp anchor is excluded from the agent surface (design D5).
+        self.assertIsNone(PLATFORM_REGISTRY["agents"].agents_dir)
+
+    def test_agents_dir_lives_under_its_anchor(self) -> None:
+        for info in PLATFORM_REGISTRY.values():
+            if info.agents_dir is None:
+                continue
+            self.assertTrue(
+                info.agents_dir == info.anchor
+                or info.agents_dir.startswith(info.anchor + "/"),
+                info.agents_dir,
             )
 
 

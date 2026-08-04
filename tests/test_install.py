@@ -6,6 +6,7 @@ import hashlib
 import json
 import unittest
 
+import tomllib
 import yaml
 from install_test_support import (
     PACK_ROOT,
@@ -321,6 +322,55 @@ class FilteredRefreshReceiptTest(TempDirTestCase):
             {t for t in provenance["files"] if t.startswith(".codex/")},
             "codex entries dropped from provenance",
         )
+
+
+AGENT_ROWS = [row for row in MANIFEST["files"] if row["kind"] == "agent"]
+
+
+class AgentInstallTest(TempDirTestCase):
+    """Agent rows install, refresh, and remove exactly like skill rows."""
+
+    def test_no_agent_row_targets_the_amp_anchor(self) -> None:
+        self.assertTrue(AGENT_ROWS, "expected at least one agent row")
+        for row in AGENT_ROWS:
+            self.assertFalse(
+                row["target"].startswith(".config/agents/"), row["target"]
+            )
+
+    def test_agent_round_trip_on_claude_and_codex(self) -> None:
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+        claude_agent = home / ".claude" / "agents" / "se-smoke.md"
+        codex_agent = home / ".codex" / "agents" / "se-smoke.toml"
+        self.assertTrue(claude_agent.is_file())
+        self.assertTrue(codex_agent.is_file())
+
+        installed = tree_paths(home)
+        self.assertIn(".claude/agents/se-smoke.md", installed)
+        self.assertIn(".codex/agents/se-smoke.toml", installed)
+
+        receipt = read_receipt_targets(home)
+        self.assertIn(".claude/agents/se-smoke.md", receipt)
+        self.assertIn(".codex/agents/se-smoke.toml", receipt)
+        provenance = read_provenance(home)
+        self.assertIn(".codex/agents/se-smoke.toml", set(provenance["files"]))
+
+        # Idempotent refresh leaves the overlays untouched.
+        refreshed = install_ok("--root", str(home))
+        self.assertIn("unchanged", refreshed.stdout)
+
+        # Remove prunes both overlays.
+        install_ok("remove", "--root", str(home))
+        self.assertFalse(claude_agent.exists())
+        self.assertFalse(codex_agent.exists())
+
+    def test_installed_codex_agent_is_valid_toml(self) -> None:
+        home = make_home(self.base, anchors=("codex",))
+        install_ok("--root", str(home))
+        codex_agent = home / ".codex" / "agents" / "se-smoke.toml"
+        parsed = tomllib.loads(codex_agent.read_text(encoding="utf-8"))
+        self.assertEqual(parsed["name"], "se-smoke")
+        self.assertIn("developer_instructions", parsed)
 
 
 if __name__ == "__main__":
