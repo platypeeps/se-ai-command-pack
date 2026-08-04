@@ -171,6 +171,22 @@ class ReleaseGateTest(TempDirTestCase):
         result = self.gate()
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def test_nested_install_py_is_not_gated(self) -> None:
+        # `install.py` is an exact top-level match, not a prefix: a nested
+        # `sub/install.py` is not shipped payload and needs no bump.
+        nested = self.repo / "sub"
+        nested.mkdir()
+        (nested / "install.py").write_text("print('x')\n", encoding="utf-8")
+        result = self.gate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_installer_prefix_sibling_is_not_gated(self) -> None:
+        # The `installer/` prefix must not match a sibling like `installerX.py`
+        # (startswith on a slash-terminated prefix, not a bare name).
+        (self.repo / "installerX.py").write_text("x = 1\n", encoding="utf-8")
+        result = self.gate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_no_payload_diff_passes_without_bump(self) -> None:
         # Widened surface present and committed; a non-payload edit alongside a
         # byte-identical payload tree must still pass without a bump (carve-out).

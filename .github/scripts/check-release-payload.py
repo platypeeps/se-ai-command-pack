@@ -36,7 +36,11 @@ from pathlib import Path
 PACK_ROOT = Path(__file__).resolve().parents[2]
 PAYLOAD_PREFIXES = ("templates/", "generated/", "installer/")
 MANIFEST_NAME = "manifest.json"
-PAYLOAD_EXACT = frozenset({MANIFEST_NAME, "install.py"})
+# Exact repo-relative paths that are payload on their own. `install.py` is the
+# root installer entry point; nested `install.py` files are covered only when
+# they fall under a PAYLOAD_PREFIXES directory. The exact set and the prefixes
+# never overlap: `install.py` does not start with `installer/`.
+PAYLOAD_EXACT = frozenset((MANIFEST_NAME, "install.py"))
 CHANGELOG_NAME = "CHANGELOG.md"
 HEADING_PATTERN = re.compile(r"^## (?P<version>\S+) - (?P<date>\d{4}-\d{2}-\d{2})$")
 GIT_TIMEOUT_SECONDS = 60
