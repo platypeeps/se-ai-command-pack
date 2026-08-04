@@ -153,6 +153,8 @@ templates/
       SKILL.md
     se-proposal/
       SKILL.md
+    se-propose-skills/
+      SKILL.md
     se-publish/
       SKILL.md
     se-red-team/
@@ -230,7 +232,7 @@ requirements-dev.txt
 # Files
 
 ## File: .github/scripts/check-release-payload.py
-````python
+`````python
 #!/usr/bin/env python3
 """Release payload gate.
 
@@ -313,10 +315,10 @@ args = parser.parse_args(argv if argv is not None else sys.argv[1:])
 repo = Path(args.repo).resolve()
 ⋮----
 summary = run_gate(repo, args.base)
-````
+`````
 
 ## File: .github/scripts/create-release-tag.py
-````python
+`````python
 #!/usr/bin/env python3
 """Tag v<manifest version> at HEAD when the tag does not exist yet.
 
@@ -354,10 +356,10 @@ existing_locally = (
 created = run_git(repo, "tag", tag, "HEAD")
 ⋮----
 pushed = run_git(repo, "push", "origin", tag)
-````
+`````
 
 ## File: .github/scripts/generate-skill-surfaces.py
-````python
+`````python
 #!/usr/bin/env python3
 """Generate the committed manifest rows and skill catalog surfaces.
 
@@ -629,10 +631,10 @@ drifted = True
 updates: list[tuple[Path, str | None, str | None]] = []
 ⋮----
 action = "removed" if regenerated is None else "wrote"
-````
+`````
 
 ## File: .github/workflows/tests.yml
-````yaml
+`````yaml
 name: tests
 
 on:
@@ -728,10 +730,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - run: python3 .github/scripts/create-release-tag.py --push
-````
+`````
 
 ## File: .trellis/audit/ledger.md
-````markdown
+`````markdown
 # Audit ledger
 Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack; managed by sd-audit-repo.
 
@@ -1281,10 +1283,10 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - why: Relocated-CODEX_HOME consumers get skills where Codex never reads them; the pack's two docs contradict each other.
 - fix: Implement CODEX_HOME resolution (with test), or delete the README claim and document the --root/symlink workaround.
 - notes: merged — found independently by architecture, documentation, improvements, and consumer-impact reviewers.
-````
+`````
 
 ## File: .trellis/audit/report-2026-07-25.md
-````markdown
+`````markdown
 # Repo Audit — platypeeps/se-ai-command-pack @ 4067caa — 2026-07-25
 Mode: full · Depth: standard · Dimensions: architecture, design, correctness, security, testing, documentation, bloat, performance, dependencies, tooling, release-hygiene, improvements, consumer-impact (observability and accessibility-i18n skipped by fingerprint)
 
@@ -1722,10 +1724,10 @@ Proposals (title · slug · summary · acceptance sketch):
 - Network: reviewers worked offline against the local tree; CVE status of pinned dependencies was not verifiable in-run (noted in A-031/A-033).
 - Run note: the first workflow launch aborted instantly on an orchestration args-typing bug (no reviewer had started); it was fixed and relaunched with no coverage impact.
 - Out of scope by brief: .venv/ and cache directories; committed platform copies were judged for drift/process, not flagged for being committed.
-````
+`````
 
 ## File: .trellis/spec/backend/database-guidelines.md
-````markdown
+`````markdown
 # Database Guidelines
 
 > Database guidance for this project.
@@ -1786,10 +1788,10 @@ When changing persistent fields:
 - Writing receipt files directly and non-atomically.
 - Adding a new receipt field without tests for installations where it is absent.
 - Describing this project as having database conventions when it has none.
-````
+`````
 
 ## File: .trellis/spec/backend/directory-structure.md
-````markdown
+`````markdown
 # Directory Structure
 
 > How Python installer code and shipped skill content are organized.
@@ -1888,10 +1890,10 @@ tests/                      # unittest modules mirroring installer concerns
   bundled script merely to shorten the skill text.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI
   entry point.
-````
+`````
 
 ## File: .trellis/spec/backend/error-handling.md
-````markdown
+`````markdown
 # Error Handling
 
 > How CLI and installer failures are represented and propagated.
@@ -1964,10 +1966,10 @@ entire platform-dependent error string.
 - Printing an error and returning success.
 - Mutating files before all safety checks and dry-run planning have passed.
 - Exposing tracebacks for routine invalid user input.
-````
+`````
 
 ## File: .trellis/spec/backend/index.md
-````markdown
+`````markdown
 # Backend Development Guidelines
 
 > Best practices for backend development in this project.
@@ -2001,10 +2003,10 @@ not aspirational architecture.
 ---
 
 **Language**: All documentation should be written in **English**.
-````
+`````
 
 ## File: .trellis/spec/backend/logging-guidelines.md
-````markdown
+`````markdown
 # Logging Guidelines
 
 > Operational output conventions for this command-line pack.
@@ -2065,10 +2067,10 @@ functions in `install.py`, and assertions in `tests/test_install.py` and
 - Python tracebacks for expected CLI failures.
 - Noisy per-function tracing or duplicate plan/apply messages that obscure the
   final result.
-````
+`````
 
 ## File: .trellis/spec/backend/quality-guidelines.md
-````markdown
+`````markdown
 # Quality Guidelines
 
 > Code quality standards for backend development.
@@ -3456,10 +3458,10 @@ installer/registry.py
 generated/skills/claude/se-research/SKILL.md
   -> context: fork, model: opus, effort: high plus the canonical body
 ```
-````
+`````
 
 ## File: .trellis/spec/guides/code-reuse-thinking-guide.md
-````markdown
+`````markdown
 # Code Reuse Thinking Guide
 
 > **Purpose**: Stop and think before creating new code - does it already exist?
@@ -3683,10 +3685,10 @@ rsync -av --delete --exclude='__pycache__' .trellis/scripts/ packages/cli/src/te
 ```
 
 **Gotcha**: Running rsync with wrong source/destination paths can create nested garbage directories (e.g., `.trellis/scripts/packages/cli/...`). Always double-check paths before running.
-````
+`````
 
 ## File: .trellis/spec/guides/cross-layer-thinking-guide.md
-````markdown
+`````markdown
 # Cross-Layer Thinking Guide
 
 > **Purpose**: Think through data flow across layers before implementing.
@@ -4014,10 +4016,10 @@ state correctly, but several commands still re-parsed event payload fields with
 local casts. The fix was to make the core event layer own `ThreadChannelEvent`
 and `isThreadEvent`, make `reduceChannelMetadata` the only channel metadata
 projection, and make `reduceThreads` the only thread replay reducer.
-````
+`````
 
 ## File: .trellis/spec/guides/index.md
-````markdown
+`````markdown
 # Thinking Guides
 
 > **Purpose**: Expand your thinking to catch things you might not have considered.
@@ -4115,10 +4117,10 @@ Found a new "didn't think of that" moment? Add it to the relevant guide.
 ---
 
 **Core Principle**: 30 minutes of thinking saves 3 hours of debugging.
-````
+`````
 
 ## File: docs/SE_AI_COMMAND_PACK.md
-````markdown
+`````markdown
 # SE AI Command Pack — Operator Guide
 
 The maintainer-facing reference for the pack's internals: manifest schema,
@@ -4819,6 +4821,26 @@ available. Formal incident causal and safeguard analysis remains with
 task, contacts participants, publishes a report, changes systems, or executes a
 follow-up.
 
+### Propose-skills workflow boundary
+
+`se-propose-skills` owns end-of-session review of the current session for
+recurring friction, repeated steps, and hard-won gotchas, drafting only the
+survivors of a deliberately strict bar into skill proposals. The bar is
+three-part: a pattern must recur, have a mechanical repeatable core, and carry
+a real silent-failure cost; zero survivors is an expected result rather than a
+prompt to invent one. It reviews only the session in context and never reads
+past sessions or external transcripts.
+
+Destination is resolved before drafting: an explicit `target`, then a
+`profile=auto` host-configured locator, else inline-only reporting; `profile=off`
+forces inline and writes nothing. Each survivor is written once, deduplicated
+against existing proposal notes and installed skills, as a native note carrying
+`status: proposed` and an inline-select control the user flips to accept or
+decline. `se-propose-skills` never advances that status, never files a task,
+never overwrites an existing note, and never embeds the private destination
+path. Improving an existing skill is editing, not proposing, and stays out of
+scope.
+
 ### Weekly-review workflow boundary
 
 `se-weekly-review` owns personal cross-stream synthesis for one explicit local
@@ -5061,15 +5083,15 @@ prefix is reserved; document any future variable here.
 - **Remove preserved files you wanted gone** — they drifted from the
   installed version; re-run with `python3 install.py remove --user --force`
   after reviewing the list.
-````
+`````
 
 ## File: installer/__init__.py
-````python
+`````python
 """Installer package for the SE AI command pack."""
-````
+`````
 
 ## File: installer/fileops.py
-````python
+`````python
 """Payload file operations: selection, atomic writes, backups, removal helpers."""
 ⋮----
 @dataclass(frozen=True)
@@ -5189,10 +5211,10 @@ def sha256_file(path: Path) -> tuple[str | None, str | None]
 def display_path(root: Path, path: Path) -> Path
 ⋮----
 __all__ = [
-````
+`````
 
 ## File: installer/management.py
-````python
+`````python
 """Status and source-checkout update operations for the installed pack."""
 ⋮----
 def _read_json_object(path: Path) -> dict[str, Any] | None
@@ -5241,10 +5263,10 @@ installer = str(source_root / "install.py")
 plan = subprocess.run(
 ⋮----
 __all__ = ["pack_status", "update_pack"]
-````
+`````
 
 ## File: installer/manifest.py
-````python
+`````python
 """Manifest loading and validation: PackFile entries and safe path resolution."""
 ⋮----
 MANIFEST_PATH = ROOT / "manifest.json"
@@ -5320,10 +5342,10 @@ destination = root / relative_path
 def require_install_root(root: Path) -> None
 ⋮----
 __all__ = [
-````
+`````
 
 ## File: installer/provenance.py
-````python
+`````python
 """Install receipts: provenance hashes for vouching and the installed-targets record."""
 ⋮----
 """Return the set of POSIX target paths the install records as installed.
@@ -5420,10 +5442,10 @@ file = generated_pack_file("generated-manifest", INSTALLED_TARGETS_FILE)
 content = installed_targets_content(selected, extra_targets=extra_targets)
 ⋮----
 __all__ = [
-````
+`````
 
 ## File: installer/registry.py
-````python
+`````python
 """Source of truth for platform scopes, skill names, and pack-wide constants."""
 ⋮----
 # The package lives one level below the pack root that hosts install.py,
@@ -5559,10 +5581,10 @@ expected_profiles = build_skill_runtime_profiles(
 unknown = set(consumers) - set(SKILL_NAMES)
 ⋮----
 __all__ = [
-````
+`````
 
 ## File: installer/removal.py
-````python
+`````python
 """Pack removal: vouch-gated deletion and retired-target cleanup."""
 ⋮----
 GENERATED_REMOVAL_TARGETS = frozenset(
@@ -5644,10 +5666,10 @@ file = files_by_target.get(relative_path.as_posix())
 suffix = f" ({result.detail})" if result.detail else ""
 ⋮----
 __all__ = [
-````
+`````
 
 ## File: installer/status.py
-````python
+`````python
 """Typed status vocabularies for installer result objects."""
 ⋮----
 class StringStatus(str, Enum)
@@ -5683,10 +5705,10 @@ VOUCHABLE_STATUSES = frozenset(
 WRITTEN_REMOVE_STATUSES = frozenset(
 ⋮----
 __all__ = [
-````
+`````
 
 ## File: scripts/sd_ai_command_pack_fleet_lib.py
-````python
+`````python
 #!/usr/bin/env python3
 """Shared fleet manifest, payload digest, and candidate-ledger contracts."""
 ⋮----
@@ -5985,10 +6007,10 @@ base_commit = result.get("baseCommit")
 expected_prepares = [list(command) for command in consumer.candidate_prepare]
 ⋮----
 expected_checks = [list(command) for command in consumer.candidate_checks]
-````
+`````
 
 ## File: scripts/sd_ai_command_pack_lib.py
-````python
+`````python
 #!/usr/bin/env python3
 """Shared stdlib helpers for shipped sd-ai-command-pack Python scripts."""
 ⋮----
@@ -5996,10 +6018,34 @@ DEFAULT_COMMAND_TIMEOUT = 60
 DEFAULT_GIT_TIMEOUT = 60
 DEFAULT_GH_TIMEOUT = 120
 DEFAULT_TRELLIS_TIMEOUT = 120
+REVIEW_FAMILY_TASK_METADATA = "task-metadata"
+REVIEW_FAMILY_BOUNDARY_VALIDATION = "boundary-validation"
+REVIEW_FAMILY_CONTRACT_DOCUMENTATION = "contract-documentation-drift"
+REVIEW_FAMILY_GENERATED_SURFACES = "generated-surfaces"
+REVIEW_FAMILY_REVIEWER_TEST_HARNESS = "reviewer-test-harness-quality"
+REVIEW_FAMILY_OTHER = "other"
+REVIEW_FINDING_FAMILY_IDS = (
+CACHE_ROOT_ENV = "SD_AI_COMMAND_PACK_CACHE_ROOT"
+CACHE_ENV_KEYS = (
+CACHE_DIRECTORY_NAMES = {
 ⋮----
 class CommandError(RuntimeError)
 ⋮----
 """Raised when a required external command cannot complete cleanly."""
+⋮----
+class CacheSetupError(CommandError)
+⋮----
+"""Raised when a private external tool cache cannot be prepared safely."""
+⋮----
+@dataclass(frozen=True)
+class ToolExecutionPlan
+⋮----
+"""An argv-safe command and the validated environment used to run it."""
+⋮----
+command: tuple[str, ...]
+environment: dict[str, str]
+cache_paths: dict[str, Path]
+cache_namespace: Path
 ⋮----
 def command_display(command: Iterable[str]) -> str
 ⋮----
@@ -6011,7 +6057,91 @@ stderr = result.stderr if isinstance(result.stderr, str) else ""
 ⋮----
 detail = stream.strip()
 ⋮----
+def _path_from_environment(value: str, *, variable: str) -> Path
+⋮----
+path = Path(value).expanduser()
+⋮----
+def _is_within(path: Path, parent: Path) -> bool
+⋮----
+def _repository_boundary(repository: Path) -> Path
+⋮----
+"""Return the nearest conservative worktree boundary for a repository path."""
+⋮----
+marker = candidate / ".git"
+⋮----
+def _validate_external_path(path: Path, *, repo: Path, label: str) -> Path
+⋮----
+resolved = path.resolve(strict=False)
+⋮----
+metadata = path.lstat()
+⋮----
+def _ensure_private_directory(path: Path, *, label: str) -> Path
+⋮----
+def _cache_namespace_name(repo: Path) -> str
+⋮----
+uid = str(os.getuid()) if hasattr(os, "getuid") else "user"
+digest = hashlib.sha256(os.fsencode(str(repo))).hexdigest()[:16]
+⋮----
+def _prepare_namespace(base: Path, *, repo: Path, source: str) -> Path
+⋮----
+validated_base = _validate_external_path(base, repo=repo, label=source)
+⋮----
+namespace = validated_base / _cache_namespace_name(repo)
+namespace = _validate_external_path(namespace, repo=repo, label="pack cache namespace")
+⋮----
+explicit_root = environment.get(CACHE_ROOT_ENV, "")
+⋮----
+candidates: list[tuple[Path, str, bool]] = []
+inherited_xdg = environment.get("XDG_CACHE_HOME", "")
+⋮----
+xdg_path = _path_from_environment(inherited_xdg, variable="XDG_CACHE_HOME")
+⋮----
+namespace_name = _cache_namespace_name(repo)
+⋮----
+inherited_namespace = xdg_path.parent
+⋮----
+xdg_path = inherited_namespace.parent
+⋮----
+temp_values = [
+⋮----
+# This is only a validated parent; _prepare_namespace creates mode 0700.
+temp_values.append(str(Path("/tmp").resolve()))  # nosec B108
+seen: set[str] = set()
+⋮----
+path = _path_from_environment(value, variable="temporary cache root")
+⋮----
+key = os.path.normcase(str(path))
+⋮----
+"""Return inherited environment with safe external tool caches configured."""
+⋮----
+environment = dict(os.environ if environ is None else environ)
+repository = Path.cwd() if repo is None else Path(repo)
+⋮----
+repository = repository.resolve(strict=True)
+⋮----
+repository = _repository_boundary(repository)
+⋮----
+namespace: Path | None = None
+failures: list[str] = []
+candidates = _cache_root_candidates(environment, repo=repository)
+⋮----
+namespace = _prepare_namespace(base, repo=repository, source=source)
+⋮----
+detail = failures[-1] if failures else "no absolute writable cache root is available"
+⋮----
+cache_paths: dict[str, Path] = {}
+⋮----
+inherited_override = environment.get(variable, "") if variable != "XDG_CACHE_HOME" else ""
+⋮----
+override = _path_from_environment(inherited_override, variable=variable)
+cache_path = _validate_external_path(
+cache_path = _ensure_private_directory(
+⋮----
+"""Build an argv-safe command plan with the shared cache environment."""
+⋮----
 """Run a command with a timeout and convert expected failures to messages."""
+⋮----
+plan = build_tool_execution_plan(command, cwd=cwd, environ=env)
 ⋮----
 allowed_returncodes = {0}
 ⋮----
@@ -6029,18 +6159,146 @@ stripped = result.stdout.strip()
 def repo_root(*, fallback_to_cwd: bool = False) -> Path
 ⋮----
 toplevel = git_stdout(
-````
+⋮----
+# ---------------------------------------------------------------------------
+# Environment-blocked recovery evidence
+#
+# One additive, self-versioned structured fragment shared by lifecycle mutation
+# owners (session recorder, finish-work, housekeeping, work-loop persistence,
+# knowledge-base refresh, toolchain cache setup). An owner constructs it from
+# its own control flow when it hits a filesystem or authority *boundary* — never
+# by parsing stderr and never for a repository defect — to name the boundary,
+# the last verified checkpoint, whether a narrow retry is safe, and a bounded,
+# secret-safe recovery action. It carries no executable authority: `recoveryAction`
+# is argv-shaped data or a skill-owned instruction, never an interpolated shell
+# string. Consumers validate the fragment and, if they cannot, fall back to the
+# host command's own bounded diagnostic rather than acting on partial evidence.
+⋮----
+# Fragment schema (schemaVersion 1):
+#   schemaVersion : int, fixed 1 (the fragment's own version, independent of any
+#                   host result object; hosts attach it additively and keep their
+#                   own schemaVersion unchanged)
+#   reasonCode    : str, fixed "environment_blocked"
+#   boundary      : one of ENVIRONMENT_BOUNDARIES
+#   operation     : bounded, command-owned operation identifier
+#   retryable     : bool, owner-derived (never inferred by presentation code);
+#                   True is rejected when mutationState is "unknown"
+#   checkpoint    : bounded name of the last lifecycle checkpoint the owner verified
+#   mutationState : one of ENVIRONMENT_MUTATION_STATES
+#   recoveryAction: None, {"kind": "argv", "argv": [token, ...]}, or
+#                   {"kind": "skill", "instruction": text}; all bounded and redacted
+#   diagnostic    : bounded (ENVIRONMENT_DIAGNOSTIC_LIMIT), control-stripped, with
+#                   URL credentials and obvious tokens redacted
+⋮----
+ENVIRONMENT_BLOCKED_REASON = "environment_blocked"
+ENVIRONMENT_BLOCKED_SCHEMA_VERSION = 1
+ENVIRONMENT_BOUNDARIES = (
+ENVIRONMENT_MUTATION_STATES = ("none", "partial-recoverable", "unknown")
+ENVIRONMENT_DIAGNOSTIC_LIMIT = 500
+ENVIRONMENT_RECOVERY_KINDS = ("argv", "skill")
+_ENVIRONMENT_FIELD_LIMIT = 120
+_ENVIRONMENT_RECOVERY_TOKEN_LIMIT = 32
+_ENVIRONMENT_CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]+")
+_ENVIRONMENT_URL_CREDENTIAL_RE = re.compile(r"([A-Za-z][A-Za-z0-9+.\-]*://)[^/@\s]+@")
+# Controlled path rendering: an absolute POSIX filesystem path token — a "/" that
+# begins a path segment and is not part of a scheme://host/path URL, whose
+# internal slashes are always preceded by an alphanumeric, ":" or "/". Plain
+# remote URLs are permitted diagnostic context (design permits "remote URLs with
+# credentials" removal only), so the negative lookbehind deliberately spares them.
+_ENVIRONMENT_FS_PATH_RE = re.compile(r"(?<![A-Za-z0-9:/])/[^\s'\"]+")
+_ENVIRONMENT_SECRET_RE = re.compile(
+⋮----
+class EnvironmentEvidenceError(CommandError)
+⋮----
+"""Raised when environment-blocked recovery evidence is malformed.
+
+    Construction errors are owner-side programming bugs (an unknown boundary or
+    an incoherent retry claim) and must fail closed rather than emit partial
+    evidence; validation errors tell a consumer to fall back to the host
+    command's own bounded diagnostic.
+    """
+⋮----
+def _redact_environment_text(value: object, *, limit: int) -> str
+⋮----
+"""Bound and redact free text for the fragment: strip control bytes, remove
+    URL credentials, obvious tokens, and arbitrary absolute filesystem paths
+    (rendered as ``[path]``), collapse whitespace, and truncate. Plain remote
+    URLs without credentials are preserved as diagnostic context."""
+text = "" if value is None else str(value)
+text = _ENVIRONMENT_URL_CREDENTIAL_RE.sub(r"\1[redacted]@", text)
+text = _ENVIRONMENT_SECRET_RE.sub("[redacted]", text)
+text = _ENVIRONMENT_FS_PATH_RE.sub("[path]", text)
+text = _ENVIRONMENT_CONTROL_RE.sub(" ", text)
+text = " ".join(text.split())
+⋮----
+text = text[: limit - 1].rstrip() + "…"
+⋮----
+def _normalize_recovery_action(action: object) -> dict[str, object] | None
+⋮----
+"""Validate and bound a recovery action into argv-shaped or skill-owned data."""
+⋮----
+kind = action.get("kind")
+⋮----
+raw = action.get("argv")
+⋮----
+tokens = [
+⋮----
+instruction = _redact_environment_text(
+⋮----
+"""Construct the additive environment-blocked fragment from owner control flow.
+
+    Raises EnvironmentEvidenceError on an unknown boundary or mutation state, a
+    non-boolean retry flag, a retry advertised over an unknown mutation state, or
+    a malformed recovery action. Owners call this only for a genuine environment
+    or authority boundary; unknown failures keep their existing failure result.
+    """
+⋮----
+def validate_environment_blocked_evidence(fragment: object) -> dict[str, object]
+⋮----
+"""Validate a fragment as a consumer would and return its normalized form.
+
+    Enforces reasonCode, the supported schemaVersion, bounded enums, and the
+    retry/mutation coherence rule, then re-bounds and re-redacts every field by
+    rebuilding through the composer so unknown extra fields are dropped. Raises
+    EnvironmentEvidenceError when the fragment is unusable; a consumer that
+    catches it must fall back to the host command's own bounded diagnostic
+    rather than act on partial evidence.
+    """
+⋮----
+retryable = fragment.get("retryable")
+⋮----
+"""Classify a cache-setup failure as a tool-cache environment block.
+
+    Cache preparation runs before any lifecycle mutation and is idempotent:
+    `build_tool_environment` reuses the same private per-repository namespace on
+    a repeat run (see the namespace-reuse tests), so a failure never leaves a
+    partial mutation and is always safe to retry once the environment is fixed.
+    The recovery action is operator-side configuration expressed as a bounded
+    skill instruction, never a command to auto-run.
+    """
+⋮----
+def _cache_env_main(argv: Sequence[str]) -> int
+⋮----
+args = list(argv)
+as_json = "--json" in args
+⋮----
+args = [item for item in args if item != "--json"]
+⋮----
+evidence = cache_setup_blocked_evidence(
+⋮----
+cache_env = {variable: environment[variable] for variable in CACHE_ENV_KEYS}
+`````
 
 ## File: scripts/se-ai-command-pack-skill-review.py
-````python
+`````python
 #!/usr/bin/env python3
 """Run the canonical bundled skill-review inventory helper from this checkout."""
 ⋮----
 SCRIPT = (
-````
+`````
 
 ## File: scripts/update_repomix
-````
+`````
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -6065,10 +6323,10 @@ cd "$repo_root"
 mkdir -p "$npm_cache"
 export NPM_CONFIG_CACHE="$npm_cache"
 exec npx --yes "repomix@${repomix_version}" --config repomix.config.json
-````
+`````
 
 ## File: templates/skills/_shared/references/personal-profile-contract.md
-````markdown
+`````markdown
 # Personal profile contract
 
 Portable schema and behavior contract for a user-owned personal operating
@@ -6251,14 +6509,14 @@ retain earlier copies.
   disclose, purchase, publish, decide, or commit on the user's behalf.
 - Preserve contradictory evidence and recency. Confidence is not truth, and a
   direct correction is not silently displaced by later observed behavior.
-````
+`````
 
 ## File: templates/skills/_shared/references/skill-catalog.md
-````markdown
+`````markdown
 <!-- Generated by .github/scripts/generate-skill-surfaces.py; do not edit. -->
 # SE Skill Catalog
 
-Bundled pack version: `0.64.0`
+Bundled pack version: `0.65.0`
 
 This catalog describes skills bundled with this release. Current session availability must be reconciled separately by `se-help`.
 
@@ -6351,14 +6609,15 @@ Reflect, learn, and strengthen future work.
 | `se-feedback` | Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions. |
 | `se-postmortem` | Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions. |
 | `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
+| `se-propose-skills` | Use when the user wants the current session reviewed for recurring friction, repeated steps, and hard-won gotchas, and high-bar skill proposals drafted into a configurable Obsidian Skill Proposals destination for later accept or decline. |
 | `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
 | `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
 | `se-weekly-review` | Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct. |
 | `se-review-skills` | Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, interaction design, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks. |
-````
+`````
 
 ## File: templates/skills/_shared/references/source-standards.md
-````markdown
+`````markdown
 # Source standards
 
 Shared quality bar for every skill in this pack that evaluates external
@@ -6423,10 +6682,10 @@ Cite inline where the claim appears: publisher or title, date, and a link
 or locator. Every finding in a final report carries at least one citation.
 Never cite a source you did not actually open, and never invent a citation,
 quote, or number — an honest gap outranks a fabricated fact.
-````
+`````
 
 ## File: templates/skills/_shared/references/state-schema.md
-````markdown
+`````markdown
 # SE Monitor State Schema
 
 `se-monitor-state/v1` is a portable interchange artifact for a later
@@ -6547,10 +6806,10 @@ Retain only the minimum fact, observation date, and locator needed for the next
 comparison. Never include credentials, tokens, private connector metadata,
 irrelevant personal data, or full source content. Summarize unchanged items in
 the report, but retain only still-relevant bounded items in the next state.
-````
+`````
 
 ## File: templates/skills/_shared/references/verification-protocol.md
-````markdown
+`````markdown
 # Verification protocol
 
 How claims earn their way into an evidence-backed report or claim audit. Source
@@ -6608,10 +6867,10 @@ self-interested comparisons dispositive.
   sentence on which you weight and why.
 - Paywalled or inaccessible sources are marked inaccessible; never guess
   their contents from the headline or snippet.
-````
+`````
 
 ## File: templates/skills/se-action-inbox/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-action-inbox
 description: Use when the user wants a reviewable, cross-source inbox of explicit commitments and opt-in possible actions without creating tasks or sending replies.
@@ -6727,10 +6986,10 @@ reading sources.
   inputs, time-range limits, truncation, and material unknowns;
 - **Recommended handling** — items to clarify, accept, decline, or pass by a
   separate request to `se-plan` or authorized task tooling.
-````
+`````
 
 ## File: templates/skills/se-agenda/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-agenda
 description: Use when the user wants a decision-oriented, timeboxed meeting agenda with explicit outcomes, roles, evidence, preparation, and parking-lot rules.
@@ -6846,10 +7105,10 @@ reading context or drafting the agenda.
   and a separately requested `se-meeting-follow-through` handoff;
 - **Facilitator notes** — only for `format=facilitator`: prompts, transitions,
   time checks, capture fields, and failure contingencies.
-````
+`````
 
 ## File: templates/skills/se-ask-me/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-ask-me
 description: Use when the user wants a profile-grounded prediction, aligned recommendation, reflection, or outward-safe draft without treating prior behavior as identity or authority.
@@ -7030,10 +7289,10 @@ would materially change the result. Otherwise state assumptions and proceed.
   removed, questioned, or marked as placeholders; and
 - **Next step** — at most one useful question or a separate invocation such as
   `se-profile`, `se-decide`, or the appropriate authoring/action workflow.
-````
+`````
 
 ## File: templates/skills/se-author/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-author
 description: Use when the user wants to develop an original evidence-backed technical article through a one-question interview, approved editorial brief, staged drafting, review, and publication handoff.
@@ -7185,10 +7444,10 @@ stop and identify them before reading sources or workspace artifacts.
   sensitive material, and withheld or placeholder content; and
 - **Publication handoff** — explicit not-published status and the smallest
   separate `se-publish`, specialist-review, or evidence step still needed.
-````
+`````
 
 ## File: templates/skills/se-bookmark-triage/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-bookmark-triage
 description: Use when the user wants to deduplicate and triage a bounded collection of saved links, videos, pages, or notes into a small evidence-labeled attention queue without mutating the source collection.
@@ -7312,10 +7571,10 @@ reading saved items.
   `snippet`, `metadata`, `user context`, and `judgment`;
 - **Recommended handoffs** — optional, not-yet-run routes to `se-video-notes`,
   `se-capture`, `se-knowledge-capture`, or `se-action-inbox`.
-````
+`````
 
 ## File: templates/skills/se-brief/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-brief
 description: Use when the user asks for a morning, daily, or on-demand brief that assembles their stated topics and sources into one short, scannable update.
@@ -7397,10 +7656,10 @@ A dated brief containing:
 - **Worth knowing** — the rest, same shape;
 - footer: skipped-as-noise count, sources or tools that were unavailable,
   and the next suggested check-in window.
-````
+`````
 
 ## File: templates/skills/se-capture/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-capture
 description: Use when the user wants one URL, file, pasted passage, connected record, or bounded thread normalized into a destination-neutral knowledge artifact with provenance and no implicit external write.
@@ -7518,10 +7777,10 @@ reading the source.
   regions, unsupported formats, truncation, conflicts, and confidence impact;
 - **Suggested next workflows** — relevant `not run` handoffs plus the precise
   capture artifact or section each would consume.
-````
+`````
 
 ## File: templates/skills/se-checklist/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-checklist
 description: Use when the user wants a short read-do or do-confirm checklist derived from bounded authoritative sources, with observable pass conditions, failure responses, and no execution or certification.
@@ -7658,10 +7917,10 @@ reading the sources.
   and review owner or schedule as `unassigned` or `unscheduled` when unknown;
 - **Limits** — explicit statement that no step was executed, no evidence was
   produced by execution, and no certification is claimed.
-````
+`````
 
 ## File: templates/skills/se-compare/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-compare
 description: Use when the user wants a neutral, evidence-aware comparison of known alternatives on one fair frame without ranking them or recommending a winner.
@@ -7800,10 +8059,10 @@ gathering or structuring evidence.
 - **Decision handoff** — only when requested, a neutral `se-decide` input package
   with unresolved value judgments and an explicit `not run` status;
 - **Limits** — no recommendation, execution, procurement, or live benchmark was performed.
-````
+`````
 
 ## File: templates/skills/se-decide/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-decide
 description: Use when the user wants a defensible recommendation between known options using explicit criteria, constraints, evidence, tradeoffs, and uncertainty.
@@ -7900,10 +8159,10 @@ evaluating any option.
   decision;
 - **Next action** — the smallest useful step, clearly separated from execution;
 - **Sources and assumptions** — cited evidence plus every provisional input.
-````
+`````
 
 ## File: templates/skills/se-diagram/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-diagram
 description: Use when the user wants a precise, evidence-traceable diagram specification or conservative Mermaid diagram for a system, process, concept, hierarchy, comparison, state model, or event sequence.
@@ -8013,10 +8272,10 @@ extracting the model.
 - **Accessibility description** — linear equivalent that does not depend on visual styling;
 - **Review questions** — highest-value confirmations needed before publication or implementation;
 - **Limits** — no automatic discovery, source mutation, rendering guarantee, or publication was performed.
-````
+`````
 
 ## File: templates/skills/se-digest/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-digest
 description: Use when the user provides multiple documents, threads, or links and wants them synthesized into one decision-ready brief with disagreements surfaced.
@@ -8095,10 +8354,10 @@ before reading anything.
 - **Conflict table** — topic / what each side says / which documents;
 - **Unanswered questions** — gaps the inputs leave open, and whether web
   search could close them.
-````
+`````
 
 ## File: templates/skills/se-distill/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-distill
 description: Use when the user wants supplied material compressed to an explicit information budget while preserving decision-critical meaning, attribution, exceptions, and an auditable loss ledger.
@@ -8244,10 +8503,10 @@ reading or compressing source material.
   should use the full material;
 - **Limits** — the 80% value goal was not objectively measured, no external
   research was added without approval, and no source or destination was changed.
-````
+`````
 
 ## File: templates/skills/se-evaluate/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-evaluate
 description: Use when the user wants one defined subject assessed against an explicit rubric with criterion-level evidence, uncertainty, sensitivity, deficiencies, and prioritized improvements.
@@ -8405,10 +8664,10 @@ reading evidence or applying the rubric.
   explicit `not run` status;
 - **Limits** — read-only evaluation only; no personnel assessment,
   certification, final decision, publication, or execution was performed.
-````
+`````
 
 ## File: templates/skills/se-explain/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-explain
 description: Use when the user wants one complex topic explained accurately for a stated audience, purpose, prior-knowledge level, and depth, with explicit analogy and limitation boundaries.
@@ -8544,10 +8803,10 @@ building the explanation.
   `se-socratic-review` handoff with status `not run`;
 - **Sources and limits** — cited mutable claims, unresolved evidence needs,
   read-only status, and actions not performed.
-````
+`````
 
 ## File: templates/skills/se-fact-check/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-fact-check
 description: Use when the user supplies claims or a draft and wants a claim-by-claim evidence audit with supported, partially supported, unverified, contradicted, or outdated verdicts.
@@ -8667,10 +8926,10 @@ reading or searching.
   ambiguity, and credible disagreement;
 - **Methodology** — source tiers, origin tracing, corroboration, and
   disconfirmation performed under the shared verification protocol.
-````
+`````
 
 ## File: templates/skills/se-feedback/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-feedback
 description: Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions.
@@ -8804,10 +9063,10 @@ reading or clustering feedback.
   sequencing rationale, and decisions still required without invented owners;
 - **Actions and limits** — explicit read-only status; replies, resolutions,
   artifact edits, assignments, scheduling, and publication all `not run`.
-````
+`````
 
 ## File: templates/skills/se-handoff/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-handoff
 description: Use when the user wants a compact, evidence-backed continuity packet that lets another person, team, or AI session safely resume a defined objective.
@@ -8933,10 +9192,10 @@ reading sources.
 - **Source coverage, omissions, and limits** — sources checked, freshness,
   conflicts, access gaps, sensitive values intentionally omitted, actions not
   performed, and any part that still requires the original context.
-````
+`````
 
 ## File: templates/skills/se-help/references/examples.md
-````markdown
+`````markdown
 # SE Help Examples
 
 Use these examples to demonstrate routing and handoffs. The generated catalog,
@@ -8982,10 +9241,10 @@ either stage.
 - "Help me understand this" is ambiguous between `$se-research`, `$se-digest`, and `$se-fact-check`; ask one question about whether the user wants new evidence, synthesis of supplied material, or a claim audit.
 - An unknown or externally provided skill is labeled external or unknown, never bundled merely because its name resembles `$se-help`.
 - A bundled skill missing from the current capability inventory is labeled included in the installed pack but not discoverable now; report observed versions and use the native status/update path without guessing the cause.
-````
+`````
 
 ## File: templates/skills/se-help/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-help
 description: Use when the user wants to discover, compare, or choose SE skills and receive a justified recommendation with a copy-ready prompt without executing another workflow.
@@ -9118,10 +9377,10 @@ ambiguous input and the valid choices.
   neighbors when material.
 - **Next invocation**: one copy-ready platform-native invocation for a separate
   request; do not execute it.
-````
+`````
 
 ## File: templates/skills/se-knowledge-capture/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-knowledge-capture
 description: Use when the user wants a normalized capture safely published to Obsidian or Notion through duplicate-aware preview, preservation, approval, and verified write-back.
@@ -9265,10 +9524,10 @@ reading the capture or destination.
 - **Limits and next action** — unavailable capabilities, unverified effects,
   preserved input, reconciliation needs, and the smallest safe approval,
   connector, or conflict-resolution step.
-````
+`````
 
 ## File: templates/skills/se-knowledge-gap/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-knowledge-gap
 description: Use when the user wants a bounded, cross-source audit of missing, inaccessible, stale, conflicting, unsupported, duplicated, or unresolved knowledge.
@@ -9415,10 +9674,10 @@ reading sources.
 - **Limits and unresolved coverage** — access gaps, missing authority,
   incomplete searches, sensitive boundaries, assumptions, and conclusions the
   evidence does not support.
-````
+`````
 
 ## File: templates/skills/se-learn/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-learn
 description: Use when the user wants an adaptive, mastery-oriented learning path from a stated capability goal, diagnosed baseline, constraints, and observable evidence.
@@ -9561,10 +9820,10 @@ building the path.
   or `unavailable`; and
 - **Limits and evidence status** — read-only actions not performed, mastery not
   claimed, unresolved baseline questions, and conditions that require replanning.
-````
+`````
 
 ## File: templates/skills/se-literature-map/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-literature-map
 description: Use when the user wants a source-traceable map of a field's schools, methods, works, relationships, disputes, gaps, and reading paths without a flattened narrative review.
@@ -9704,10 +9963,10 @@ searching.
   prerequisites, disputes unlocked, access state, and substitutions; and
 - **Handoffs and limits** — proposed `se-research` or `se-paper` work marked
   `not run` or `unavailable`, read-only status, and claims the map cannot make.
-````
+`````
 
 ## File: templates/skills/se-meeting-follow-through/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-meeting-follow-through
 description: Use when the user wants a source-traceable post-meeting package that reconciles intended and actual outcomes, decisions, commitments, unresolved items, and consent-gated follow-through.
@@ -9857,10 +10116,10 @@ what occurred.
   coverage, conflicts, material omissions, and confidence effects; and
 - **Actions and handoffs** — separately authorized task, calendar, messaging,
   or knowledge-system actions, each marked `not run` or `unavailable`.
-````
+`````
 
 ## File: templates/skills/se-meeting-prep/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-meeting-prep
 description: Use when the user has an upcoming meeting or call and wants a dossier on the people, company, and context, plus talking points and questions.
@@ -9945,10 +10204,10 @@ A one-page dossier:
 - **Talking points and questions** — aligned to `goal=`;
 - **Sources** — grouped, dated, with anything ambiguous or unverifiable
   flagged.
-````
+`````
 
 ## File: templates/skills/se-monitor/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-monitor
 description: Use when the user wants a dated, source-traceable comparison of a watched subject against an explicit baseline, with meaningful deltas and a portable next-state artifact.
@@ -10089,10 +10348,10 @@ identify them before reading sources or state.
   validation error plus a separately labeled replacement-baseline proposal; and
 - **Capability status** — persistence, scheduling, subscriptions,
   notifications, webhooks, and downstream actions, all explicitly `not run`.
-````
+`````
 
 ## File: templates/skills/se-paper/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-paper
 description: Use when the user wants to develop a credible research paper through question refinement, an approved research brief, explicit literature and methodology protocols, traceable evidence, reproducibility, and venue-aware review.
@@ -10269,10 +10528,10 @@ identify them before reading research, profile, data, or workspace sources.
   unresolved requirements, citation style, anonymization, and artifacts; and
 - **Submission handoff** — explicit not-submitted and not-published status plus
   the smallest separate evidence, ethics, specialist-review, or submission step.
-````
+`````
 
 ## File: templates/skills/se-plan/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-plan
 description: Use when the user has accepted a goal or decision and wants a bounded, evidence-aware plan with observable milestones, dependencies, risks, decision points, and immediate next actions.
@@ -10394,10 +10653,10 @@ identify them before reading sources or building the plan.
   dates, estimates, and actions; and
 - **Execution boundary** — local-development-workflow handoff and every task,
   calendar, message, purchase, approval, or external write marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-postmortem/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-postmortem
 description: Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions.
@@ -10546,10 +10805,10 @@ identify them before reading sources or analyzing the event.
   locators, audience limitations, and qualified-review needs; and
 - **Execution boundary** — incident response, assignments, tasks, publication,
   legal/disciplinary judgment, and every corrective action marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-premortem/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-premortem
 description: Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions.
@@ -10702,10 +10961,10 @@ identify them before reading sources or generating scenarios.
 - **Execution boundary** — approval, assignments, tasks, publication,
   go/no-go decisions, prevention, contingencies, and external writes marked
   `not run`.
-````
+`````
 
 ## File: templates/skills/se-presentation/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-presentation
 description: Use when the user wants to turn an approved source artifact into an audience-specific story arc and source-traceable slide specification before using presentation tooling.
@@ -10849,10 +11108,10 @@ identify them before reading sources, profile content, or workspace artifacts.
   sensitive handling, open questions, and acceptance checks; and
 - **Execution boundary** — deck creation, rendering, rehearsal, presenting,
   publication, and every external write marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-profile/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-profile
 description: Use when the user wants to create, inspect, correct, review, import, export, or forget a consent-driven personal operating profile with traceable assertions.
@@ -11031,10 +11290,10 @@ ambiguous, ask one focused question and do not mutate anything.
   items, and numbered next decisions; and
 - **Next action** — the smallest explicit maintenance, confirmation, reminder,
   or separate destination action still needed.
-````
+`````
 
 ## File: templates/skills/se-proposal/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-proposal
 description: Use when the user wants to develop an evidence-backed, decision-ready proposal with transparent alternatives, investment, risks, success criteria, and an explicit ask.
@@ -11195,10 +11454,173 @@ identify them before reading sources, profile content, or workspace artifacts.
   gaps, success criteria, commitments, and risks for a separate `se-plan`; and
 - **Execution boundary** — approval, negotiation, task creation, planning,
   implementation, and every external write marked `not run`.
+`````
+
+## File: templates/skills/se-propose-skills/SKILL.md
+`````markdown
+---
+name: se-propose-skills
+description: Use when the user wants the current session reviewed for recurring friction, repeated steps, and hard-won gotchas, and high-bar skill proposals drafted into a configurable Obsidian Skill Proposals destination for later accept or decline.
+---
+
+# SE Propose Skills
+
+Turn what the current session actually taught into reviewable skill proposals, so
+a lesson learned the hard way is not lost when the session ends. Do the judgement
+and the drafting; the user decides each proposal by flipping a dropdown in the
+written note. Nothing is filed automatically, and nothing is written unless a
+destination is resolved.
+
+A proposal is expensive to read and cheap to skip, so the bar is high on purpose:
+most sessions should yield zero or one, not a list.
+
+## When to use
+
+Use at the end of a working session, or when the user asks to capture what a
+session taught as reusable skills — phrasings like "review this session for
+skills", "propose skills from what we learned", or "what should we build from
+this". Use it only for the session in context; it does not read past sessions or
+external transcripts.
+
+Do not use it to improve an existing skill (that is editing, not proposing), to
+file tasks, or to write anything when no destination is configured — in that case
+it reports inline instead.
+
+## Arguments
+
+Arguments arrive as free text. Unknown argument names are an error — stop and
+identify them before reviewing the session or writing anything.
+
+- `target=` — destination root. Notes are written under
+  `<target>/System/Databases/Skill Proposals/`. An explicit `target` overrides
+  profile resolution.
+- `profile=auto|off|<locator>` — default `auto`. `auto` resolves only an
+  attached, authorized, host-configured locator for the destination and never
+  guesses a path; `off` forces inline-only and writes nothing; `<locator>` names
+  a specific configured destination. Locator details stay private to the host and
+  never appear in this skill.
+- `context=` — the workspace or project label recorded in each note's `contexts`
+  field. Defaults to the current project or repository name; the user may adjust
+  it.
+
+If neither an explicit `target` nor a resolvable locator is available, the skill
+is destination-neutral: it drafts the proposals into its report and states how to
+set a destination, rather than writing files.
+
+## Workflow
+
+1. Establish the write destination first, before drafting, so the run knows
+   whether it will write or report inline. Resolve in order: `profile=off` means
+   inline-only; an explicit `target=` wins next; `profile=auto` resolves an
+   authorized host-configured locator; if nothing resolves, stay inline-only.
+2. Review the current session for candidate skills — a step repeated across
+   turns, the same friction hit more than once, a defect class that recurred, a
+   workaround discovered mid-task, a precondition or ordering that bit and had to
+   be re-derived.
+3. Hold every candidate to the strict bar. A candidate qualifies only when all
+   three hold: it recurred at least twice (or is a clearly recurring pattern); its
+   repeatable core is mechanical (an enumeration, a check, a comparison, a fixed
+   procedure) while the judgement is written once in the skill header; and there
+   is a real cost of getting it wrong, where under-reporting fails silently. Drop
+   everything else. Zero survivors is a valid, expected result — never invent a
+   proposal to have something to show.
+4. Give each survivor a kebab-case, filesystem-safe `<skill-name>`. Deduplicate
+   before writing: skip, and report, any name that already exists as a note in
+   the destination's `System/Databases/Skill Proposals/` folder (any status) or
+   as an installed skill in the environment. Never overwrite an existing file.
+5. Render each surviving proposal as a note using the exact template below. Copy
+   the status-control line character for character — it is an inline-select
+   control and only renders when verbatim. Write `status: proposed` and nothing
+   else; the accept, decline, and filed states belong to the user and the
+   destination's own filing routine.
+6. Write one file per survivor to
+   `<destination>/System/Databases/Skill Proposals/<skill-name>.md`, only when a
+   destination resolved in step 1. Otherwise place the fully rendered notes in the
+   report.
+7. Report what was written, what was skipped and why, and — when nothing cleared
+   the bar or no destination resolved — say so plainly.
+
+The note template, reproduced exactly:
+
+````markdown
+---
+contexts:
+  - <context label>
+area: Software Engineering
+category:
+  - Knowledge Management
+content-type: skill-proposal
+status: proposed
+dateCreated: <YYYY-MM-DD today, unquoted>
+description: <skill-name>
+tags:
+  - ai-generated
+  - claude
+  - se-propose-skills
+skill-name: <skill-name>
+---
+
+# <skill-name>
+
+**Status:** `INPUT[inlineSelect(option(proposed), option(accepted), option(declined), option(filed)):status]`
+
+**What it would do.** <The mechanical behavior in a few sentences: what it
+enumerates, checks, compares, or produces, and the one hard rule that keeps it
+honest.>
+
+**Evidence.** <The concrete instances from this session — what recurred, how
+often, what it cost. Describe the pattern, never paste raw command output,
+secrets, tokens, or file contents.>
+
+**Why a skill and not a note.** <The split: the mechanical part that repeats
+versus the one-time judgement written in the header. Why a passive note would go
+unread by the person who needs it at the moment it matters.>
+
+**Cost of getting it wrong.** <Over-reporting: cheap and visible. Under-reporting:
+invisible and the real failure. Name the silent-failure case.>
+
+---
+
+*This is a native note in this vault — the note itself is the record; there is no external ledger. Use the dropdown above rather than the frontmatter field — an off-vocabulary value is reported, not guessed at, so a typo reads as silence. Pick `accepted` to have `skill-proposal-accept` file it as a Trellis task in `se-ai-command-pack`, or `declined` to close it. `filed` is set by the routine, not by you.*
 ````
 
+The note's `# <skill-name>` and `skill-name:` are the proposed skill's name, not
+this skill's. The `dateCreated` is an unquoted ISO date so the collection's
+age formula parses it.
+
+## Safety rules
+
+- Write only when a destination resolved. With `profile=off`, or no `target` and
+  no resolvable locator, write nothing and report inline.
+- Only ever write `status: proposed`. The accept, decline, and filed states are
+  the user's, set through the dropdown; this skill never advances them and never
+  files a task.
+- Never overwrite an existing note. A name collision is a skip, not a rewrite.
+- The note is the record. Do not write an external ledger or add ledger fields.
+- Never copy raw session output, secrets, credentials, or file contents into a
+  note. Evidence describes the pattern.
+- Never ship or embed a private destination path. The locator stays host-side.
+- Prefer zero proposals over a weak one. Do not manufacture recurrence, evidence,
+  or cost to clear the bar.
+- If the session was shortened or summarized, work from the context that remains
+  and do not fabricate instances that cannot be cited.
+
+## Final report
+
+- **Destination** — resolved target and how it resolved (`target`, locator, or
+  inline-only), or the reason nothing resolved;
+- **Proposals written** — each `<skill-name>` with its file path and a one-line
+  summary;
+- **Skipped candidates** — each with its reason (dedup against an existing note or
+  installed skill, or below the strict bar);
+- **Inline drafts** — the full rendered notes when no destination resolved, ready
+  to paste once a target is set; and
+- **Nothing-to-propose** — an explicit statement when no candidate cleared the
+  bar, rather than a padded list.
+`````
+
 ## File: templates/skills/se-publish/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-publish
 description: Use when the user wants an approved source artifact adapted into a source-faithful, destination-specific draft and preview without sending or publishing it.
@@ -11355,10 +11777,10 @@ identify them before reading sources, profile content, or workspace artifacts.
   required; and
 - **Execution boundary** — sending, publishing, scheduling, destination writes,
   connector validation, and media production marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-red-team/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-red-team
 description: Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions.
@@ -11507,10 +11929,10 @@ identify them before reading artifacts, evidence, or workspace content.
   questions, and smallest next decision or evidence step; and
 - **Execution boundary** — probing, testing, approval, remediation, disclosure,
   task creation, and external actions marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-research/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-research
 description: Use when the user asks for deep, multi-source research on a question or topic and wants a verified, source-graded written brief rather than a quick answer.
@@ -11602,10 +12024,10 @@ before the first search.
 - **Open questions** — what remains unknown and what would resolve it.
 - **Methodology** — lanes searched, count of independent sources consulted,
   disconfirmation queries run, and anything that limited the sweep.
-````
+`````
 
 ## File: templates/skills/se-retro/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-retro
 description: Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups.
@@ -11753,10 +12175,10 @@ identify them before reading evidence or constructing the retrospective.
 - **Execution boundary** — journal recording, task creation or assignment,
   participant contact, publication, system changes, and follow-up execution,
   each marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-review-skills/references/report-schema.md
-````markdown
+`````markdown
 # Review Report and Selection Schema
 
 Use stable hierarchical IDs within one inventory snapshot. Sort repositories
@@ -11970,10 +12392,10 @@ provider limits, unavailable capabilities, excluded scope, residual
 uncertainty, and the selectors that would be valid if a later review produces
 findings. Finish with **Suggested next steps**, even when the only recommendation
 is no action or a later bounded review.
-````
+`````
 
 ## File: templates/skills/se-review-skills/references/review-rubric.md
-````markdown
+`````markdown
 # Skill Review Rubric
 
 Use this rubric only after deterministic inventory. Candidate size,
@@ -12232,10 +12654,10 @@ because a fix is easy.
 For safety alerts, record confidence as `high`, `medium`, or `low` from the
 directness of the instruction, evidence quality, reachability of the harm path,
 and certainty about the gates. Confidence does not replace P0-P3 severity.
-````
+`````
 
 ## File: templates/skills/se-review-skills/references/runtime-routing.md
-````markdown
+`````markdown
 # Runtime and Agent Routing
 
 Keep one portable authored skill body. Treat exact host fields, model names,
@@ -12379,10 +12801,10 @@ optional peer review never blocks the baseline workflow.
 - Claude Code subagents: https://code.claude.com/docs/en/sub-agents
 - OpenAI Codex plugin for Claude Code:
   https://github.com/openai/codex-plugin-cc/blob/main/README.md
-````
+`````
 
 ## File: templates/skills/se-review-skills/references/session-evidence.md
-````markdown
+`````markdown
 # Observed Session Evidence
 
 Use observed sessions to test whether a reviewed skill's written contract held in
@@ -12550,10 +12972,10 @@ causal class, current canonical locator, and redaction must still hold. Reject
 stale or ambiguous evidence rather than broadening the selection. Raw sessions
 remain read-only evidence and are never copied into task artifacts or delegated
 as unbounded context.
-````
+`````
 
 ## File: templates/skills/se-review-skills/scripts/skill_review.py
-````python
+`````python
 #!/usr/bin/env python3
 """Build a deterministic inventory for a bounded skill review.
 
@@ -13174,10 +13596,10 @@ payload = build_inventory(
 destination: Path | None = None
 ⋮----
 content = json.dumps(payload, sort_keys=True, separators=(",", ":")) + "\n"
-````
+`````
 
 ## File: templates/skills/se-review-skills/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-review-skills
 description: Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, interaction design, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks.
@@ -13447,10 +13869,10 @@ an exact `skill=`, `root=`, or `installed-root=`.
   `task=` or `apply=` selectors, installation-refresh advice for reported drift,
   and blockers or verification needed before acting. This is always the final
   report section and is advisory only.
-````
+`````
 
 ## File: templates/skills/se-runbook/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-runbook
 description: Use when the user wants a source-traceable operational runbook with bounded authority, ordered steps, verification, failure handling, escalation, rollback, recovery, and maintenance metadata.
@@ -13640,10 +14062,10 @@ identify them before reading sources or drafting procedure steps.
   prominent stale-runbook warning; and
 - **Execution boundary** — commands, mutations, approvals, scheduling,
   notifications, publication, and live validation each marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-scan/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-scan
 description: Use when the user wants a competitive, market, or landscape scan that inventories the players in a space and compares them on consistent criteria.
@@ -13721,10 +14143,10 @@ before enumerating anything.
 - **Positioning read** — clusters and whitespace, labeled as inference;
 - **Cut list** — candidates excluded, with reasons;
 - **Sources** — grouped and dated.
-````
+`````
 
 ## File: templates/skills/se-socratic-review/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-socratic-review
 description: Use when the user wants a bounded, adaptive Socratic review that asks one question at a time, tests demonstrated understanding, repairs misconceptions, and reports evidence without grading.
@@ -13859,10 +14281,10 @@ Arguments arrive as free text with `key=value` pairs and bare flags. Unknown arg
   `se-learn`, or `se-study-guide` work, each `not run` or `unavailable`; and
 - **Limits and actions not performed** — no grade, credential, general-ability
   claim, enrollment, scheduling, submission, publication, or external mutation.
-````
+`````
 
 ## File: templates/skills/se-sop/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-sop
 description: Use when the user wants a source-traceable standard operating procedure for routine repeatable work, with controlled current practice, testable controls, exceptions, records, and maintenance metadata.
@@ -14051,10 +14473,10 @@ stop and identify them before reading sources or drafting the SOP.
   checklist, or planning needs identified but not run; and
 - **Execution boundary** — execution, enforcement, assignment, approval,
   publication, training, record creation, and certification each marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-stakeholder-map/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-stakeholder-map
 description: Use when the user wants an evidence-aware map of the people and groups relevant to a defined initiative or decision, with authority, influence, interests, tensions, engagement order, and validation gaps kept distinct.
@@ -14226,10 +14648,10 @@ intended use, or disclosure audience is ambiguous enough to change the map.
   `se-handoff`, `se-feedback`, or `se-profile`, without invoking it; and
 - **Execution boundary** — contacts, messages, meetings, assignments,
   approvals, external writes, and engagement actions all `not run`.
-````
+`````
 
 ## File: templates/skills/se-status/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-status
 description: Use when the user wants an objective-oriented project status update from supplied or connected work sources, with outcomes, current state, blockers, risks, decisions, asks, and next actions.
@@ -14342,10 +14764,10 @@ reading project sources.
   owners or dates left unknown;
 - **Source coverage and gaps** — sources checked, freshness, conflicts,
   unavailable inputs, assumptions, and material unknowns.
-````
+`````
 
 ## File: templates/skills/se-study-guide/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-study-guide
 description: Use when the user wants a bounded source set transformed into a durable study guide with traceable concepts, definitions, examples, retrieval prompts, practice, solutions, traps, and review order.
@@ -14507,10 +14929,10 @@ are ambiguous enough to change what must be retained or practiced.
 - **Execution boundary** — source edits, external research, deck creation,
   enrollment, scheduling, submission, grading, certification, publication, and
   performance tracking all `not run`.
-````
+`````
 
 ## File: templates/skills/se-technical-editor/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-technical-editor
 description: Use when the user wants an existing technical draft reviewed through evidence-located correctness, citation, code, structure, comprehension, confidentiality, and voice passes before approved revisions are applied.
@@ -14691,10 +15113,10 @@ reading, searching, or editing.
 - **Handoffs and limits** — explicitly not-published status plus any separate
   `se-fact-check`, `se-research`, `se-red-team`, `se-author`, or `se-publish`
   work that remains not run.
-````
+`````
 
 ## File: templates/skills/se-thread-digest/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-thread-digest
 description: Use when the user wants a bounded Slack thread, channel window, or equivalent conversation converted into an evidence-linked digest of decisions, commitments, unresolved work, disagreement, risks, and message history.
@@ -14839,10 +15261,10 @@ or sensitivity ambiguity could change coverage or disclosure.
 - **Execution boundary** — posting, reacting, canvases, lists, monitoring,
   messages, tasks, assignments, persistence, and external mutations all
   `not run`.
-````
+`````
 
 ## File: templates/skills/se-topic-radar/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-topic-radar
 description: Use when the user wants ten ranked technical writing opportunities grounded in authorized personal activity, current developments, prior coverage, evidence readiness, novelty, and effort.
@@ -14997,10 +15419,10 @@ stop and identify them before reading personal or external sources.
   `se-paper`, with explicit `not run` status; and
 - **Limits** — read-only opportunity ranking only; no article, calendar,
   monitoring, publication, messaging, or scheduling was performed.
-````
+`````
 
 ## File: templates/skills/se-tutorial/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-tutorial
 description: Use when the user wants a checkpoint-driven technical tutorial that moves a defined audience from a known starting state to an observable result with honest execution status, verification, recovery, and cleanup.
@@ -15178,10 +15600,10 @@ enough to change the steps or risk.
 - **Execution boundary** — commands on the reader's system, production changes,
   resource creation, deployment, publication, enrollment, submission, and
   certification all `not run`.
-````
+`````
 
 ## File: templates/skills/se-video-notes/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-video-notes
 description: Use when the user wants one or more supplied videos converted into source-faithful, timestamped notes with explicit transcript coverage, claim extraction, comparison, and read-only downstream handoffs.
@@ -15357,10 +15779,10 @@ enough to change evidence coverage or the result.
 - **Execution boundary** — downloading, transcription, access bypass, channel or
   playlist mutation, subscription, comments, publication, persistence, and all
   external writes marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-watchlist/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-watchlist
 description: Use when the user wants a read-only review of configured channels, feeds, authors, searches, playlists, podcasts, or collections that reports only material new items since an explicit checkpoint.
@@ -15526,10 +15948,10 @@ identify them before reading sources, state, or profile data.
 - **Capability status** — persistence, scheduling, subscriptions, downloads,
   notifications, collection changes, downstream workflows, and all external
   writes marked `not run`.
-````
+`````
 
 ## File: templates/skills/se-weekly-review/SKILL.md
-````markdown
+`````markdown
 ---
 name: se-weekly-review
 description: Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct.
@@ -15695,10 +16117,10 @@ identify them before resolving profiles or reading sources.
 - **Capture handoff and execution boundary** — portable Markdown plus profile
   changes, `se-capture`, `se-knowledge-capture`, publication, notes, tasks,
   schedules, messages, and follow-ups, all marked `not run`.
-````
+`````
 
 ## File: tests/install_test_support.py
-````python
+`````python
 """Shared helpers for the installer test suite."""
 ⋮----
 PACK_ROOT = Path(__file__).resolve().parent.parent
@@ -15733,10 +16155,10 @@ class TempDirTestCase(unittest.TestCase)
 def setUp(self) -> None
 ⋮----
 tmp = tempfile.TemporaryDirectory()
-````
+`````
 
 ## File: tests/test_generate.py
-````python
+`````python
 """Tests for the skill-surface generator: validation, regen, drift check."""
 ⋮----
 GENERATOR_PATH = PACK_ROOT / ".github" / "scripts" / "generate-skill-surfaces.py"
@@ -16059,10 +16481,10 @@ def test_unknown_header_field_rejected(self) -> None
 def test_generation_error_exits_nonzero(self) -> None
 ⋮----
 # No skill dir written: validate_skills fails inside main.
-````
+`````
 
 ## File: tests/test_install_core.py
-````python
+`````python
 """Unit tests for manifest loading/validation and core file operations."""
 ⋮----
 REAL_TEMPLATE = ROOT / "templates/skills/se-research/SKILL.md"
@@ -16263,10 +16685,10 @@ root = install_module.resolve_install_root(self.namespace(user=True))
 def test_refuses_pack_checkout(self) -> None
 ⋮----
 def test_refuses_paths_inside_checkout(self) -> None
-````
+`````
 
 ## File: tests/test_install.py
-````python
+`````python
 """End-to-end installer tests: subprocess runs against temporary roots."""
 ⋮----
 MANIFEST = json.loads((PACK_ROOT / "manifest.json").read_text(encoding="utf-8"))
@@ -16422,10 +16844,10 @@ result = install_ok("--root", str(home), "--platform", "claude")
 ⋮----
 targets = read_receipt_targets(home)
 codex_entries = {t for t in targets if t.startswith(".codex/")}
-````
+`````
 
 ## File: tests/test_installer_docs.py
-````python
+`````python
 """Contract tests for the user-facing installer documentation."""
 ⋮----
 def markdown_section(path: Path, heading: str) -> str
@@ -16452,10 +16874,10 @@ section = markdown_section(PACK_ROOT / "README.md", "Install")
 def test_operator_receipts_section_uses_canonical_refresh_contract(self) -> None
 ⋮----
 section = markdown_section(
-````
+`````
 
 ## File: tests/test_management.py
-````python
+`````python
 """Pack lifecycle command tests."""
 ⋮----
 class StatusCommandTest(TempDirTestCase)
@@ -16514,10 +16936,10 @@ def test_update_applies_with_fresh_process_after_ff_only_pull(self) -> None
 ⋮----
 @mock.patch("installer.management._run_git")
     def test_update_refuses_dirty_checkout(self, run_git: mock.Mock) -> None
-````
+`````
 
 ## File: tests/test_project_check.py
-````python
+`````python
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_JSON = ROOT / "package.json"
 REVIEW_FULL_CHECK = ROOT / "scripts" / "sd-ai-command-pack-review-full-check.sh"
@@ -16533,10 +16955,10 @@ runner = Path(temp_dir) / "package-runner"
 env = os.environ.copy()
 ⋮----
 result = subprocess.run(
-````
+`````
 
 ## File: tests/test_provenance.py
-````python
+`````python
 """Unit tests for install receipts: provenance content and coverage."""
 ⋮----
 MANIFEST_HEADER = {"name": "se-ai-command-pack", "version": "9.9.9"}
@@ -16627,10 +17049,10 @@ skipped_known = pack_file(
 skipped_unknown = pack_file(
 existing = {skipped_known.target.as_posix()}
 kept = preserved_receipt_targets(
-````
+`````
 
 ## File: tests/test_release_gate.py
-````python
+`````python
 """Release payload gate tests against synthetic git repositories."""
 ⋮----
 GATE_SCRIPT = PACK_ROOT / ".github" / "scripts" / "check-release-payload.py"
@@ -16715,10 +17137,10 @@ def test_push_respects_remote_tag_missing_locally(self) -> None
 # runner's checkout has no tags. The script must not recreate it.
 ⋮----
 def test_push_without_origin_fails_cleanly(self) -> None
-````
+`````
 
 ## File: tests/test_remove.py
-````python
+`````python
 """End-to-end removal tests: vouching, drift preservation, refusals."""
 ⋮----
 RECEIPT_FILE = ".se-ai-command-pack/installed-targets.txt"
@@ -16788,10 +17210,10 @@ target = home / ".claude/skills/se-brief/SKILL.md"
 real = home / "real.md"
 ⋮----
 result = run_installer("remove", "--root", str(home))
-````
+`````
 
 ## File: tests/test_repomix.py
-````python
+`````python
 """Repository-map configuration and generated-artifact contract tests."""
 ⋮----
 CONFIG_PATH = PACK_ROOT / "repomix.config.json"
@@ -16814,10 +17236,10 @@ exclusions = set(config["ignore"]["customPatterns"])
 def test_checked_in_map_matches_scope_contract(self) -> None
 ⋮----
 repository_map = MAP_PATH.read_text(encoding="utf-8")
-````
+`````
 
 ## File: tests/test_skill_review.py
-````python
+`````python
 """Deterministic inventory tests for the bundled skill reviewer."""
 ⋮----
 SCRIPT_PATH = (
@@ -17143,10 +17565,10 @@ def test_manifest_source_cannot_cross_a_symlink_boundary(self) -> None
 linked = source_root / "templates" / "skills" / "linked"
 ⋮----
 context = review._package_context(source_root)
-````
+`````
 
 ## File: tests/test_skills.py
-````python
+`````python
 """Content pins for the canonical skills: conventions and safety anchors."""
 ⋮----
 SKILLS_ROOT = PACK_ROOT / TEMPLATES_SKILLS_DIR
@@ -17970,10 +18392,10 @@ readme = (PACK_ROOT / "README.md").read_text(encoding="utf-8")
 def test_changelog_mentions_every_skill(self) -> None
 ⋮----
 changelog = (PACK_ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
-````
+`````
 
 ## File: .gitignore
-````
+`````
 .DS_Store
 Thumbs.db
 desktop.ini
@@ -18065,15 +18487,12 @@ sd-ai-command-pack-uv-tools/
 .agent/**/logs/
 .agent/**/tmp/
 .agent/**/*.log
-.claude/**
-!.claude/commands/
-!.claude/commands/sd/
-!.claude/commands/sd/*.md
 .claude/settings.local.json
 .claude/**/*.local.*
 .claude/**/.cache/
 .claude/**/cache/
 .claude/**/logs/
+.claude/**/tmp/
 .claude/**/*.log
 .codebuddy/**/*.local.*
 .codebuddy/**/.cache/
@@ -18180,10 +18599,10 @@ node_modules/
 # Generated Obsidian KB copy folder; source docs remain in normal repo paths.
 /.obsidian-kb
 # sd-ai-command-pack obsidian-kb end
-````
+`````
 
 ## File: AGENTS.md
-````markdown
+`````markdown
 <!-- TRELLIS:START -->
 # Trellis Instructions
 
@@ -18205,11 +18624,18 @@ If you're using Codex or another agent-capable tool, additional project-scoped h
 Managed by Trellis. Edits outside this block are preserved; edits inside may be overwritten by a future `trellis update`.
 
 <!-- TRELLIS:END -->
-````
+`````
 
 ## File: CHANGELOG.md
-````markdown
+`````markdown
 # Changelog
+
+## 0.65.0 - 2026-08-03
+
+- Add `se-propose-skills`: reviews the current session for recurring friction and
+  drafts high-bar skill proposals into a configurable Obsidian Skill Proposals
+  destination (`target=`/`profile=auto|off|<locator>`), destination-neutral by
+  default. Writes only `status: proposed`; never files or overwrites.
 
 ## 0.64.0 - 2026-07-23
 
@@ -18904,10 +19330,10 @@ Managed by Trellis. Edits outside this block are preserved; edits inside may be 
 - Generator (`make generate`) that validates canonical skills and
   regenerates the manifest; release payload gate binding payload changes to
   version bumps and dated changelog headings.
-````
+`````
 
 ## File: CONTRIBUTING.md
-````markdown
+`````markdown
 # Contributing
 
 ## Workflow
@@ -18934,10 +19360,10 @@ CI enforces this via the release payload gate. Merges to `main` are tagged
 
 `make sync` installs the pack into your own home directory (`install.py
 --user`) so the skills you are editing are the skills you use.
-````
+`````
 
 ## File: install.py
-````python
+`````python
 #!/usr/bin/env python3
 """Install the SE AI command pack into user-level agent skill directories."""
 ⋮----
@@ -19026,10 +19452,10 @@ retired_results = retire_stale_targets(
 kept_receipt_targets = _install_receipt_files(
 ⋮----
 conflict_results = _conflict_results(results)
-````
+`````
 
 ## File: LICENSE
-````
+`````
 MIT License
 
 Copyright (c) 2026 Platypeeps
@@ -19051,10 +19477,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-````
+`````
 
 ## File: Makefile
-````makefile
+`````makefile
 BREW_PYTHON ?= /opt/homebrew/bin/python3.13
 PYTHON ?= $(shell if [ -x "$(BREW_PYTHON)" ]; then printf '%s' "$(BREW_PYTHON)"; elif [ -x /usr/local/bin/python3.13 ]; then printf '%s' /usr/local/bin/python3.13; elif [ -x /opt/homebrew/bin/python3 ]; then printf '%s' /opt/homebrew/bin/python3; elif [ -x /usr/local/bin/python3 ]; then printf '%s' /usr/local/bin/python3; else command -v python3; fi)
 VENV ?= .venv
@@ -19089,14 +19515,14 @@ release-check:
 	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py
 
 check: test lint release-check
-````
+`````
 
 ## File: manifest.json
-````json
+`````json
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.64.0",
+  "version": "0.65.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, evidence-backed personal weekly reviews, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
@@ -21507,6 +21933,33 @@ check: test lint release-check
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/se-propose-skills/SKILL.md",
+      "target": ".config/agents/skills/se-propose-skills/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-propose-skills/SKILL.md",
+      "target": ".claude/skills/se-propose-skills/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-propose-skills/SKILL.md",
+      "target": ".codex/skills/se-propose-skills/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/se-publish/SKILL.md",
       "target": ".config/agents/skills/se-publish/SKILL.md",
       "anchor": ".config/agents",
@@ -22504,10 +22957,10 @@ check: test lint release-check
     }
   ]
 }
-````
+`````
 
 ## File: package.json
-````json
+`````json
 {
   "private": true,
   "scripts": {
@@ -22515,10 +22968,10 @@ check: test lint release-check
     "check:full": "npm run check && bash scripts/sd-ai-command-pack-full-check.sh"
   }
 }
-````
+`````
 
 ## File: pyproject.toml
-````toml
+`````toml
 [tool.ruff]
 target-version = "py310"
 line-length = 88
@@ -22535,10 +22988,10 @@ select = ["E4", "E7", "E9", "F", "I", "B"]
 python_version = "3.10"
 check_untyped_defs = true
 warn_unused_ignores = true
-````
+`````
 
 ## File: README.md
-````markdown
+`````markdown
 # SE AI Command Pack
 
 User-level knowledge-work skills for AI agent frameworks: personal profile
@@ -22647,6 +23100,7 @@ come directly from canonical skill frontmatter.
 | `se-feedback` | Use when the user wants supplied reviews, comments, interviews, or conversations synthesized into traceable themes, tensions, and evidence-backed response dispositions. |
 | `se-postmortem` | Use when the user wants a formal, evidence-linked, blameless analysis of an incident or failed outcome with defensible causes, safeguard findings, and verifiable corrective actions. |
 | `se-premortem` | Use when the user wants to stress-test an accepted plan before execution by assuming failure, ranking plausible failure modes, and defining indicators, prevention, contingencies, and stop conditions. |
+| `se-propose-skills` | Use when the user wants the current session reviewed for recurring friction, repeated steps, and hard-won gotchas, and high-bar skill proposals drafted into a configurable Obsidian Skill Proposals destination for later accept or decline. |
 | `se-red-team` | Use when the user wants a constructive adversarial review of an artifact's assumptions, contrary evidence, incentives, failure modes, misuse, security, privacy, counterarguments, and reversal conditions. |
 | `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
 | `se-weekly-review` | Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct. |
@@ -23022,10 +23476,10 @@ project.
 ## License
 
 MIT — see [LICENSE](LICENSE).
-````
+`````
 
 ## File: repomix.config.json
-````json
+`````json
 {
   "$schema": "https://repomix.com/schemas/latest/schema.json",
   "output": {
@@ -23086,13 +23540,13 @@ MIT — see [LICENSE](LICENSE).
     ]
   }
 }
-````
+`````
 
 ## File: requirements-dev.txt
-````
+`````
 # The test suite uses stdlib unittest plus PyYAML for skill frontmatter parsing.
 # Ruff and mypy provide the CI lint lane.
 PyYAML==6.0.3
 ruff==0.15.21
 mypy==2.3.0
-````
+`````

@@ -1646,3 +1646,36 @@ Authored, registered, generated, tested, and shipped se-propose-skills: a CONVER
 ### Next Steps
 
 - None - task complete
+
+
+## Session 96: Refresh sd-ai-command-pack to 0.64.3
+
+**Date**: 2026-08-03
+**Task**: Refresh sd-ai-command-pack to 0.64.3
+**Branch**: `refresh-sd-ai-command-pack-0.64.3`
+
+### Summary
+
+Installer-managed refresh of vendored sd-ai-command-pack 0.64.0 to 0.64.3 (TOCTOU helper-loader hardening); install audit passed, 4 platforms.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5047f2c2e93073e96e72cabbbc47d764baaac228` | chore: refresh sd-ai-command-pack to 0.64.3 |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
