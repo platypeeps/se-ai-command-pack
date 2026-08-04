@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.66.1 - 2026-08-04
+
+- Retract the README claim that the `codex` platform honors `$CODEX_HOME`
+  (A-044). No code ever resolved `$CODEX_HOME`: the installer targets a fixed
+  `~/.codex`, and the operator guide already states no environment variables
+  are read. The README platform table now reads "OpenAI Codex" and documents
+  the real relocation workaround (`install.py --root <dir>` or symlinking
+  `~/.codex`). Docs-only contract correction; no installed skill or agent
+  behavior changes.
+
 ## 0.66.0 - 2026-08-03
 
 - Add `agent` as a first-class artifact kind. Canonical neutral sources live in

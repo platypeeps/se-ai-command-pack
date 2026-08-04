@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 99
+- **Total Sessions**: 100
 - **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~1801 | Active |
+| `journal-2.md` | ~1842 | Active |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 100 | 2026-08-04 | Resolve CODEX_HOME contract drift (A-044) | `75f896c`, `9f21063` | `audit/codex-home-contract` |
 | 99 | 2026-08-04 | Resolve A-001: track .claude sd-adapters (gitignore ownership) | `5be1d39`, `eca05be`, `f5b3d10`, `7ca77a7` | `audit/claude-gitignore-owner` |
 | 98 | 2026-08-04 | Registry-driven shared-reference tests (dedupe-generate-tests) | `595a008`, `26fd265`, `2c24021`, `d83984f`, `ed416cb` | `audit/dedupe-generate-tests` |
 | 97 | 2026-08-04 | Add agent artifact kind (0.66.0) | `52f04ad`, `8253095` | `chore/archive-agent-artifact-kind` |
