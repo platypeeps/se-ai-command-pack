@@ -55,6 +55,10 @@ SKILLS_ROOT = ROOT / TEMPLATES_SKILLS_DIR
 GENERATED_SKILLS_DIR = "generated/skills"
 CLAUDE_GENERATED_ROOT = ROOT / GENERATED_SKILLS_DIR / "claude"
 SHARED_DIR_NAME = "_shared"
+# A skill body citation of a shipped reference. The leading class requires an
+# alphanumeric first character so documentation placeholders like
+# `references/<file>.md` (angle-bracketed) never match and never trip the gate.
+CITATION_PATTERN = re.compile(r"references/([A-Za-z0-9][A-Za-z0-9._-]*\.md)")
 HELP_CATALOG_SOURCE = "_shared/references/skill-catalog.md"
 HELP_CATALOG_PATH = SKILLS_ROOT / HELP_CATALOG_SOURCE
 GENERATED_SHARED_REFERENCES = frozenset({HELP_CATALOG_SOURCE})
@@ -363,6 +367,44 @@ def validate_skills() -> dict[str, dict[str, str]]:
                 errors.append(
                     f"{TEMPLATES_SKILLS_DIR}/{consumer}/references/{basename} "
                     f"collides with the shared reference fan-out of {source}"
+                )
+
+    # Reverse citation-closure. The checks above prove registration -> the file
+    # exists and fans out; this proves the reverse, that every references/<b>.md
+    # a skill body cites will actually ship to that skill. A citation is closed
+    # when the skill owns references/<b>.md or is a registered consumer of a
+    # shared source named <b>; the fan-out arm keys on membership so generated
+    # sources (whose files do not exist at scan time) still count as delivered.
+    delivered: dict[str, set[str]] = {name: set() for name in SKILL_NAMES}
+    for source, consumers in SHARED_REFERENCES.items():
+        basename = source.rsplit("/", 1)[-1]
+        for consumer in consumers:
+            delivered.setdefault(consumer, set()).add(basename)
+    for name in SKILL_NAMES:
+        if name in missing_dirs:
+            continue
+        skill_dir = SKILLS_ROOT / name
+        own_refs = skill_dir / "references"
+        if own_refs.is_dir():
+            # references/ is flat by contract (validate_skill above rejects any
+            # nested directory), and citations are flat references/<basename>.md,
+            # so a non-recursive iterdir() over regular files is complete.
+            for entry in own_refs.iterdir():
+                if entry.is_file():
+                    delivered.setdefault(name, set()).add(entry.name)
+        skill_md = skill_dir / "SKILL.md"
+        if not skill_md.is_file():
+            continue
+        body = skill_md.read_text(encoding="utf-8")
+        for basename in sorted(set(CITATION_PATTERN.findall(body))):
+            if basename not in delivered.get(name, set()):
+                errors.append(
+                    f"{TEMPLATES_SKILLS_DIR}/{name}/SKILL.md cites "
+                    f"references/{basename} but it will not ship to this skill "
+                    f"(no own references/{basename} and no registered "
+                    "SHARED_REFERENCES fan-out); add the skill as a consumer of "
+                    "the source in installer/registry.py SHARED_REFERENCES, or "
+                    f"provide {TEMPLATES_SKILLS_DIR}/{name}/references/{basename}"
                 )
 
     if errors:

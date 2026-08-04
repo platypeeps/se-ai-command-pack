@@ -12,9 +12,9 @@ A skill whose body cites `references/<file>.md` that will not ship to it (neithe
 
 ## Acceptance Criteria
 
-- [ ] A seeded violation (citation without registration) fails `make generate --check`.
-- [ ] A test in tests/test_generate.py (or test_skills.py) proves the failure mode.
-- [ ] Current tree passes the new gate.
+- [x] A seeded violation (citation without registration) fails `make generate --check`. The reverse closure check in `validate_skills()` raises `GenerationError`, which `--check` surfaces as a nonzero exit. (test: `test_generate.SandboxGeneratorTest.test_dangling_citation_fails`)
+- [x] A test in tests/test_generate.py (or test_skills.py) proves the failure mode. (tests: `test_dangling_citation_fails`, plus positive closure via own resource `test_citation_satisfied_by_own_reference`, via fan-out `test_citation_satisfied_by_registered_fanout`, and placeholder-ignored `test_placeholder_citation_is_ignored`)
+- [x] Current tree passes the new gate. `generate-skill-surfaces.py --check` exits 0; empirical probe found 0 dangling citations across all registered skills. (verified in `make check`)
 
 ## Notes
 
