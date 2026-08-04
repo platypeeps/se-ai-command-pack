@@ -45,3 +45,41 @@ Autonomous work-loop iteration 1: aligned maintainer docs with the generated sur
 ### Next Steps
 
 - None - task complete
+
+
+## Session 105: File sd-review nested-check false-block backlog task (PR #130)
+
+**Date**: 2026-08-04
+**Task**: File sd-review nested-check false-block backlog task (PR #130)
+**Branch**: `chore/file-review-nested-check-task`
+
+### Summary
+
+Filed the audit-review-nested-check-falseblock backlog PRD documenting the sd-review coordinator false-block on knowledge.obsidian-kb and pack.review-scope observed while shipping PR #129, then converged the review loop on PR #130 (CI green, Copilot clean).
+
+### Main Changes
+
+- Added .trellis/tasks/08-04-audit-review-nested-check-falseblock backlog task (PRD + metadata)
+- Addressed Copilot review: emptied jsonl scaffold manifests and de-personalized the .obsidian-kb symlink note
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9154098` | chore(task): file audit-review-nested-check-falseblock backlog PRD |
+| `dca1199` | chore(task): address Copilot review on backlog PRD |
+
+### Testing
+
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs -> 0 failures, 0 warnings
+- [OK] PR #130 CI all green (lint, release-payload-gate, unittest 3.10/3.13 ubuntu + 3.13 macOS, ci-result)
+- [OK] Copilot re-review on dca1199 -> 0 inline comments; all 3 prior threads resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
