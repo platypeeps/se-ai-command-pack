@@ -55,6 +55,113 @@ Text.
 Text.
 """
 
+# Golden snapshot of which shared references each skill consumes. Seeded as an
+# independent literal, not computed from gen.SHARED_REFERENCES, so a registry
+# change (a dropped or added consumer) diverges from this snapshot and fails the
+# subTest naming the offending skill. Skills absent here consume no shared
+# reference and default to (). Adding a skill needs no new test method: a new
+# consumer only edits this dict.
+EXPECTED_SHARED_SOURCES: dict[str, tuple[str, ...]] = {
+    "se-research": (
+        "_shared/references/source-standards.md",
+        "_shared/references/verification-protocol.md",
+    ),
+    "se-brief": ("_shared/references/source-standards.md",),
+    "se-meeting-prep": ("_shared/references/source-standards.md",),
+    "se-scan": ("_shared/references/source-standards.md",),
+    "se-digest": ("_shared/references/source-standards.md",),
+    "se-decide": ("_shared/references/source-standards.md",),
+    "se-status": ("_shared/references/source-standards.md",),
+    "se-fact-check": (
+        "_shared/references/source-standards.md",
+        "_shared/references/verification-protocol.md",
+    ),
+    "se-help": ("_shared/references/skill-catalog.md",),
+    "se-profile": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-action-inbox": ("_shared/references/source-standards.md",),
+    "se-agenda": ("_shared/references/source-standards.md",),
+    "se-ask-me": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-author": ("_shared/references/source-standards.md",),
+    "se-bookmark-triage": ("_shared/references/source-standards.md",),
+    "se-capture": ("_shared/references/source-standards.md",),
+    "se-checklist": ("_shared/references/source-standards.md",),
+    "se-compare": ("_shared/references/source-standards.md",),
+    "se-diagram": ("_shared/references/source-standards.md",),
+    "se-distill": ("_shared/references/source-standards.md",),
+    "se-evaluate": ("_shared/references/source-standards.md",),
+    "se-topic-radar": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-technical-editor": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-explain": ("_shared/references/source-standards.md",),
+    "se-feedback": ("_shared/references/source-standards.md",),
+    "se-handoff": ("_shared/references/source-standards.md",),
+    "se-knowledge-capture": ("_shared/references/source-standards.md",),
+    "se-knowledge-gap": ("_shared/references/source-standards.md",),
+    "se-learn": ("_shared/references/source-standards.md",),
+    "se-literature-map": (
+        "_shared/references/source-standards.md",
+        "_shared/references/verification-protocol.md",
+    ),
+    "se-meeting-follow-through": ("_shared/references/source-standards.md",),
+    "se-monitor": (
+        "_shared/references/source-standards.md",
+        "_shared/references/state-schema.md",
+    ),
+    "se-paper": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+        "_shared/references/verification-protocol.md",
+    ),
+    "se-plan": ("_shared/references/source-standards.md",),
+    "se-postmortem": ("_shared/references/source-standards.md",),
+    "se-premortem": ("_shared/references/source-standards.md",),
+    "se-presentation": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-proposal": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-publish": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-red-team": ("_shared/references/source-standards.md",),
+    "se-retro": ("_shared/references/source-standards.md",),
+    "se-weekly-review": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-runbook": ("_shared/references/source-standards.md",),
+    "se-socratic-review": ("_shared/references/source-standards.md",),
+    "se-sop": ("_shared/references/source-standards.md",),
+    "se-stakeholder-map": ("_shared/references/source-standards.md",),
+    "se-study-guide": ("_shared/references/source-standards.md",),
+    "se-thread-digest": ("_shared/references/source-standards.md",),
+    "se-tutorial": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-video-notes": ("_shared/references/source-standards.md",),
+    "se-watchlist": (
+        "_shared/references/personal-profile-contract.md",
+        "_shared/references/source-standards.md",
+        "_shared/references/state-schema.md",
+    ),
+}
+
 
 class RealRepoGeneratorTest(unittest.TestCase):
     def test_canonical_skills_validate(self) -> None:
@@ -220,798 +327,41 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 "templates/skills/_shared/references/skill-catalog.md",
             )
 
-    def test_fact_check_installs_all_cited_shared_references(self) -> None:
-        expected_sources = {
-            "_shared/references/source-standards.md",
-            "_shared/references/verification-protocol.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-fact-check" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-    def test_profile_installs_its_contract_and_source_standards(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-profile" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        rows = manifest["files"]
-        for platform, info in gen.PLATFORM_REGISTRY.items():
-            for basename in ("personal-profile-contract.md", "source-standards.md"):
-                target = f"{info.skills_dir}/se-profile/references/{basename}"
-                matches = [row for row in rows if row["target"] == target]
-                self.assertEqual(len(matches), 1, (platform, target))
-
-    def test_ask_me_installs_profile_contract_and_source_standards(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-ask-me" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
+    def test_registered_shared_sources_match_snapshot(self) -> None:
+        """One registry-driven check replacing the per-skill methods: each
+        skill's registered shared sources must match the golden snapshot, and
+        every registered reference must fan into a manifest target on every
+        platform. Failure output names the offending skill and reference."""
         manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
         targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in ("personal-profile-contract.md", "source-standards.md"):
-                self.assertIn(
-                    f"{info.skills_dir}/se-ask-me/references/{basename}",
-                    targets,
+        stale = sorted(set(EXPECTED_SHARED_SOURCES) - set(gen.SKILL_NAMES))
+        self.assertEqual(stale, [], f"snapshot names absent from SKILL_NAMES: {stale}")
+        for name in gen.SKILL_NAMES:
+            with self.subTest(skill=name):
+                actual = tuple(
+                    sorted(
+                        source
+                        for source, consumers in gen.SHARED_REFERENCES.items()
+                        if name in consumers
+                    )
                 )
-
-    def test_author_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-author" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-author/references/source-standards.md",
-                targets,
-            )
-
-    def test_topic_radar_installs_profile_contract_and_source_standards(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-topic-radar" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in ("personal-profile-contract.md", "source-standards.md"):
-                self.assertIn(
-                    f"{info.skills_dir}/se-topic-radar/references/{basename}",
-                    targets,
+                expected = EXPECTED_SHARED_SOURCES.get(name, ())
+                self.assertEqual(
+                    actual,
+                    expected,
+                    f"{name}: registered shared sources {actual} "
+                    f"do not match snapshot {expected}",
                 )
-
-    def test_technical_editor_installs_profile_contract_and_source_standards(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-technical-editor" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in ("personal-profile-contract.md", "source-standards.md"):
-                self.assertIn(
-                    f"{info.skills_dir}/se-technical-editor/references/{basename}",
-                    targets,
-                )
-
-    def test_explain_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-explain" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-explain/references/source-standards.md",
-                targets,
-            )
-
-    def test_monitor_installs_state_schema_and_source_standards(self) -> None:
-        expected_sources = {
-            "_shared/references/source-standards.md",
-            "_shared/references/state-schema.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-monitor" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-monitor/references/source-standards.md",
-                targets,
-            )
-            self.assertIn(
-                f"{info.skills_dir}/se-monitor/references/state-schema.md",
-                targets,
-            )
-
-    def test_watchlist_installs_monitor_profile_and_source_references(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-            "_shared/references/state-schema.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-watchlist" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in (
-                "personal-profile-contract.md",
-                "source-standards.md",
-                "state-schema.md",
-            ):
-                self.assertIn(
-                    f"{info.skills_dir}/se-watchlist/references/{basename}",
-                    targets,
-                )
-
-    def test_paper_installs_profile_source_and_verification_references(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-            "_shared/references/verification-protocol.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-paper" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in (
-                "personal-profile-contract.md",
-                "source-standards.md",
-                "verification-protocol.md",
-            ):
-                self.assertIn(
-                    f"{info.skills_dir}/se-paper/references/{basename}",
-                    targets,
-                )
-
-    def test_plan_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-plan" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-plan/references/source-standards.md",
-                targets,
-            )
-
-    def test_presentation_installs_profile_and_source_references(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-presentation" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in (
-                "personal-profile-contract.md",
-                "source-standards.md",
-            ):
-                self.assertIn(
-                    f"{info.skills_dir}/se-presentation/references/{basename}",
-                    targets,
-                )
-
-    def test_proposal_installs_profile_and_source_references(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-proposal" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in (
-                "personal-profile-contract.md",
-                "source-standards.md",
-            ):
-                self.assertIn(
-                    f"{info.skills_dir}/se-proposal/references/{basename}",
-                    targets,
-                )
-
-    def test_publish_installs_profile_and_source_references(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-publish" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in (
-                "personal-profile-contract.md",
-                "source-standards.md",
-            ):
-                self.assertIn(
-                    f"{info.skills_dir}/se-publish/references/{basename}",
-                    targets,
-                )
-
-    def test_red_team_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-red-team" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-red-team/references/source-standards.md",
-                targets,
-            )
-
-    def test_retro_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-retro" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-retro/references/source-standards.md",
-                targets,
-            )
-
-    def test_weekly_review_installs_profile_and_source_references(self) -> None:
-        expected_sources = {
-            "_shared/references/personal-profile-contract.md",
-            "_shared/references/source-standards.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-weekly-review" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for basename in (
-                "personal-profile-contract.md",
-                "source-standards.md",
-            ):
-                self.assertIn(
-                    f"{info.skills_dir}/se-weekly-review/references/{basename}",
-                    targets,
-                )
-
-    def test_runbook_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-runbook" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-runbook/references/source-standards.md",
-                targets,
-            )
-
-    def test_sop_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-sop" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-sop/references/source-standards.md",
-                targets,
-            )
-
-    def test_stakeholder_map_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-stakeholder-map" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-stakeholder-map/references/source-standards.md",
-                targets,
-            )
-
-    def test_study_guide_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-study-guide" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-study-guide/references/source-standards.md",
-                targets,
-            )
-
-    def test_thread_digest_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-thread-digest" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-thread-digest/references/source-standards.md",
-                targets,
-            )
-
-    def test_tutorial_installs_shared_references(self) -> None:
-        expected_sources = {
-            "_shared/references/source-standards.md",
-            "_shared/references/personal-profile-contract.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-tutorial" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-tutorial/references/source-standards.md",
-                targets,
-            )
-            self.assertIn(
-                f"{info.skills_dir}/se-tutorial/references/personal-profile-contract.md",
-                targets,
-            )
-
-    def test_video_notes_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-video-notes" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-video-notes/references/source-standards.md",
-                targets,
-            )
-
-    def test_postmortem_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-postmortem" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-postmortem/references/source-standards.md",
-                targets,
-            )
-
-    def test_premortem_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-premortem" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-premortem/references/source-standards.md",
-                targets,
-            )
-
-    def test_feedback_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-feedback" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-feedback/references/source-standards.md",
-                targets,
-            )
-
-    def test_handoff_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-handoff" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-handoff/references/source-standards.md",
-                targets,
-            )
-
-    def test_knowledge_capture_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-knowledge-capture" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-knowledge-capture/references/"
-                "source-standards.md",
-                targets,
-            )
-
-    def test_knowledge_gap_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-knowledge-gap" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-knowledge-gap/references/"
-                "source-standards.md",
-                targets,
-            )
-
-    def test_learn_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-learn" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-learn/references/source-standards.md",
-                targets,
-            )
-
-    def test_literature_map_installs_source_and_verification_references(self) -> None:
-        expected_sources = {
-            "_shared/references/source-standards.md",
-            "_shared/references/verification-protocol.md",
-        }
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-literature-map" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            for reference in ("source-standards.md", "verification-protocol.md"):
-                self.assertIn(
-                    f"{info.skills_dir}/se-literature-map/references/{reference}",
-                    targets,
-                )
-
-    def test_meeting_follow_through_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-meeting-follow-through" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-meeting-follow-through/references/"
-                "source-standards.md",
-                targets,
-            )
-
-    def test_action_inbox_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-action-inbox" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-action-inbox/references/"
-                "source-standards.md",
-                targets,
-            )
-
-    def test_bookmark_triage_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-bookmark-triage" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-bookmark-triage/references/"
-                "source-standards.md",
-                targets,
-            )
-
-    def test_capture_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-capture" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-capture/references/source-standards.md",
-                targets,
-            )
-
-    def test_checklist_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-checklist" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-checklist/references/source-standards.md",
-                targets,
-            )
-
-    def test_compare_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-compare" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-compare/references/source-standards.md",
-                targets,
-            )
-
-    def test_diagram_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-diagram" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-diagram/references/source-standards.md",
-                targets,
-            )
-
-    def test_distill_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-distill" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-distill/references/source-standards.md",
-                targets,
-            )
-
-    def test_evaluate_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-evaluate" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-evaluate/references/source-standards.md",
-                targets,
-            )
-
-    def test_agenda_installs_source_standards(self) -> None:
-        expected_sources = {"_shared/references/source-standards.md"}
-        actual_sources = {
-            source
-            for source, consumers in gen.SHARED_REFERENCES.items()
-            if "se-agenda" in consumers
-        }
-        self.assertEqual(actual_sources, expected_sources)
-
-        manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
-        targets = {row["target"] for row in manifest["files"]}
-        for info in gen.PLATFORM_REGISTRY.values():
-            self.assertIn(
-                f"{info.skills_dir}/se-agenda/references/source-standards.md",
-                targets,
-            )
+                for source in actual:
+                    basename = Path(source).name
+                    for platform, info in gen.PLATFORM_REGISTRY.items():
+                        target = f"{info.skills_dir}/{name}/references/{basename}"
+                        self.assertIn(
+                            target,
+                            targets,
+                            f"{name}: shared reference {basename} missing "
+                            f"manifest target for {platform}",
+                        )
 
     def test_verification_protocol_preserves_registered_targets(self) -> None:
         source = "_shared/references/verification-protocol.md"
