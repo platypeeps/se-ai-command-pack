@@ -1718,3 +1718,45 @@ Made agent a first-class artifact kind flowing through registry -> generator -> 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 98: Registry-driven shared-reference tests (dedupe-generate-tests)
+
+**Date**: 2026-08-04
+**Task**: Registry-driven shared-reference tests (dedupe-generate-tests)
+**Branch**: `audit/dedupe-generate-tests`
+
+### Summary
+
+Replaced the ~790-line block of hand-copied per-skill shared-reference test methods in tests/test_generate.py with one golden-snapshot EXPECTED_SHARED_SOURCES dict plus a single subTest-driven test iterating SKILL_NAMES. A registry omission diverges from the snapshot and fails the subTest naming the offending skill and reference; each reference is still asserted to fan into exactly one manifest target per platform.
+
+### Main Changes
+
+- Add module-level EXPECTED_SHARED_SOURCES golden snapshot (independent literal, not computed from the registry) and test_registered_shared_sources_match_snapshot iterating gen.SKILL_NAMES
+- Delete the ~40 uniform per-skill test_<skill>_installs_* methods; keep the four non-uniform tests (generic fan-out, review payload, help-catalog source, verification-protocol tuple)
+- Address review: order-free snapshot comparison, exact-one manifest-row uniqueness assertion, and precompute target counts + invert the registry once to drop per-loop rescans
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `595a008` | test: replace per-skill shared-reference methods with registry-driven snapshot |
+| `26fd265` | test: make snapshot order-free and assert manifest-target uniqueness |
+| `2c24021` | test: precompute manifest target counts to avoid per-target rescans |
+| `d83984f` | test: invert shared-reference registry once instead of per-skill scan |
+| `ed416cb` | chore(task): archive 07-25-audit-dedupe-generate-tests |
+
+### Testing
+
+- [OK] make check: 492 tests OK, ruff clean, mypy clean, drift --check clean, release payload gate: no payload change (no version bump)
+- [OK] Falsification: seeded registry omission (se-fact-check, se-paper) fails the subTest naming the skill and reference
+- [OK] PR #121 full CI matrix green (ubuntu 3.10/3.13, macos 3.13, lint, release-payload-gate); Copilot review resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
