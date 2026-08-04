@@ -30,6 +30,10 @@ Branch `audit/dependabot-config` off `main`.
    ups = d["updates"]
    assert isinstance(ups, list) and len(ups) == 1, "expected exactly one update entry"
    pip = ups[0]
+   assert set(pip) == {
+       "package-ecosystem", "directory", "schedule",
+       "open-pull-requests-limit", "commit-message",
+   }, f"unexpected keys in pip entry: {set(pip)}"
    assert pip["package-ecosystem"] == "pip", pip.get("package-ecosystem")
    assert pip["directory"] == "/", pip.get("directory")
    assert pip["schedule"]["interval"] == "weekly", pip.get("schedule")

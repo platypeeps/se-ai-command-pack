@@ -61,6 +61,10 @@ not a subset:
   fails (guards typos GitHub would silently ignore);
 - `version == 2`;
 - `updates` is a list of length exactly 1;
+- the pip entry's key set is exactly
+  `{package-ecosystem, directory, schedule, open-pull-requests-limit,
+  commit-message}` — no extra or missing keys (catches an unintended field
+  added alongside the correct ones, which top-level-only key checking misses);
 - the pip entry asserts every value the plan commits to:
   `package-ecosystem == "pip"`, `directory == "/"`,
   `schedule.interval == "weekly"`, `open-pull-requests-limit == 5`,
