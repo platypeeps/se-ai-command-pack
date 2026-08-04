@@ -13,9 +13,22 @@ The shipped `skill_review.py` stops AST-parsing `installer/registry.py` of revie
 
 ## Acceptance Criteria
 
-- [ ] `skill_review.py` no longer opens `installer/registry.py`.
+- [ ] `skill_review.py` prefers the versioned snapshot and opens
+      `installer/registry.py` only as a legacy fallback when the snapshot is
+      absent (transitional; see follow-up). A present-but-version-incompatible
+      or malformed snapshot fails closed instead of misparsing.
 - [ ] Snapshot regenerates via `make generate` and drifts fail `--check`.
-- [ ] Tests cover snapshot consumption and the version-mismatch error path.
+- [ ] Tests cover snapshot consumption, the version-mismatch error path, and
+      the absent-snapshot fallback (behavior parity preserved for both packs).
+
+## Scope decision (2026-08-04)
+
+The consumer switch is **snapshot-preferred with an AST fallback** so neither
+the SE pack nor the SD-pack checkout (a tested current input this SE
+`skill_review.py` also reviews) regresses before the SD repo ships its own
+snapshot producer. The strict "no longer opens `installer/registry.py`" end
+state is a bounded follow-up: remove the fallback once the SD pack ships a
+same-schema snapshot. Rationale in `design.md`; concern ledger C-1.
 
 ## Notes
 

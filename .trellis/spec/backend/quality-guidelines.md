@@ -150,10 +150,10 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - The catalog description comes from the already validated frontmatter parse.
   Markdown table pipes are escaped deterministically; descriptions are not
   duplicated in registry code.
-- Generation computes and validates manifest, README, and bundled help-catalog
-  results before writing any of them. A later write failure rolls earlier
-  surfaces back to their committed state. README content outside one ordered
-  marker pair is preserved.
+- Generation computes and validates manifest, README, bundled help-catalog, and
+  the generated `registry-snapshot.json` results before writing any of them. A
+  later write failure rolls earlier surfaces back to their committed state.
+  README content outside one ordered marker pair is preserved.
 - Family-only metadata and catalog changes do not require a release bump when
   `manifest.json` and shipped payload bytes remain unchanged.
 
@@ -167,7 +167,8 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | Duplicate skill name, including cross-family membership | Raise a registry `RuntimeError`; never choose one row implicitly. |
 | Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
-| Manifest, README, or bundled help catalog drifts | `--check` reports each drifted surface and exits nonzero. |
+| Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
+| Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
 | Family metadata changes but payload does not | Manifest and changelog stay unchanged; release gate passes without a bump. |
 
 ### 5. Good/Base/Bad Cases
@@ -186,8 +187,12 @@ manifest/install order, and grouping must not reorder generated manifest rows.
   duplicate membership.
 - Generator tests pin README grouping, all-family bundled-help output,
   frontmatter sourcing, version identity, pipe escaping, marker validation,
-  independent drift reporting, coordinated rollback, and patched temporary
-  output paths.
+  independent drift reporting (including the registry snapshot), coordinated
+  rollback (including a snapshot write failure), and patched temporary output
+  paths.
+- Consumer tests pin snapshot-preferred resolution matching the AST fallback,
+  absent- and symlinked-snapshot fallback, and fail-closed `ReviewError` for
+  unsupported/mistyped `schemaVersion` and malformed payloads.
 - `make generate` twice, `make check`, `git diff --check`, and explicit empty
   diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
 
@@ -666,9 +671,18 @@ defaults installed discovery to `off` so callers and tests must opt in.
   deduplicate only when normalized skill name and content hash both match.
 - Every collapsed copy retains path, root, platform, observed hash, drift, and
   mapping evidence. Installed copies are evidence, never mutation targets.
-- Parse `SHARED_REFERENCES` statically from the registry AST. Hash each selected
-  canonical shared source into `relatedTemplates` and snapshot identity without
-  importing or executing reviewed repository code.
+- Resolve the registry (families, family order, skill order, platforms, and
+  `SHARED_REFERENCES`) by preferring the generated
+  `generated/registry-snapshot.json` payload, falling back to a static AST parse
+  of `installer/registry.py` only when the snapshot is absent or a symlink. The
+  snapshot's `schemaVersion` must be an exact `int` in
+  `SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS` before use — `bool`, `float`, or
+  a string version, an unsupported integer, malformed JSON, or a mistyped field
+  fails closed with a `ReviewError` rather than silently reverting to the AST
+  parser. Hash each selected canonical shared source into `relatedTemplates` and
+  snapshot identity without importing or executing reviewed repository code. The
+  producer (`generate-skill-surfaces.py`) is the sole writer of the snapshot;
+  `--check` fails when the committed snapshot drifts from `installer/registry.py`.
 - Inventory schema version 3 exposes `installationRoots`, per-skill
   `installations`, `installedCopies`, `reviewPath`, `testTextReferences`, and
   deduplication coverage. Test-text references are bounded substring locators,
