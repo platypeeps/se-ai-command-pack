@@ -1679,3 +1679,42 @@ Installer-managed refresh of vendored sd-ai-command-pack 0.64.0 to 0.64.3 (TOCTO
 ### Next Steps
 
 - None - task complete
+
+
+## Session 97: Add agent artifact kind (0.66.0)
+
+**Date**: 2026-08-04
+**Task**: Add agent artifact kind (0.66.0)
+**Branch**: `chore/archive-agent-artifact-kind`
+
+### Summary
+
+Made agent a first-class artifact kind flowing through registry -> generator -> manifest -> installer, rendered per platform (Claude MD, Codex TOML), user-scoped, Amp excluded. Shipped throwaway se-smoke agent proving the lifecycle. Merged as PR #119 at 0.66.0.
+
+### Main Changes
+
+- registry: optional PlatformInfo.agents_dir (claude/codex set, Amp None) + validation
+- generator: agent validation, Claude MD + Codex TOML renderers, kind:agent rows, drift/unexpected-file handling, merged duplicate-target guard
+- manifest: agent added to KNOWN_MANIFEST_KINDS; templates/agents/se-smoke.md smoke agent; docs + version 0.66.0 + changelog
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `52f04ad` | feat(installer): add agent artifact kind (0.66.0) |
+| `8253095` | test: guard tomllib import for Python 3.10 CI (skip parse checks) |
+
+### Testing
+
+- [OK] make check: 533 tests OK, ruff clean, mypy clean, --check drift clean, release gate 0.65.0 -> 0.66.0
+- [OK] CI green full matrix incl Python 3.10 (tomllib import guarded)
+- [OK] Codex TOML round-trips byte-for-byte; install/remove round-trip lands+prunes both overlays; zero agent rows target .config/agents (Amp)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
