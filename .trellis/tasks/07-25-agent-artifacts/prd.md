@@ -67,13 +67,14 @@ Cross-child acceptance (parent integration review, run when all children archive
 
 - [x] Full `make check` green with all child changes merged. (Verified on merged main:
       coverage 88.3%, ruff + mypy clean, generator `--check` matches, release gate clean.)
-- [x] One se-research run on a sub-agent-dispatch platform and one on an inline platform
+- [ ] One se-research run on a sub-agent-dispatch platform and one on an inline platform
       produce contract-identical final reports (execution strategy differs, outcome does not).
-      Verified by design, not by live execution: the dispatch section's contract (one worker
-      per unit, orchestrator owns synthesis, workers return the same expected artifact under
-      the same stop condition, inline fallback opening) makes the final report shape identical
-      across platforms by construction. A live two-platform run is deferred as a follow-up; no
-      code path forks the report contract on platform.
+      DEFERRED — not executed in this closeout. Static evidence supports the contract: the
+      dispatch section's design (one worker per unit, orchestrator owns synthesis, workers
+      return the same expected artifact under the same stop condition, inline fallback opening)
+      makes the final report shape platform-independent by construction, and no code path forks
+      the report contract on platform. A live two-platform run remains the outstanding empirical
+      check and is tracked as a follow-up; this AC stays unchecked until that run is done.
 - [x] Operator docs match shipped behavior (profiles, agents, dispatch). (docs/SE_AI_COMMAND_PACK.md
       carries the Shipped agents inventory, runtime-profile/overlay explanation, and delegation.)
 
