@@ -412,6 +412,10 @@ def _open_exclusive_backup(root: Path, destination: Path) -> tuple[int, Path]:
     # a successful create: validate_resolved_target_path follows symlinks, so
     # validating an unopened candidate would hard-fail on an escaping symlink
     # instead of letting the loop skip past it.
+    # O_NOFOLLOW is POSIX-only; degrade to 0 (no-op) where it is absent, matching
+    # the repo's defensive os-attribute guarding (e.g. getattr(os, "geteuid")).
+    # O_EXCL still provides the atomic create there.
+    no_follow = getattr(os, "O_NOFOLLOW", 0)
     index = 0
     while True:
         suffix = ".bak" if index == 0 else f".bak{index}"
@@ -419,7 +423,7 @@ def _open_exclusive_backup(root: Path, destination: Path) -> tuple[int, Path]:
         try:
             fd = os.open(
                 candidate,
-                os.O_CREAT | os.O_EXCL | os.O_WRONLY | os.O_NOFOLLOW,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY | no_follow,
                 0o600,
             )
         except FileExistsError:
@@ -429,6 +433,12 @@ def _open_exclusive_backup(root: Path, destination: Path) -> tuple[int, Path]:
             validate_resolved_target_path(root, candidate, "backup path")
         except BaseException:
             os.close(fd)
+            # Do not leave the just-created backup file behind on a validation
+            # failure (defensive: a fresh in-root regular file always validates).
+            try:
+                os.unlink(candidate)
+            except OSError:
+                pass
             raise
         return fd, candidate
 
