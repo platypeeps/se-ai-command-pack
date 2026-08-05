@@ -13,9 +13,9 @@ One deliberate policy for the 1 MB generated docs/repomix-map.md (currently ~45%
 
 ## Acceptance Criteria
 
-- [ ] Chosen policy implemented; no silent-drift state remains possible.
-- [ ] Spec + README updated consistently; `make repomix` behavior documented.
-- [ ] Consumers verified working (sd-update-spec path exercised or reasoned in the task).
+- [x] Chosen policy implemented; no silent-drift state remains possible.
+- [x] Spec + README updated consistently; `make repomix` behavior documented.
+- [x] Consumers verified working (sd-update-spec path exercised or reasoned in the task).
 
 ## Notes
 
