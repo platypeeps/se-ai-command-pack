@@ -34,15 +34,15 @@ One argument vocabulary across the 53-skill key=value interface: identical conce
 
 ## Acceptance Criteria
 
-- [ ] Three-axis canonical vocabulary + reserved-name registry documented in a
+- [x] Three-axis canonical vocabulary + reserved-name registry documented in a
       shared reference shipped to skills.
-- [ ] `.venv/bin/python .github/scripts/generate-skill-surfaces.py --check`
+- [x] `.venv/bin/python .github/scripts/generate-skill-surfaces.py --check`
       (and `make test`) rejects a **known** non-canonical covered-axis alias or
       off-ladder value (proven by a deliberate violation + negative fixtures).
       Note: `make generate --check` does NOT forward `--check`; the guarantee is
       regression-prevention under known aliases + ladders, not detection of an
       arbitrary future semantic alias.
-- [ ] All covered skills conform; `CHANGELOG.md` documents every rename citing
+- [x] All covered skills conform; `CHANGELOG.md` documents every rename citing
       A-006; `sources=` / `privacy=` / `evidence=` / `format=` shapes / `mode=` /
       `scope=` left intact.
 
