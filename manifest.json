@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.66.3",
+  "version": "0.66.4",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, evidence-backed personal weekly reviews, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
@@ -33,6 +33,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-research/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -56,6 +65,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".claude/skills/se-research/references/verification-protocol.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-research/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -87,6 +105,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-research/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -101,6 +128,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-brief/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-brief/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -123,6 +159,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-brief/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -137,6 +182,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-brief/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-brief/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -159,6 +213,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-meeting-prep/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -173,6 +236,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-meeting-prep/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-meeting-prep/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -195,6 +267,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-meeting-prep/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -209,6 +290,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-scan/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-scan/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -231,6 +321,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-scan/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -245,6 +344,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-scan/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-scan/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -267,6 +375,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-digest/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -281,6 +398,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-digest/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-digest/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -303,6 +429,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-digest/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -317,6 +452,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-decide/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-decide/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -339,6 +483,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-decide/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -353,6 +506,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-decide/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-decide/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -375,6 +537,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-status/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -393,6 +564,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-status/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -407,6 +587,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-status/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-status/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -438,6 +627,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-fact-check/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -461,6 +659,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".claude/skills/se-fact-check/references/verification-protocol.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-fact-check/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -492,6 +699,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-fact-check/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -506,6 +722,15 @@
       "scope": "user",
       "source": "templates/skills/se-help/references/examples.md",
       "target": ".config/agents/skills/se-help/references/examples.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-help/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -540,6 +765,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-help/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/skill-catalog.md",
       "target": ".claude/skills/se-help/references/skill-catalog.md",
       "anchor": ".claude",
@@ -560,6 +794,15 @@
       "scope": "user",
       "source": "templates/skills/se-help/references/examples.md",
       "target": ".codex/skills/se-help/references/examples.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-help/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -594,6 +837,15 @@
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-profile/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".config/agents/skills/se-profile/references/personal-profile-contract.md",
       "anchor": ".config/agents",
@@ -614,6 +866,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-profile/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-profile/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -648,6 +909,15 @@
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-profile/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".codex/skills/se-profile/references/personal-profile-contract.md",
       "anchor": ".codex",
@@ -672,6 +942,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-action-inbox/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -686,6 +965,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-action-inbox/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-action-inbox/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -708,6 +996,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-action-inbox/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -722,6 +1019,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-agenda/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-agenda/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -744,6 +1050,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-agenda/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -762,6 +1077,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-agenda/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -776,6 +1100,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-ask-me/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-ask-me/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -810,6 +1143,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-ask-me/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-ask-me/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -830,6 +1172,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-ask-me/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-ask-me/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -861,6 +1212,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-author/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -875,6 +1235,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-author/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-author/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -897,6 +1266,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-author/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -911,6 +1289,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-bookmark-triage/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-bookmark-triage/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -933,6 +1320,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-bookmark-triage/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -947,6 +1343,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-bookmark-triage/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-bookmark-triage/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -969,6 +1374,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-capture/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -983,6 +1397,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-capture/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-capture/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1005,6 +1428,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-capture/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1019,6 +1451,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-checklist/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-checklist/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1041,6 +1482,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-checklist/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -1055,6 +1505,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-checklist/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-checklist/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1077,6 +1536,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-compare/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -1091,6 +1559,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-compare/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-compare/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1113,6 +1590,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-compare/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1127,6 +1613,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-diagram/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-diagram/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1149,6 +1644,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-diagram/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -1163,6 +1667,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-diagram/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-diagram/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1185,6 +1698,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-distill/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -1199,6 +1721,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-distill/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-distill/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1221,6 +1752,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-distill/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1235,6 +1775,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-evaluate/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-evaluate/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1257,6 +1806,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-evaluate/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -1275,6 +1833,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-evaluate/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1289,6 +1856,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-topic-radar/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-topic-radar/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1323,6 +1899,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-topic-radar/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-topic-radar/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -1343,6 +1928,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-topic-radar/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-topic-radar/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1377,6 +1971,15 @@
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-technical-editor/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".config/agents/skills/se-technical-editor/references/personal-profile-contract.md",
       "anchor": ".config/agents",
@@ -1397,6 +2000,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-technical-editor/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-technical-editor/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1431,6 +2043,15 @@
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-technical-editor/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".codex/skills/se-technical-editor/references/personal-profile-contract.md",
       "anchor": ".codex",
@@ -1455,6 +2076,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-explain/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -1469,6 +2099,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-explain/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-explain/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1491,6 +2130,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-explain/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1505,6 +2153,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-feedback/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-feedback/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1527,6 +2184,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-feedback/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -1541,6 +2207,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-feedback/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-feedback/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1563,6 +2238,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-handoff/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -1577,6 +2261,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-handoff/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-handoff/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1599,6 +2292,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-handoff/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1613,6 +2315,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-knowledge-capture/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-knowledge-capture/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1635,6 +2346,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-knowledge-capture/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -1649,6 +2369,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-knowledge-capture/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-knowledge-capture/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1671,6 +2400,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-knowledge-gap/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -1685,6 +2423,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-knowledge-gap/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-knowledge-gap/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1707,6 +2454,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-knowledge-gap/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1721,6 +2477,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-learn/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-learn/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1743,6 +2508,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-learn/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -1757,6 +2531,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-learn/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-learn/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1788,6 +2571,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-literature-map/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -1811,6 +2603,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".claude/skills/se-literature-map/references/verification-protocol.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-literature-map/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1842,6 +2643,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-literature-map/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -1856,6 +2666,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-meeting-follow-through/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-meeting-follow-through/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -1878,6 +2697,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-meeting-follow-through/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -1892,6 +2720,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-meeting-follow-through/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-meeting-follow-through/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -1923,6 +2760,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-monitor/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -1946,6 +2792,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/state-schema.md",
       "target": ".claude/skills/se-monitor/references/state-schema.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-monitor/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -1977,6 +2832,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-monitor/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -2000,6 +2864,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/verification-protocol.md",
       "target": ".config/agents/skills/se-paper/references/verification-protocol.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-paper/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -2043,6 +2916,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-paper/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-paper/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -2079,6 +2961,15 @@
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-paper/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".codex/skills/se-paper/references/personal-profile-contract.md",
       "anchor": ".codex",
@@ -2103,6 +2994,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-plan/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -2117,6 +3017,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-plan/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-plan/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -2139,6 +3048,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-plan/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -2153,6 +3071,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-postmortem/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-postmortem/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -2175,6 +3102,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-postmortem/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -2189,6 +3125,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-postmortem/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-postmortem/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -2211,6 +3156,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-premortem/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -2225,6 +3179,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-premortem/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-premortem/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -2247,6 +3210,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-premortem/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -2261,6 +3233,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-presentation/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-presentation/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -2295,6 +3276,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-presentation/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-presentation/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -2315,6 +3305,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-presentation/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-presentation/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -2349,6 +3348,15 @@
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-proposal/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".config/agents/skills/se-proposal/references/personal-profile-contract.md",
       "anchor": ".config/agents",
@@ -2369,6 +3377,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-proposal/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-proposal/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -2403,6 +3420,15 @@
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-proposal/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".codex/skills/se-proposal/references/personal-profile-contract.md",
       "anchor": ".codex",
@@ -2418,6 +3444,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-propose-skills/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -2427,11 +3462,29 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-propose-skills/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
       "source": "templates/skills/se-propose-skills/SKILL.md",
       "target": ".codex/skills/se-propose-skills/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-propose-skills/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -2450,6 +3503,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-publish/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-publish/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -2484,6 +3546,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-publish/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-publish/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -2504,6 +3575,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-publish/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-publish/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -2535,6 +3615,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-red-team/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -2549,6 +3638,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-red-team/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-red-team/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -2571,6 +3669,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-red-team/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -2585,6 +3692,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-retro/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-retro/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -2607,6 +3723,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-retro/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -2625,6 +3750,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-retro/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -2639,6 +3773,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-weekly-review/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-weekly-review/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -2673,6 +3816,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-weekly-review/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-weekly-review/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -2693,6 +3845,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-weekly-review/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-weekly-review/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -2724,6 +3885,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-runbook/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -2742,6 +3912,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-runbook/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -2756,6 +3935,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-runbook/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-runbook/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -2814,6 +4002,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-review-skills/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -2864,6 +4061,15 @@
       "scope": "user",
       "source": "templates/skills/se-review-skills/scripts/skill_review.py",
       "target": ".claude/skills/se-review-skills/scripts/skill_review.py",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-review-skills/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -2922,6 +4128,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-review-skills/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -2936,6 +4151,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-socratic-review/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-socratic-review/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -2958,6 +4182,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-socratic-review/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -2972,6 +4205,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-socratic-review/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-socratic-review/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -2994,6 +4236,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-sop/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -3008,6 +4259,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-sop/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-sop/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -3030,6 +4290,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-sop/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -3044,6 +4313,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-stakeholder-map/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-stakeholder-map/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -3066,6 +4344,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-stakeholder-map/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -3080,6 +4367,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-stakeholder-map/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-stakeholder-map/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -3102,6 +4398,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-study-guide/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -3116,6 +4421,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".claude/skills/se-study-guide/references/source-standards.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-study-guide/references/argument-vocabulary.md",
       "anchor": ".claude",
       "install": "if-anchor-exists"
     },
@@ -3138,6 +4452,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-study-guide/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -3152,6 +4475,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-thread-digest/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-thread-digest/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -3174,6 +4506,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-thread-digest/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -3192,6 +4533,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-thread-digest/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
@@ -3206,6 +4556,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".config/agents/skills/se-tutorial/references/source-standards.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-tutorial/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -3240,6 +4599,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-tutorial/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-tutorial/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -3260,6 +4628,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-tutorial/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-tutorial/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -3291,6 +4668,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-video-notes/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
@@ -3309,6 +4695,15 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-video-notes/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "codex",
       "kind": "skill",
       "scope": "user",
@@ -3323,6 +4718,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/source-standards.md",
       "target": ".codex/skills/se-video-notes/references/source-standards.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-video-notes/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },
@@ -3350,6 +4754,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/state-schema.md",
       "target": ".config/agents/skills/se-watchlist/references/state-schema.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-watchlist/references/argument-vocabulary.md",
       "anchor": ".config/agents",
       "install": "if-anchor-exists"
     },
@@ -3393,6 +4806,15 @@
       "platform": "claude",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-watchlist/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/_shared/references/personal-profile-contract.md",
       "target": ".claude/skills/se-watchlist/references/personal-profile-contract.md",
       "anchor": ".claude",
@@ -3422,6 +4844,15 @@
       "scope": "user",
       "source": "templates/skills/_shared/references/state-schema.md",
       "target": ".codex/skills/se-watchlist/references/state-schema.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-watchlist/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },

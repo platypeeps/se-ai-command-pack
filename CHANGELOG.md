@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.66.4 - 2026-08-04
+
+- Ship the canonical `key=value` argument vocabulary (A-006) as a shared
+  reference, `templates/skills/_shared/references/argument-vocabulary.md`, fanned
+  to all 53 skills via `SHARED_REFERENCES`; each skill body now cites it under
+  `## Arguments`. Define the single source-of-truth constants
+  (`CANONICAL_ARGUMENT_LADDERS`, `RESERVED_ARGUMENT_NAMES`) in
+  `installer/registry.py`. No argument names change in this step; enforcement and
+  the consumer-visible renames land in later A-006 children.
+
 ## 0.66.3 - 2026-08-04
 
 - Emit a versioned machine-readable `generated/registry-snapshot.json` from
