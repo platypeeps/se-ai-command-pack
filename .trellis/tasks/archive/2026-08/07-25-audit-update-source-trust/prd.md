@@ -16,9 +16,9 @@
 
 ## Acceptance Criteria
 
-- [ ] Test: crafted provenance.json with a foreign sourceRoot causes a clean refusal (no git, no exec).
-- [ ] Test: normal same-checkout update path unaffected.
-- [ ] Docs describe the confirmation path for intentionally relocated sources.
+- [x] Test: crafted provenance.json with a foreign sourceRoot causes a clean refusal (no git, no exec).
+- [x] Test: normal same-checkout update path unaffected.
+- [x] Docs describe the confirmation path for intentionally relocated sources.
 
 ## Notes
 
