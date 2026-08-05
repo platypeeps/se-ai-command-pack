@@ -41,6 +41,8 @@ from installer.registry import (  # noqa: E402
     USER_SCOPE,
     RuntimeProfile,
     SkillInfo,
+    argument_vocabulary_errors,
+    arguments_section,
 )
 
 MANIFEST_PATH = ROOT / "manifest.json"
@@ -259,6 +261,10 @@ def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
         if index < last_index:
             errors.append(f"{label}: section {section!r} is out of order")
         last_index = index
+
+    errors.extend(
+        argument_vocabulary_errors(label, arguments_section(body))
+    )
 
     banned = sorted({match.group(0) for match in BANNED_PHRASE_PATTERN.finditer(text)})
     if banned:

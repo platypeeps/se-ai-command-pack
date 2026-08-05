@@ -20,6 +20,8 @@ from installer.registry import (
     TEMPLATES_SKILLS_DIR,
     RuntimeProfile,
     SkillInfo,
+    argument_vocabulary_errors,
+    arguments_section,
     build_skill_runtime_profiles,
     validate_registry,
 )
@@ -148,6 +150,17 @@ class SkillConventionsTest(unittest.TestCase):
                 "Unknown argument names are an error",
                 skill_text(name),
                 name,
+            )
+
+    def test_argument_vocabulary_conformance(self) -> None:
+        # The live corpus must satisfy the covered-axis guard the generator
+        # enforces: no known non-canonical alias, no off-ladder depth=/
+        # sensitivity= value. Reuses the single registry checker.
+        for name in SKILL_NAMES:
+            section = arguments_section(skill_text(name))
+            self.assertNotEqual(section, "", f"{name}: missing ## Arguments")
+            self.assertEqual(
+                argument_vocabulary_errors(name, section), [], name
             )
 
 

@@ -512,3 +512,45 @@ Canonicalized the primary-artifact intake argument to input= across se-capture, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 117: A-006 covered-axis argument vocabulary enforcement
+
+**Date**: 2026-08-05
+**Task**: A-006 covered-axis argument vocabulary enforcement
+**Branch**: `audit/arg-vocab-enforce`
+
+### Summary
+
+Activated the covered-axis argument-vocabulary guard: registry.py owns KNOWN_COVERED_AXIS_ALIASES + argument_vocabulary_errors/arguments_section; generate-skill-surfaces.py enforces it in validate_skill(); negative fixtures + live-corpus conformance test added. Bumped 0.66.7->0.66.8.
+
+### Main Changes
+
+- registry.py: KNOWN_COVERED_AXIS_ALIASES + argument_vocabulary_errors(label,section) + arguments_section(body); fullmatch guards partial-name misreads; ladder value check flags stray-case/punctuation
+- generate-skill-surfaces.py validate_skill() extends errors with argument_vocabulary_errors(label, arguments_section(body))
+- tests: negative + positive fixtures in test_generate.py; live-corpus test_argument_vocabulary_conformance in test_skills.py
+- manifest 0.66.8 + CHANGELOG 0.66.8 A-006 rename/enforcement summary
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `262d5fa` | feat(skills): enforce covered-axis argument vocabulary (A-006) |
+| `b632ae0` | refactor(skills): harden arg-vocab parser + share section slicer |
+| `9dc681f` | fix(skills): flag off-ladder tokens with stray case/punctuation |
+| `7f9999b` | test(skills): cover inputs= alias + malformed argument spans |
+| `e64553b` | chore(task): archive 08-04-arg-vocab-enforce |
+
+### Testing
+
+- [OK] make check green (533 tests, ruff/mypy clean, generate --check matches, release-payload gate matches)
+- [OK] Copilot review clean on head 7f9999b (no new comments); zero unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

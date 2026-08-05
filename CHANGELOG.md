@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.66.8 - 2026-08-05
+
+- Activate covered-axis argument-vocabulary enforcement (A-006, final child
+  `08-04-arg-vocab-enforce`). `validate_skill()` now rejects, as a hard
+  generation error, any skill whose `## Arguments` section declares a covered
+  axis under a known non-canonical alias or a `depth=`/`sensitivity=` value
+  outside its canonical ladder, so the vocabulary settled across A-006 cannot
+  regress. The closed alias set and the two enforced ladders live beside the
+  `CANONICAL_ARGUMENT_LADDERS`/`RESERVED_ARGUMENT_NAMES` constants in
+  `installer/registry.py` as a single `argument_vocabulary_errors()` checker,
+  consumed by both the generator and the tests. Errors surface through
+  `.venv/bin/python .github/scripts/generate-skill-surfaces.py --check`,
+  `make release-check`, and `make check`.
+- Record the consumer-visible A-006 renames now guarded: verbosity `length=`
+  and the verbosity/redaction `detail=` → `depth=`; the primary artifact under
+  action `source=`/`inputs=` → `input=`; the count `se-research sources=N` →
+  `min_sources=N`; the redaction axis `se-red-team detail=` → `sensitivity=`;
+  the editorial coverage `se-technical-editor depth=` → `coverage=`; and the
+  split of `se-author length=` into `target_words=` plus a `depth=` tier. The
+  reference list `sources=` (21 skills) is a separate, unchanged axis.
+
 ## 0.66.7 - 2026-08-04
 
 - Canonicalize the primary-artifact axis and apply the remaining discrete
