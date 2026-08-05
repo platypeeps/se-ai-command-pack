@@ -21,6 +21,7 @@ from installer.registry import (
     RuntimeProfile,
     SkillInfo,
     argument_vocabulary_errors,
+    arguments_section,
     build_skill_runtime_profiles,
     validate_registry,
 )
@@ -156,12 +157,8 @@ class SkillConventionsTest(unittest.TestCase):
         # enforces: no known non-canonical alias, no off-ladder depth=/
         # sensitivity= value. Reuses the single registry checker.
         for name in SKILL_NAMES:
-            body = skill_text(name)
-            start = body.find("\n## Arguments\n")
-            self.assertNotEqual(start, -1, f"{name}: missing ## Arguments")
-            rest = body[start + 1 :]
-            nxt = rest.find("\n## ", len("## Arguments"))
-            section = rest if nxt == -1 else rest[:nxt]
+            section = arguments_section(skill_text(name))
+            self.assertNotEqual(section, "", f"{name}: missing ## Arguments")
             self.assertEqual(
                 argument_vocabulary_errors(name, section), [], name
             )

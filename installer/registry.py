@@ -475,6 +475,21 @@ _ARGUMENT_SPAN_RE = re.compile(r"`([^`\n]+)`")
 _ARGUMENT_NAME_RE = re.compile(r"[a-z0-9_-]+")
 
 
+def arguments_section(body: str) -> str:
+    """Return a skill body's ``## Arguments`` section text, or '' when absent.
+
+    Slices from the ``## Arguments`` heading to the next ``## `` heading (or the
+    end of the body). Shared so the generator's `validate_skill()` and the
+    live-corpus conformance test extract the same span from one definition.
+    """
+    start = body.find("\n## Arguments\n")
+    if start == -1:
+        return ""
+    rest = body[start + 1 :]
+    next_section = rest.find("\n## ", len("## Arguments"))
+    return rest if next_section == -1 else rest[:next_section]
+
+
 def argument_vocabulary_errors(label: str, arguments_section: str) -> list[str]:
     """Covered-axis argument violations in one skill's ``## Arguments`` body.
 
@@ -496,10 +511,12 @@ def argument_vocabulary_errors(label: str, arguments_section: str) -> list[str]:
         if "=" not in span:
             continue
         left, _, right = span.partition("=")
-        name_match = _ARGUMENT_NAME_RE.match(left)
-        if name_match is None:
+        # Only treat a span as a declaration when its whole left side is a clean
+        # argument token; `depth*foo=x` and similar malformed spans are skipped
+        # rather than mis-read as a `depth=` declaration.
+        if _ARGUMENT_NAME_RE.fullmatch(left) is None:
             continue
-        name = name_match.group(0)
+        name = left
         if name in KNOWN_COVERED_AXIS_ALIASES:
             canonical = KNOWN_COVERED_AXIS_ALIASES[name]
             suggestion = " or ".join(f"`{canon}=`" for canon in canonical)
