@@ -45,7 +45,7 @@ reading meeting records.
   or disclosure would materially differ by audience;
 - `sensitivity=standard|restricted` — default `standard`; `restricted` produces
   a minimized recap and a separate restricted-items ledger;
-- `format=compact|standard` — default `standard`.
+- `depth=standard|brief` — default `standard`.
 
 At least one meeting record must be available through `notes=` or
 `transcript=`. Participant context or `prep=` never substitutes for a record of

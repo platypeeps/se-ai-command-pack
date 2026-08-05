@@ -37,7 +37,7 @@ Arguments arrive as free text with the invocation. Unknown argument names are an
 - `audience=` — intended readers and disclosure boundary;
 - `sensitivity=standard|restricted` — default `standard`; restricted output
   minimizes participant and confidential detail;
-- `format=compact|standard` — default `standard`; and
+- `depth=standard|brief` — default `standard`; and
 - `as_of=` — retrieval cutoff for mutable conversations; default to the current
   date and time and state the default.
 

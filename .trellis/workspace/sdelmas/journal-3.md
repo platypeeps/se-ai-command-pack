@@ -433,3 +433,41 @@ Renamed length=/verbosity-detail= to depth=brief|standard|deep across 30 skills 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 115: A-006 format density classification (task 08-04-arg-vocab-format)
+
+**Date**: 2026-08-04
+**Task**: A-006 format density classification (task 08-04-arg-vocab-format)
+**Branch**: `audit/arg-vocab-format`
+
+### Summary
+
+Classified every format= declaration as density ladder vs structural shape. Migrated 4 pure density ladders to depth= (se-meeting-follow-through, se-thread-digest, se-tutorial, borderline se-sop full|compact); retained structural shapes as format= (borderline se-runbook full|quick-reference kept). Shipped as PR #140 (v0.66.6).
+
+### Main Changes
+
+- Migrate pure density format= ladders to depth=; classify borderlines (se-sop->depth, se-runbook stays format=); record calls in PR body
+- Copilot: reorder depth=brief|standard -> depth=standard|brief (default-first per vocabulary reference); fixed 44fa06b
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fe9eb93` | refactor(skills): classify format= density vs shape, migrate density (A-006) |
+| `44fa06b` | fix(skills): declare depth= default-first per vocabulary contract |
+| `a04d13e` | chore(task): archive 08-04-arg-vocab-format |
+
+### Testing
+
+- [OK] make check green (generate --check, release gate 0.66.5->0.66.6)
+- [OK] sd-check 7/7; Prism clean; no Gito findings; Copilot 2nd pass clean; 0 unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

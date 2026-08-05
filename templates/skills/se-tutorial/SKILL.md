@@ -56,7 +56,7 @@ identify them before reading sources, inspecting an environment, or drafting.
   resources or persistent state;
 - `profile=auto|off|<locator>` — default `auto`; optional read-only preferences
   under the personal profile contract;
-- `format=standard|compact` — default `standard`; and
+- `depth=standard|brief` — default `standard`; and
 - `as_of=` — verification cutoff for mutable technical claims; default to the
   current date and state the default.
 
@@ -68,7 +68,7 @@ enough to change the steps or risk.
 
 1. Restate the tutorial contract: objective, audience, observable final result,
    starting state, environment, prerequisites, version and date scope, sources,
-   permissions, safety, cleanup, profile mode, format, and cutoff. Do not infer
+   permissions, safety, cleanup, profile mode, depth, and cutoff. Do not infer
    reader ability from role, confidence, age, credentials, or profile data.
 2. Apply `references/personal-profile-contract.md`. `off` disables profile use;
    `auto` uses only an explicit current-context profile. Preferences may shape
@@ -157,7 +157,7 @@ enough to change the steps or risk.
 
 - **Tutorial contract** — objective, audience, starting state, environment,
   prerequisites, observable final result, version scope, safety, profile mode,
-  format, cleanup, and cutoff;
+  depth, cleanup, and cutoff;
 - **Prerequisite and environment check** — checks, accepted states, missing or
   unknown requirements, platform branches, permissions, and remediation;
 - **Checkpoint-driven tutorial** — incremental steps with purpose, commands or
