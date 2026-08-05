@@ -95,6 +95,10 @@ def _owned_by_current_user(path: Path) -> bool:
     explicit-confirmation gate in :func:`_source_checkout` remains the
     cross-platform trust guarantee. ``stat`` follows symlinks, so a symlinked
     ``.git`` is judged by its resolved target.
+
+    An :class:`OSError` (missing path, permission denied, broken symlink) is
+    treated as "not owned" and returns ``False`` so the trust gate fails closed
+    rather than proceeding on an unverifiable path.
     """
     geteuid = getattr(os, "geteuid", None)
     if geteuid is None:
@@ -128,6 +132,8 @@ def _source_checkout(root: Path, *, confirm_source: bool) -> Path:
     # runs git against it and executes its install.py. Refuse an unverified path
     # before any git or exec: it must be a git repository (current-user-owned on
     # POSIX), and must either be the running checkout or be explicitly confirmed.
+    # The window between these checks and the later git/exec use is an accepted
+    # residual TOCTOU risk, tracked as a separate hardening follow-up.
     git_entry = source_root / ".git"
     if not git_entry.exists():
         raise SystemExit(
