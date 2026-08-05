@@ -62,10 +62,10 @@ class ResolveCheckTest(unittest.TestCase):
         # tree now passes (stubbed), so _resolve_check must return the fresh
         # passed report, not the cached failure.
         state = {
-            "phase": "remote",
+            "phase": "ready",
             "check": _failed_report(),
             "local": {"status": "clean"},
-            "remote": {"observation": None},
+            "observation": None,
         }
         self._write_state(state)
         self._stub_run_check(_passed_report())
@@ -91,7 +91,7 @@ class ResolveCheckTest(unittest.TestCase):
     def test_genuine_failure_still_blocks(self) -> None:
         # AC3: a genuinely failing check (stale KB / absent scope section) still
         # fails in the nested path -- recompute never masks a real failure.
-        state = {"phase": "remote", "check": _passed_report(), "local": {"x": 1}}
+        state = {"phase": "ready", "check": _passed_report(), "local": {"x": 1}}
         self._write_state(state)
         self._stub_run_check(_failed_report())
         result = review._resolve_check(Path("."), state, self.state_path)
@@ -100,16 +100,27 @@ class ResolveCheckTest(unittest.TestCase):
 
     def test_resume_does_not_regress_phase_or_cached_stages(self) -> None:
         # Recomputing check on resume must not roll the phase back to "check"
-        # nor disturb the memoized local/remote stages.
+        # nor disturb the memoized local/remote stages. The coordinator has no
+        # "remote" phase or state key: it advances through real phases (ending
+        # at "ready") and persists remote-stage data under remoteReceipt and
+        # observation, so assert against those real fields.
         local = {"status": "clean", "receipt": {"id": "abc"}}
-        remote = {"observation": {"state": "pending"}}
-        state = {"phase": "remote", "check": _failed_report(), "local": local, "remote": remote}
+        remote_receipt = {"id": "rcpt"}
+        observation = {"state": "pending"}
+        state = {
+            "phase": "ready",
+            "check": _failed_report(),
+            "local": local,
+            "remoteReceipt": remote_receipt,
+            "observation": observation,
+        }
         self._write_state(state)
         self._stub_run_check(_passed_report())
         review._resolve_check(Path("."), state, self.state_path)
-        self.assertEqual(state["phase"], "remote")
+        self.assertEqual(state["phase"], "ready")
         self.assertEqual(state["local"], local)
-        self.assertEqual(state["remote"], remote)
+        self.assertEqual(state["remoteReceipt"], remote_receipt)
+        self.assertEqual(state["observation"], observation)
 
     def test_first_entry_advances_phase_and_persists(self) -> None:
         # With no prior check, _resolve_check advances the phase to "check" and
