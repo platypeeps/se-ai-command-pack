@@ -762,3 +762,44 @@ Extended the validated dispatch pattern from the pilot (se-research, se-fact-che
 ### Next Steps
 
 - None - task complete
+
+
+## Session 123: Ship wave-1 SE worker agents (07-25-worker-agents)
+
+**Date**: 2026-08-05
+**Task**: Ship wave-1 SE worker agents (07-25-worker-agents)
+**Branch**: `task/07-25-worker-agents`
+
+### Summary
+
+Added se-source-reader and se-claim-verifier as the first real SE worker agents, retired the se-smoke placeholder, and added a fail-closed RuntimeProfile delegation model with a generator existence gate. Shipped through PR #148.
+
+### Main Changes
+
+- New agents se-source-reader (bounded read-only source extraction) and se-claim-verifier (single-claim refute-default verdict); render to Claude MD + Codex TOML
+- RuntimeProfile gains delegation/roles axes with fail-closed validation; se-research/se-fact-check split into optional-delegation profiles
+- Generator validate_delegation_roles() existence-gates every declared role to a shipped agent; se-smoke retired into RETIRED_TARGETS
+- Copilot review fix: validate_runtime_profile rejects non-tuple roles (bare-string char-iteration gotcha)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `73a5c4a` | feat: add wave-1 SE worker agents (se-source-reader, se-claim-verifier) |
+| `d873d90` | fix: reject non-tuple roles in runtime profile validation |
+| `93e73a7` | chore(task): record worker-agents branch for finalization |
+| `b044c84` | chore(task): archive 07-25-worker-agents |
+
+### Testing
+
+- [OK] make check: coverage 88.3% (registry.py 93.0%), ruff + mypy clean, generator --check matches, release gate 0.66.12 -> 0.66.13
+- [OK] PR #148 CI: unittest x3 + lint + release-payload-gate all SUCCESS; Copilot review 1 finding fixed and resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

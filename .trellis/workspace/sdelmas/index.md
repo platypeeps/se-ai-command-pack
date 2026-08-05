@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 122
+- **Total Sessions**: 123
 - **Last Active**: 2026-08-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~762 | Active |
+| `journal-3.md` | ~804 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 123 | 2026-08-05 | Ship wave-1 SE worker agents (07-25-worker-agents) | `73a5c4a`, `d873d90`, `93e73a7`, `b044c84` | `task/07-25-worker-agents` |
 | 122 | 2026-08-05 | Roll out sub-agent dispatch to five fan-out skills | `447144c`, `7707786`, `49944fb`, `1f593f4674bd1994cdbf3f123c94ba6b888766df` | `task/07-25-dispatch-rollout` |
 | 121 | 2026-08-05 | Close A-006 argument-vocabulary umbrella task | `ed55594` | `task/07-25-audit-skill-arg-vocabulary` |
 | 120 | 2026-08-05 | Encode fresh-session runtime context in Claude overlays + document runtime profiles | `bb98a71`, `43528ae`, `e2d6620` | `task/07-25-runtime-profile-gaps` |
