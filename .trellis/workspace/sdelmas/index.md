@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 121
+- **Total Sessions**: 122
 - **Last Active**: 2026-08-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~720 | Active |
+| `journal-3.md` | ~762 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 122 | 2026-08-05 | Roll out sub-agent dispatch to five fan-out skills | `447144c`, `7707786`, `49944fb`, `1f593f4674bd1994cdbf3f123c94ba6b888766df` | `task/07-25-dispatch-rollout` |
 | 121 | 2026-08-05 | Close A-006 argument-vocabulary umbrella task | `ed55594` | `task/07-25-audit-skill-arg-vocabulary` |
 | 120 | 2026-08-05 | Encode fresh-session runtime context in Claude overlays + document runtime profiles | `bb98a71`, `43528ae`, `e2d6620` | `task/07-25-runtime-profile-gaps` |
 | 119 | 2026-08-05 | Sub-agent dispatch pilot: se-research + se-fact-check (07-25-dispatch-pilot) | `e8c0d3c`, `0b4fe51`, `2610b4c`, `33e3209`, `eefa087ba7d91b4d0ce1cbabb31ae8c64f0567d5` | `dispatch/se-research-fact-check-pilot` |

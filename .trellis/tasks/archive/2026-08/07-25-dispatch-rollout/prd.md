@@ -24,9 +24,9 @@ security, privacy, misuse).
 
 ## Acceptance Criteria
 
-- [ ] All five skills carry dispatch sections; neutrality lint + section validation pass.
-- [ ] Generator `--check` clean; version bump + changelog.
-- [ ] A short pattern-conformance note (what matched the pilot, what diverged and why) is
+- [x] All five skills carry dispatch sections; neutrality lint + section validation pass.
+- [x] Generator `--check` clean; version bump + changelog.
+- [x] A short pattern-conformance note (what matched the pilot, what diverged and why) is
       recorded in this task before archive.
 
 ## Dependencies / order
