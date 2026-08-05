@@ -34,11 +34,11 @@ Ordering: parent `implement.md`. Land after every migration child so
 
 ## Acceptance Criteria
 
-- [ ] `.venv/bin/python .github/scripts/generate-skill-surfaces.py --check`
+- [x] `.venv/bin/python .github/scripts/generate-skill-surfaces.py --check`
       and `make test` reject a deliberately known-alias covered name or
       off-ladder value (proven; note `make generate --check` does not forward
       `--check`).
-- [ ] Negative fixtures in `tests/test_generate.py` + live-corpus case in
+- [x] Negative fixtures in `tests/test_generate.py` + live-corpus case in
       `tests/test_skills.py` both present and green.
-- [ ] `make check` green with all covered skills conforming and the guard
+- [x] `make check` green with all covered skills conforming and the guard
       active; `CHANGELOG.md` documents every A-006 rename; version bump present.
