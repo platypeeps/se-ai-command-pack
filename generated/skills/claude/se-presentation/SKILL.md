@@ -82,7 +82,7 @@ identify them before reading sources, profile content, or workspace artifacts.
    `existing`, `derived from identified data`, or `proposed`. Unsupported visual
    or data ideas remain labeled proposals with the evidence or asset needed;
    never represent them as existing charts, measurements, or findings.
-8. For `brief` and `standard` variants, reprioritize the narrative around the
+8. For `short` and `standard` variants, reprioritize the narrative around the
    same audience outcome. Maintain an omission ledger naming every removed
    claim, evidence item, example, and audience consequence. Never create a short
    version by shrinking text, silently deleting citations, or changing facts.

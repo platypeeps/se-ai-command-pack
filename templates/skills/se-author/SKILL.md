@@ -55,14 +55,16 @@ stop and identify them before reading sources or workspace artifacts.
 
 ## Workflow
 
-1. Inventory the requested stage, theme, audience, objective, format, depth,
-   tone, authorized sources, confidentiality constraints, workspace, and known
+1. Inventory the requested stage, theme, audience, objective, format,
+   target word count, depth, tone, authorized sources, confidentiality
+   constraints, workspace, and known
    approvals. If `stage=resume`, read before writing and locate the latest
    explicit approved checkpoint. Surface missing, stale, duplicated, or
    conflicting artifacts; never overwrite or infer approval.
 2. Maintain this portable workspace as files or equivalent host-managed state:
    - `brief.md`: approved audience, thesis, reader outcome, original
-     contribution, evidence needs, type, depth, tone, and confidentiality;
+     contribution, evidence needs, type, target word count, depth, tone, and
+     confidentiality;
    - `interview.md`: dated questions and user answers, separate from assistant
      hypotheses and prose suggestions;
    - `evidence.md`: claim/evidence ledger with source, strength, citation,
@@ -140,7 +142,8 @@ stop and identify them before reading sources or workspace artifacts.
 - **Authoring state** — current stage, latest approved checkpoint, workspace
   coverage, conflicts, and resume point;
 - **Editorial brief** — audience, thesis, reader outcome, original contribution,
-  evidence needs, type, depth, tone, and confidentiality constraints;
+  evidence needs, type, target word count, depth, tone, and confidentiality
+  constraints;
 - **Interview record** — settled user-provided insights and the single next
   highest-value question, without blending assistant hypotheses;
 - **Evidence state** — claim coverage, citations, contrary evidence, source
