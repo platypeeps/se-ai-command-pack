@@ -38,9 +38,9 @@ Ordering + validation gate: parent `implement.md`. Land after
 
 ## Acceptance Criteria
 
-- [ ] No skill declares `length=` or verbosity-sense `detail=`; no `depth=`
+- [x] No skill declares `length=` or verbosity-sense `detail=`; no `depth=`
       collision remains (`coverage=` for se-technical-editor); verbosity is
       `depth=` with ladder-subset values.
-- [ ] `se-author` numeric length handled + documented.
-- [ ] `make test` + `make release-check` green; mirror regenerated; version bump
+- [x] `se-author` numeric length handled + documented.
+- [x] `make test` + `make release-check` green; mirror regenerated; version bump
       + changelog citing A-006.
