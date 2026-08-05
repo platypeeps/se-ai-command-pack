@@ -23,13 +23,13 @@ RuntimeProfile/overlay system is undocumented in the operator guide.
 
 ## Acceptance Criteria
 
-- [ ] Generated output for se-red-team expresses the fresh-session recommendation (no
+- [x] Generated output for se-red-team expresses the fresh-session recommendation (no
       silent collapse to host default), with the mechanism documented.
-- [ ] docs/SE_AI_COMMAND_PACK.md covers layout (`generated/`), runtime profiles, and both
+- [x] docs/SE_AI_COMMAND_PACK.md covers layout (`generated/`), runtime profiles, and both
       maintainer checklists.
-- [ ] `make check` (generator `--check`, release payload gate) passes; version bump and
+- [x] `make check` (generator `--check`, release payload gate) passes; version bump and
       dated changelog entry per repo rules.
-- [ ] Tests pinning overlay behavior updated where affected (tests/test_generate.py,
+- [x] Tests pinning overlay behavior updated where affected (tests/test_generate.py,
       tests/test_skill_review.py contextIsolation cases).
 
 ## Dependencies / order

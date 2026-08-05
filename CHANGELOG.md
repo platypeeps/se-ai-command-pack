@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.66.11 - 2026-08-05
+
+- Encode the portable `fresh-session` runtime context in generated Claude skill
+  overlays (task `07-25-runtime-profile-gaps`). Previously `fresh-session` (used
+  only by `se-red-team`) emitted no marker and silently collapsed to the host
+  default. The generator now appends an advisory in-body note stating the
+  independent-run intent; `context: fork` is deliberately not used because a
+  forked subagent returns to its caller and is not interchangeable with an
+  independent session. Documents the RuntimeProfile / overlay system and the
+  `generated/` tree in `docs/SE_AI_COMMAND_PACK.md`. Only `se-red-team`'s overlay
+  changes; all other generated surfaces are byte-identical.
+
 ## 0.66.10 - 2026-08-05
 
 - Add a `## Sub-agent dispatch` section to the `se-research` and `se-fact-check`

@@ -151,3 +151,8 @@ identify them before reading artifacts, evidence, or workspace content.
   questions, and smallest next decision or evidence step; and
 - **Execution boundary** — probing, testing, approval, remediation, disclosure,
   task creation, and external actions marked `not run`.
+
+<!-- generated: runtime-profile fresh-session -->
+> Runtime profile: **fresh-session**. Run this skill as an independent session —
+> do not inherit conclusions, scratchpad state, or prior framing from the calling
+> context. Start from the artifact and its evidence alone.

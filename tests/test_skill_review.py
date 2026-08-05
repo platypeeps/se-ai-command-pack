@@ -1003,6 +1003,53 @@ class SkillReviewInventoryTest(TempDirTestCase):
             ["name", "description", "context", "model", "effort"],
         )
 
+    def test_fresh_session_body_note_is_not_host_enforced_isolation(self) -> None:
+        # A fresh-session overlay carries an advisory in-body note but NO
+        # `context: fork` frontmatter. The analyzer must not misreport that note
+        # as host-enforced isolation: contextIsolation stays host-default.
+        source_root, source_skill = self.write_se_pack()
+        canonical = source_skill.read_text(encoding="utf-8")
+        end = canonical.find("\n---\n")
+        note = (
+            "\n\n<!-- generated: runtime-profile fresh-session -->\n"
+            "> Runtime profile: **fresh-session**. Run this skill as an "
+            "independent session.\n"
+        )
+        generated_text = (
+            canonical[:end]
+            + "\ndisable-model-invocation: true\nmodel: opus\neffort: xhigh"
+            + canonical[end:]
+            + note
+        )
+        generated = (
+            source_root / "generated" / "skills" / "claude" / "se-test" / "SKILL.md"
+        )
+        generated.parent.mkdir(parents=True)
+        generated.write_text(generated_text, encoding="utf-8")
+        manifest_path = source_root / "manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        claude_row = next(
+            row for row in manifest["files"] if row["platform"] == "claude"
+        )
+        claude_row["source"] = "generated/skills/claude/se-test/SKILL.md"
+        manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+        install_root = self.base / "home"
+        observed = install_root / ".claude" / "skills" / "se-test" / "SKILL.md"
+        observed.parent.mkdir(parents=True)
+        observed.write_text(generated_text, encoding="utf-8")
+        receipt = install_root / ".se-ai-command-pack" / "provenance.json"
+        receipt.parent.mkdir()
+        receipt.write_text(
+            json.dumps({"sourceRoot": str(source_root)}), encoding="utf-8"
+        )
+
+        skill = self.inventory(install_root, str(observed))["skills"][0]
+        matrix = {entry["target"]: entry for entry in skill["platformTargets"]}
+        self.assertEqual(matrix["claude"]["contextIsolation"], "inline-or-host-default")
+        self.assertEqual(matrix["claude"]["content"], "adapted")
+        self.assertNotIn("context", matrix["claude"]["frontmatter"])
+
     def initialize_verified_se_repo(self, root: Path) -> None:
         if shutil.which("git") is None:
             self.skipTest("git executable is not available")
