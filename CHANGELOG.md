@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.66.12 - 2026-08-05
+
+- Roll out the `## Sub-agent dispatch` protocol from the pilot skills
+  (`se-research`, `se-fact-check`) to the remaining fan-out research skills:
+  `se-digest`, `se-feedback`, `se-scan`, `se-video-notes`, and `se-red-team`
+  (task `07-25-dispatch-rollout`). Each section replicates the six-element
+  pilot shape — strategy/inline-fallback opening, one-worker-per-unit,
+  orchestrator-owns-synthesis, worker input contract with expected artifact and
+  stop condition, no-recursion guard, and active-task prefix — mapped to that
+  skill's natural fan-out unit (per input document, per supplied source, per
+  player, per video, per adversarial lane). Dispatch stays an execution strategy
+  layered over each skill's existing Workflow: it never changes scope, the
+  skill's core discipline, or the `## Final report` contract. `se-video-notes`
+  scopes fan-out to `mode=compare`; `se-red-team` diverges to preserve
+  independent-red-team isolation — workers receive the artifact, request, and
+  evidence ledger but never the parent's steelman or conclusions.
+
 ## 0.66.11 - 2026-08-05
 
 - Encode the portable `fresh-session` runtime context in generated Claude skill

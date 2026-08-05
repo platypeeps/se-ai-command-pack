@@ -3,7 +3,7 @@
   "name": "dispatch-rollout",
   "title": "Roll out dispatch protocols to remaining fan-out skills",
   "description": "Tier 1 rollout: se-digest, se-feedback, se-scan, se-video-notes, se-red-team dispatch sections after pilot validates the pattern",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
