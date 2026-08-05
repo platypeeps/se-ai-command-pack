@@ -842,6 +842,12 @@ class SandboxGeneratorTest(TempDirTestCase):
             "not in the canonical sensitivity ladder"
         )
 
+    def test_ladder_value_with_stray_case_rejected(self) -> None:
+        # A value that differs only by case is off-ladder and must be flagged,
+        # not skipped as an unrecognized token.
+        self.write_skill(text=self._arguments("- `depth=Standard`"))
+        self.assert_validation_error("'Standard'")
+
     def test_two_argument_spans_in_one_bullet_both_checked(self) -> None:
         self.write_skill(
             text=self._arguments("- `mode=review|write` and `length=brief`")

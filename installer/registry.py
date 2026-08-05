@@ -490,7 +490,7 @@ def arguments_section(body: str) -> str:
     return rest if next_section == -1 else rest[:next_section]
 
 
-def argument_vocabulary_errors(label: str, arguments_section: str) -> list[str]:
+def argument_vocabulary_errors(label: str, section: str) -> list[str]:
     """Covered-axis argument violations in one skill's ``## Arguments`` body.
 
     Parses every inline-code ``key=values`` span in the given section text (a
@@ -506,7 +506,7 @@ def argument_vocabulary_errors(label: str, arguments_section: str) -> list[str]:
     (reserved or per-skill owned) — see the closed-set note above.
     """
     errors: list[str] = []
-    for match in _ARGUMENT_SPAN_RE.finditer(arguments_section):
+    for match in _ARGUMENT_SPAN_RE.finditer(section):
         span = match.group(1)
         if "=" not in span:
             continue
@@ -527,13 +527,14 @@ def argument_vocabulary_errors(label: str, arguments_section: str) -> list[str]:
         elif name in CANONICAL_ARGUMENT_LADDERS:
             ladder = CANONICAL_ARGUMENT_LADDERS[name]
             allowed = set(ladder)
+            # Any non-empty `|`-separated token that is not in the ladder is a
+            # violation — including one with stray case or punctuation
+            # (`Standard`, `standard,`), which must be flagged, not skipped.
             off_ladder = sorted(
                 {
                     value
                     for token in right.split("|")
-                    if (value := token.strip())
-                    and _ARGUMENT_NAME_RE.fullmatch(value)
-                    and value not in allowed
+                    if (value := token.strip()) and value not in allowed
                 }
             )
             if off_ladder:
