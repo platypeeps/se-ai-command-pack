@@ -95,8 +95,12 @@ scope, the verification bar, or the `## Final report` contract.
   subscribing, or purchasing), an **expected artifact** (the exact result shape
   it returns — for a search lane, the logged sources and extracted claims with
   tier and date; for a verification, the corroboration record for that claim),
-  and a **stop condition** (the unit is done when its `min_sources` share is met
-  or the claim is resolved). Cap concurrency to the host and task budget.
+  and a **stop condition** (a search-lane worker is done when it has swept its
+  planned lane and logged its contributing sources; a verification worker is done
+  when its claim is corroborated, traced to origin, or recorded as unresolved).
+  The `min_sources` minimum stays a global gate the orchestrator enforces across
+  all lanes, never a per-worker quota, so no unit lowers the verification bar.
+  Cap concurrency to the host and task budget.
 - **No recursion when already dispatched.** This skill may itself be running as
   a dispatched sub-agent. When it is already running as a dispatched sub-agent,
   run the units inline in its own context rather than dispatching further — do
