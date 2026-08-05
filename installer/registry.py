@@ -431,13 +431,12 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
     ),
 }
 
-# Canonical `key=value` argument vocabulary shared across skills. Single source
-# of truth for the enforced value ladders and the reserved argument names; the
-# human-readable contract lives in
-# `templates/skills/_shared/references/argument-vocabulary.md`. Value ladders are
-# checked as set membership (a skill may declare any subset, in any order).
-CANONICAL_ARGUMENT_VOCABULARY_REFERENCE = "_shared/references/argument-vocabulary.md"
-
+# Canonical `key=value` argument vocabulary shared across skills. These two
+# constants are the single source of truth for the enforced value ladders and
+# the reserved argument names. The human-readable contract is the shared
+# reference registered under the `_shared/references/argument-vocabulary.md` key
+# in SHARED_REFERENCES above. Value ladders are checked as set membership (a
+# skill may declare any subset, in any order).
 CANONICAL_ARGUMENT_LADDERS: dict[str, tuple[str, ...]] = {
     "depth": ("brief", "standard", "deep"),
     "sensitivity": ("minimal", "restricted", "standard"),
