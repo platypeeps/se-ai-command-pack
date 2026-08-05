@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -14,6 +15,7 @@ from installer.registry import (
     PACK_NAME,
     PLATFORM_REGISTRY,
     PROVENANCE_FILE,
+    ROOT,
 )
 
 
@@ -85,7 +87,29 @@ def pack_status(root: Path) -> int:
     return 0
 
 
-def _source_checkout(root: Path) -> Path:
+def _owned_by_current_user(path: Path) -> bool:
+    """Whether ``path`` is owned by the current effective user.
+
+    On platforms without an effective-uid primitive (e.g. Windows), ownership
+    cannot be established, so this returns ``True`` and the same-checkout /
+    explicit-confirmation gate in :func:`_source_checkout` remains the
+    cross-platform trust guarantee. ``stat`` follows symlinks, so a symlinked
+    ``.git`` is judged by its resolved target.
+
+    An :class:`OSError` (missing path, permission denied, broken symlink) is
+    treated as "not owned" and returns ``False`` so the trust gate fails closed
+    rather than proceeding on an unverifiable path.
+    """
+    geteuid = getattr(os, "geteuid", None)
+    if geteuid is None:
+        return True
+    try:
+        return path.stat().st_uid == geteuid()
+    except OSError:
+        return False
+
+
+def _source_checkout(root: Path, *, confirm_source: bool) -> Path:
     provenance = _read_json_object(root / PROVENANCE_FILE)
     source_value = provenance.get("sourceRoot") if provenance else None
     if not isinstance(source_value, str) or not source_value:
@@ -103,6 +127,41 @@ def _source_checkout(root: Path) -> Path:
         raise SystemExit(
             f"error: recorded source checkout is not {PACK_NAME}: {source_root}"
         )
+    # Source-trust gate (audit A-017). The recorded sourceRoot comes from a
+    # plain-JSON provenance receipt with no integrity protection, and update
+    # runs git against it and executes its install.py. Refuse an unverified path
+    # before any git or exec: it must be a git repository (current-user-owned on
+    # POSIX), and must either be the running checkout or be explicitly confirmed.
+    # The window between these checks and the later git/exec use is an accepted
+    # residual TOCTOU risk, tracked as a separate hardening follow-up.
+    git_entry = source_root / ".git"
+    if not git_entry.exists():
+        raise SystemExit(
+            f"error: recorded source checkout is not a git repository: {source_root}"
+        )
+    if not (
+        _owned_by_current_user(source_root) and _owned_by_current_user(git_entry)
+    ):
+        raise SystemExit(
+            "error: recorded source checkout is not owned by the current user: "
+            f"{source_root}"
+        )
+    if source_root != ROOT and not confirm_source:
+        if sys.stdin.isatty():
+            answer = input(
+                f"Recorded source checkout {source_root} differs from the running "
+                f"checkout {ROOT}. Update from it anyway? [y/N] "
+            )
+            if answer.strip().lower() not in ("y", "yes"):
+                raise SystemExit(
+                    "error: update from a relocated source checkout was not confirmed"
+                )
+        else:
+            raise SystemExit(
+                f"error: recorded source checkout {source_root} differs from the "
+                f"running checkout {ROOT}; pass --confirm-source to update from a "
+                "relocated checkout"
+            )
     return source_root
 
 
@@ -151,9 +210,10 @@ def update_pack(
     backup: bool,
     platforms: list[str] | None,
     install_all: bool,
+    confirm_source: bool = False,
 ) -> int:
     """Fast-forward the recorded checkout and refresh with a new process."""
-    source_root = _source_checkout(root)
+    source_root = _source_checkout(root, confirm_source=confirm_source)
     dirty = _run_git(source_root, "status", "--porcelain")
     if dirty:
         raise SystemExit(

@@ -408,6 +408,20 @@ The update command locates the checkout through the install receipt, refuses
 a dirty worktree, pulls fast-forward only, previews the refreshed install,
 then reapplies it from a fresh Python process.
 
+Because the recorded source path drives `git` and re-executes `install.py`, the
+update refuses an unverified source: the recorded checkout must be a git
+repository (owned by the current user on POSIX platforms), and it must be the
+checkout you are running `install.py` from. To update from a **relocated**
+checkout — one you moved or renamed since installing — confirm it explicitly:
+
+```sh
+python3 install.py update --user --confirm-source
+```
+
+Without `--confirm-source`, a recorded source that differs from the running
+checkout is refused (or, when run interactively, prompts for confirmation)
+before any `git` or install runs.
+
 Other lifecycle commands:
 
 ```sh

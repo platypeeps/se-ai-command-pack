@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 117
+- **Total Sessions**: 118
 - **Last Active**: 2026-08-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~555 | Active |
+| `journal-3.md` | ~597 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 118 | 2026-08-05 | Harden install.py update source trust (A-017) | `c11919b`, `9e04a34`, `c10af5b`, `820da25`, `65f7470` | `audit/update-source-trust` |
 | 117 | 2026-08-05 | A-006 covered-axis argument vocabulary enforcement | `262d5fa`, `b632ae0`, `9dc681f`, `7f9999b`, `e64553b` | `audit/arg-vocab-enforce` |
 | 116 | 2026-08-04 | Argument vocabulary locator migration (A-006) | `201d9f9`, `02ae089` | `audit/arg-vocab-locator` |
 | 115 | 2026-08-04 | A-006 format density classification (task 08-04-arg-vocab-format) | `fe9eb93`, `44fa06b`, `a04d13e` | `audit/arg-vocab-format` |

@@ -554,3 +554,46 @@ Activated the covered-axis argument-vocabulary guard: registry.py owns KNOWN_COV
 ### Next Steps
 
 - None - task complete
+
+
+## Session 118: Harden install.py update source trust (A-017)
+
+**Date**: 2026-08-05
+**Task**: Harden install.py update source trust (A-017)
+**Branch**: `audit/update-source-trust`
+
+### Summary
+
+Gated the provenance-recorded update sourceRoot behind a git-repository check, POSIX ownership check, and same-checkout-or-explicit-confirm requirement before any git or exec, closing a write-one-file-to-code-execution path. Added --confirm-source, docs, spec, and 23-case test coverage; addressed Copilot review on the test suite.
+
+### Main Changes
+
+- Added source-trust gate in installer/management.py _source_checkout: refuse non-git sourceRoot, refuse non-current-user-owned source_root/.git on POSIX, require --confirm-source / interactive y-N / non-tty refusal for a relocated checkout
+- Added --confirm-source CLI flag in install.py, threaded through update_pack
+- Documented fail-closed ownership check and accepted TOCTOU residual; README + docs provenance guidance; backend quality-guidelines Pack Lifecycle scenario; version 0.66.8 -> 0.66.9 + changelog A-017 entry
+- Addressed Copilot PR #143 review: renamed misleading test, patched os.geteuid with create=True for non-POSIX robustness
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c11919b` | feat(installer): harden update source trust (A-017) |
+| `9e04a34` | docs(installer): clarify fail-closed ownership check and TOCTOU residual |
+| `c10af5b` | test(installer): address Copilot review on A-017 source-trust tests |
+| `820da25` | chore(task): record branch for audit-update-source-trust finalization |
+| `65f7470` | chore(task): archive 07-25-audit-update-source-trust |
+
+### Testing
+
+- [OK] make check: 88.1% coverage, Ruff/mypy clean, release gate 0.66.8 -> 0.66.9, exit 0
+- [OK] tests/test_management.py: Ran 23 tests, OK
+- [OK] sd-review deterministic gate: 7/7 checks passed, exit 0 at head c10af5b
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

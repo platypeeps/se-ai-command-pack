@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
+import unittest
 from unittest import mock
 
 from install_test_support import (
@@ -16,6 +18,7 @@ from install_test_support import (
 
 from install import main
 from installer.management import _run_git, update_pack
+from installer.registry import PACK_NAME, PROVENANCE_FILE
 
 
 class StatusCommandTest(TempDirTestCase):
@@ -176,7 +179,253 @@ class UpdateCommandTest(TempDirTestCase):
             )
 
 
-if __name__ == "__main__":
-    import unittest
+class UpdateSourceTrustTest(TempDirTestCase):
+    """Trust gate on the provenance-recorded source checkout (audit A-017)."""
 
+    def _installed_home(self):
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+        return home
+
+    def _make_foreign_checkout(self, *, git=True, git_as_file=False, name=PACK_NAME):
+        """A valid-looking pack checkout that is NOT the running checkout."""
+        src = self.base / "foreign-checkout"
+        src.mkdir()
+        (src / "install.py").write_text("# fake installer\n", encoding="utf-8")
+        (src / "manifest.json").write_text(
+            json.dumps({"name": name, "version": "0.0.0"}), encoding="utf-8"
+        )
+        if git_as_file:
+            (src / ".git").write_text("gitdir: /elsewhere/.git\n", encoding="utf-8")
+        elif git:
+            (src / ".git").mkdir()
+        return src.resolve()
+
+    def _point_provenance(self, home, source_root) -> None:
+        prov = home / PROVENANCE_FILE
+        data = json.loads(prov.read_text(encoding="utf-8"))
+        data["sourceRoot"] = str(source_root)
+        prov.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+    def _fail_if_git_or_exec(self):
+        """Patches that raise if any git or subprocess call is attempted."""
+        return (
+            mock.patch(
+                "installer.management._run_git",
+                side_effect=AssertionError("git must not run"),
+            ),
+            mock.patch(
+                "installer.management.subprocess.run",
+                side_effect=AssertionError("exec must not run"),
+            ),
+        )
+
+    def test_refuses_relocated_current_user_checkout_without_confirmation(
+        self,
+    ) -> None:
+        """PRINCIPAL CONTROL: a current-user-owned git checkout that differs
+        from the running checkout must be refused (by the confirmation gate, not
+        the .git gate) with zero git and zero exec calls."""
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=True)
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with no_git, no_exec, mock.patch("installer.management.sys.stdin") as stdin:
+            stdin.isatty.return_value = False
+            with self.assertRaisesRegex(SystemExit, "--confirm-source"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=False,
+                )
+
+    def test_refuses_non_git_foreign_source(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=False)
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with no_git, no_exec:
+            with self.assertRaisesRegex(SystemExit, "not a git repository"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                )
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "requires POSIX geteuid")
+    def test_refuses_foreign_owned_source(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=True)
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with (
+            no_git,
+            no_exec,
+            mock.patch(
+                "installer.management.os.geteuid", return_value=os.geteuid() + 1
+            ),
+        ):
+            with self.assertRaisesRegex(SystemExit, "not owned by the current user"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
+    def test_same_checkout_needs_no_confirmation(self) -> None:
+        """AC2: the normal same-checkout path (sourceRoot == running checkout)
+        proceeds without confirmation."""
+        home = self._installed_home()  # provenance sourceRoot == running checkout
+        with (
+            mock.patch("installer.management._run_git", return_value=""),
+            mock.patch("installer.management.subprocess.run") as run_process,
+        ):
+            run_process.return_value = subprocess.CompletedProcess([], 0)
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=False,
+            )
+        self.assertEqual(result, 0)
+
+    def test_relocated_source_confirmed_with_flag_proceeds(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=True)
+        self._point_provenance(home, src)
+        with (
+            mock.patch("installer.management._run_git", return_value="") as run_git,
+            mock.patch("installer.management.subprocess.run") as run_process,
+        ):
+            run_process.return_value = subprocess.CompletedProcess([], 0)
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=True,
+            )
+        self.assertEqual(result, 0)
+        self.assertEqual(run_git.call_args_list[1].args[1:], ("pull", "--ff-only"))
+
+    def test_relocated_source_interactive_yes_proceeds(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=True)
+        self._point_provenance(home, src)
+        with (
+            mock.patch("installer.management._run_git", return_value=""),
+            mock.patch("installer.management.subprocess.run") as run_process,
+            mock.patch("installer.management.sys.stdin") as stdin,
+            mock.patch("builtins.input", return_value="y"),
+        ):
+            stdin.isatty.return_value = True
+            run_process.return_value = subprocess.CompletedProcess([], 0)
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=False,
+            )
+        self.assertEqual(result, 0)
+
+    def test_relocated_source_interactive_no_refuses(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=True)
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with (
+            no_git,
+            no_exec,
+            mock.patch("installer.management.sys.stdin") as stdin,
+            mock.patch("builtins.input", return_value="n"),
+        ):
+            stdin.isatty.return_value = True
+            with self.assertRaisesRegex(SystemExit, "not confirmed"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=False,
+                )
+
+    def test_accepts_git_file_worktree(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=False, git_as_file=True)
+        self._point_provenance(home, src)
+        with (
+            mock.patch("installer.management._run_git", return_value=""),
+            mock.patch("installer.management.subprocess.run") as run_process,
+        ):
+            run_process.return_value = subprocess.CompletedProcess([], 0)
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=True,
+            )
+        self.assertEqual(result, 0)
+
+    def test_ownership_check_skipped_without_geteuid(self) -> None:
+        """Without an effective-uid primitive, the ownership branch is skipped
+        while the git-repo and confirmation gates still apply."""
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=True)
+        self._point_provenance(home, src)
+        with (
+            mock.patch("installer.management._run_git", return_value=""),
+            mock.patch("installer.management.subprocess.run") as run_process,
+            mock.patch.object(os, "geteuid", None, create=True),
+        ):
+            run_process.return_value = subprocess.CompletedProcess([], 0)
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=True,
+            )
+        self.assertEqual(result, 0)
+
+    @mock.patch("install.update_pack", return_value=0)
+    def test_cli_forwards_confirm_source(self, update: mock.Mock) -> None:
+        home = self._installed_home()
+        result = main(["update", "--root", str(home), "--confirm-source"])
+        self.assertEqual(result, 0)
+        self.assertTrue(update.call_args.kwargs["confirm_source"])
+
+    @mock.patch("install.update_pack", return_value=0)
+    def test_cli_confirm_source_defaults_false(self, update: mock.Mock) -> None:
+        home = self._installed_home()
+        main(["update", "--root", str(home)])
+        self.assertFalse(update.call_args.kwargs["confirm_source"])
+
+
+if __name__ == "__main__":
     unittest.main()

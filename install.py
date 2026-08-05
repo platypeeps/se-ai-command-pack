@@ -134,6 +134,16 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action="store_true",
         help="Print planned changes without writing files.",
     )
+    parser.add_argument(
+        "--confirm-source",
+        action="store_true",
+        help=(
+            "For update: confirm updating from a recorded source checkout that "
+            "differs from the checkout install.py is running from (a relocated "
+            "checkout). Without it, a differing source is refused unless "
+            "confirmed interactively."
+        ),
+    )
     return parser.parse_args(argv)
 
 
@@ -329,6 +339,7 @@ def main(argv: list[str] | None = None) -> int:
             backup=args.backup,
             platforms=args.platform,
             install_all=args.all,
+            confirm_source=args.confirm_source,
         )
 
     manifest_data, files = load_manifest()
