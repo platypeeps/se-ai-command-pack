@@ -3,7 +3,7 @@
   "name": "dispatch-pilot",
   "title": "Add sub-agent dispatch to se-research and se-fact-check",
   "description": "Tier 1 pilot: capability-first dispatch sections (per lane/claim) with inline fallback in the two highest-value skills",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

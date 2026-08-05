@@ -80,6 +80,41 @@ reading or searching.
    prose, alter the source artifact, or publish a correction.
 9. Deliver the ledger or memo in the requested shape.
 
+## Sub-agent dispatch
+
+On sub-agent dispatch platforms, run the units below in parallel; on inline
+platforms, work through them sequentially in one context. Dispatch is an
+execution strategy layered over the Workflow above — it never changes the
+scope, the verdict ladder, or the `## Final report` contract.
+
+- **One worker per atomic claim.** After the inventory splits the material into
+  atomic claims (steps 2-3), the per-claim evidence work (steps 5-6) is mutually
+  independent, so every claim worker runs concurrently in one phase. Inventory,
+  claim splitting, and locator assignment stay with the orchestrator and run
+  before any fan-out.
+- **The orchestrator owns the ledger.** The parent context assigns claim IDs,
+  deduplicates evidence, reconciles conflicting verdicts, and writes the single
+  verdict ledger. Workers never assign claim IDs and never write the final
+  report.
+- **Worker input contract.** Each worker receives the smallest complete input
+  for its claim (the claim ID, exact original wording, locator, and as-of date),
+  explicit exclusions (do not re-inventory or re-split), an authority boundary
+  (read-only: never edit the artifact, publish a correction, or contact a
+  source), an **expected artifact** (the single verdict record for its claim —
+  one verdict, decisive evidence with dates and locators, and any minimal
+  corrected wording), and a **stop condition** (the claim is done when exactly
+  one verdict is assigned with its evidence recorded). Cap concurrency to the
+  host and task budget.
+- **No recursion when already dispatched.** This skill may itself be running as
+  a dispatched sub-agent. When it is already running as a dispatched sub-agent,
+  run the units inline in its own context rather than dispatching further — do
+  not spawn another layer.
+- **Active task prefix.** When a Trellis task is active, open each dispatch
+  prompt with `Active task: <task path from task.py current>` before the
+  role-specific instructions, so platforms that do not hook-inject context still
+  receive it. When no Trellis task is active, omit the prefix and hand the worker
+  its claim input directly.
+
 ## Safety rules
 
 - This skill is read-only: never edit or replace the supplied artifact, publish
