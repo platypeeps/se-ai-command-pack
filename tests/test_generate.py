@@ -810,6 +810,52 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.assert_validation_error("out of order")
 
     @staticmethod
+    def _arguments(body: str) -> str:
+        # Replace the fixture's placeholder Arguments section body.
+        return VALID_SKILL.format(name="se-test").replace(
+            "## Arguments\n\nText.", f"## Arguments\n\n{body}"
+        )
+
+    def test_covered_axis_alias_length_rejected(self) -> None:
+        self.write_skill(text=self._arguments("- `length=brief|standard`"))
+        self.assert_validation_error("non-canonical alias for the depth axis")
+
+    def test_covered_axis_alias_source_rejected(self) -> None:
+        self.write_skill(text=self._arguments("- `source=`"))
+        self.assert_validation_error(
+            "non-canonical alias for the input axis"
+        )
+
+    def test_covered_axis_detail_names_both_canonicals(self) -> None:
+        self.write_skill(text=self._arguments("- `detail=minimal|standard`"))
+        self.assert_validation_error(
+            "non-canonical alias for the depth / sensitivity axis"
+        )
+
+    def test_depth_off_ladder_value_rejected(self) -> None:
+        self.write_skill(text=self._arguments("- `depth=brief|verbose|deep`"))
+        self.assert_validation_error("'verbose'")
+
+    def test_sensitivity_off_ladder_value_rejected(self) -> None:
+        self.write_skill(text=self._arguments("- `sensitivity=secret`"))
+        self.assert_validation_error(
+            "not in the canonical sensitivity ladder"
+        )
+
+    def test_two_argument_spans_in_one_bullet_both_checked(self) -> None:
+        self.write_skill(
+            text=self._arguments("- `mode=review|write` and `length=brief`")
+        )
+        self.assert_validation_error("non-canonical alias for the depth axis")
+
+    def test_canonical_arguments_pass(self) -> None:
+        # Subset declared out of order plus a canonical name is not flagged.
+        self.write_skill(
+            text=self._arguments("- `depth=deep|brief`\n- `input=`")
+        )
+        gen.validate_skills()
+
+    @staticmethod
     def _cite(basename: str) -> str:
         return VALID_SKILL.format(name="se-test").replace(
             "## Workflow\n\nText.",

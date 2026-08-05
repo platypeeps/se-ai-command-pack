@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -455,6 +456,76 @@ RESERVED_ARGUMENT_NAMES: tuple[str, ...] = (
     "scope",
     "audience",
 )
+
+# Known non-canonical aliases for the enforced covered axes, mapped to the
+# canonical name(s) a regression should use instead. Declaring one of these is a
+# hard validation error. This is a closed set by construction: enforcement does
+# not infer a covered concept from an arbitrary future name, so the guarantee is
+# "no regression under a known covered-axis alias or off-ladder value", not "no
+# drift under any conceivable name". `detail` maps to both canonicals because it
+# was used for both the verbosity and redaction senses before A-006.
+KNOWN_COVERED_AXIS_ALIASES: dict[str, tuple[str, ...]] = {
+    "length": ("depth",),
+    "source": ("input",),
+    "inputs": ("input",),
+    "detail": ("depth", "sensitivity"),
+}
+
+_ARGUMENT_SPAN_RE = re.compile(r"`([^`\n]+)`")
+_ARGUMENT_NAME_RE = re.compile(r"[a-z0-9_-]+")
+
+
+def argument_vocabulary_errors(label: str, arguments_section: str) -> list[str]:
+    """Covered-axis argument violations in one skill's ``## Arguments`` body.
+
+    Parses every inline-code ``key=values`` span in the given section text (a
+    single Arguments bullet may declare more than one argument). Returns
+    human-readable error strings, each prefixed with ``label``:
+
+    - a covered axis declared under a known non-canonical alias
+      (``length``/``source``/``inputs``/``detail``); and
+    - a ``depth=`` or ``sensitivity=`` value outside its canonical ladder,
+      checked as set membership rather than declaration order.
+
+    A name that is neither a known alias nor an enforced ladder is left alone
+    (reserved or per-skill owned) — see the closed-set note above.
+    """
+    errors: list[str] = []
+    for match in _ARGUMENT_SPAN_RE.finditer(arguments_section):
+        span = match.group(1)
+        if "=" not in span:
+            continue
+        left, _, right = span.partition("=")
+        name_match = _ARGUMENT_NAME_RE.match(left)
+        if name_match is None:
+            continue
+        name = name_match.group(0)
+        if name in KNOWN_COVERED_AXIS_ALIASES:
+            canonical = KNOWN_COVERED_AXIS_ALIASES[name]
+            suggestion = " or ".join(f"`{canon}=`" for canon in canonical)
+            errors.append(
+                f"{label}: argument `{name}=` is a non-canonical alias for the "
+                f"{' / '.join(canonical)} axis; use {suggestion}"
+            )
+        elif name in CANONICAL_ARGUMENT_LADDERS:
+            ladder = CANONICAL_ARGUMENT_LADDERS[name]
+            allowed = set(ladder)
+            off_ladder = sorted(
+                {
+                    value
+                    for token in right.split("|")
+                    if (value := token.strip())
+                    and _ARGUMENT_NAME_RE.fullmatch(value)
+                    and value not in allowed
+                }
+            )
+            if off_ladder:
+                errors.append(
+                    f"{label}: argument `{name}=` value(s) {off_ladder} are not "
+                    f"in the canonical {name} ladder {list(ladder)}"
+                )
+    return errors
+
 
 ALWAYS_INSTALL = "always"
 IF_ANCHOR_EXISTS = "if-anchor-exists"
