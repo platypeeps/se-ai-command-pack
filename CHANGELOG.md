@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.66.13 - 2026-08-05
+
+- Ship the first named SE worker agents and wire the pilot skills to them (task
+  `07-25-worker-agents`). Adds two canonical agents — `se-source-reader` (bounded
+  read-only source consumption returning a provenance-tagged extract) and
+  `se-claim-verifier` (adversarial single-claim verifier defaulting to
+  refutation) — rendered to Claude Markdown and Codex TOML.
+- Extends the `RuntimeProfile` layer with an optional `delegation`
+  (`none|optional|required`) axis plus `roles`, scoped to the two pilot skills:
+  `se-research` may delegate a source-gathering unit to `se-source-reader` and
+  `se-fact-check` may delegate a per-claim unit to `se-claim-verifier`. The
+  reference is optional — inline platforms are unaffected — and the pilots' own
+  `## Sub-agent dispatch` sections name the roles as an enhancement over a
+  generic subagent.
+- Adds a generator-side existence gate: every delegation role must resolve to a
+  canonical agent under `templates/agents/`, or `make generate`/`make check`
+  fails closed.
+- Retires the placeholder `se-smoke` agent now that real worker roles ship; its
+  last-shipped install targets are added to `RETIRED_TARGETS` so upgrades remove
+  it cleanly.
+
 ## 0.66.12 - 2026-08-05
 
 - Roll out the `## Sub-agent dispatch` protocol from the pilot skills

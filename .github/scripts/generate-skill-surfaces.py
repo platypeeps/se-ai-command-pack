@@ -719,6 +719,36 @@ def validate_agents() -> None:
         )
 
 
+def validate_delegation_roles(
+    profiles: "dict[str, RuntimeProfile] | None" = None,
+    known_agents: "set[str] | None" = None,
+) -> None:
+    """Every delegation role a runtime profile names must resolve to an agent.
+
+    The registry cannot check this itself (it has no agent inventory), so the
+    generator owns the cross-check. ``profiles``/``known_agents`` are injectable
+    for tests; both default to the live registry map and discovered agents.
+    """
+
+    if profiles is None:
+        profiles = SKILL_RUNTIME_PROFILES
+    if known_agents is None:
+        known_agents = set(agent_names())
+    errors: list[str] = []
+    for skill_name, profile in profiles.items():
+        for role in profile.roles:
+            if role not in known_agents:
+                errors.append(
+                    f"skill {skill_name!r} delegation role {role!r} does not "
+                    "resolve to a canonical agent under templates/agents/"
+                )
+    if errors:
+        raise GenerationError(
+            "delegation role validation failed:\n"
+            + "\n".join(f"- {error}" for error in errors)
+        )
+
+
 def _toml_basic_string(value: str) -> str:
     """Encode a scalar as a TOML single-line basic string with full escaping."""
 
@@ -1215,6 +1245,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         metadata = validate_skills()
         validate_agents()
+        validate_delegation_roles()
         regenerated_claude = regenerated_claude_skill_texts()
         committed_claude, unexpected_claude = read_committed_claude_skills(
             regenerated_claude

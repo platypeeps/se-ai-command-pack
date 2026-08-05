@@ -98,6 +98,13 @@ scope, the verification bar, or the `## Final report` contract.
   The `min_sources` minimum stays a global gate the orchestrator enforces across
   all lanes, never a per-worker quota, so no unit lowers the verification bar.
   Cap concurrency to the host and task budget.
+- **Optional worker role.** On platforms that expose a bounded read-only reader
+  role, a source-gathering unit may be dispatched to the `se-source-reader` role
+  as an enhancement over a generic subagent — it returns one provenance-tagged
+  extract and nothing else. The role is optional: where no such role exists, run
+  the unit inline exactly as above. Naming the role never changes the scope, the
+  `min_sources` bar, or the `## Final report` contract, and inline platforms are
+  unaffected.
 - **No recursion when already dispatched.** This skill may itself be running as
   a dispatched sub-agent. When it is already running as a dispatched sub-agent,
   run the units inline in its own context rather than dispatching further — do

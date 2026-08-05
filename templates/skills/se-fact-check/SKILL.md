@@ -105,6 +105,13 @@ scope, the verdict ladder, or the `## Final report` contract.
   corrected wording), and a **stop condition** (the claim is done when exactly
   one verdict is assigned with its evidence recorded). Cap concurrency to the
   host and task budget.
+- **Optional worker role.** On platforms that expose a bounded read-only
+  verifier role, a per-claim unit may be dispatched to the `se-claim-verifier`
+  role as an enhancement over a generic subagent — it defaults to refuting the
+  claim and returns exactly one verdict with cited evidence. The role is
+  optional: where no such role exists, run the claim inline exactly as above.
+  Naming the role never changes the scope, the verdict ladder, or the
+  `## Final report` contract, and inline platforms are unaffected.
 - **No recursion when already dispatched.** This skill may itself be running as
   a dispatched sub-agent. When it is already running as a dispatched sub-agent,
   run the units inline in its own context rather than dispatching further — do

@@ -50,6 +50,10 @@ RETIRED_TARGETS: tuple[str, ...] = (
     ".config/agents/skills/se-pack/SKILL.md",
     ".claude/skills/se-pack/SKILL.md",
     ".codex/skills/se-pack/SKILL.md",
+    # se-smoke: placeholder agent retired once the first real worker roles
+    # (se-source-reader, se-claim-verifier) shipped. Last-shipped targets:
+    ".claude/agents/se-smoke.md",
+    ".codex/agents/se-smoke.toml",
 )
 
 # remove_pack_file statuses renamed so the install summary reads as
