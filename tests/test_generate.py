@@ -64,103 +64,228 @@ Text.
 # consumer only edits this dict.
 EXPECTED_SHARED_SOURCES: dict[str, tuple[str, ...]] = {
     "se-research": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/source-standards.md",
         "_shared/references/verification-protocol.md",
     ),
-    "se-brief": ("_shared/references/source-standards.md",),
-    "se-meeting-prep": ("_shared/references/source-standards.md",),
-    "se-scan": ("_shared/references/source-standards.md",),
-    "se-digest": ("_shared/references/source-standards.md",),
-    "se-decide": ("_shared/references/source-standards.md",),
-    "se-status": ("_shared/references/source-standards.md",),
+    "se-brief": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-meeting-prep": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-scan": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-digest": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-decide": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-status": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-fact-check": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/source-standards.md",
         "_shared/references/verification-protocol.md",
     ),
-    "se-help": ("_shared/references/skill-catalog.md",),
+    "se-help": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/skill-catalog.md",
+    ),
     "se-profile": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
-    "se-action-inbox": ("_shared/references/source-standards.md",),
-    "se-agenda": ("_shared/references/source-standards.md",),
+    "se-action-inbox": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-agenda": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-ask-me": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
-    "se-author": ("_shared/references/source-standards.md",),
-    "se-bookmark-triage": ("_shared/references/source-standards.md",),
-    "se-capture": ("_shared/references/source-standards.md",),
-    "se-checklist": ("_shared/references/source-standards.md",),
-    "se-compare": ("_shared/references/source-standards.md",),
-    "se-diagram": ("_shared/references/source-standards.md",),
-    "se-distill": ("_shared/references/source-standards.md",),
-    "se-evaluate": ("_shared/references/source-standards.md",),
+    "se-author": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-bookmark-triage": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-capture": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-checklist": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-compare": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-diagram": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-distill": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-evaluate": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-topic-radar": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
     "se-technical-editor": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
-    "se-explain": ("_shared/references/source-standards.md",),
-    "se-feedback": ("_shared/references/source-standards.md",),
-    "se-handoff": ("_shared/references/source-standards.md",),
-    "se-knowledge-capture": ("_shared/references/source-standards.md",),
-    "se-knowledge-gap": ("_shared/references/source-standards.md",),
-    "se-learn": ("_shared/references/source-standards.md",),
+    "se-explain": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-feedback": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-handoff": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-knowledge-capture": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-knowledge-gap": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-learn": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-literature-map": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/source-standards.md",
         "_shared/references/verification-protocol.md",
     ),
-    "se-meeting-follow-through": ("_shared/references/source-standards.md",),
+    "se-meeting-follow-through": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-monitor": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/source-standards.md",
         "_shared/references/state-schema.md",
     ),
     "se-paper": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
         "_shared/references/verification-protocol.md",
     ),
-    "se-plan": ("_shared/references/source-standards.md",),
-    "se-postmortem": ("_shared/references/source-standards.md",),
-    "se-premortem": ("_shared/references/source-standards.md",),
+    "se-plan": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-postmortem": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-premortem": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-presentation": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
     "se-proposal": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
     "se-publish": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
-    "se-red-team": ("_shared/references/source-standards.md",),
-    "se-retro": ("_shared/references/source-standards.md",),
+    "se-red-team": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-retro": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-weekly-review": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
-    "se-runbook": ("_shared/references/source-standards.md",),
-    "se-socratic-review": ("_shared/references/source-standards.md",),
-    "se-sop": ("_shared/references/source-standards.md",),
-    "se-stakeholder-map": ("_shared/references/source-standards.md",),
-    "se-study-guide": ("_shared/references/source-standards.md",),
-    "se-thread-digest": ("_shared/references/source-standards.md",),
+    "se-runbook": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-socratic-review": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-sop": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-stakeholder-map": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-study-guide": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
+    "se-thread-digest": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-tutorial": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
     ),
-    "se-video-notes": ("_shared/references/source-standards.md",),
+    "se-video-notes": (
+        "_shared/references/argument-vocabulary.md",
+        "_shared/references/source-standards.md",
+    ),
     "se-watchlist": (
+        "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
         "_shared/references/source-standards.md",
         "_shared/references/state-schema.md",
     ),
+    "se-propose-skills": ("_shared/references/argument-vocabulary.md",),
+    "se-review-skills": ("_shared/references/argument-vocabulary.md",),
 }
 
 

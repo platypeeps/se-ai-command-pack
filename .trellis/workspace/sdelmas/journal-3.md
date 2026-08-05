@@ -354,3 +354,43 @@ Design-first planning for pack-wide argument vocabulary (A-006): two-lane advers
 ### Next Steps
 
 - None - task complete
+
+
+## Session 113: A-006 argument vocabulary shared reference (child 1/5)
+
+**Date**: 2026-08-04
+**Task**: A-006 argument vocabulary shared reference (child 1/5)
+**Branch**: `audit/arg-vocab-reference`
+
+### Summary
+
+Shipped the canonical key=value argument vocabulary (A-006) as a shared reference fanned to all 53 skills, plus single-source-of-truth constants (CANONICAL_ARGUMENT_LADDERS, RESERVED_ARGUMENT_NAMES) in installer/registry.py. No argument names change; enforcement and renames land in later A-006 children. PR #138.
+
+### Main Changes
+
+- New templates/skills/_shared/references/argument-vocabulary.md (enforced depth=/sensitivity= ladders + reserved-name registry); registered to all 53 skills via SHARED_REFERENCES; each skill body cites it under ## Arguments
+- Defined CANONICAL_ARGUMENT_LADDERS + RESERVED_ARGUMENT_NAMES in installer/registry.py; regenerated mirrors/manifest/snapshot; golden EXPECTED_SHARED_SOURCES updated; manifest 0.66.3->0.66.4 + CHANGELOG
+- Copilot review: removed unused CANONICAL_ARGUMENT_VOCABULARY_REFERENCE that duplicated the SHARED_REFERENCES key (sync hazard)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5d2b5dd` | feat(A-006): ship canonical argument vocabulary shared reference |
+| `e6a0e74` | docs(A-006): drop duplicated reference-path constant flagged in review |
+| `ccd98e3` | chore(task): mark arg-vocab-reference acceptance criteria met |
+
+### Testing
+
+- [OK] make check green: 522 tests, coverage >=80, ruff clean, all generated surfaces match, release-payload gate satisfied
+- [OK] sd-review scope=pr ready/exactHeadReady at head ccd98e3; 0 unresolved review threads
+- [OK] GitHub CI green (lint, release-payload-gate, 3x unittest); pre-archive gate pre_archive_valid
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

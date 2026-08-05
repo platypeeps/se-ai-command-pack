@@ -37,6 +37,8 @@ Do not use for research-paper methodology (`se-paper`), isolated open research
 
 ## Arguments
 
+Argument names and value sets follow the shared vocabulary in `references/argument-vocabulary.md`; reuse a canonical name and its value set before coining a new one.
+
 Arguments arrive as free text with the invocation. Unknown argument names are an error —
 stop and identify them before reading sources or workspace artifacts.
 

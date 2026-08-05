@@ -45,6 +45,8 @@ explicit selector; a request to review never implies either.
 
 ## Arguments
 
+Argument names and value sets follow the shared vocabulary in `references/argument-vocabulary.md`; reuse a canonical name and its value set before coining a new one.
+
 Natural language is accepted. Normalize only these optional keys:
 
 - `mode=review|task|apply` — default `review`;

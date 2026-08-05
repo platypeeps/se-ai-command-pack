@@ -360,6 +360,61 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-literature-map",
         "se-paper",
     ),
+    "_shared/references/argument-vocabulary.md": (
+        "se-action-inbox",
+        "se-agenda",
+        "se-ask-me",
+        "se-author",
+        "se-bookmark-triage",
+        "se-brief",
+        "se-capture",
+        "se-checklist",
+        "se-compare",
+        "se-decide",
+        "se-diagram",
+        "se-digest",
+        "se-distill",
+        "se-evaluate",
+        "se-explain",
+        "se-fact-check",
+        "se-feedback",
+        "se-handoff",
+        "se-help",
+        "se-knowledge-capture",
+        "se-knowledge-gap",
+        "se-learn",
+        "se-literature-map",
+        "se-meeting-follow-through",
+        "se-meeting-prep",
+        "se-monitor",
+        "se-paper",
+        "se-plan",
+        "se-postmortem",
+        "se-premortem",
+        "se-presentation",
+        "se-profile",
+        "se-proposal",
+        "se-propose-skills",
+        "se-publish",
+        "se-red-team",
+        "se-research",
+        "se-retro",
+        "se-review-skills",
+        "se-runbook",
+        "se-scan",
+        "se-socratic-review",
+        "se-sop",
+        "se-stakeholder-map",
+        "se-status",
+        "se-study-guide",
+        "se-technical-editor",
+        "se-thread-digest",
+        "se-topic-radar",
+        "se-tutorial",
+        "se-video-notes",
+        "se-watchlist",
+        "se-weekly-review",
+    ),
     "_shared/references/skill-catalog.md": ("se-help",),
     "_shared/references/personal-profile-contract.md": (
         "se-profile",
@@ -375,6 +430,31 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-weekly-review",
     ),
 }
+
+# Canonical `key=value` argument vocabulary shared across skills. These two
+# constants are the single source of truth for the enforced value ladders and
+# the reserved argument names. The human-readable contract is the shared
+# reference registered under the `_shared/references/argument-vocabulary.md` key
+# in SHARED_REFERENCES above. Value ladders are checked as set membership (a
+# skill may declare any subset, in any order).
+CANONICAL_ARGUMENT_LADDERS: dict[str, tuple[str, ...]] = {
+    "depth": ("brief", "standard", "deep"),
+    "sensitivity": ("minimal", "restricted", "standard"),
+}
+
+RESERVED_ARGUMENT_NAMES: tuple[str, ...] = (
+    "input",
+    "sources",
+    "min_sources",
+    "coverage",
+    "target_words",
+    "privacy",
+    "evidence",
+    "format",
+    "mode",
+    "scope",
+    "audience",
+)
 
 ALWAYS_INSTALL = "always"
 IF_ANCHOR_EXISTS = "if-anchor-exists"

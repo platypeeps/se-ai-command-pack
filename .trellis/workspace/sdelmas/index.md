@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 112
+- **Total Sessions**: 113
 - **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~354 | Active |
+| `journal-3.md` | ~394 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 113 | 2026-08-04 | A-006 argument vocabulary shared reference (child 1/5) | `5d2b5dd`, `e6a0e74`, `ccd98e3` | `audit/arg-vocab-reference` |
 | 112 | 2026-08-04 | A-006 skill argument vocabulary — design-first planning | `ed33b0e`, `3abb0a9` | `audit/skill-arg-vocab-planning` |
 | 111 | 2026-08-04 | Repomix map policy A-025: gitignore + on-demand generation | `3f06126`, `7fde07ffaed198d18851251631ecc8b9beef17a5` | `audit/repomix-map-policy` |
 | 110 | 2026-08-04 | audit-review-nested-check-falseblock: recompute sd-check every run | `bc01bc2`, `4d62cd9`, `a971c29` | `audit/review-nested-check-falseblock` |

@@ -24,6 +24,8 @@ the recommended workflow. Execution requires a separate explicit request.
 
 ## Arguments
 
+Argument names and value sets follow the shared vocabulary in `references/argument-vocabulary.md`; reuse a canonical name and its value set before coining a new one.
+
 Natural-language requests are preferred. These optional keys make a request
 more precise:
 
