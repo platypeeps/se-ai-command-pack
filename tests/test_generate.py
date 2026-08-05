@@ -826,11 +826,26 @@ class SandboxGeneratorTest(TempDirTestCase):
             "non-canonical alias for the input axis"
         )
 
+    def test_covered_axis_alias_inputs_rejected(self) -> None:
+        self.write_skill(text=self._arguments("- `inputs=paths`"))
+        self.assert_validation_error(
+            "non-canonical alias for the input axis"
+        )
+
     def test_covered_axis_detail_names_both_canonicals(self) -> None:
         self.write_skill(text=self._arguments("- `detail=minimal|standard`"))
         self.assert_validation_error(
             "non-canonical alias for the depth / sensitivity axis"
         )
+
+    def test_malformed_argument_spans_ignored(self) -> None:
+        # A span without '=' and one whose left side is not a clean argument
+        # token are not declarations: they must not raise, nor be mis-read as a
+        # covered-axis declaration.
+        self.write_skill(
+            text=self._arguments("- `some note` and `depth*foo=verbose`")
+        )
+        gen.validate_skills()
 
     def test_depth_off_ladder_value_rejected(self) -> None:
         self.write_skill(text=self._arguments("- `depth=brief|verbose|deep`"))
