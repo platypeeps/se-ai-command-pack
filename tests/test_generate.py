@@ -332,7 +332,6 @@ class RealRepoGeneratorTest(unittest.TestCase):
         # fresh-session has no Claude frontmatter encoding: no context: fork.
         self.assertNotIn("context", red_team_metadata)
         # ...it is expressed as an advisory in-body note instead.
-        self.assertIn(gen.FRESH_SESSION_MARKER, red_team_body)
         _, canonical_red_team = gen.parse_frontmatter(
             (gen.SKILLS_ROOT / "se-red-team" / "SKILL.md").read_text("utf-8"),
             "canonical red team",

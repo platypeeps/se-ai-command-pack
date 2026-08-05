@@ -122,14 +122,11 @@ CLAUDE_EFFORT_VALUES = frozenset({"low", "medium", "high", "xhigh"})
 # travels with the skill. The marker comment lets tests and the drift gate pin
 # exactly which overlays carry it.
 FRESH_SESSION_MARKER = "<!-- generated: runtime-profile fresh-session -->"
-FRESH_SESSION_NOTE = (
-    f"{FRESH_SESSION_MARKER}\n"
-    "> Runtime profile: **fresh-session**. Run this skill as an independent "
-    "session —\n"
-    "> do not inherit conclusions, scratchpad state, or prior framing from the "
-    "calling\n"
-    "> context. Start from the artifact and its evidence alone."
-)
+FRESH_SESSION_NOTE = f"""\
+{FRESH_SESSION_MARKER}
+> Runtime profile: **fresh-session**. Run this skill as an independent session —
+> do not inherit conclusions, scratchpad state, or prior framing from the calling
+> context. Start from the artifact and its evidence alone."""
 ALLOWED_RESOURCE_SUFFIXES = {
     "references": ".md",
     "scripts": ".py",
@@ -515,8 +512,11 @@ def render_claude_skill(
     if profile.context == "fresh-session":
         # Separate the note from the body by exactly one blank line, independent
         # of the body's own trailing newlines. Only the body is adjusted; the
-        # frontmatter block is left intact.
-        body = f"{body.rstrip(chr(10))}\n\n{FRESH_SESSION_NOTE}\n"
+        # frontmatter block is left intact. (rstrip is on its own line because a
+        # backslash escape is not allowed inside an f-string expression on the
+        # supported Python 3.10 floor.)
+        trimmed_body = body.rstrip("\n")
+        body = f"{trimmed_body}\n\n{FRESH_SESSION_NOTE}\n"
     return f"---\n{dumped}---\n{body}"
 
 
