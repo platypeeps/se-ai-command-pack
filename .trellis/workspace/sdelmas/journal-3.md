@@ -276,3 +276,43 @@ Fixed the sd-review coordinator false-block: the typed sd-check report was memoi
 ### Next Steps
 
 - None - task complete
+
+
+## Session 111: Repomix map policy A-025: gitignore + on-demand generation
+
+**Date**: 2026-08-04
+**Task**: Repomix map policy A-025: gitignore + on-demand generation
+**Branch**: `audit/repomix-map-policy`
+
+### Summary
+
+Adopted policy (a) for docs/repomix-map.md: gitignore the 1.1 MB generated map and produce it on demand via make repomix, making committed-but-stale state structurally impossible (A-025). Updated spec, README, and the map-content test (skip-when-absent); verified consumers are absence-safe. Planning adversarial review ran both host and Codex lanes (7 concerns, all addressed/rebutted).
+
+### Main Changes
+
+- Gitignore + git rm --cached docs/repomix-map.md; keep local copy, regenerate via make repomix
+- test_repomix.py: map-content contract now skips when the gitignored map is absent (CI/fresh clone)
+- quality-guidelines.md + README.md: document on-demand/gitignored policy; dropped nonexistent stale-map gate row
+- Verified consumers absence-safe (install-audit exclusion, check.py path-hash, sd-update-spec regenerates); not a manifest target
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3f06126` | feat(repomix): gitignore the generated map, generate on demand (A-025) |
+| `7fde07ffaed198d18851251631ecc8b9beef17a5` | chore(task): archive 07-25-audit-repomix-map-policy |
+
+### Testing
+
+- [OK] make repomix -> exit 0, security scan clean (on-demand generation after untracking)
+- [OK] make test -> 522 passed
+- [OK] sd-check -> all checks pass
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

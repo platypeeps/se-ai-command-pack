@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 110
+- **Total Sessions**: 111
 - **Last Active**: 2026-08-04
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~277 | Active |
+| `journal-3.md` | ~316 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 111 | 2026-08-04 | Repomix map policy A-025: gitignore + on-demand generation | `3f06126`, `7fde07ffaed198d18851251631ecc8b9beef17a5` | `audit/repomix-map-policy` |
 | 110 | 2026-08-04 | audit-review-nested-check-falseblock: recompute sd-check every run | `bc01bc2`, `4d62cd9`, `a971c29` | `audit/review-nested-check-falseblock` |
 | 109 | 2026-08-04 | audit-shared-reference-closure: reverse citation-closure gate | `3acdf13` | `audit/shared-reference-closure` |
 | 108 | 2026-08-04 | Widen release payload gate to installer surface; make local check range-aware | `d29f864`, `13df277` | `audit/release-gate-scope` |
