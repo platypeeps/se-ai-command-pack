@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 119
+- **Total Sessions**: 120
 - **Last Active**: 2026-08-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~640 | Active |
+| `journal-3.md` | ~683 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 120 | 2026-08-05 | Encode fresh-session runtime context in Claude overlays + document runtime profiles | `bb98a71`, `43528ae`, `e2d6620` | `task/07-25-runtime-profile-gaps` |
 | 119 | 2026-08-05 | Sub-agent dispatch pilot: se-research + se-fact-check (07-25-dispatch-pilot) | `e8c0d3c`, `0b4fe51`, `2610b4c`, `33e3209`, `eefa087ba7d91b4d0ce1cbabb31ae8c64f0567d5` | `dispatch/se-research-fact-check-pilot` |
 | 118 | 2026-08-05 | Harden install.py update source trust (A-017) | `c11919b`, `9e04a34`, `c10af5b`, `820da25`, `65f7470` | `audit/update-source-trust` |
 | 117 | 2026-08-05 | A-006 covered-axis argument vocabulary enforcement | `262d5fa`, `b632ae0`, `9dc681f`, `7f9999b`, `e64553b` | `audit/arg-vocab-enforce` |

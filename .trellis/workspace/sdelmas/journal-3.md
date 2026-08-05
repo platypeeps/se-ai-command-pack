@@ -641,3 +641,45 @@ Added a host-neutral `## Sub-agent dispatch` section to the se-research and se-f
 ### Next Steps
 
 - None - task complete
+
+
+## Session 120: Encode fresh-session runtime context in Claude overlays + document runtime profiles
+
+**Date**: 2026-08-05
+**Task**: Encode fresh-session runtime context in Claude overlays + document runtime profiles
+**Branch**: `task/07-25-runtime-profile-gaps`
+
+### Summary
+
+Closed the two RuntimeProfile gaps for task 07-25-runtime-profile-gaps: the portable fresh-session context now emits an explicit generated in-body note in the Claude overlay (se-red-team only) instead of silently collapsing to host default, and the RuntimeProfile/overlay system is documented in the operator guide. No frontmatter context key (fork would misrepresent intent per runtime-routing.md:26); contextIsolation stays inline-or-host-default. Version bumped 0.66.10 to 0.66.11 with dated changelog. Finalization: recorded branch and marked acceptance criteria before capturing the finalization base.
+
+### Main Changes
+
+- generate-skill-surfaces.py render_claude_skill appends FRESH_SESSION_NOTE (marker-guarded) to the overlay body only when profile.context == fresh-session; canonical SKILL.md body untouched
+- Regenerated generated/skills/claude/se-red-team/SKILL.md (body gains the note); all other overlays byte-identical
+- docs/SE_AI_COMMAND_PACK.md: generated/ layout row, Runtime profiles section (axis + Claude translation tables), runtime-profile steps in Adding-a-skill and Adding-a-platform
+- Version 0.66.11 + dated CHANGELOG; quality-guidelines Runtime Profile contract updated with the fresh-session body-parity exception
+- Tests: test_generate.py fresh-session marker assertions + only-on-fresh-session overlay set; test_skill_review.py pins contextIsolation stays inline-or-host-default despite the body note
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bb98a71` | feat: encode fresh-session runtime context in Claude skill overlays |
+| `43528ae` | fix(review): clarify fresh-session note append and pin note position |
+| `e2d6620` | fix(review): use plain "\n" strip and tidy fresh-session note constant |
+
+### Testing
+
+- [OK] make check (test lint release-check: generator --check drift gate + check-release-payload.py) green
+- [OK] python -m unittest tests.test_generate tests.test_skill_review — pass
+- [OK] pre-archive gate: pre_archive_valid
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
