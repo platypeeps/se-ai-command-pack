@@ -512,10 +512,12 @@ def render_claude_skill(
         sort_keys=False,
         width=10000,
     )
-    rendered = f"---\n{dumped}---\n{body}"
     if profile.context == "fresh-session":
-        rendered = f"{rendered.rstrip(chr(10))}\n\n{FRESH_SESSION_NOTE}\n"
-    return rendered
+        # Separate the note from the body by exactly one blank line, independent
+        # of the body's own trailing newlines. Only the body is adjusted; the
+        # frontmatter block is left intact.
+        body = f"{body.rstrip(chr(10))}\n\n{FRESH_SESSION_NOTE}\n"
+    return f"---\n{dumped}---\n{body}"
 
 
 def regenerated_claude_skill_texts() -> dict[Path, str]:

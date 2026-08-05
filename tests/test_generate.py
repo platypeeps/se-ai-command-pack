@@ -340,6 +340,12 @@ class RealRepoGeneratorTest(unittest.TestCase):
         # The only body change is the appended note; canonical text is preserved.
         self.assertTrue(red_team_body.startswith(canonical_red_team))
         self.assertNotIn(gen.FRESH_SESSION_MARKER, canonical_red_team)
+        # The note is appended AFTER the canonical body, not spliced into it, and
+        # the generated body ends with the note.
+        self.assertGreaterEqual(
+            red_team_body.index(gen.FRESH_SESSION_MARKER), len(canonical_red_team)
+        )
+        self.assertTrue(red_team_body.rstrip("\n").endswith(gen.FRESH_SESSION_NOTE))
 
     def test_fresh_session_note_only_on_fresh_session_overlays(self) -> None:
         regenerated = gen.regenerated_claude_skill_texts()
