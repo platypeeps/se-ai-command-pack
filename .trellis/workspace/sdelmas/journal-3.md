@@ -683,3 +683,40 @@ Closed the two RuntimeProfile gaps for task 07-25-runtime-profile-gaps: the port
 ### Next Steps
 
 - None - task complete
+
+
+## Session 121: Close A-006 argument-vocabulary umbrella task
+
+**Date**: 2026-08-05
+**Task**: Close A-006 argument-vocabulary umbrella task
+**Branch**: `task/07-25-audit-skill-arg-vocabulary`
+
+### Summary
+
+Administrative closeout of the umbrella task 07-25-audit-skill-arg-vocabulary (A-006). All five implementation children (08-04-arg-vocab-reference/verbosity/format/locator/enforce) were already merged and archived; this iteration verified the umbrella's acceptance criteria in-tree, checked them off, and archived the umbrella (status completed). No code, skill, or spec change.
+
+### Main Changes
+
+- Verified AC in-tree: shared reference templates/skills/_shared/references/argument-vocabulary.md; covered-axis enforcement in generate-skill-surfaces.py with negative fixtures (tests/test_generate.py) + live-corpus case (tests/test_skills.py); CHANGELOG.md cites A-006 for every rename
+- Marked all three umbrella acceptance criteria satisfied and archived 07-25-audit-skill-arg-vocabulary to archive/2026-08 (status completed)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ed55594` | chore(task): close A-006 argument-vocabulary umbrella |
+
+### Testing
+
+- [OK] deterministic review preflight: 0 failures, 0 warnings
+- [OK] sd-check: 7/7 passed on PR #146 head
+- [OK] pre-archive gate: pre_archive_valid
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
