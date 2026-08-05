@@ -220,7 +220,9 @@ class UpdateSourceTrustTest(TempDirTestCase):
             ),
         )
 
-    def test_refuses_foreign_owned_git_checkout_without_confirmation(self) -> None:
+    def test_refuses_relocated_current_user_checkout_without_confirmation(
+        self,
+    ) -> None:
         """PRINCIPAL CONTROL: a current-user-owned git checkout that differs
         from the running checkout must be refused (by the confirmation gate, not
         the .git gate) with zero git and zero exec calls."""
@@ -397,7 +399,7 @@ class UpdateSourceTrustTest(TempDirTestCase):
         with (
             mock.patch("installer.management._run_git", return_value=""),
             mock.patch("installer.management.subprocess.run") as run_process,
-            mock.patch.object(os, "geteuid", None),
+            mock.patch.object(os, "geteuid", None, create=True),
         ):
             run_process.return_value = subprocess.CompletedProcess([], 0)
             result = update_pack(
