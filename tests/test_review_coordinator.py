@@ -124,18 +124,5 @@ class ResolveCheckTest(unittest.TestCase):
         self.assertEqual(on_disk["check"]["status"], "passed")
 
 
-class _TmpDir:
-    """Minimal context manager yielding a TemporaryDirectory path string."""
-
-    def __enter__(self) -> str:
-        import tempfile
-
-        self._tmp = tempfile.TemporaryDirectory()
-        return self._tmp.name
-
-    def __exit__(self, *exc: object) -> None:
-        self._tmp.cleanup()
-
-
 if __name__ == "__main__":
     unittest.main()
