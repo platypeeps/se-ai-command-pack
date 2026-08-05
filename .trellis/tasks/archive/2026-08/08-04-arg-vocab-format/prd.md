@@ -27,9 +27,9 @@ Ordering: parent `implement.md`. Land after `08-04-arg-vocab-verbosity`, before
 
 ## Acceptance Criteria
 
-- [ ] Every `format=` declaration classified; density ladders migrated to
+- [x] Every `format=` declaration classified; density ladders migrated to
       `depth=`; structural shapes retained as `format=`; borderline calls
       recorded.
-- [ ] No `format=` declaration remains that is purely a verbosity/density ladder.
-- [ ] `make test` + `make release-check` green; mirror regenerated; version bump
+- [x] No `format=` declaration remains that is purely a verbosity/density ladder.
+- [x] `make test` + `make release-check` green; mirror regenerated; version bump
       + changelog citing A-006.
