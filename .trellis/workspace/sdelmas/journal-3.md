@@ -840,3 +840,44 @@ All five children of the agent-artifacts umbrella are merged and archived. Verif
 ### Next Steps
 
 - None - task complete
+
+
+## Session 125: CI workflow hygiene and release-tag error contract
+
+**Date**: 2026-08-05
+**Task**: CI workflow hygiene and release-tag error contract
+**Branch**: `task/07-25-audit-ci-workflow-hygiene`
+
+### Summary
+
+Shipped 07-25-audit-ci-workflow-hygiene: pip caching, PR-only run cancellation, push-lane payload gating, and a clean subprocess error contract for create-release-tag.py. PR #150, all CI green, Copilot review converged (3 findings fixed).
+
+### Main Changes
+
+- A-038 pip cache on all three setup-python steps keyed on requirements-dev.txt
+- A-039 top-level concurrency with PR-only cancel-in-progress (push-to-main release lane never cancelled)
+- A-037 release-payload-gate widened to push-to-main (base=last release tag) and auto-tag-release depends on it
+- A-014 ReleaseTagError maps FileNotFoundError/TimeoutExpired to clean 'error:' + exit 1
+- Tests: module-import error-contract tests + WorkflowHygieneTest text lock-in (anchored per Copilot review)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `683b15b` | feat: CI workflow hygiene and release-tag error contract |
+| `cf71ce2` | fix: address Copilot review on PR #150 |
+
+### Testing
+
+- [OK] make check exit 0 (unittest+coverage 88.4%, ruff, mypy, generator --check, release gate)
+- [OK] release gate: no payload change; no version bump required
+- [OK] PR #150 CI all green; auto-tag-release correctly skipped on PR
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

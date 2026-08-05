@@ -13,9 +13,9 @@ The CI pipeline wastes less (caching, cancellation), the push lane cannot ship u
 
 ## Acceptance Criteria
 
-- [ ] PR runs show pip cache hits; superseded PR runs are cancelled.
-- [ ] Push-lane gating decision implemented or explicitly documented (once, without duplicating the sibling task).
-- [ ] Simulated git timeout in create-release-tag.py produces the clean `error:` message and exit 1 (test).
+- [x] PR runs show pip cache hits; superseded PR runs are cancelled. — wiring implemented (`cache: pip` on all 3 setup-python steps; top-level `concurrency:` with PR-only cancel) and locked by `WorkflowHygieneTest`. Cache-hit and run-cancellation are CI-side observables that surface on the next PR/superseded run.
+- [x] Push-lane gating decision implemented or explicitly documented (once, without duplicating the sibling task). — implemented here (release-payload-gate widened to push-to-main with `git describe` base; added to `auto-tag-release` needs); sibling `07-25-audit-release-gate-scope` deferred it, so no duplication.
+- [x] Simulated git timeout in create-release-tag.py produces the clean `error:` message and exit 1 (test). — `test_git_timeout_fails_cleanly` + `test_git_missing_fails_cleanly` in `tests/test_release_gate.py`.
 
 ## Notes
 

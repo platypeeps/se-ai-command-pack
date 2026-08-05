@@ -2,16 +2,32 @@
 
 from __future__ import annotations
 
+import contextlib
+import importlib.util
+import io
 import json
 import subprocess
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from install_test_support import PACK_ROOT, TempDirTestCase
 
 GATE_SCRIPT = PACK_ROOT / ".github" / "scripts" / "check-release-payload.py"
 TAG_SCRIPT = PACK_ROOT / ".github" / "scripts" / "create-release-tag.py"
+WORKFLOW = PACK_ROOT / ".github" / "workflows" / "tests.yml"
+
+
+def load_tag_module():
+    """Import create-release-tag.py as a module so its subprocess.run is
+    patchable in-process; run_script's external subprocess cannot be reached
+    by patch()."""
+    spec = importlib.util.spec_from_file_location("create_release_tag", TAG_SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
 
 
 def git(repo: Path, *args: str) -> None:
@@ -317,6 +333,72 @@ class ReleaseTagTest(TempDirTestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("cannot query origin", result.stderr)
         self.assertEqual(self.tags(), set())
+
+    def test_git_timeout_fails_cleanly(self) -> None:
+        # A hung git must map to a clean error: exit 1, no traceback. A --push
+        # run reaches run_git at its first ls-remote call before any early exit.
+        module = load_tag_module()
+        stderr = io.StringIO()
+        with patch.object(
+            module.subprocess,
+            "run",
+            side_effect=subprocess.TimeoutExpired(cmd="git", timeout=60),
+        ), contextlib.redirect_stderr(stderr):
+            code = module.main(["--repo", str(self.repo), "--push"])
+        self.assertEqual(code, 1)
+        captured = stderr.getvalue()
+        self.assertIn("error:", captured)
+        self.assertIn("timed out", captured)
+
+    def test_git_missing_fails_cleanly(self) -> None:
+        module = load_tag_module()
+        stderr = io.StringIO()
+        with patch.object(
+            module.subprocess, "run", side_effect=FileNotFoundError()
+        ), contextlib.redirect_stderr(stderr):
+            code = module.main(["--repo", str(self.repo), "--push"])
+        self.assertEqual(code, 1)
+        captured = stderr.getvalue()
+        self.assertIn("error:", captured)
+        self.assertIn("git not found", captured)
+
+
+class WorkflowHygieneTest(unittest.TestCase):
+    """Lock the CI-workflow wiring so a future edit that drops any of the
+    hygiene guarantees (A-038 cache, A-039 concurrency, A-037 push-lane gate)
+    fails a test. pyyaml is not a dependency, so assert on the file text."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.text = WORKFLOW.read_text(encoding="utf-8")
+
+    def test_pip_cache_on_three_setup_python_steps(self) -> None:
+        self.assertEqual(self.text.count("cache: pip"), 3)
+
+    def test_concurrency_with_pr_only_cancellation(self) -> None:
+        self.assertIn("concurrency:", self.text)
+        self.assertIn(
+            "cancel-in-progress: ${{ github.event_name == 'pull_request' }}",
+            self.text,
+        )
+
+    def test_auto_tag_depends_on_release_gate(self) -> None:
+        # Anchor to the auto-tag-release job body: the same needs string also
+        # appears under ci-result, so a bare substring match is ambiguous and
+        # would pass even if auto-tag-release dropped the gate dependency.
+        _, _, tail = self.text.partition("auto-tag-release:")
+        self.assertTrue(tail, "auto-tag-release job not found")
+        self.assertIn("needs: [unittest, lint, release-payload-gate]", tail)
+
+    def test_release_gate_runs_on_push_to_main(self) -> None:
+        # The full PR-or-push expression is unique to release-payload-gate;
+        # auto-tag-release uses a push-only if without the pull_request clause,
+        # so matching the whole expression anchors the assertion to the gate.
+        self.assertIn(
+            "if: github.event_name == 'pull_request' || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/main')",
+            self.text,
+        )
 
 
 if __name__ == "__main__":
