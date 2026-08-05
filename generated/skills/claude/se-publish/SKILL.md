@@ -47,7 +47,7 @@ identify them before reading sources, profile content, or workspace artifacts.
 
 ## Workflow
 
-1. Confirm the source, its explicit approval state and version, audience,
+1. Confirm the input, its explicit approval state and version, audience,
    destination, objective, tone, constraints, profile mode, and depth. An
    already approved source artifact is required. If its argument is unsettled,
    approval is unclear, or the requested destination would materially change

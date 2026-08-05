@@ -31,7 +31,7 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 
 Arguments arrive as free text with the invocation: `key=value` pairs and bare
 flags. Unknown argument names are an error — stop and report them before
-reading the source.
+reading the input.
 
 - `input=` — one supplied URL, file, pasted block, connected record, or
   bounded thread. Use the current attachment or context when unambiguous.
