@@ -27,11 +27,11 @@ a single claim) — and wire skills to them through the RuntimeProfile delegatio
 
 ## Acceptance Criteria
 
-- [ ] Both agents render to Claude MD and Codex TOML and install/remove cleanly.
-- [ ] Pilot skills (se-research, se-fact-check) reference the roles without requiring
+- [x] Both agents render to Claude MD and Codex TOML and install/remove cleanly.
+- [x] Pilot skills (se-research, se-fact-check) reference the roles without requiring
       them; inline platforms unaffected.
-- [ ] Registry/profile validation covers the delegation mapping; tests extended.
-- [ ] Version bump + changelog; operator docs list the new agents.
+- [x] Registry/profile validation covers the delegation mapping; tests extended.
+- [x] Version bump + changelog; operator docs list the new agents.
 
 ## Dependencies / order
 

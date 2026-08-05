@@ -48,6 +48,8 @@ class RuntimeProfile:
     context: str
     model: str
     effort: str
+    delegation: str = "none"
+    roles: tuple[str, ...] = ()
 
 
 # One registry row per platform id. Adding a platform means one row here;
@@ -158,6 +160,7 @@ KNOWN_RUNTIME_INVOCATIONS = frozenset({"automatic", "user-only", "both"})
 KNOWN_RUNTIME_CONTEXTS = frozenset({"inline", "forked", "fresh-session"})
 KNOWN_RUNTIME_MODELS = frozenset({"inherit", "fast", "balanced", "deep"})
 KNOWN_RUNTIME_EFFORTS = frozenset({"low", "medium", "high", "xhigh"})
+KNOWN_RUNTIME_DELEGATIONS = frozenset({"none", "optional", "required"})
 
 CONVERSATIONAL = RuntimeProfile("both", "inline", "balanced", "medium")
 DEEP_ANALYSIS = RuntimeProfile("both", "forked", "deep", "high")
@@ -172,6 +175,18 @@ INDEPENDENT_RED_TEAM = RuntimeProfile(
     "user-only", "fresh-session", "deep", "xhigh"
 )
 PACKAGE_REVIEW = RuntimeProfile("user-only", "inline", "deep", "xhigh")
+# Pilot delegated profiles: same execution axes as DEEP_ANALYSIS, but each names
+# one optional worker role. Split out so delegation reaches only the two pilot
+# skills and not the rest of the DEEP_ANALYSIS group. Roles are existence-gated
+# by the generator (validate_delegation_roles).
+DEEP_ANALYSIS_SOURCE_READING = RuntimeProfile(
+    "both", "forked", "deep", "high",
+    delegation="optional", roles=("se-source-reader",)
+)
+DEEP_ANALYSIS_CLAIM_VERIFYING = RuntimeProfile(
+    "both", "forked", "deep", "high",
+    delegation="optional", roles=("se-claim-verifier",)
+)
 
 # Grouped recommendations are easier to audit than 52 repeated records. The
 # builder rejects cross-group duplication before deriving the per-skill map.
@@ -202,11 +217,11 @@ RUNTIME_PROFILE_ASSIGNMENTS: tuple[
             "se-retro",
         ),
     ),
+    (DEEP_ANALYSIS_SOURCE_READING, ("se-research",)),
+    (DEEP_ANALYSIS_CLAIM_VERIFYING, ("se-fact-check",)),
     (
         DEEP_ANALYSIS,
         (
-            "se-research",
-            "se-fact-check",
             "se-knowledge-gap",
             "se-literature-map",
             "se-evaluate",
@@ -258,11 +273,34 @@ def validate_runtime_profile(profile: RuntimeProfile) -> None:
         ("context", profile.context, KNOWN_RUNTIME_CONTEXTS),
         ("model", profile.model, KNOWN_RUNTIME_MODELS),
         ("effort", profile.effort, KNOWN_RUNTIME_EFFORTS),
+        ("delegation", profile.delegation, KNOWN_RUNTIME_DELEGATIONS),
     ):
         if value not in allowed:
             raise RuntimeError(
                 f"runtime profile has unknown {field_name} value: {value!r}"
             )
+    if not isinstance(profile.roles, tuple):
+        # A bare string is iterable char-by-char, so it would silently pass
+        # the per-role checks below as a sequence of single-character "roles".
+        raise RuntimeError(
+            "runtime profile roles must be a tuple, not "
+            f"{type(profile.roles).__name__}: {profile.roles!r}"
+        )
+    if profile.delegation == "none":
+        if profile.roles:
+            raise RuntimeError(
+                "runtime profile delegation 'none' must carry no roles: "
+                f"{profile.roles!r}"
+            )
+    elif not profile.roles:
+        raise RuntimeError(
+            f"runtime profile delegation {profile.delegation!r} requires "
+            "at least one role"
+        )
+    if any(not isinstance(role, str) or not role for role in profile.roles):
+        raise RuntimeError(
+            f"runtime profile roles must be non-empty strings: {profile.roles!r}"
+        )
 
 
 def build_skill_runtime_profiles(
@@ -665,6 +703,7 @@ __all__ = [
     "INSTALLED_TARGETS_FILE",
     "KNOWN_INSTALL_MODES",
     "KNOWN_RUNTIME_CONTEXTS",
+    "KNOWN_RUNTIME_DELEGATIONS",
     "KNOWN_RUNTIME_EFFORTS",
     "KNOWN_RUNTIME_INVOCATIONS",
     "KNOWN_RUNTIME_MODELS",

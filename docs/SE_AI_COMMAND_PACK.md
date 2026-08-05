@@ -969,6 +969,26 @@ uses `fresh-session`.
    vouched leftovers from user scopes automatically.
 4. Version bump + changelog.
 
+## Shipped agents
+
+Canonical worker agents live in `templates/agents/`. Each is a bounded,
+read-only worker a parent skill may dispatch; the parent always owns the final
+report and sets concurrency.
+
+| Agent | Role | Input → output |
+| --- | --- | --- |
+| `se-source-reader` | Bounded source reader | one source + extraction brief → one provenance-tagged structured extract |
+| `se-claim-verifier` | Adversarial claim verifier (defaults to refute) | one claim + evidence set → one verdict (`supported`/`refuted`/`uncertain`) with cited reasons |
+
+Skills opt into a worker role through the `RuntimeProfile` `delegation` axis
+(`none|optional|required`) and `roles` list in `installer/registry.py`. Today
+`se-research` optionally delegates a source-gathering unit to `se-source-reader`
+and `se-fact-check` optionally delegates a per-claim unit to `se-claim-verifier`.
+Delegation is optional — inline platforms run the unit in one context, unaffected
+— and the pilot skills' `## Sub-agent dispatch` sections name the role as an
+enhancement. The generator's `validate_delegation_roles` gate fails closed if any
+declared role does not resolve to an agent in this table.
+
 ## Adding an agent
 
 1. Create `templates/agents/se-<name>.md`:
@@ -992,7 +1012,11 @@ uses `fresh-session`.
 
 1. Delete its `templates/agents/<name>.md`; `make generate` drops the overlays
    and rows, and refreshes prune installed files via provenance.
-2. Version bump + changelog.
+2. Add the target paths the last shipping manifest listed for it
+   (`.claude/agents/<name>.md`, `.codex/agents/<name>.toml`) to
+   `RETIRED_TARGETS` in `installer/removal.py`, so an upgrade removes an
+   already-installed copy from user scopes.
+3. Version bump + changelog.
 
 ## Adding a platform
 

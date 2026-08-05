@@ -344,20 +344,20 @@ class AgentInstallTest(TempDirTestCase):
     def test_agent_round_trip_on_claude_and_codex(self) -> None:
         home = make_home(self.base)
         install_ok("--root", str(home))
-        claude_agent = home / ".claude" / "agents" / "se-smoke.md"
-        codex_agent = home / ".codex" / "agents" / "se-smoke.toml"
+        claude_agent = home / ".claude" / "agents" / "se-source-reader.md"
+        codex_agent = home / ".codex" / "agents" / "se-source-reader.toml"
         self.assertTrue(claude_agent.is_file())
         self.assertTrue(codex_agent.is_file())
 
         installed = tree_paths(home)
-        self.assertIn(".claude/agents/se-smoke.md", installed)
-        self.assertIn(".codex/agents/se-smoke.toml", installed)
+        self.assertIn(".claude/agents/se-source-reader.md", installed)
+        self.assertIn(".codex/agents/se-source-reader.toml", installed)
 
         receipt = read_receipt_targets(home)
-        self.assertIn(".claude/agents/se-smoke.md", receipt)
-        self.assertIn(".codex/agents/se-smoke.toml", receipt)
+        self.assertIn(".claude/agents/se-source-reader.md", receipt)
+        self.assertIn(".codex/agents/se-source-reader.toml", receipt)
         provenance = read_provenance(home)
-        self.assertIn(".codex/agents/se-smoke.toml", set(provenance["files"]))
+        self.assertIn(".codex/agents/se-source-reader.toml", set(provenance["files"]))
 
         # Idempotent refresh leaves the overlays untouched.
         refreshed = install_ok("--root", str(home))
@@ -372,9 +372,9 @@ class AgentInstallTest(TempDirTestCase):
     def test_installed_codex_agent_is_valid_toml(self) -> None:
         home = make_home(self.base, anchors=("codex",))
         install_ok("--root", str(home))
-        codex_agent = home / ".codex" / "agents" / "se-smoke.toml"
+        codex_agent = home / ".codex" / "agents" / "se-source-reader.toml"
         parsed = tomllib.loads(codex_agent.read_text(encoding="utf-8"))
-        self.assertEqual(parsed["name"], "se-smoke")
+        self.assertEqual(parsed["name"], "se-source-reader")
         self.assertIn("developer_instructions", parsed)
 
 

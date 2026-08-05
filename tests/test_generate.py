@@ -580,21 +580,79 @@ class RealRepoAgentTest(unittest.TestCase):
                 )
 
     @unittest.skipIf(tomllib is None, "tomllib requires Python 3.11+")
-    def test_smoke_agent_round_trips_through_both_dialects(self) -> None:
-        name = "se-smoke"
-        canonical = (gen.AGENTS_ROOT / f"{name}.md").read_text("utf-8")
-        _, canonical_body = gen.parse_frontmatter(canonical, "canonical smoke")
+    def test_worker_agents_round_trip_through_both_dialects(self) -> None:
+        for name in ("se-source-reader", "se-claim-verifier"):
+            with self.subTest(agent=name):
+                canonical = (gen.AGENTS_ROOT / f"{name}.md").read_text("utf-8")
+                _, canonical_body = gen.parse_frontmatter(
+                    canonical, f"canonical {name}"
+                )
 
-        claude = gen.render_claude_agent(name, canonical)
-        claude_meta, claude_body = gen.parse_frontmatter(claude, "claude smoke")
-        self.assertEqual(claude_meta["name"], name)
-        self.assertNotIn("sandbox_mode", claude_meta)
-        self.assertEqual(claude_body, canonical_body)
+                claude = gen.render_claude_agent(name, canonical)
+                claude_meta, claude_body = gen.parse_frontmatter(
+                    claude, f"claude {name}"
+                )
+                self.assertEqual(claude_meta["name"], name)
+                self.assertNotIn("sandbox_mode", claude_meta)
+                self.assertEqual(claude_body, canonical_body)
 
-        codex = gen.render_codex_agent(name, canonical)
-        parsed = tomllib.loads(codex)
-        self.assertEqual(parsed["name"], name)
-        self.assertEqual(parsed["developer_instructions"], canonical_body)
+                codex = gen.render_codex_agent(name, canonical)
+                parsed = tomllib.loads(codex)
+                self.assertEqual(parsed["name"], name)
+                self.assertEqual(
+                    parsed["developer_instructions"], canonical_body
+                )
+
+    def test_committed_delegation_roles_resolve_to_agents(self) -> None:
+        # The real registry map must pass the existence gate as shipped.
+        gen.validate_delegation_roles()
+
+    def test_delegation_role_must_resolve_to_agent(self) -> None:
+        dangling = {
+            "se-example": gen.RuntimeProfile(
+                "both", "forked", "deep", "high",
+                delegation="optional", roles=("se-nonexistent-role",),
+            )
+        }
+        with self.assertRaisesRegex(gen.GenerationError, "se-nonexistent-role"):
+            gen.validate_delegation_roles(
+                profiles=dangling, known_agents={"se-source-reader"}
+            )
+
+    def test_delegation_profile_validation_fails_closed(self) -> None:
+        from installer import registry
+
+        # Unknown delegation value.
+        with self.assertRaisesRegex(RuntimeError, "unknown delegation"):
+            registry.validate_runtime_profile(
+                registry.RuntimeProfile(
+                    "both", "forked", "deep", "high", delegation="maybe"
+                )
+            )
+        # delegation 'none' must carry no roles.
+        with self.assertRaisesRegex(RuntimeError, "must carry no roles"):
+            registry.validate_runtime_profile(
+                registry.RuntimeProfile(
+                    "both", "forked", "deep", "high",
+                    delegation="none", roles=("se-source-reader",),
+                )
+            )
+        # delegation 'optional'/'required' must name at least one role.
+        with self.assertRaisesRegex(RuntimeError, "requires at least one role"):
+            registry.validate_runtime_profile(
+                registry.RuntimeProfile(
+                    "both", "forked", "deep", "high", delegation="required"
+                )
+            )
+        # A bare string is not a valid roles tuple even though it is iterable:
+        # without this guard "se-source-reader" would pass as single-char roles.
+        with self.assertRaisesRegex(RuntimeError, "roles must be a tuple"):
+            registry.validate_runtime_profile(
+                registry.RuntimeProfile(
+                    "both", "forked", "deep", "high",
+                    delegation="optional", roles="se-source-reader",
+                )
+            )
 
 
 class AgentRendererTest(unittest.TestCase):
