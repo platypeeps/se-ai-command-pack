@@ -41,7 +41,7 @@ reading the source.
   source metadata.
 - `topics=` — optional user-supplied topic hints; keep them separate from
   extracted topics.
-- `detail=compact|standard` — default `standard`; `compact` keeps provenance,
+- `depth=brief|standard` — default `standard`; `brief` keeps provenance,
   retrieval state, dedupe basis, summary, and limitations.
 - `follow_up=none|suggest` — default `suggest`; suggestions never execute.
 

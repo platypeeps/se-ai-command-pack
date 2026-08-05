@@ -47,7 +47,7 @@ stop and identify them before reading a profile or source.
   and goal relevance.
 - `audience=` and `channel=` — optional overlay selection and draft context.
 - `options=` — optional bounded alternatives for prediction or advice.
-- `detail=compact|standard` — default `standard`; compact collapses supporting
+- `depth=brief|standard` — default `standard`; brief collapses supporting
   sections without hiding material uncertainty or limits.
 
 Ask at most one focused question when missing context, mode, or audience choice

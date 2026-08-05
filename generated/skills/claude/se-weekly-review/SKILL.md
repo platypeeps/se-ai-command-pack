@@ -58,14 +58,14 @@ identify them before resolving profiles or reading sources.
   use and output; default `private-only`. Use a broader scope only when the
   current request explicitly names it for a defined audience;
 - `audience=` — intended reader, used only within the privacy ceiling; and
-- `length=short|standard` — default `standard`; sparse evidence always permits
+- `depth=brief|standard` — default `standard`; sparse evidence always permits
   a shorter result.
 
 ## Workflow
 
 1. Before source reads, resolve the exact half-open reporting window, timezone,
    worklog-profile mode or locator, personal-profile mode or locator, source
-   inventory, privacy scope, audience, and length. If `worklog_profile` is
+   inventory, privacy scope, audience, and depth. If `worklog_profile` is
    unresolved, or is `off` without an authorized source inventory, stop; do not
    discover private configuration globally. If timezone is unresolved, ask and
    stop before calculating a calendar boundary.

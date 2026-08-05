@@ -47,8 +47,10 @@ stop and identify them before reading sources or workspace artifacts.
   brief when unambiguous; route research-paper intent separately.
 - `audience=` — intended readers and their current knowledge or decision need.
 - `objective=` — what readers should understand, believe, or do differently.
-- `length=` — target word count or `short|standard|long`; never omit required
+- `target_words=` — optional exact target word count; never omit required
   evidence merely to meet it.
+- `depth=brief|standard|deep` — default `standard`; verbosity tier used when no
+  exact `target_words=` is supplied.
 - `tone=` — explicit voice guidance or supplied samples; never invent a personal brand.
 - `workspace=` — optional artifact locator or resume pointer.
 - `stage=discover|interview|brief|outline|draft|review|package|resume` — optional
@@ -56,14 +58,16 @@ stop and identify them before reading sources or workspace artifacts.
 
 ## Workflow
 
-1. Inventory the requested stage, theme, audience, objective, format, length,
-   tone, authorized sources, confidentiality constraints, workspace, and known
+1. Inventory the requested stage, theme, audience, objective, format,
+   target word count, depth, tone, authorized sources, confidentiality
+   constraints, workspace, and known
    approvals. If `stage=resume`, read before writing and locate the latest
    explicit approved checkpoint. Surface missing, stale, duplicated, or
    conflicting artifacts; never overwrite or infer approval.
 2. Maintain this portable workspace as files or equivalent host-managed state:
    - `brief.md`: approved audience, thesis, reader outcome, original
-     contribution, evidence needs, type, length, tone, and confidentiality;
+     contribution, evidence needs, type, target word count, depth, tone, and
+     confidentiality;
    - `interview.md`: dated questions and user answers, separate from assistant
      hypotheses and prose suggestions;
    - `evidence.md`: claim/evidence ledger with source, strength, citation,
@@ -141,7 +145,8 @@ stop and identify them before reading sources or workspace artifacts.
 - **Authoring state** — current stage, latest approved checkpoint, workspace
   coverage, conflicts, and resume point;
 - **Editorial brief** — audience, thesis, reader outcome, original contribution,
-  evidence needs, type, length, tone, and confidentiality constraints;
+  evidence needs, type, target word count, depth, tone, and confidentiality
+  constraints;
 - **Interview record** — settled user-provided insights and the single next
   highest-value question, without blending assistant hypotheses;
 - **Evidence state** — claim coverage, citations, contrary evidence, source

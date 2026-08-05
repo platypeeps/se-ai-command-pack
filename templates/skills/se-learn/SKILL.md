@@ -41,12 +41,12 @@ building the path.
 - `materials=` — authorized supplied or external learning resources;
 - `horizon=` — target duration or milestone date, treated as a planning
   constraint rather than a mastery guarantee;
-- `detail=outline|standard` — default `standard`.
+- `depth=brief|standard` — default `standard`.
 
 ## Workflow
 
 1. Resolve the capability goal, target contexts, baseline, constraints,
-   available time, preferred modes, materials, horizon, and detail. Rewrite the
+   available time, preferred modes, materials, horizon, and depth. Rewrite the
    goal into observable mastery signals: representative explanation,
    application, debugging or judgment, and transfer where relevant.
 2. Separate self-reported familiarity from demonstrated ability. Never infer

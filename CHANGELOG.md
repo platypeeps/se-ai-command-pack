@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.66.5 - 2026-08-04
+
+- Canonicalize the verbosity axis to `depth=brief|standard|deep` across the skill
+  surface (A-006, child `08-04-arg-vocab-verbosity`). Rename every `length=` and
+  verbosity-sense `detail=` argument to `depth=` with the value map
+  `short`/`compact`/`quick`/`outline`→`brief`, `long`/`full`→`deep`, and
+  normalize six existing off-ladder `depth=` declarations. Clear the `depth=`
+  name collision first: `se-technical-editor` editorial `depth=full|focused` →
+  `coverage=full|focused`, and `se-author`'s exact-word-count `length=` splits
+  into `target_words=` plus a tier `depth=`. Consumer-visible; the redaction
+  `detail=` on `se-red-team` and all `format=`/`sources=`/`input=` names are out
+  of scope for this child. Generated `generated/skills/claude/` mirror
+  regenerated.
+
 ## 0.66.4 - 2026-08-04
 
 - Ship the canonical `key=value` argument vocabulary (A-006) as a shared

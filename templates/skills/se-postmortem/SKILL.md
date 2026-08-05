@@ -40,7 +40,7 @@ identify them before reading sources or analyzing the event.
 - `audience=` — intended readers and their authorized level of detail;
 - `sensitivity=standard|restricted` — default `standard`; `restricted` minimizes
   identifying or confidential detail without changing the findings; and
-- `depth=brief|full` — default `full`; `brief` compresses presentation without
+- `depth=brief|deep` — default `deep`; `brief` compresses presentation without
   dropping evidence gaps, causal limits, or action verification.
 
 ## Workflow

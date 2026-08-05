@@ -47,13 +47,13 @@ identify them before reading sources, state, or profile data.
 - `audience=` — intended report audience and profile-overlay context;
 - `as_of=` — optional explicit through-time; otherwise disclose retrieval time;
   and
-- `detail=compact|standard` — default `standard`; `compact` preserves coverage,
+- `depth=brief|standard` — default `standard`; `brief` preserves coverage,
   selected items, material exclusions, state, and limitations.
 
 ## Workflow
 
 1. Restate source scope, checkpoint locator and cutoff, interests, exclusions,
-   limit, profile choice, audience, as-of time, and detail. Ask when ambiguity
+   limit, profile choice, audience, as-of time, and depth. Ask when ambiguity
    changes the source set, delta, or ranking.
 2. If profile use is enabled, follow
    `references/personal-profile-contract.md`. Use only confirmed context-matching
@@ -147,7 +147,7 @@ identify them before reading sources, state, or profile data.
 ## Final report
 
 - **Watchlist contract** — sources, interests, exclusions, limit, profile mode,
-  audience, as-of time, detail, and confidence;
+  audience, as-of time, depth, and confidence;
 - **Checkpoint and outcome** — checkpoint kind, validation, cutoff, prior-key
   coverage, mode, one exact outcome, and replay or staleness limits;
 - **Source coverage** — requested and observed lanes, retrieval/freshness dates,

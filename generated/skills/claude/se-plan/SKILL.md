@@ -40,7 +40,7 @@ identify them before reading sources or building the plan.
 - `resources=` — supplied people, capacity, systems, inputs, and authority;
 - `sources=` — supplied or authorized evidence and project records;
 - `audience=` — owner, team, sponsor, or intended reader; and
-- `detail=outline|standard` — default `standard`; `outline` keeps milestone and
+- `depth=brief|standard` — default `standard`; `brief` keeps milestone and
   dependency detail compact without dropping uncertainty.
 
 ## Workflow

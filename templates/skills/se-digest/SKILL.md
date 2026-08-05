@@ -35,7 +35,7 @@ before reading anything.
   Required; ask when missing.
 - `question=` — optional lens the synthesis should answer; without it the
   digest surfaces the inputs' own main tensions and takeaways.
-- `length=short|standard|long` — default `standard`.
+- `depth=brief|standard|deep` — default `standard`.
 - `audience=` — who will read the digest; adjusts background given.
 
 ## Workflow

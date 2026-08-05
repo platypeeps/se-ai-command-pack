@@ -45,7 +45,7 @@ identify them before reading sources or generating scenarios.
 - `dependencies=` — internal and external prerequisites or coupled systems;
 - `evidence=` — authorized plans, research, records, metrics, or analogous
   outcomes; and
-- `depth=brief|full` — default `full`; `brief` compresses presentation without
+- `depth=brief|deep` — default `deep`; `brief` compresses presentation without
   dropping catastrophic tails, unmitigated risks, or evidence limits.
 
 ## Workflow

@@ -33,11 +33,11 @@ Arguments arrive as free text with the invocation: `key=value` pairs and
 bare flags. Unknown argument names are an error — stop and report them
 before the first search.
 
-- `depth=quick|standard|deep` — default `standard`. `quick` limits the
+- `depth=brief|standard|deep` — default `standard`. `brief` limits the
   sweep to the strongest few sources and shortens the brief; `deep` widens
   the search lanes and the disconfirmation pass.
 - `sources=N` — minimum count of independent sources actually consulted.
-  Defaults: 3 for `quick`, 6 for `standard`, 10 for `deep`.
+  Defaults: 3 for `brief`, 6 for `standard`, 10 for `deep`.
 - `format=brief|report|memo` — default `brief`. A brief leads with
   findings; a report adds methodology and per-source notes; a memo is
   written to be forwarded.

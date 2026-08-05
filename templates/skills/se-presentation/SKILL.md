@@ -43,12 +43,12 @@ identify them before reading sources, profile content, or workspace artifacts.
 - `variant=short|standard|both` — default `standard`;
 - `profile=auto|off|<locator>` — default `auto`; optional read-only voice and
   presentation preferences under the personal profile contract; and
-- `detail=compact|standard` — default `standard`.
+- `depth=brief|standard` — default `standard`.
 
 ## Workflow
 
 1. Confirm the source boundary, explicit approval state, audience, intended
-   outcome, duration, venue, constraints, variant, profile mode, and detail.
+   outcome, duration, venue, constraints, variant, profile mode, and depth.
    Inventory inaccessible, stale, conflicting, or sensitive source material.
    If the source argument is not settled enough to present, stop with the
    smallest source-development or approval question instead of papering over it.

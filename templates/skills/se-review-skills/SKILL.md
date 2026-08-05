@@ -63,7 +63,7 @@ Natural language is accepted. Normalize only these optional keys:
 - `session=<id>` — repeatable explicit session inside the verified project
   boundary;
 - `independent=auto|off` — default `auto`; and
-- `detail=compact|standard` — default `standard`.
+- `depth=brief|standard` — default `standard`.
 
 Unknown argument names are an error — stop and identify them before discovery,
 task reconciliation, or editing. Reject an invalid selector instead of

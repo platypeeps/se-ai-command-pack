@@ -38,7 +38,7 @@ identify them before retrieving video metadata, captions, or transcripts.
   explicitly mapped to a video;
 - `mode=single|compare` — default `single` for one video and `compare` for more
   than one; state the inferred default;
-- `detail=brief|standard|deep` — default `standard`; detail changes note depth,
+- `depth=brief|standard|deep` — default `standard`; depth changes note density,
   never evidence or coverage requirements;
 - `purpose=` — what the reader needs to understand, retain, compare, verify, or
   do next;
@@ -56,7 +56,7 @@ enough to change evidence coverage or the result.
 
 ## Workflow
 
-1. Restate the video-note contract: videos, supplied transcripts, mode, detail,
+1. Restate the video-note contract: videos, supplied transcripts, mode, depth,
    purpose, scope, timestamp basis, comment policy, cutoff, authorized retrieval
    capabilities, and requested outputs. Never imply that the video was watched;
    state exactly which representations are available.
@@ -152,7 +152,7 @@ enough to change evidence coverage or the result.
 
 ## Final report
 
-- **Video-note contract** — videos, mode, purpose, scope, detail, timestamp
+- **Video-note contract** — videos, mode, purpose, scope, depth, timestamp
   basis, comment policy, cutoff, authorized access, and requested outputs;
 - **Source inventory and coverage** — video IDs, metadata, versions, transcript
   and caption sources, languages, coverage states, missing regions, access

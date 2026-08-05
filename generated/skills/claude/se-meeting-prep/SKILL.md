@@ -37,7 +37,7 @@ before researching anyone.
 - `when=` — meeting time, used to frame recency ("as of this week").
 - `goal=intro|sales|hiring|partnership|catchup` — default `intro`; shapes
   talking points and questions.
-- `depth=quick|standard` — default `standard`; `quick` is a five-minute
+- `depth=brief|standard` — default `standard`; `brief` is a five-minute
   skim for back-to-back days.
 
 ## Workflow

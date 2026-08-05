@@ -44,13 +44,13 @@ reading sources.
 - `include=inferred|explicit-only` — default `explicit-only`. Inferred
   possibilities are opt-in and never become commitments.
 - `limit=` — maximum retained actions after classification and ranking.
-- `detail=compact|standard` — default `standard`; `compact` returns the active
+- `depth=brief|standard` — default `standard`; `brief` returns the active
   queue, conflicts, and coverage without the full evidence ledger.
 
 ## Workflow
 
 1. Restate the source set, time boundary, owner and project filters, inference
-   policy, limit, and output detail. Inventory inaccessible sources and
+   policy, limit, and output depth. Inventory inaccessible sources and
    identities before extraction; never silently narrow coverage.
 2. Extract candidate statements with their original wording, source locator,
    speaker or author, and evidence date before normalizing the action text.
