@@ -15,6 +15,8 @@ import install as install_module
 from installer import fileops, manifest
 from installer.fileops import (
     InstallResult,
+    backup_existing_file,
+    default_file_mode,
     install_file,
     next_backup_path,
     path_is_occupied,
@@ -252,6 +254,26 @@ class SelectedFilesTest(TempDirTestCase):
             [always, preserve], self.base, None, False
         )
         self.assertEqual(selected, [always, preserve])
+
+    def test_platform_filter_keeps_always_and_if_not_exists(self) -> None:
+        # A-008 contract: --platform restricts only anchored (if-anchor-exists)
+        # skills; pack-wide always-install and if-not-exists files install
+        # regardless of the filter, as the --platform help now states.
+        always = pack_file(install=ALWAYS_INSTALL, anchor=None, platform="codex")
+        preserve = pack_file(
+            install=IF_NOT_EXISTS,
+            target=".claude/other.md",
+            anchor=None,
+            platform="codex",
+        )
+        anchored_other = pack_file(platform="codex")
+        selected, skipped = selected_files(
+            [always, preserve, anchored_other], self.base, ["claude"], False
+        )
+        self.assertIn(always, selected)
+        self.assertIn(preserve, selected)
+        self.assertNotIn(anchored_other, selected)
+        self.assertEqual([f for f, _ in skipped], [anchored_other])
 
     def test_unknown_mode_raises(self) -> None:
         broken = pack_file(install="sometimes")
@@ -513,6 +535,50 @@ class FileopsHelpersTest(TempDirTestCase):
         self.assertEqual(
             destination.stat().st_mode & 0o777, 0o666 & ~umask
         )
+
+    def test_backup_preserves_mode_and_content(self) -> None:
+        # A-019: the .bak preserves the source file's exact mode (no umask-0644
+        # leak) and is a real regular file, not a symlink.
+        destination = self.base / "secret.txt"
+        destination.write_text("private", encoding="utf-8")
+        os.chmod(destination, 0o600)
+        backup = backup_existing_file(
+            self.base, destination, backup=True, dry_run=False
+        )
+        assert backup is not None
+        self.assertEqual(backup.name, "secret.txt.bak")
+        self.assertFalse(backup.is_symlink())
+        self.assertEqual(backup.read_text(encoding="utf-8"), "private")
+        self.assertEqual(backup.stat().st_mode & 0o777, 0o600)
+
+    def test_backup_skips_symlink_candidate_without_following(self) -> None:
+        # A-019: a pre-existing .bak symlink escaping the tree must not be
+        # followed or clobbered; O_EXCL treats it as occupied and the backup
+        # lands on a fresh non-symlink path.
+        sentinel = self.base / "sentinel.txt"
+        sentinel.write_text("do-not-touch", encoding="utf-8")
+        destination = self.base / "file.txt"
+        destination.write_text("payload", encoding="utf-8")
+        hostile = destination.with_name("file.txt.bak")
+        hostile.symlink_to(sentinel)
+        backup = backup_existing_file(
+            self.base, destination, backup=True, dry_run=False
+        )
+        assert backup is not None
+        self.assertEqual(backup.name, "file.txt.bak1")
+        self.assertFalse(backup.is_symlink())
+        self.assertEqual(backup.read_text(encoding="utf-8"), "payload")
+        # The symlink target was never written through.
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "do-not-touch")
+
+    def test_default_file_mode_uses_cached_umask(self) -> None:
+        # A-011: default_file_mode reads the module-level umask constant and
+        # never calls os.umask itself.
+        with mock.patch.object(fileops, "_PROCESS_UMASK", 0o022):
+            with mock.patch.object(fileops.os, "umask") as umask_call:
+                self.assertEqual(default_file_mode(), 0o644)
+                self.assertEqual(default_file_mode(executable=True), 0o755)
+                umask_call.assert_not_called()
 
 
 class ResolveInstallRootTest(unittest.TestCase):

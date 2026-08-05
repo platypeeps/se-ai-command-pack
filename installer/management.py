@@ -18,6 +18,11 @@ from installer.registry import (
     ROOT,
 )
 
+# Bound git the same way every other subprocess wrapper in the repo does
+# (check-release-payload.py, create-release-tag.py): a hung git during update
+# must not block the installer forever.
+GIT_TIMEOUT_SECONDS = 60
+
 
 def _read_json_object(path: Path) -> dict[str, Any] | None:
     if path.is_symlink() or not path.is_file():
@@ -166,12 +171,18 @@ def _source_checkout(root: Path, *, confirm_source: bool) -> Path:
 
 
 def _run_git(source_root: Path, *args: str) -> str:
-    result = subprocess.run(
-        ["git", "-C", str(source_root), *args],
-        text=True,
-        capture_output=True,
-        check=False,
-    )
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(source_root), *args],
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=GIT_TIMEOUT_SECONDS,
+        )
+    except FileNotFoundError:
+        raise SystemExit("error: git not found") from None
+    except subprocess.TimeoutExpired:
+        raise SystemExit(f"error: git {' '.join(args)} timed out") from None
     if result.returncode != 0:
         detail = (result.stderr or result.stdout).strip()
         suffix = f": {detail}" if detail else ""

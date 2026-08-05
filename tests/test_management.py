@@ -108,6 +108,22 @@ class UpdateCommandTest(TempDirTestCase):
         with self.assertRaisesRegex(SystemExit, "no upstream configured"):
             _run_git(self.base, "pull", "--ff-only")
 
+    @mock.patch(
+        "installer.management.subprocess.run",
+        side_effect=subprocess.TimeoutExpired(cmd="git", timeout=60),
+    )
+    def test_git_timeout_fails_cleanly(self, run_process: mock.Mock) -> None:
+        # A-013: a hung git maps to a clean SystemExit, not a raw traceback.
+        with self.assertRaisesRegex(SystemExit, "timed out"):
+            _run_git(self.base, "pull", "--ff-only")
+
+    @mock.patch(
+        "installer.management.subprocess.run", side_effect=FileNotFoundError()
+    )
+    def test_git_missing_fails_cleanly(self, run_process: mock.Mock) -> None:
+        with self.assertRaisesRegex(SystemExit, "git not found"):
+            _run_git(self.base, "pull", "--ff-only")
+
     def test_update_dry_run_fetches_and_plans_only(self) -> None:
         home = self._installed_home()
         with (
