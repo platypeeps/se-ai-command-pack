@@ -43,7 +43,7 @@ stop and identify them before reading sources or drafting the SOP.
 - `owner=` — supplied process or document owner; never inferred;
 - `authority=` — supplied approval and deviation boundaries;
 - `effective=` — requested effective date or `draft`; and
-- `format=full|compact` — default `full`; compact may shorten explanation but
+- `depth=deep|brief` — default `deep`; `brief` may shorten explanation but
   cannot remove controls, exceptions, records, provenance, or maintenance.
 
 ## Workflow

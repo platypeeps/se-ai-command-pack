@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.66.6 - 2026-08-04
+
+- Classify every `format=` declaration as a density ladder or a structural
+  output shape (A-006, child `08-04-arg-vocab-format`). Migrate the pure density
+  ladders to `depth=`: `se-meeting-follow-through` and `se-thread-digest`
+  `format=compact|standard` → `depth=brief|standard`, `se-tutorial`
+  `format=standard|compact` → `depth=standard|brief`, and the borderline
+  `se-sop format=full|compact` → `depth=deep|brief` (compact only shortens
+  explanation within the same document structure). Retain genuine structural
+  shapes as `format=`, including the borderline `se-runbook
+  format=full|quick-reference` (quick-reference is a distinct output form, not a
+  density tier) and every structural menu (`ledger|memo`, `table|memo`,
+  `prose|walkthrough|qa`, `standard|flashcards|practice`, `*|facilitator`,
+  `*|brief`, `technical-blog|…`, `markdown|summary`, …). Generated mirror
+  regenerated.
+
 ## 0.66.5 - 2026-08-04
 
 - Canonicalize the verbosity axis to `depth=brief|standard|deep` across the skill
