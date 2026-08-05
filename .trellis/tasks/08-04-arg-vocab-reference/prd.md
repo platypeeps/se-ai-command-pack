@@ -34,9 +34,9 @@ Land this child first (see parent `implement.md` ordering).
 
 ## Acceptance Criteria
 
-- [ ] Shared reference states all three canonical axes + ladders and the full
+- [x] Shared reference states all three canonical axes + ladders and the full
       reserved-name registry (incl. `input=` vs `sources=` vs `evidence=`, and
       `sensitivity=` vs `privacy=`).
-- [ ] Canonical vocabulary defined as one importable constant (no duplication).
-- [ ] No argument name changes; required consumer citations present;
+- [x] Canonical vocabulary defined as one importable constant (no duplication).
+- [x] No argument name changes; required consumer citations present;
       `make check` green; version bump + changelog present.
