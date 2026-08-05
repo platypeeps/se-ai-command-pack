@@ -21,9 +21,9 @@
   "children": [
     "08-04-arg-vocab-reference",
     "08-04-arg-vocab-verbosity",
+    "08-04-arg-vocab-format",
     "08-04-arg-vocab-locator",
-    "08-04-arg-vocab-enforce",
-    "08-04-arg-vocab-format"
+    "08-04-arg-vocab-enforce"
   ],
   "parent": null,
   "relatedFiles": [],

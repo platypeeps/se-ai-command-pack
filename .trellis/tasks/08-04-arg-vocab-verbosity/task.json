@@ -2,7 +2,7 @@
   "id": "arg-vocab-verbosity",
   "name": "arg-vocab-verbosity",
   "title": "Argument vocabulary verbosity migration",
-  "description": "Rename length=/verbosity-detail= to depth=brief|standard|deep across ~22 skills; rename se-red-team redaction detail= to sensitivity=. Regenerate mirrors. Part of A-006.",
+  "description": "Mechanical verbosity rename to depth=brief|standard|deep: every length= and verbosity-sense detail= (23 skills) plus normalize 6 off-ladder depth= declarations (~29 touched). First rename se-technical-editor depth=full|focused to coverage=; resolve se-author numeric length via target_words=. Does NOT touch sensitivity=/format=/input=. Regenerate mirrors. Part of A-006.",
   "status": "planning",
   "dev_type": null,
   "scope": null,

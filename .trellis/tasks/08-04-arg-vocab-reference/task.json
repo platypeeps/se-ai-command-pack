@@ -2,7 +2,7 @@
   "id": "arg-vocab-reference",
   "name": "arg-vocab-reference",
   "title": "Argument vocabulary shared reference",
-  "description": "Ship the two-axis canonical vocabulary + reserved-name registry as a shared reference; define the single-source-of-truth constant. No enforcement, no skill-body changes yet. Foundation for A-006 migration.",
+  "description": "Ship the three-axis canonical vocabulary (depth=/input=/sensitivity=) + reserved-name registry as a shared reference; define the single-source-of-truth constant. No enforcement and no argument-name changes; adds the required one-line shared-reference citation to each consumer body. Foundation for A-006 migration.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
