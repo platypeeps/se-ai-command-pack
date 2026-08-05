@@ -27,11 +27,11 @@ platforms keep today's sequential outcome.
 
 ## Acceptance Criteria
 
-- [ ] se-research and se-fact-check canonical bodies contain the dispatch section with
+- [x] se-research and se-fact-check canonical bodies contain the dispatch section with
       inline fallback; `BANNED_PHRASE_PATTERN` lint and section validation pass.
-- [ ] Generator `--check` clean; regenerated Claude overlays byte-stable otherwise.
-- [ ] Final-report contracts unchanged (same sections, same evidence rules).
-- [ ] Version bump + dated changelog entry.
+- [x] Generator `--check` clean; regenerated Claude overlays byte-stable otherwise.
+- [x] Final-report contracts unchanged (same sections, same evidence rules).
+- [x] Version bump + dated changelog entry.
 
 ## Dependencies / order
 

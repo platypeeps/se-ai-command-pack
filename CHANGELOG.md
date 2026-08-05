@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.66.10 - 2026-08-05
+
+- Add a `## Sub-agent dispatch` section to the `se-research` and `se-fact-check`
+  skill bodies (task `07-25-dispatch-pilot`). Both skills now document how to fan
+  their existing workflow units out to parallel sub-agents on dispatch-capable
+  platforms while staying single-context on inline ones. se-research parallelizes
+  within each workflow phase only (sweep, then verify, then disconfirm — never
+  across phases); se-fact-check runs one worker per atomic claim. Each section
+  states the orchestrator-owns-synthesis rule, a worker input contract with an
+  expected artifact and stop condition, a no-recursion guard for when the skill
+  is itself already dispatched, and the conditional `Active task:` prefix. Prose
+  only — no generator, lint, registry, or installer change, and the final-report
+  contracts are untouched.
+
 ## 0.66.9 - 2026-08-05
 
 - Harden `install.py update` source trust (A-017, task

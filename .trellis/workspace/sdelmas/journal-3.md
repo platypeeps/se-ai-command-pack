@@ -597,3 +597,47 @@ Gated the provenance-recorded update sourceRoot behind a git-repository check, P
 ### Next Steps
 
 - None - task complete
+
+
+## Session 119: Sub-agent dispatch pilot: se-research + se-fact-check (07-25-dispatch-pilot)
+
+**Date**: 2026-08-05
+**Task**: Sub-agent dispatch pilot: se-research + se-fact-check (07-25-dispatch-pilot)
+**Branch**: `dispatch/se-research-fact-check-pilot`
+
+### Summary
+
+Added a host-neutral `## Sub-agent dispatch` section to the se-research and se-fact-check skill bodies documenting how each fans its existing workflow units out to parallel sub-agents on dispatch-capable platforms while staying single-context inline. se-research parallelizes within each workflow phase only; se-fact-check runs one worker per atomic claim. Both state orchestrator-owns-synthesis, a worker input contract with expected artifact + stop condition, a no-recursion guard for already-dispatched execution, and a conditional Active task prefix. Prose only; version 0.66.9->0.66.10; overlays regenerated. Two-lane planning adversarial review (host + Codex, no blocking concerns) preceded implementation. Copilot flagged an ambiguous min_sources 'share' stop condition; fixed to preserve the global verification bar.
+
+### Main Changes
+
+- se-research/SKILL.md + se-fact-check/SKILL.md: new `## Sub-agent dispatch` section (canonical + regenerated Claude overlays)
+- Within-phase-only parallelism for se-research (sweep -> verify -> disconfirm stay ordered); one-worker-per-atomic-claim for se-fact-check
+- No-recursion guard for already-dispatched execution; conditional Active task prefix; worker contract with expected artifact + stop condition
+- manifest 0.66.9 -> 0.66.10; dated CHANGELOG entry; final-report contracts byte-unchanged
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e8c0d3c` | feat(skills): add sub-agent dispatch section to se-research and se-fact-check |
+| `0b4fe51` | fix(se-research): clarify dispatch stop condition and preserve min_sources bar |
+| `2610b4c` | chore(task): check dispatch-pilot acceptance criteria (verified) |
+| `33e3209` | chore(task): record dispatch-pilot branch for finalization |
+| `eefa087ba7d91b4d0ce1cbabb31ae8c64f0567d5` | chore(task): archive 07-25-dispatch-pilot |
+
+### Testing
+
+- [OK] make check (drift gate clean, tests 88.1% cov, ruff+mypy clean, release payload 0.66.9->0.66.10)
+- [OK] Semantic assertions: one dispatch heading + inline fallback + no-recursion phrase per body; Final report byte-identical
+- [OK] Review preflight 0 failures; sd-review coordinator ready/clean on final head
+- [OK] Copilot review: 1 finding (min_sources share) fixed in 0b4fe51, round-2 clean, thread resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
