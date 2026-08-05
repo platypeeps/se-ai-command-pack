@@ -720,3 +720,45 @@ Administrative closeout of the umbrella task 07-25-audit-skill-arg-vocabulary (A
 ### Next Steps
 
 - None - task complete
+
+
+## Session 122: Roll out sub-agent dispatch to five fan-out skills
+
+**Date**: 2026-08-05
+**Task**: Roll out sub-agent dispatch to five fan-out skills
+**Branch**: `task/07-25-dispatch-rollout`
+
+### Summary
+
+Extended the validated dispatch pattern from the pilot (se-research, se-fact-check) to se-digest, se-feedback, se-scan, se-video-notes, and se-red-team. Each carries a ## Sub-agent dispatch section using the six-element pilot shape mapped to its fan-out unit. se-video-notes scopes to mode=compare; se-red-team preserves independent-red-team isolation. Version 0.66.12, changelog, surfaces regenerated. Task 07-25-dispatch-rollout.
+
+### Main Changes
+
+- Add ## Sub-agent dispatch to se-digest, se-feedback, se-scan, se-video-notes, se-red-team (between Workflow and Safety rules)
+- se-video-notes fan-out scoped to mode=compare; se-red-team workers receive artifact+evidence ledger but never parent steelman/conclusions (fresh-session isolation)
+- Recorded pattern-conformance note; bumped 0.66.11->0.66.12, changelog, regenerated surfaces
+- Addressed Copilot review: dropped implied document-ID contract in se-digest, attributing digests by inventory identity
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `447144c` | feat(skills): roll out sub-agent dispatch to five fan-out skills |
+| `7707786` | fix(se-digest): drop implied document-ID contract in dispatch section |
+| `49944fb` | chore(task): record dispatch-rollout branch for finalization |
+| `1f593f4674bd1994cdbf3f123c94ba6b888766df` | chore(task): archive 07-25-dispatch-rollout |
+
+### Testing
+
+- [OK] make check exit 0: coverage 88.2%, ruff+mypy clean, generator --check matches, release gate 0.66.11->0.66.12
+- [OK] sd-review scope=pr attempt 2 on head 7707786: status ready, sd-check passed
+- [OK] PR #147 CI green: unittest matrix (3.10/3.13 ubuntu+macos), lint, release-payload-gate
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
