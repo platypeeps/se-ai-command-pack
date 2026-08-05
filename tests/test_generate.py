@@ -323,11 +323,38 @@ class RealRepoGeneratorTest(unittest.TestCase):
         red_team = (
             gen.CLAUDE_GENERATED_ROOT / "se-red-team" / "SKILL.md"
         ).read_text(encoding="utf-8")
-        red_team_metadata, _ = gen.parse_frontmatter(red_team, "generated red team")
+        red_team_metadata, red_team_body = gen.parse_frontmatter(
+            red_team, "generated red team"
+        )
         self.assertTrue(red_team_metadata["disable-model-invocation"])
         self.assertEqual(red_team_metadata["model"], "opus")
         self.assertEqual(red_team_metadata["effort"], "xhigh")
+        # fresh-session has no Claude frontmatter encoding: no context: fork.
         self.assertNotIn("context", red_team_metadata)
+        # ...it is expressed as an advisory in-body note instead.
+        self.assertIn(gen.FRESH_SESSION_MARKER, red_team_body)
+        _, canonical_red_team = gen.parse_frontmatter(
+            (gen.SKILLS_ROOT / "se-red-team" / "SKILL.md").read_text("utf-8"),
+            "canonical red team",
+        )
+        # The only body change is the appended note; canonical text is preserved.
+        self.assertTrue(red_team_body.startswith(canonical_red_team))
+        self.assertNotIn(gen.FRESH_SESSION_MARKER, canonical_red_team)
+
+    def test_fresh_session_note_only_on_fresh_session_overlays(self) -> None:
+        regenerated = gen.regenerated_claude_skill_texts()
+        marked = {
+            path.parent.name
+            for path, text in regenerated.items()
+            if gen.FRESH_SESSION_MARKER in text
+        }
+        fresh_session = {
+            name
+            for name, profile in gen.SKILL_RUNTIME_PROFILES.items()
+            if profile.context == "fresh-session"
+        }
+        self.assertEqual(marked, fresh_session)
+        self.assertEqual(marked, {"se-red-team"})
 
     def test_manifest_description_matches_bootstrap_default(self) -> None:
         committed = json.loads(

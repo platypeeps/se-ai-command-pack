@@ -3,7 +3,7 @@
   "name": "runtime-profile-gaps",
   "title": "Fix fresh-session encoding and document runtime profiles",
   "description": "Tier 3: encode fresh-session (se-red-team) instead of silent degradation; document RuntimeProfile/overlay system in operator docs",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

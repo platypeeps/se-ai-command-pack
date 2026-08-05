@@ -11,6 +11,7 @@ process. User-facing install/update/remove instructions live in the
 |---|---|
 | `templates/skills/<name>/` | Canonical skill definitions (`SKILL.md` + optional flat `references/*.md` and `scripts/*.py`). The only place skills are edited. |
 | `templates/agents/<name>.md` | Canonical agent definitions (neutral MD + frontmatter allowlist `name`, `description`, optional `tools`, `model`, `sandbox_mode`). The only place agents are edited. |
+| `generated/skills/claude/<name>/SKILL.md` | Per-platform skill overlays rendered by the generator: canonical body plus a Claude frontmatter block translated from the skill's registry runtime profile (see [Runtime profiles](#runtime-profiles)); never hand-edit. |
 | `generated/agents/claude/<name>.md`, `generated/agents/codex/<name>.toml` | Per-platform agent overlays rendered by the generator (Claude Markdown, Codex TOML); never hand-edit. |
 | `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
 | `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
@@ -890,6 +891,42 @@ recognized pack target **and** its sha256 matches the recorded hash or the
 current template bytes. Anything else is `preserved` (drift) or `ignored`
 (unrecognized), and `.git/` internals are always refused.
 
+## Runtime profiles
+
+Every registered skill belongs to exactly one portable `RuntimeProfile`
+(`installer/registry.py`), a host-neutral recommendation the generator
+translates into each platform's overlay. A profile has four portable axes:
+
+| Axis | Portable values |
+|---|---|
+| `invocation` | `automatic \| user-only \| both` |
+| `context` | `inline \| forked \| fresh-session` |
+| `model` | `inherit \| fast \| balanced \| deep` |
+| `effort` | `low \| medium \| high \| xhigh` |
+
+The `context` axis expresses how isolated a run should be:
+
+- `inline` — run in the calling context (approvals, dialogue, incremental work);
+- `forked` — a host-managed isolated subagent that returns to the caller;
+- `fresh-session` — an independent run without inherited conclusions.
+
+`forked` and `fresh-session` are **not** interchangeable (see
+`templates/skills/se-review-skills/references/runtime-routing.md`).
+
+Claude overlay translation (`claude_frontmatter` / `render_claude_skill` in
+`.github/scripts/generate-skill-surfaces.py`):
+
+| Portable `context` | Claude overlay encoding |
+|---|---|
+| `inline` | no `context` key (host default) |
+| `forked` | `context: fork` in frontmatter |
+| `fresh-session` | no frontmatter key exists; an advisory in-body note (marker `<!-- generated: runtime-profile fresh-session -->`) is appended to the generated body stating the independent-run intent. Canonical `SKILL.md` bodies are never modified. |
+
+`fresh-session` uses an in-body note because Claude skill frontmatter has no
+independent-session field, and `context: fork` would misrepresent the intent (a
+returning subagent, not an independent session). Only `se-red-team` currently
+uses `fresh-session`.
+
 ## Adding a skill
 
 1. Create `templates/skills/se-<name>/SKILL.md`:
@@ -910,10 +947,16 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
    `installer/registry.py`. Choose exactly one of Understand, Decide, Create,
    Coordinate, Operate, or Improve. Registry order remains manifest order;
    `SKILL_NAMES` is derived and must not be edited separately.
-4. `make generate` to update the manifest, marker-bounded README catalog, and
+4. Assign the skill to exactly one portable runtime profile in
+   `RUNTIME_PROFILE_ASSIGNMENTS` (`installer/registry.py`) — see
+   [Runtime profiles](#runtime-profiles). Reuse a named profile
+   (e.g. `CONVERSATIONAL`, `DEEP_ANALYSIS`) unless the skill needs a genuinely
+   new axis combination; every registered skill must appear in exactly one
+   group, and the generator fails if coverage differs from `SKILL_NAMES`.
+5. `make generate` to update the manifest, marker-bounded README catalog, and
    generated bundled help catalog, then run `make check`. Never hand-edit
    generated catalog rows.
-5. Bump the version + changelog when the shipped payload changes (the release
+6. Bump the version + changelog when the shipped payload changes (the release
    gate enforces this). Family/catalog metadata alone does not require a bump
    when `manifest.json` remains byte-for-byte unchanged.
 
@@ -957,9 +1000,16 @@ current template bytes. Anything else is `preserved` (drift) or `ignored`
 2. Add one `PlatformInfo(skills_dir=..., anchor=..., display=..., agents_dir=...)`
    row to `PLATFORM_REGISTRY`. Set `agents_dir` only if the platform has a real
    user-level agents directory; leave it unset (`None`) otherwise.
-3. `make generate` (fans every skill, and every agent when `agents_dir` is set,
+3. Decide how the platform's overlay renderer translates each portable
+   runtime-profile axis — see [Runtime profiles](#runtime-profiles). Only apply
+   host fields through an allowlisted adapter (like `claude_frontmatter`);
+   unknown values or unsupported fields must fail before any output is written.
+   For every `context` value decide an honest encoding: if the host has no
+   primitive for `forked` or `fresh-session`, prefer an in-body note over a
+   misleading frontmatter field rather than silently dropping the intent.
+4. `make generate` (fans every skill, and every agent when `agents_dir` is set,
    into the new platform), `make check`.
-4. Version bump + changelog.
+5. Version bump + changelog.
 
 ## Release process
 

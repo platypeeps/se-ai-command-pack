@@ -113,6 +113,23 @@ CLAUDE_MODEL_MAP = {
 }
 CLAUDE_MODEL_VALUES = frozenset(CLAUDE_MODEL_MAP.values())
 CLAUDE_EFFORT_VALUES = frozenset({"low", "medium", "high", "xhigh"})
+# Claude skill frontmatter has no field for the portable "fresh-session" context
+# (an independent run without inherited conclusions). context: fork is a
+# host-managed isolated subagent that RETURNS to the caller and is not
+# interchangeable with fresh-session, so mapping fresh-session -> fork would
+# misrepresent the intent. Instead the renderer appends this advisory note to the
+# generated overlay body (canonical SKILL.md bodies stay untouched) so the intent
+# travels with the skill. The marker comment lets tests and the drift gate pin
+# exactly which overlays carry it.
+FRESH_SESSION_MARKER = "<!-- generated: runtime-profile fresh-session -->"
+FRESH_SESSION_NOTE = (
+    f"{FRESH_SESSION_MARKER}\n"
+    "> Runtime profile: **fresh-session**. Run this skill as an independent "
+    "session —\n"
+    "> do not inherit conclusions, scratchpad state, or prior framing from the "
+    "calling\n"
+    "> context. Start from the artifact and its evidence alone."
+)
 ALLOWED_RESOURCE_SUFFIXES = {
     "references": ".md",
     "scripts": ".py",
@@ -471,7 +488,13 @@ def claude_frontmatter(
 def render_claude_skill(
     name: str, canonical_text: str, profile: RuntimeProfile
 ) -> str:
-    """Merge Claude metadata into one canonical skill without changing its body."""
+    """Merge Claude metadata into one canonical skill.
+
+    The canonical body is passed through verbatim, with one deliberate
+    exception: a ``fresh-session`` profile has no Claude frontmatter encoding, so
+    an advisory ``FRESH_SESSION_NOTE`` is appended to the generated overlay body.
+    Canonical ``SKILL.md`` bodies are never modified.
+    """
 
     frontmatter, body = parse_frontmatter(
         canonical_text, f"{TEMPLATES_SKILLS_DIR}/{name}/SKILL.md"
@@ -489,7 +512,10 @@ def render_claude_skill(
         sort_keys=False,
         width=10000,
     )
-    return f"---\n{dumped}---\n{body}"
+    rendered = f"---\n{dumped}---\n{body}"
+    if profile.context == "fresh-session":
+        rendered = f"{rendered.rstrip(chr(10))}\n\n{FRESH_SESSION_NOTE}\n"
+    return rendered
 
 
 def regenerated_claude_skill_texts() -> dict[Path, str]:
