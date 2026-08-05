@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.66.9 - 2026-08-05
+
+- Harden `install.py update` source trust (A-017, task
+  `07-25-audit-update-source-trust`). The recorded `sourceRoot` comes from an
+  integrity-unprotected plain-JSON provenance receipt, yet `update` runs `git`
+  against it and re-executes its `install.py` — a write-one-file-to-code-execution
+  path. `installer/management.py` now refuses an unverified source before any
+  `git` or exec: the recorded checkout must be a git repository (current-user-owned
+  on POSIX platforms), and must either equal the running checkout
+  (`installer.registry.ROOT`) or be explicitly confirmed. A new
+  `install.py update --confirm-source` flag authorizes updating from a relocated
+  checkout; run interactively, a differing source prompts for confirmation
+  instead. The same-checkout path is unchanged.
+
 ## 0.66.8 - 2026-08-05
 
 - Activate covered-axis argument-vocabulary enforcement (A-006, final child

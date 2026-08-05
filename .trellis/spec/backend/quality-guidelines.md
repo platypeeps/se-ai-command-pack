@@ -1029,6 +1029,14 @@ are positional commands; do not add parallel action flags such as `--remove`.
 - `update` trusts only the provenance-recorded `sourceRoot`, requires the
   expected pack manifest, refuses a dirty checkout, and fast-forwards with
   `git pull --ff-only`.
+- Because `sourceRoot` comes from an integrity-unprotected plain-JSON receipt
+  and drives `git` plus re-execution of its `install.py`, `update` refuses an
+  unverified source before any `git` or exec: the recorded path must be a git
+  repository (current-user-owned where the platform exposes an effective-uid
+  check), and must either equal the running checkout (`installer.registry.ROOT`)
+  or be explicitly confirmed via `--confirm-source` (or an interactive yes). The
+  same-checkout / explicit-confirmation rule is the cross-platform guarantee;
+  the ownership check is supplementary defense-in-depth on POSIX.
 - After pulling, `update` launches a fresh Python process, runs a dry-run, and
   applies only when that plan succeeds. This prevents old imported modules
   from being mixed with newly pulled files.
@@ -1045,6 +1053,8 @@ are positional commands; do not add parallel action flags such as `--remove`.
 | Install root is missing | Exit nonzero with `install root not found`. |
 | Status receipts are absent or invalid | Report not installed and return 1. |
 | Recorded source checkout is missing or is the wrong pack | Exit before Git or filesystem writes. |
+| Recorded source is not a git repository, or (on POSIX) not owned by the current user | Refuse before any Git or exec. |
+| Recorded source differs from the running checkout and is not confirmed | Refuse before any Git or exec (or prompt when interactive); `--confirm-source` authorizes a relocated checkout. |
 | Source checkout is dirty | Exit before fetch, pull, or refresh. |
 | Fast-forward pull fails | Exit with the Git failure; never merge or rebase. |
 | Refreshed dry-run fails | Do not run the applying refresh. |
@@ -1073,6 +1083,14 @@ are positional commands; do not add parallel action flags such as `--remove`.
   and the not-installed return code.
 - Update tests assert dirty-checkout refusal, `--ff-only`, dry-run-before-apply,
   and two fresh-process invocations for planning and application.
+- Update source-trust tests assert that an unverified `sourceRoot` is refused
+  with zero `git` and zero exec calls — including the principal case of a
+  current-user-owned git checkout that differs from the running checkout and is
+  refused by the confirmation gate (not merely the `.git` gate) — while the
+  same-checkout path proceeds, `--confirm-source` and an interactive yes
+  authorize a relocated checkout, a `.git`-file worktree is accepted, and the
+  ownership check is skipped where `os.geteuid` is unavailable. CLI tests assert
+  `--confirm-source` forwards and defaults to false.
 - Retirement tests inject a prior provenance hash and assert normal refresh
   removes the vouched old target while existing drift-preservation tests stay
   green.

@@ -7,7 +7,10 @@
 ## Requirements
 
 - Require the recorded `sourceRoot` to equal the running checkout (installer.registry.ROOT) unless the user explicitly confirms a different path (flag or interactive confirmation).
-- Refuse a recorded path that is not a git repository owned by the current user.
+- Refuse a recorded path that is not a git repository, and — on POSIX platforms
+  that expose an effective-uid check — one owned by the current user. Where the
+  platform provides no ownership primitive, the same-checkout / explicit-confirm
+  requirement above remains the cross-platform guarantee.
 - Keep the legitimate relocated-checkout workflow possible and documented.
 - Installer behavior is consumer contract: changelog + version bump discipline applies.
 
