@@ -471,3 +471,44 @@ Classified every format= declaration as density ladder vs structural shape. Migr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 116: Argument vocabulary locator migration (A-006)
+
+**Date**: 2026-08-04
+**Task**: Argument vocabulary locator migration (A-006)
+**Branch**: `audit/arg-vocab-locator`
+
+### Summary
+
+Canonicalized the primary-artifact intake argument to input= across se-capture, se-presentation, se-publish, and se-digest; renamed se-research sources=N to min_sources=N and se-red-team detail= to sensitivity=; aligned workflow-step prose to input= after Copilot review.
+
+### Main Changes
+
+- Renamed source=/inputs= primary-artifact args to input= in se-capture, se-presentation, se-publish, se-digest (declarations + arg-referencing prose)
+- se-research: sources=N minimum-count arg renamed to min_sources=N; downstream prose updated
+- se-red-team: redaction axis detail=minimal|restricted|standard renamed to sensitivity=; privacy=/evidence= untouched
+- Version bump 0.66.6 -> 0.66.7; changelog entry citing A-006; regenerated mirror surfaces
+- Review-fix: aligned se-capture/se-presentation/se-publish workflow-step prose from bare 'source' to input=, leaving genuine English untouched (Copilot findings)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `201d9f9` | refactor(skills): canonicalize input= + discrete arg renames (A-006) |
+| `02ae089` | fix(skills): align workflow-step prose to input= arg name |
+
+### Testing
+
+- [OK] make check green (generate-check + test + release-check, version 0.66.6 -> 0.66.7)
+- [OK] sd-review scope=pr attempt 2: ready; sd-check clean; prism clean
+- [OK] Copilot second pass: generated no new comments; 3 threads resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
