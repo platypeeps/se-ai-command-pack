@@ -279,6 +279,13 @@ def validate_runtime_profile(profile: RuntimeProfile) -> None:
             raise RuntimeError(
                 f"runtime profile has unknown {field_name} value: {value!r}"
             )
+    if not isinstance(profile.roles, tuple):
+        # A bare string is iterable char-by-char, so it would silently pass
+        # the per-role checks below as a sequence of single-character "roles".
+        raise RuntimeError(
+            "runtime profile roles must be a tuple, not "
+            f"{type(profile.roles).__name__}: {profile.roles!r}"
+        )
     if profile.delegation == "none":
         if profile.roles:
             raise RuntimeError(

@@ -644,6 +644,15 @@ class RealRepoAgentTest(unittest.TestCase):
                     "both", "forked", "deep", "high", delegation="required"
                 )
             )
+        # A bare string is not a valid roles tuple even though it is iterable:
+        # without this guard "se-source-reader" would pass as single-char roles.
+        with self.assertRaisesRegex(RuntimeError, "roles must be a tuple"):
+            registry.validate_runtime_profile(
+                registry.RuntimeProfile(
+                    "both", "forked", "deep", "high",
+                    delegation="optional", roles="se-source-reader",
+                )
+            )
 
 
 class AgentRendererTest(unittest.TestCase):
