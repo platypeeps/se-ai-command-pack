@@ -394,3 +394,42 @@ Shipped the canonical key=value argument vocabulary (A-006) as a shared referenc
 ### Next Steps
 
 - None - task complete
+
+
+## Session 114: A-006 verbosity migration: canonicalize depth= (task 08-04-arg-vocab-verbosity)
+
+**Date**: 2026-08-04
+**Task**: A-006 verbosity migration: canonicalize depth= (task 08-04-arg-vocab-verbosity)
+**Branch**: `audit/arg-vocab-verbosity`
+
+### Summary
+
+Renamed length=/verbosity-detail= to depth=brief|standard|deep across 30 skills with value map short/compact/quick/outline->brief and long/full->deep, normalized 6 off-ladder depth= declarations, split se-technical-editor depth->coverage and se-author length->target_words+depth. Shipped as PR #139 (v0.66.5).
+
+### Main Changes
+
+- Rename every length= and verbosity-sense detail= to depth= (ladder-subset values); normalize 6 off-ladder depth= declarations
+- Clear depth= collision: se-technical-editor depth=full|focused -> coverage=; se-author length= -> target_words= + tier depth=
+- Copilot found 2 real bugs (se-presentation variant token wrongly remapped; se-author inventory missing target_words); both fixed in 4d1fb54
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0e98ca5` | refactor(skills): canonicalize verbosity axis to depth= (A-006) |
+| `4d1fb54` | fix(skills): correct verbosity migration per Copilot review |
+| `5429410` | chore(task): archive 08-04-arg-vocab-verbosity |
+
+### Testing
+
+- [OK] make check green (522 tests, generate --check, release gate 0.66.4->0.66.5)
+- [OK] sd-check 7/7; Prism clean; Gito findings all verified false-positive (diff-noise); Copilot 2nd pass clean; 0 unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
