@@ -316,3 +316,41 @@ Adopted policy (a) for docs/repomix-map.md: gitignore the 1.1 MB generated map a
 ### Next Steps
 
 - None - task complete
+
+
+## Session 112: A-006 skill argument vocabulary — design-first planning
+
+**Date**: 2026-08-04
+**Task**: A-006 skill argument vocabulary — design-first planning
+**Branch**: `audit/skill-arg-vocab-planning`
+
+### Summary
+
+Design-first planning for pack-wide argument vocabulary (A-006): two-lane adversarial review (host + Codex, 3 rounds) reshaped the naive 2-axis thesis into a 3-axis taxonomy (depth=/input=/sensitivity=) with an operator-resolved D-1/D-2/D-3, a reserved-name registry, and five ordered child tasks. Shipped as PR #137; consumer-visible renames execute in later iterations.
+
+### Main Changes
+
+- Wrote parent design.md/implement.md + refined prd.md for A-006 three-axis vocabulary; created five ordered child tasks (reference→verbosity→format→locator→enforce)
+- Aligned child task.json metadata with the reviewed 3-axis bodies after Copilot review of PR #137 (children order, reference/verbosity/locator descriptions)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ed33b0e` | plan(A-006): three-axis skill argument vocabulary + five ordered child tasks |
+| `3abb0a9` | fix(A-006): align child task.json metadata with reviewed 3-axis bodies |
+
+### Testing
+
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs — 0 failures, 1 warning (6-dir single planning outcome)
+- [OK] sd-review scope=pr attempt 2 — all 7 sd-check gates passed, ready/exactHeadReady at head 3abb0a9
+- [OK] GitHub CI on 3abb0a9 — lint, release-payload-gate, 3x unittest all pass; 0 unresolved review threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
