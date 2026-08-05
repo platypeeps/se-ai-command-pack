@@ -1119,8 +1119,9 @@ installed sha256 != prior provenance -> conflict + no writes
 
 ### 1. Scope / Trigger
 
-- Trigger: adding or changing the checked-in repository map, its Repomix
-  configuration, or its refresh command.
+- Trigger: adding or changing the on-demand repository map, its Repomix
+  configuration, or its refresh command. The map is gitignored and never
+  committed (policy A-025); it is generated locally on demand.
 
 ### 2. Signatures
 
@@ -1134,11 +1135,13 @@ bash scripts/update_repomix
 - `repomix.config.json` owns the input exclusions and writes compressed,
   parsable Markdown to `docs/repomix-map.md`.
 - Git change-count sorting is disabled so identical repository contents
-  generate byte-stable file ordering before and after commits.
+  generate byte-stable file ordering on every regeneration.
 - `scripts/update_repomix` runs the pinned Repomix version through `npx`
   without adding Node dependencies to this Python project.
 - The generated map excludes itself, local knowledge copies and receipts,
   Trellis task/session state, and copied agent-platform surfaces.
+- `docs/repomix-map.md` is gitignored and generated on demand; it is never
+  committed, so no committed-but-stale (silent-drift) state can exist.
 
 ### 4. Validation & Error Matrix
 
@@ -1146,22 +1149,25 @@ bash scripts/update_repomix
 |---|---|
 | `npx` is unavailable | Exit nonzero with an actionable requirement message. |
 | Repomix installation or generation fails | Propagate the nonzero exit; do not report a refreshed map. |
-| Repomix detects suspicious content | Treat the generation as failed and inspect before committing. |
-| Configuration changes | Regenerate and commit `docs/repomix-map.md` in the same change. |
-| Identical inputs generate a different map | Treat the map as nondeterministic; do not commit ordering-only churn. |
+| Repomix detects suspicious content | Treat the generation as failed and inspect before use. |
+| Configuration changes | Regenerate on demand with `make repomix`; the map is gitignored and never committed. |
+| Identical inputs generate a different map | Treat the map as nondeterministic and investigate before relying on it. |
 
 ### 5. Good/Base/Bad Cases
 
-- Good: `make repomix` uses the pinned version and replaces the tracked map.
+- Good: `make repomix` uses the pinned version and replaces the local
+  generated map.
 - Base: rerunning the command without source changes produces no map diff.
-- Bad: running an unpinned global or latest Repomix version and committing an
+- Bad: running an unpinned global or latest Repomix version and relying on an
   output whose behavior cannot be reproduced from the repository.
 
 ### 6. Tests Required
 
-- `tests/test_repomix.py` asserts the required copied/runtime exclusion set and
-  verifies the checked-in map omits those files while retaining representative
-  repo-owned source, tests, templates, and specs.
+- `tests/test_repomix.py` asserts the required copied/runtime exclusion set and,
+  when the on-demand map is present locally, verifies it omits those files while
+  retaining representative repo-owned source, tests, templates, and specs. The
+  map-content check skips cleanly when the gitignored map is absent (CI / fresh
+  clones).
 - Run `make repomix` and require a successful Repomix security scan.
 - Run `git diff --check` and verify `docs/repomix-map.md` is the configured
   output and does not include itself.
@@ -1224,7 +1230,6 @@ bash scripts/sd-ai-command-pack-toolchain.sh doctor
 | `make check` fails | Stop before the shared pack full-check. |
 | The shared pack full-check fails | Propagate its nonzero exit. |
 | The wrapper contains a forbidden recursive command | Reject it with exit `2`. |
-| The Repomix map is stale | `make check` exits nonzero before remote review. |
 
 ### 5. Good/Base/Bad Cases
 

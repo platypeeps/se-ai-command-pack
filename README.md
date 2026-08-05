@@ -464,9 +464,10 @@ directories are pruned.
 
 ## Repository map
 
-The generated [Repomix repository map](docs/repomix-map.md) provides a compact,
-AI-friendly view of the repository. Refresh it after structural or substantial
-documentation changes:
+The Repomix repository map (`docs/repomix-map.md`) provides a compact,
+AI-friendly view of the repository. It is **gitignored and generated on
+demand** — never committed — so the repository carries no large, drift-prone
+snapshot. Generate or refresh it locally whenever you need it:
 
 ```sh
 make repomix
