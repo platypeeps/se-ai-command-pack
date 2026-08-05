@@ -18,14 +18,23 @@ PACK_ROOT = Path(__file__).resolve().parents[2]
 GIT_TIMEOUT_SECONDS = 60
 
 
+class ReleaseTagError(Exception):
+    """A git invocation could not run to completion (missing or timed out)."""
+
+
 def run_git(repo: Path, *args: str) -> subprocess.CompletedProcess:
-    return subprocess.run(
-        ["git", "-C", str(repo), *args],
-        text=True,
-        capture_output=True,
-        check=False,
-        timeout=GIT_TIMEOUT_SECONDS,
-    )
+    try:
+        return subprocess.run(
+            ["git", "-C", str(repo), *args],
+            text=True,
+            capture_output=True,
+            check=False,
+            timeout=GIT_TIMEOUT_SECONDS,
+        )
+    except FileNotFoundError:
+        raise ReleaseTagError("git not found") from None
+    except subprocess.TimeoutExpired:
+        raise ReleaseTagError(f"git {' '.join(args)} timed out") from None
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -44,7 +53,14 @@ def main(argv: list[str] | None = None) -> int:
               file=sys.stderr)
         return 1
     tag = f"v{version}"
+    try:
+        return _create_release_tag(repo, tag, args)
+    except ReleaseTagError as error:
+        print(f"error: {error}", file=sys.stderr)
+        return 1
 
+
+def _create_release_tag(repo: Path, tag: str, args: argparse.Namespace) -> int:
     # CI checkouts are shallow and tag-less, so a local ref check alone
     # would recreate an existing release tag at the new HEAD and fail on
     # push. When pushing, the remote is the authority.
