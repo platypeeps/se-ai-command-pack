@@ -39,7 +39,7 @@ reading sources.
   reader and state the default.
 - `as_of=` — state cutoff. Default to the current date and time and state the
   default; never imply a later verification.
-- `depth=compact|standard` — default `standard`; `compact` retains every
+- `depth=brief|standard` — default `standard`; `brief` retains every
   load-bearing fact while removing optional background.
 
 ## Workflow

@@ -929,7 +929,7 @@ class SkillSafetyPinsTest(unittest.TestCase):
             "mode=predict|advise|reflect|draft",
             "profile=auto|off|<locator>",
             "horizon=now|near-term|long-term|<date>",
-            "detail=compact|standard",
+            "depth=brief|standard",
             "se-personal-profile/v1",
             "Ask at most one focused question",
         ):

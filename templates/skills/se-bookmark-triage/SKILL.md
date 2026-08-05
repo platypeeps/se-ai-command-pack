@@ -40,13 +40,13 @@ reading saved items.
   never discards an item by itself.
 - `exclude=` — optional source, topic, status, or content exclusions.
 - `limit=` — optional maximum number of retained queue entries.
-- `detail=compact|standard` — default `standard`; `compact` returns the queue,
+- `depth=brief|standard` — default `standard`; `brief` returns the queue,
   coverage, and material exceptions without the full evidence ledger.
 
 ## Workflow
 
 1. Restate the bounded source set, interests, projects, time budget, staleness
-   threshold, exclusions, limit, and detail. Inventory item count, time range,
+   threshold, exclusions, limit, and depth. Inventory item count, time range,
    pagination or connector limits, inaccessible/private items, and available
    metadata. Never imply complete coverage after truncation or access failure.
 2. Record each original locator and the evidence actually available. Use one

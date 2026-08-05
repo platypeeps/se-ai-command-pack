@@ -43,7 +43,7 @@ reading, searching, or editing.
 - `evidence=` — optional claim/evidence ledger, citations, test output, or
   authoritative sources already associated with the draft.
 - `target=` — optional publication target and its format or editorial rules.
-- `depth=full|focused` — default `full`; focused mode requires `passes=`.
+- `coverage=full|focused` — default `full`; focused mode requires `passes=`.
 - `passes=` — comma-separated subset of `technical-correctness`,
   `evidence-and-citations`, `hidden-assumptions`, `code-and-examples`,
   `novelty-and-originality`, `skeptical-reader-objections`, `structure`,
@@ -58,7 +58,7 @@ reading, searching, or editing.
 
 ## Workflow
 
-1. Inventory the input, brief, audience, evidence, target, review depth,
+1. Inventory the input, brief, audience, evidence, target, review coverage,
    selected passes, profile mode, requested output, and edit authority. Report
    inaccessible, partial, stale, duplicated, or conflicting inputs. Establish
    the authoritative draft version so findings do not target the wrong text.
@@ -161,7 +161,7 @@ reading, searching, or editing.
 ## Final report
 
 - **Review scope and inputs** — authoritative draft version, brief, audience,
-  evidence, target, depth, selected passes, inaccessible inputs, and profile use;
+  evidence, target, coverage, selected passes, inaccessible inputs, and profile use;
 - **Draft contract and conflicts** — intended claim, reader outcome, constraints,
   protected choices, confidentiality boundary, and editorial-goal priorities;
 - **Pass coverage** — status and concise result for all eleven passes, including

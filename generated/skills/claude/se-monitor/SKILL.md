@@ -47,13 +47,13 @@ identify them before reading sources or state.
   state changes rather than timestamps, layout, or wording alone;
 - `since=` — optional collection window when the baseline does not establish
   one; and
-- `length=short|standard` — default `standard`; `short` compresses unchanged
+- `depth=brief|standard` — default `standard`; `brief` compresses unchanged
   counts, supporting detail, and the state preview without dropping gaps.
 
 ## Workflow
 
 1. Restate the normalized subject, watch set, materiality rules, source scope,
-   baseline locator and cutoff, collection through-date, and requested detail.
+   baseline locator and cutoff, collection through-date, and requested depth.
    Ask when an ambiguity would change what is gathered or compared.
 2. Validate the prior artifact against `references/state-schema.md`. After the
    missing, malformed, and version checks, apply the deterministic staleness

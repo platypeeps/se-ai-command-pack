@@ -41,7 +41,7 @@ identify them before reading sources, profile content, or workspace artifacts.
   framing preferences under the personal profile contract;
 - `workspace=` — optional portable brief, interview, evidence, or draft state;
 - `stage=interview|brief|draft|review|handoff|resume` — default `interview`; and
-- `length=short|standard|full` — desired depth, constrained by actual evidence.
+- `depth=brief|standard|deep` — desired depth, constrained by actual evidence.
 
 ## Workflow
 

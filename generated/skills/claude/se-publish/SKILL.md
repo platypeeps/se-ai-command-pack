@@ -43,12 +43,12 @@ identify them before reading sources, profile content, or workspace artifacts.
   accessibility, terminology, or other supplied rules;
 - `profile=auto|off|<locator>` — default `auto`; optional read-only voice and
   formatting preferences under the personal profile contract; and
-- `detail=compact|standard` — default `standard`.
+- `depth=brief|standard` — default `standard`.
 
 ## Workflow
 
 1. Confirm the source, its explicit approval state and version, audience,
-   destination, objective, tone, constraints, profile mode, and detail. An
+   destination, objective, tone, constraints, profile mode, and depth. An
    already approved source artifact is required. If its argument is unsettled,
    approval is unclear, or the requested destination would materially change
    the objective, stop with the smallest approval or source-development question.
@@ -137,7 +137,7 @@ identify them before reading sources, profile content, or workspace artifacts.
 ## Final report
 
 - **Publication contract** — source and approval state, version, audience,
-  destination, objective, tone, constraints, profile mode, and detail;
+  destination, objective, tone, constraints, profile mode, and depth;
 - **Source coverage and claim ledger** — load-bearing claims, citations,
   quotations, nuance, conflicts, gaps, sensitive items, dates, and locators;
 - **Audience and destination fit** — scope comparison, mismatch, confidentiality,
@@ -151,7 +151,7 @@ identify them before reading sources, profile content, or workspace artifacts.
 - **Sensitivity and accessibility review** — audience widening, private or
   confidential material, stale timing, unsupported promotion, structure,
   plain language, link context, and media alternatives;
-- **Open approvals and conflicts** — unresolved source, audience, length,
+- **Open approvals and conflicts** — unresolved source, audience, depth,
   destination, wording, or sensitivity decisions;
 - **Connector-ready handoff** — final target locator when supplied, exact
   preview, source/adaptation metadata, verification checks, and authority still

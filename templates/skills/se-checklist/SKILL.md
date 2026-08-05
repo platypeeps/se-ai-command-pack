@@ -41,7 +41,7 @@ reading the sources.
 - `trigger=` — event or condition that starts checklist use;
 - `phase=preflight|execution|closeout|all` — default `all`;
 - `failure_history=` — optional bounded incidents, defects, or near misses;
-- `length=short|standard` — default `short`;
+- `depth=brief|standard` — default `brief`;
 - `urgency=normal|emergency` — default `normal`.
 
 ## Workflow
@@ -96,7 +96,7 @@ reading the sources.
    or promote an unvalidated proposal. Use explicit `STOP` or `ESCALATE`
    responses when safe continuation is not established.
 9. Audit the draft against the five inclusion tests, source authority,
-   dependency order, requested length, and mode. Remove decorative reminders;
+   dependency order, requested depth, and mode. Remove decorative reminders;
    preserve any check whose removal would expose a named risk, requirement,
    dependency, or completion signal.
 
@@ -109,7 +109,7 @@ reading the sources.
 - Never invent owners, permissions, thresholds, commands, evidence, source
   authority, validation state, stop conditions, or completion signals. Mark
   gaps `unknown` and explain their operational effect.
-- Never let `mode=do-confirm`, a length target, or emergency urgency remove a
+- Never let `mode=do-confirm`, a depth target, or emergency urgency remove a
   preventive check required before an irreversible or safety-critical action.
 - Preserve conflicts between authoritative sources and identify the decision
   owner needed to resolve them. Do not blend incompatible environments or

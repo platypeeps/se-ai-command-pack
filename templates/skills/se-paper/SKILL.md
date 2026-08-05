@@ -52,7 +52,7 @@ identify them before reading research, profile, data, or workspace sources.
 - `workspace=` — optional portable artifact locator or resume pointer;
 - `stage=discover|interview|brief|protocol|method|draft|review|package|resume`;
   and
-- `length=short|standard|full` — desired artifact depth, constrained by actual
+- `depth=brief|standard|deep` — desired artifact depth, constrained by actual
   evidence and execution state.
 
 ## Workflow

@@ -34,7 +34,7 @@ more precise:
 - `skill=<name>` for one explanation
 - `skills=<name,name,...>` for comparison
 - `goal=<desired outcome>` for recommendation
-- `detail=compact|standard`
+- `depth=brief|standard`
 
 Infer an unambiguous mode. With a goal, default to `recommend`; without a goal,
 default to `tour`. Unknown argument names are an error: stop and identify the
@@ -112,7 +112,7 @@ choices and keep the request non-executing.
 
 ## Final report
 
-Use the applicable fields below in this order. `detail=compact` may collapse
+Use the applicable fields below in this order. `depth=brief` may collapse
 empty or low-value fields, but it must preserve their meaning. Every successful
 response ends with the next invocation; errors instead name the unsupported or
 ambiguous input and the valid choices.

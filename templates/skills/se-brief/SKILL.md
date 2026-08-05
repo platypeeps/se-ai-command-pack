@@ -37,7 +37,7 @@ before gathering anything.
 - `since=24h|7d|last-brief` — default `24h`. `last-brief` means: exclude
   items already delivered in the previous brief when one is available in
   context.
-- `length=short|standard` — default `standard`; `short` caps the brief at
+- `depth=brief|standard` — default `standard`; `brief` caps the brief at
   ten items.
 - `include=` / `exclude=` — source hints (publications, feeds, or connected
   tools to prefer or skip).
@@ -55,7 +55,7 @@ before gathering anything.
 4. Rank by likely relevance to the user; write one line per item: what
    happened plus why it matters to them. Date every item.
 5. Group into **act on today**, **worth knowing**, and a counted
-   **skipped as noise** footer. Respect the `length=` budget by cutting the
+   **skipped as noise** footer. Respect the `depth=` budget by cutting the
    lowest-ranked items into the skipped count.
 6. Deliver the dated brief.
 

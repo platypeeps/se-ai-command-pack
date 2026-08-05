@@ -44,7 +44,7 @@ identify them before reading artifacts, evidence, or workspace content.
 - `evidence=` — authorized supporting, contrary, operational, or threat sources;
 - `detail=minimal|restricted|standard` — default `minimal`; maximum sensitive
   detail appropriate for the authorized audience; and
-- `depth=quick|standard|deep` — default `standard`.
+- `depth=brief|standard|deep` — default `standard`.
 
 ## Workflow
 

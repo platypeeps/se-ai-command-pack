@@ -45,7 +45,7 @@ reading project sources.
   connected sources authorized for this report.
 - `audience=` — intended readers and their decision needs. State an inferred
   audience as an assumption.
-- `length=short|standard` — default `standard`; `short` keeps only material
+- `depth=brief|standard` — default `standard`; `brief` keeps only material
   changes, blockers, decisions, asks, and next actions.
 
 ## Workflow
