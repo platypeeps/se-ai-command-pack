@@ -35,15 +35,17 @@ behavior on platforms without sub-agent support.
 
 ## Acceptance Criteria
 
-- [ ] `installer/manifest.py` accepts kind `agent`; installer round-trip (install, status,
+- [x] `installer/manifest.py` accepts kind `agent`; installer round-trip (install, status,
       remove) works for agent rows on claude and codex anchors; `agents` anchor receives none.
-- [ ] Generator renders canonical agent sources to Claude MD and Codex TOML; `--check`
+      (07-25-agent-artifact-kind; manifest carries 4 agent rows, claude+codex only.)
+- [x] Generator renders canonical agent sources to Claude MD and Codex TOML; `--check`
       drift gate covers them; release-payload version gate passes.
-- [ ] Pilot skills contain a dispatch section with inline fallback; canonical bodies still
-      pass the neutrality lint.
-- [ ] `fresh-session` encoding decision implemented and documented (docs/SE_AI_COMMAND_PACK.md).
-- [ ] Runtime-profile/overlay system documented in docs/SE_AI_COMMAND_PACK.md (existing gap).
-- [ ] Tests updated: generator, install, skills suites cover the new kind and overlays.
+- [x] Pilot skills contain a dispatch section with inline fallback; canonical bodies still
+      pass the neutrality lint. (07-25-dispatch-pilot + 07-25-dispatch-rollout.)
+- [x] `fresh-session` encoding decision implemented and documented (docs/SE_AI_COMMAND_PACK.md).
+      (07-25-runtime-profile-gaps.)
+- [x] Runtime-profile/overlay system documented in docs/SE_AI_COMMAND_PACK.md (existing gap).
+- [x] Tests updated: generator, install, skills suites cover the new kind and overlays.
 
 ## Task map (parent-owned)
 
@@ -63,10 +65,18 @@ position is not a dependency system).
 
 Cross-child acceptance (parent integration review, run when all children archive):
 
-- [ ] Full `make check` green with all child changes merged.
+- [x] Full `make check` green with all child changes merged. (Verified on merged main:
+      coverage 88.3%, ruff + mypy clean, generator `--check` matches, release gate clean.)
 - [ ] One se-research run on a sub-agent-dispatch platform and one on an inline platform
       produce contract-identical final reports (execution strategy differs, outcome does not).
-- [ ] Operator docs match shipped behavior (profiles, agents, dispatch).
+      DEFERRED — not executed in this closeout. Static evidence supports the contract: the
+      dispatch section's design (one worker per unit, orchestrator owns synthesis, workers
+      return the same expected artifact under the same stop condition, inline fallback opening)
+      makes the final report shape platform-independent by construction, and no code path forks
+      the report contract on platform. A live two-platform run remains the outstanding empirical
+      check and is tracked as a follow-up; this AC stays unchecked until that run is done.
+- [x] Operator docs match shipped behavior (profiles, agents, dispatch). (docs/SE_AI_COMMAND_PACK.md
+      carries the Shipped agents inventory, runtime-profile/overlay explanation, and delegation.)
 
 ## Open questions (delegated)
 

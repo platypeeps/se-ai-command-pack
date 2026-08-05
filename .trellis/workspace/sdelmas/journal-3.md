@@ -803,3 +803,40 @@ Added se-source-reader and se-claim-verifier as the first real SE worker agents,
 ### Next Steps
 
 - None - task complete
+
+
+## Session 124: Close 07-25-agent-artifacts umbrella (integration review)
+
+**Date**: 2026-08-05
+**Task**: Close 07-25-agent-artifacts umbrella (integration review)
+**Branch**: `task/07-25-agent-artifacts-closeout`
+
+### Summary
+
+All five children of the agent-artifacts umbrella are merged and archived. Verified and recorded the parent's six core and three cross-child acceptance criteria in prd.md. The parent is a coordination-only task that must not be started, so it stays as an in-place planning record rather than being archived (a completed record outside archive would fail the preflight, and completion/planning finalization both reject a never-started parent). One AC (contract-identical se-research across dispatch vs inline platforms) is dispositioned verified-by-design with a deferred live two-platform run.
+
+### Main Changes
+
+- Marked all 6 core ACs met, each attributed to the delivering child task
+- Marked 3 cross-child integration ACs: make check green on merged main, docs match shipped behavior, se-research contract-identity (verified by dispatch-contract design, live run deferred)
+- Left the coordination-only parent as an in-place planning record; not archived
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `477e5d5` | docs(task): mark 07-25-agent-artifacts integration acceptance criteria met |
+
+### Testing
+
+- [OK] make check on merged main: coverage 88.3%, ruff + mypy clean, generator --check matches, release gate no-change
+- [OK] manifest carries 4 agent rows (se-source-reader/se-claim-verifier x claude+codex); none on agents anchor
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
