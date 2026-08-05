@@ -31,7 +31,7 @@ Arguments arrive as free text with the invocation: `key=value` pairs and
 bare flags. Unknown argument names are an error — stop and report them
 before reading anything.
 
-- `inputs=` — paths, links, or a pointer like "the attached files".
+- `input=` — paths, links, or a pointer like "the attached files".
   Required; ask when missing.
 - `question=` — optional lens the synthesis should answer; without it the
   digest surfaces the inputs' own main tensions and takeaways.

@@ -32,7 +32,7 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 Arguments arrive as free text. Unknown argument names are an error — stop and
 identify them before reading sources, profile content, or workspace artifacts.
 
-- `source=` — approved source artifact or bounded approved source set;
+- `input=` — approved source artifact or bounded approved source set;
 - `audience=` — intended readers and their assumed context;
 - `destination=slack-message|slack-canvas|notion-page|memo|announcement|briefing|youtube-outline`;
 - `objective=` — what the destination draft should enable;

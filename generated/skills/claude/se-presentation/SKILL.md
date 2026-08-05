@@ -34,7 +34,7 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 Arguments arrive as free text. Unknown argument names are an error — stop and
 identify them before reading sources, profile content, or workspace artifacts.
 
-- `source=` — approved source artifact or bounded source set;
+- `input=` — approved source artifact or bounded source set;
 - `audience=` — intended audience, decision role, and assumed knowledge;
 - `outcome=` — observable decision, understanding, or action the presentation
   should enable;

@@ -39,7 +39,7 @@ before the first search.
 - `depth=brief|standard|deep` — default `standard`. `brief` limits the
   sweep to the strongest few sources and shortens the brief; `deep` widens
   the search lanes and the disconfirmation pass.
-- `sources=N` — minimum count of independent sources actually consulted.
+- `min_sources=N` — minimum count of independent sources actually consulted.
   Defaults: 3 for `brief`, 6 for `standard`, 10 for `deep`.
 - `format=brief|report|memo` — default `brief`. A brief leads with
   findings; a report adds methodology and per-source notes; a memo is
@@ -59,7 +59,7 @@ before the first search.
    lanes matter for this question.
 3. Sweep lane by lane with your web search tooling. Log every source that
    contributes: title, publisher, date, tier per
-   `references/source-standards.md`. Keep going until the `sources=`
+   `references/source-standards.md`. Keep going until the `min_sources=`
    minimum of genuinely independent sources is met.
 4. Extract claims and classify each as load-bearing or contextual, then
    verify them per `references/verification-protocol.md` — corroborate,

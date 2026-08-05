@@ -42,14 +42,14 @@ identify them before reading artifacts, evidence, or workspace content.
 - `constraints=` — scope, excluded areas, time, policy, confidentiality, or
   supplied acceptance rules;
 - `evidence=` — authorized supporting, contrary, operational, or threat sources;
-- `detail=minimal|restricted|standard` — default `minimal`; maximum sensitive
+- `sensitivity=minimal|restricted|standard` — default `minimal`; maximum sensitive
   detail appropriate for the authorized audience; and
 - `depth=brief|standard|deep` — default `standard`.
 
 ## Workflow
 
 1. Confirm artifact identity and version, intended outcome, audience, frame,
-   constraints, evidence boundary, detail policy, depth, approval state, and
+   constraints, evidence boundary, sensitivity policy, depth, approval state, and
    confidentiality. If the artifact, outcome, or authorized frame is materially
    ambiguous, stop before critique. Never infer permission for offensive testing.
 2. Steelman the artifact first. State its strongest fair thesis or operating
@@ -130,7 +130,7 @@ identify them before reading artifacts, evidence, or workspace content.
 ## Final report
 
 - **Red-team contract** — artifact/version, outcome, audience, frame,
-  constraints, evidence, detail policy, depth, and approval state;
+  constraints, evidence, sensitivity policy, depth, and approval state;
 - **Steelman and success model** — strongest fair case, mechanism, support,
   assumptions, constraints, and success conditions;
 - **Evidence and assertion ledger** — claims, facts, evidence, counterevidence,
