@@ -676,6 +676,27 @@ def _run_check(repo: Path) -> dict[str, Any]:
     return report
 
 
+def _resolve_check(repo: Path, state: dict[str, Any], state_path: Path) -> dict[str, Any]:
+    # Always recompute the deterministic sd-check. It is the cheap, idempotent
+    # gate and it reads live inputs -- the gitignored .obsidian-kb symlink
+    # target (knowledge.obsidian-kb) and the live PR body (pack.review-scope) --
+    # that the state identity deliberately does not capture (worktreeDigest
+    # excludes gitignored paths and is None for PR scope; only prNumber, not the
+    # body, is in identity). Memoizing the report would serve a stale pass/fail
+    # after those inputs change at an unchanged head, which false-blocks review.
+    # Persist the fresh report for reporting without regressing the phase on a
+    # resume; the expensive local/remote stages stay memoized because their
+    # inputs are captured by worktreeDigest/head.
+    check = _run_check(repo)
+    if state.get("check") is None:
+        _advance(state_path, state, "check", check=check)
+    else:
+        state["check"] = check
+        state["updatedAt"] = int(time.time())
+        _atomic_json(state_path, state)
+    return check
+
+
 def _run_local(
     repo: Path,
     *,
@@ -1793,10 +1814,7 @@ def run(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
                 limitations=(f"router-{cap_state}",),
             )
 
-    if state.get("check") is None:
-        check = _run_check(repo)
-        _advance(state_path, state, "check", check=check)
-    check = state["check"]
+    check = _resolve_check(repo, state, state_path)
     if not isinstance(check, dict) or check.get("status") != "passed":
         return 1, _report(
             state=state,

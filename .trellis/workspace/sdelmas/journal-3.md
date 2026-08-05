@@ -237,3 +237,42 @@ Added a reverse shared-reference citation-closure check to validate_skills() in 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 110: audit-review-nested-check-falseblock: recompute sd-check every run
+
+**Date**: 2026-08-04
+**Task**: audit-review-nested-check-falseblock: recompute sd-check every run
+**Branch**: `audit/review-nested-check-falseblock`
+
+### Summary
+
+Fixed the sd-review coordinator false-block: the typed sd-check report was memoized in durable per-attempt state keyed on an identity excluding two checks' live inputs (gitignored .obsidian-kb symlink, live PR body), so a stale computation was served as the gate after those inputs changed at an unchanged head. Extracted _resolve_check to recompute every invocation without regressing phase; local/remote stay memoized.
+
+### Main Changes
+
+- review.py: _resolve_check recomputes _run_check each run, replacing the state.get('check') is None gate; persists fresh report without phase regression on resume.
+- tests/test_review_coordinator.py: 5 regression tests; AC1 proven to fail pre-fix / pass post-fix.
+- provenance.json: recorded review.py's new hash (vouched installed target) so install-audit stays green.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bc01bc2` | fix(review): recompute deterministic sd-check every run, don't serve stale cache |
+| `4d62cd9` | chore(provenance): record review.py hash after coordinator fix |
+| `a971c29` | test(review): remove unused _TmpDir helper |
+
+### Testing
+
+- [OK] test_review_coordinator: 5 tests OK; AC1 fails against restored pre-fix caching
+- [OK] full suite 522 tests OK; ruff clean; generate --check exit 0; install-audit exit 0
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
