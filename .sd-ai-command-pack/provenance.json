@@ -195,7 +195,7 @@
     "scripts/sd-ai-command-pack-review-local.sh": "sha256:70ba2de0ea6c6ba972972f41e76a266cc3e01c1ca959b929c0515d81aceff92c",
     "scripts/sd-ai-command-pack-review-preflight.mjs": "sha256:bb9a5f44736be874b392790a4e1198e48b56abfbf66ab122347b91b29ffe176d",
     "scripts/sd-ai-command-pack-review-scope.sh": "sha256:911e182aff29ca52768015b5a728b44b1a827b5519a9a7116c6ebd43b1a60b30",
-    "scripts/sd-ai-command-pack-review.py": "sha256:55a04e9c51ba3a953b93bfb735e984736fa21473b2ab7c6d7c406547c6172da7",
+    "scripts/sd-ai-command-pack-review.py": "sha256:65c4c7bc8ae569501ad93c725abf273e0e71117be93900cfadd2fd3bbfa163cf",
     "scripts/sd-ai-command-pack-shell-lib.sh": "sha256:ea16cb8faf4971baeb5737e03f9b627bfe7d883f1606d41cefacd40c5685c8f9",
     "scripts/sd-ai-command-pack-status.py": "sha256:94962138852aac5936d2bcf55f03b5d9a5fd55774ae514b1335d655c98fa41ec",
     "scripts/sd-ai-command-pack-surface-check.py": "sha256:fd402e4f29ea649cc74a9d6ce46b2187721219d1484fa9533548c070a1880963",
