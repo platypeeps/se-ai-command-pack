@@ -18,6 +18,10 @@ dist/
 *.egg-info/
 unittest-output.log
 
+# Generated repository map: gitignored, never committed, produced on demand via
+# `make repomix` (policy A-025; see .trellis/spec/backend/quality-guidelines.md).
+docs/repomix-map.md
+
 # Trellis local/runtime state (see also .trellis/.gitignore).
 .trellis/.template-hashes.json
 .trellis/worktrees/

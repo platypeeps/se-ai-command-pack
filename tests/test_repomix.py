@@ -86,7 +86,12 @@ class RepomixContractTest(unittest.TestCase):
         exclusions = set(config["ignore"]["customPatterns"])
         self.assertEqual(REQUIRED_EXCLUSIONS - exclusions, set())
 
-    def test_checked_in_map_matches_scope_contract(self) -> None:
+    @unittest.skipUnless(
+        MAP_PATH.exists(),
+        "docs/repomix-map.md is gitignored and generated on demand (policy A-025); "
+        "run `make repomix` to validate its scope contract locally",
+    )
+    def test_generated_map_matches_scope_contract_when_present(self) -> None:
         repository_map = MAP_PATH.read_text(encoding="utf-8")
 
         for header in sorted(EXCLUDED_MAP_HEADERS):
