@@ -383,11 +383,20 @@ class WorkflowHygieneTest(unittest.TestCase):
         )
 
     def test_auto_tag_depends_on_release_gate(self) -> None:
-        self.assertIn("needs: [unittest, lint, release-payload-gate]", self.text)
+        # Anchor to the auto-tag-release job body: the same needs string also
+        # appears under ci-result, so a bare substring match is ambiguous and
+        # would pass even if auto-tag-release dropped the gate dependency.
+        _, _, tail = self.text.partition("auto-tag-release:")
+        self.assertTrue(tail, "auto-tag-release job not found")
+        self.assertIn("needs: [unittest, lint, release-payload-gate]", tail)
 
     def test_release_gate_runs_on_push_to_main(self) -> None:
+        # The full PR-or-push expression is unique to release-payload-gate;
+        # auto-tag-release uses a push-only if without the pull_request clause,
+        # so matching the whole expression anchors the assertion to the gate.
         self.assertIn(
-            "github.event_name == 'push' && github.ref == 'refs/heads/main'",
+            "if: github.event_name == 'pull_request' || "
+            "(github.event_name == 'push' && github.ref == 'refs/heads/main')",
             self.text,
         )
 

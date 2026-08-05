@@ -92,9 +92,10 @@ jobs:
             # gated on its own pull request.
             echo "base=$(git describe --tags --abbrev=0 2>/dev/null || echo HEAD)" >> "$GITHUB_OUTPUT"
           fi
-      - run: python .github/scripts/check-release-payload.py --base "$BASE_SHA"
+      - run: python .github/scripts/check-release-payload.py --base "$BASE_REF"
         env:
-          BASE_SHA: ${{ steps.gate-base.outputs.base }}
+          # On push the base is a ref (last release tag or HEAD), not a SHA.
+          BASE_REF: ${{ steps.gate-base.outputs.base }}
 
   ci-result:
     needs: [unittest, lint, release-payload-gate]
