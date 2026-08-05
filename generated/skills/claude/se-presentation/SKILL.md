@@ -34,7 +34,7 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 Arguments arrive as free text. Unknown argument names are an error — stop and
 identify them before reading sources, profile content, or workspace artifacts.
 
-- `source=` — approved source artifact or bounded source set;
+- `input=` — approved source artifact or bounded source set;
 - `audience=` — intended audience, decision role, and assumed knowledge;
 - `outcome=` — observable decision, understanding, or action the presentation
   should enable;
@@ -49,10 +49,10 @@ identify them before reading sources, profile content, or workspace artifacts.
 
 ## Workflow
 
-1. Confirm the source boundary, explicit approval state, audience, intended
+1. Confirm the input boundary, explicit approval state, audience, intended
    outcome, duration, venue, constraints, variant, profile mode, and depth.
    Inventory inaccessible, stale, conflicting, or sensitive source material.
-   If the source argument is not settled enough to present, stop with the
+   If the input argument is not settled enough to present, stop with the
    smallest source-development or approval question instead of papering over it.
 2. Apply `references/personal-profile-contract.md`. `off` disables profile use;
    `auto` uses only an explicit current-context profile. Profile evidence may

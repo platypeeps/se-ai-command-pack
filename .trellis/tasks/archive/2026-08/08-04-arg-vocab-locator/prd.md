@@ -30,11 +30,11 @@ Ordering + validation gate: parent `implement.md`. Land after
 
 ## Acceptance Criteria
 
-- [ ] No primary artifact uses `source=`/`inputs=`; all use `input=`; `sources=`
+- [x] No primary artifact uses `source=`/`inputs=`; all use `input=`; `sources=`
       (reference) untouched.
-- [ ] se-research uses `min_sources=N`; no `sources=N` count remains; downstream
+- [x] se-research uses `min_sources=N`; no `sources=N` count remains; downstream
       prose updated.
-- [ ] se-red-team redaction uses `sensitivity=`; no `detail=` remains; `privacy=`
+- [x] se-red-team redaction uses `sensitivity=`; no `detail=` remains; `privacy=`
       / `evidence=` untouched.
-- [ ] `make test` + `make release-check` green; mirror regenerated; version bump
+- [x] `make test` + `make release-check` green; mirror regenerated; version bump
       + changelog citing A-006.

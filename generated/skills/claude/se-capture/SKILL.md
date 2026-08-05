@@ -33,9 +33,9 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 
 Arguments arrive as free text with the invocation: `key=value` pairs and bare
 flags. Unknown argument names are an error — stop and report them before
-reading the source.
+reading the input.
 
-- `source=` — one supplied URL, file, pasted block, connected record, or
+- `input=` — one supplied URL, file, pasted block, connected record, or
   bounded thread. Use the current attachment or context when unambiguous.
 - `title=` — optional user-supplied title; preserve it as user metadata, not
   source metadata.
@@ -47,7 +47,7 @@ reading the source.
 
 ## Workflow
 
-1. Confirm that `source=` is one logical intake unit. State the boundary and
+1. Confirm that `input=` is one logical intake unit. State the boundary and
    route independent-source synthesis to `se-digest` before extraction.
 2. Inventory access. Record source type, supplied locator, canonical locator
    when safely established, author or publisher, source date, exact retrieval

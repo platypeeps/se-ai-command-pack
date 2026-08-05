@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.66.7 - 2026-08-04
+
+- Canonicalize the primary-artifact axis and apply the remaining discrete
+  argument renames (A-006, child `08-04-arg-vocab-locator`). Rename the
+  primary artifact under action to `input=`: `source=` on se-capture,
+  se-presentation, se-publish and `inputs=` on se-digest — matching the
+  existing `input=` on se-fact-check/se-feedback/se-technical-editor. Resolve
+  the count collision `se-research sources=N` → `min_sources=N` (with its
+  downstream prose), and rename the redaction axis `se-red-team
+  detail=minimal|restricted|standard` → `sensitivity=` (ending se-red-team's
+  `detail=`/`depth=` double-use). The reference-material `sources=` axis (22
+  skills) and `privacy=`/`evidence=` are left untouched. Generated mirror
+  regenerated.
+
 ## 0.66.6 - 2026-08-04
 
 - Classify every `format=` declaration as a density ladder or a structural
