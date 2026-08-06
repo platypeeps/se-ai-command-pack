@@ -43,15 +43,15 @@ rewrite content.
 
 ## Acceptance Criteria
 
-- [ ] `templates/skills/<name>/SKILL.md` exists and passes generator
+- [x] `templates/skills/<name>/SKILL.md` exists and passes generator
       validation.
-- [ ] Generated Claude overlay, bundled catalogs, and `manifest.json` rows for
+- [x] Generated Claude overlay, bundled catalogs, and `manifest.json` rows for
       every registered platform regenerated and committed with the source.
-- [ ] Skill documents the no-guidelines bootstrap behavior explicitly, and
+- [x] Skill documents the no-guidelines bootstrap behavior explicitly, and
       bootstrap returns a draft in the report without writing any file.
-- [ ] Argument table introduces no new name for an axis the pack already
+- [x] Argument table introduces no new name for an axis the pack already
       spells another way.
-- [ ] `tests/test_skills.py` passes; skill appears in the skill catalog.
+- [x] `tests/test_skills.py` passes; skill appears in the skill catalog.
 
 ## Out of scope
 
