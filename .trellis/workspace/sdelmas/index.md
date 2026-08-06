@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 126
-- **Last Active**: 2026-08-05
+- **Total Sessions**: 127
+- **Last Active**: 2026-08-06
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~922 | Active |
+| `journal-3.md` | ~966 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 127 | 2026-08-06 | Add se-brand-voice, a guidelines-sourced brand voice validator | `ca388bd`, `47d1fb0`, `738394a`, `20587b2` | `task/07-28-brand-voice-validator-skill` |
 | 126 | 2026-08-05 | Installer subprocess and file-handling hardening | `06f9fa5`, `3f5ec22` | `task/07-25-audit-installer-hardening` |
 | 125 | 2026-08-05 | CI workflow hygiene and release-tag error contract | `683b15b`, `cf71ce2` | `task/07-25-audit-ci-workflow-hygiene` |
 | 124 | 2026-08-05 | Close 07-25-agent-artifacts umbrella (integration review) | `477e5d5` | `task/07-25-agent-artifacts-closeout` |
