@@ -113,12 +113,23 @@ Two rules, both cheap:
    files from `HEAD`, run the new tests, confirm they fail, restore the edits,
    confirm they pass.
 
+Runnable as written — set `FILE` to the source file the pin asserts against and
+`TEST` to the new test class, then paste the block:
+
 ```bash
+FILE=templates/skills/<skill>/SKILL.md
+TEST=<TestClass>
+TMP="$(mktemp)"
+
 cp "$FILE" "$TMP" && git checkout HEAD -- "$FILE"
-.venv/bin/python -m unittest discover -s tests -p test_skills.py -k <TestClass>   # expect FAILED
-cp "$TMP" "$FILE"
-.venv/bin/python -m unittest discover -s tests -p test_skills.py -k <TestClass>   # expect OK
+.venv/bin/python -m unittest discover -s tests -p test_skills.py -k "$TEST"   # expect FAILED
+cp "$TMP" "$FILE" && rm -f "$TMP"
+.venv/bin/python -m unittest discover -s tests -p test_skills.py -k "$TEST"   # expect OK
 ```
+
+With more than one source file, list them all in the `git checkout` and restore
+each from its own copy; the pin is only proved when every file the tests read is
+back at its pre-change state for the failing run.
 
 Real example: a pin of `## Gotchas` against
 `se-review-skills/references/session-evidence.md` was accepted in review and
