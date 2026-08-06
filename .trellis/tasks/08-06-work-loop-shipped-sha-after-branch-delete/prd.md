@@ -1,0 +1,131 @@
+# Work-loop reconcile cannot record lastShippedSha after housekeeping deletes the merged branch
+
+## Goal
+
+Let the autonomous work loop record its final shipped feature SHA at the merge
+boundary that `sd-housekeeping` actually produces, instead of forcing the
+operator to recreate a deleted branch ref to get past a validation dead-end.
+
+## Problem
+
+`sd-work-backlog` instructs the controller: "When housekeeping returns a
+verified clean default branch and merge HEAD, record `branch`, `head`, and the
+final shipped feature SHA before transitioning to `followups`." By the time
+housekeeping returns it has already deleted the merged feature branch — that
+deletion is step 8 of its own task list. Two validations in
+`scripts/sd-ai-command-pack-work-loop.py` then contradict each other:
+
+- around lines 1892-1900, a branch change to the base branch is allowed only at
+  a "verified merge boundary", which **requires** `lastShippedSha` in the same
+  call; and
+- around lines 1981-2006, when the branch changes the ancestry check resolves
+  the tip from `_branch_commit(remembered_branch)` — the deleted feature branch,
+  so `None` — and falls back to `remembered_head`, the pre-finalization head.
+  The real shipped SHA is not an ancestor of that fallback tip, so the call
+  fails with `lastShippedSha evidence must belong to the shipped branch`.
+
+Passing the feature branch instead fails a third check,
+`branch evidence is not a local Git branch: <branch>`, because the ref is gone.
+
+Every ordering fails:
+
+| `--branch` | `--head` | `--last-shipped-sha` | Result |
+|---|---|---|---|
+| `main` | merge commit | shipped SHA | `must belong to the shipped branch` |
+| feature branch | shipped SHA | shipped SHA | `not a local Git branch` |
+| `main` | merge commit | omitted | `may change only to the base branch at a verified merge boundary` |
+
+Observed on run `17ab8b2853724fb481696ba6d4dcc057`, iteration 2, PR #153. Each
+rejected attempt increments the context epoch and drives `contextHealth` to
+`red`, which by the controller's own rules is a stop-or-park condition — so a
+fully merged, successful iteration reports a red run.
+
+## Workaround used
+
+Recreate the deleted branch at the merge commit's second parent
+(`git rev-list --parents -n1 <merge>`), reconcile twice — once with the feature
+branch at the shipped SHA, once advancing to `main` at the merge commit — then
+delete the temporary ref. The ref points at already-merged history so it invents
+no evidence, but needing it is the defect: the controller's documented sequence
+should work against the state housekeeping actually leaves behind.
+
+## Requirements
+
+- Reconcile must accept the merge boundary using evidence that survives branch
+  deletion. The merge commit's second parent is the shipped feature tip and is
+  reachable from the base branch, so ancestry is provable without the ref.
+- A recorded branch that no longer exists locally must not by itself be an error
+  at a proven merge boundary; it is the expected post-housekeeping state.
+- A green reconciliation must clear red reasons accumulated from earlier
+  rejected calls in the same run, so operator input errors do not permanently
+  mark a successful iteration red.
+- The controller's documented call shape in `sd-work-backlog` and the helper's
+  validation must agree. If the helper keeps requiring two calls, the skill has
+  to say so.
+
+## Acceptance Criteria
+
+- [ ] A single `reconcile --verified-live-advance` call carrying the base
+      branch, the merge commit, and the shipped feature SHA succeeds against a
+      repository whose feature branch has already been deleted.
+- [ ] The rejected orderings above produce one actionable diagnostic naming the
+      missing evidence instead of three mutually exclusive errors.
+- [ ] A green reconciliation clears stale red reasons accumulated from earlier
+      rejected calls in the same run.
+- [ ] Regression coverage pins the post-housekeeping merge boundary: deleted
+      feature ref, merge commit on the base branch, shipped SHA as the merge
+      commit's second parent.
+- [ ] `sd-work-backlog` step 3's wording matches the helper's accepted call
+      shape.
+
+## Second gap: no sanctioned skip from `selected`
+
+Same run, same session. `sd-work-backlog` says "`skip current` is allowed only
+before mutation", but `LEGAL_TRANSITIONS` (around line 146) gives `selected`
+only `{planning, implementing, checkpoint, stopped}`. There is no route back to
+`inventory` and no route to `complete`, so `result --outcome skipped` fails with
+`illegal work-loop transition: selected -> complete`. Writing a checkpoint does
+not help: the overlay keeps `resumePhase: selected` and leaves the phase at
+`selected`, and `checkpoint`'s own outbound set is only reachable once the phase
+is literally `checkpoint`.
+
+The trigger is ordinary: ranking selects a task whose PRD, read after selection,
+disqualifies it. Here it was `07-25-agent-artifacts`, a parent task whose own PRD
+says it "has no direct implementation work and must not be started". Nothing in
+the ranked candidate list exposes that — it is prose inside the PRD body — so a
+correct ranking can still produce a selection that must be abandoned before any
+mutation, which is precisely the case the skill's `skip current` control names.
+
+The only exits are to walk the full phase path with no work, fabricating
+`implementing`/`validating`/`shipping` evidence that never happened, or to stop
+the run under a stop reason that is not true.
+
+### Additional requirements
+
+- Provide a sanctioned pre-mutation skip: either `selected -> inventory` as a
+  legal transition guarded by "no branch, head, or PR evidence recorded", or a
+  `result --outcome skipped` path valid from `selected`.
+- The skip must record the skipped task and its reason in the run's counters and
+  decisions, so the final report can list it. It must not consume an iteration
+  that produced no work, or it must state clearly that it does.
+- `sd-work-backlog`'s `skip current` wording and the helper's legal transitions
+  must agree.
+
+### Additional acceptance criteria
+
+- [ ] `skip current` from `selected` with no recorded branch/head/PR evidence
+      succeeds and returns the run to `inventory`.
+- [ ] The same call fails closed once branch, head, or PR evidence exists.
+- [ ] The skipped task and reason appear in the run's decisions and counters.
+- [ ] Regression coverage pins both the allowed and the refused case.
+
+## Out of scope
+
+- Changing when `sd-housekeeping` deletes the merged branch.
+- The `--recover-stale-lock` flag that `references/ownership-recovery.md` names
+  but this helper version does not implement; track that separately.
+- Broader ledger schema changes.
+
+## Notes
+
+- Lightweight enough to stay PRD-only until design work proves otherwise.

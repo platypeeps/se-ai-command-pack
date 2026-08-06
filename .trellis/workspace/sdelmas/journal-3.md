@@ -1019,3 +1019,39 @@ Extended se-review-skills so a gotcha-qualifying observed-use finding survives i
 ### Next Steps
 
 - None - task complete
+
+
+## Session 129: Record work-loop ledger gaps found while shipping PR #153
+
+**Date**: 2026-08-06
+**Task**: Record work-loop ledger gaps found while shipping PR #153
+**Branch**: `task/08-06-work-loop-ledger-gaps`
+
+### Summary
+
+Two defects in scripts/sd-ai-command-pack-work-loop.py surfaced during run 17ab8b28: reconcile cannot record lastShippedSha once sd-housekeeping has deleted the merged branch, and LEGAL_TRANSITIONS gives 'selected' no route out, so sd-work-backlog's documented 'skip current' control has no sanctioned implementation. Recorded as one P2 planning task; no fix in this branch.
+
+### Main Changes
+
+- New Trellis task 08-06-work-loop-shipped-sha-after-branch-delete carrying both gaps, each with the exact rejecting validation, the failing call matrix, and its own acceptance criteria
+- Documented the workaround used to get past the reconcile dead-end: recreate the deleted branch at the merge commit's second parent, reconcile twice, delete the temporary ref
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `073d5be` | chore(task): record 08-06-work-loop-shipped-sha-after-branch-delete |
+
+### Testing
+
+- [OK] review preflight: 0 failure(s), 0 warning(s)
+- [OK] sd-review scope=pr attempt 1: status ready, local outcome clean, 0 outstanding findings
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
