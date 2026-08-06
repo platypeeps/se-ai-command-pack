@@ -881,3 +881,44 @@ Shipped 07-25-audit-ci-workflow-hygiene: pip caching, PR-only run cancellation, 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 126: Installer subprocess and file-handling hardening
+
+**Date**: 2026-08-05
+**Task**: Installer subprocess and file-handling hardening
+**Branch**: `task/07-25-audit-installer-hardening`
+
+### Summary
+
+Shipped 07-25-audit-installer-hardening: _run_git timeout, symlink-safe mode-preserving backups, umask read once, --platform help fix. Manifest bumped to 0.66.14. PR #151, CI green, Copilot 4 findings across 2 rounds all fixed.
+
+### Main Changes
+
+- A-013 _run_git bounds git with 60s timeout, maps TimeoutExpired/FileNotFoundError to clean SystemExit
+- A-019 backups via O_CREAT|O_EXCL|O_NOFOLLOW (getattr-guarded) preserving source mode; open-before-validate skips hostile .bak symlinks
+- A-011 default_file_mode reads _PROCESS_UMASK once at import, no per-write os.umask
+- A-008 --platform help states pack-wide always/if-not-exists files install regardless; contract test
+- manifest 0.66.13 -> 0.66.14 + changelog + regenerated skill-catalog
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `06f9fa5` | feat: installer subprocess and file-handling hardening |
+| `3f5ec22` | fix: address Copilot review on PR #151 |
+
+### Testing
+
+- [OK] make check exit 0 (82 installer tests, ruff, mypy, generator --check, release gate)
+- [OK] release gate: version 0.66.13 -> 0.66.14; changelog heading matches
+- [OK] PR #151 CI all green; auto-tag-release skipped on PR
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

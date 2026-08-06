@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 125
+- **Total Sessions**: 126
 - **Last Active**: 2026-08-05
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~881 | Active |
+| `journal-3.md` | ~922 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 126 | 2026-08-05 | Installer subprocess and file-handling hardening | `06f9fa5`, `3f5ec22` | `task/07-25-audit-installer-hardening` |
 | 125 | 2026-08-05 | CI workflow hygiene and release-tag error contract | `683b15b`, `cf71ce2` | `task/07-25-audit-ci-workflow-hygiene` |
 | 124 | 2026-08-05 | Close 07-25-agent-artifacts umbrella (integration review) | `477e5d5` | `task/07-25-agent-artifacts-closeout` |
 | 123 | 2026-08-05 | Ship wave-1 SE worker agents (07-25-worker-agents) | `73a5c4a`, `d873d90`, `93e73a7`, `b044c84` | `task/07-25-worker-agents` |
