@@ -4042,8 +4042,14 @@ class BrandVoiceSkillTest(unittest.TestCase):
 
 class ReviewSkillsGotchaMandateTest(unittest.TestCase):
     """A gotcha-qualifying observed-use finding must reach the skill it is
-    about, not stop at the review report. Each phrase below is absent from the
-    pre-change files, so every assertion here can fail."""
+    about, not stop at the review report.
+
+    Every phrase pinned below was verified absent from the file it is asserted
+    against before that file gained the contract, so no assertion here can pass
+    on an incidental match elsewhere in the text. Substituting a phrase requires
+    repeating that check: see "Prose contracts: prove the pin can fail" in
+    ``.trellis/spec/backend/quality-guidelines.md`` for the runnable procedure.
+    """
 
     def test_created_tasks_require_a_gotchas_section_in_the_target(
         self,

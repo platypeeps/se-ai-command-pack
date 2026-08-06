@@ -105,17 +105,20 @@ introduces rather than restating prose. Each pins the shortest substring that
 carries the contract, so ordinary rewording does not break the test but deleting
 the contract does.
 
-| Assertion (substring pinned) | Guards | File |
-|---|---|---|
-| `## Gotchas` appears in the body | D1 mandate | `SKILL.md` |
-| `sd-retro` and `sd-review-learnings` both appear | D3 | `SKILL.md` |
-| `last in the skill body` appears | D1 in the guide | `references/session-evidence.md` |
-| `does not qualify` appears | D1 negative case | `SKILL.md` |
+| Test | Substrings pinned (lowercased) | Guards | File |
+|---|---|---|---|
+| `test_created_tasks_require_a_gotchas_section_in_the_target` | ``` `## gotchas` section ```; `placed last in the target skill body`; `rather than after a named heading the target may not have` | D1 mandate, D2 placement | `SKILL.md` |
+| `test_nonqualifying_evidence_creates_a_task_without_the_requirement` | `does not qualify`; `create the task without the requirement and say so`; `never widen the gate to manufacture a gotcha` | D1 negative case | `SKILL.md` |
+| `test_session_evidence_guide_states_the_same_mandate` | `placed last in the skill body`; `never relax the five parts above to make a record qualify` | D1 in the guide | `references/session-evidence.md` |
+| `test_neighbor_boundary_names_the_two_session_reading_skills` | ``` `sd-retro` owns incident and debugging retrospectives ```; ``` `sd-review-learnings` owns recurring pull-request review feedback ``` | D3 | `SKILL.md` |
 
-The `SKILL.md` `## Gotchas` pin is satisfied by the backticked mention inside
-the step 10 mandate. It is not an instruction to add a literal `## Gotchas`
-heading to `se-review-skills` itself — the mandate applies to the skills this
-one reviews.
+The ``` `## gotchas` section ``` pin is satisfied by the backticked mention
+inside the step 10 mandate. It is not an instruction to add a literal
+`## Gotchas` heading to `se-review-skills` itself — the mandate applies to the
+skills this one reviews. Pinning the backticked token plus the word `section`
+is deliberate: the bare heading text `## Gotchas` is a prefix of the guide's own
+`## Gotchas and regression records` heading, which is how the vacuous first
+draft passed.
 
 The reference pin uses the existing `normalized_resource(name, relative)` helper
 (`tests/test_skills.py:107-110`), which whitespace-normalizes a skill-owned
@@ -125,8 +128,13 @@ reference, so a pin survives rewrapping but not deletion.
 absent from all of them.** That check is not optional bookkeeping: an earlier
 draft pinned `## Gotchas` against the *reference*, whose existing heading
 `## Gotchas and regression records` (line 141) already contains that substring —
-the assertion would have passed before any edit and could never have failed. Re-
-run the check for any token substituted later.
+the assertion would have passed before any edit and could never have failed.
+
+The check is a runnable procedure, not a promise. The subsection
+*Prose contracts: prove the pin can fail* in
+`.trellis/spec/backend/quality-guidelines.md` owns it: grep each token against the unedited file, then restore the source files from
+`HEAD`, confirm the new tests report `FAILED`, restore the edits, and confirm
+`OK`. Re-run it for any token substituted later.
 
 No change to `tests/test_generate.py`: `EXPECTED_SHARED_SOURCES` tracks
 shared-reference consumers, and this task adds none.
