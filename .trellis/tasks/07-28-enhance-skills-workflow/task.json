@@ -1,8 +1,8 @@
 {
   "id": "enhance-skills-workflow",
   "name": "enhance-skills-workflow",
-  "title": "Create se-enhance-skills: session-driven skill improvement workflow",
-  "description": "New pack skill that mines the current conversation for sd-*/se-* skills actually used, extracts friction and mistakes, and files consent-gated Trellis improvement tasks in each skill's upstream source repo, requiring a Gotchas section in every touched SKILL.md.",
+  "title": "Extend se-review-skills: mandate a Gotchas section in tasks it creates",
+  "description": "Require every task se-review-skills creates from a gotcha-qualifying observed-use finding to carry a Gotchas acceptance requirement into the touched SKILL.md, and state that rule in references/session-evidence.md itself. Also corrects the neighbor-boundary paragraph to name sd-retro and sd-review-learnings. The session-first scope=session selector was split into its own task.",
   "status": "planning",
   "dev_type": null,
   "scope": null,

@@ -1,98 +1,89 @@
-# Create se-enhance-skills: session-driven skill improvement workflow
+# Extend se-review-skills: mandate a Gotchas section in tasks it creates
 
 ## Goal
 
-Add a pack skill (working name `se-enhance-skills`) that closes the loop from
-live skill usage back to skill source quality. Invoked on demand (typically
-near session end), it inventories the `sd-*` and `se-*` skills actually used in
-the current conversation, mines the conversation for friction attributable to
-each skill's instructions, and files consent-gated Trellis improvement tasks in
-each skill's upstream source repository. Every improvement task must require
-that the touched SKILL.md gain or extend a **Gotchas** section capturing the
-mistake pattern so future sessions avoid it.
+`se-review-skills` already reports gotchas from observed session use. It does
+not require the task it creates to carry that gotcha into the target skill, so
+the durable lesson depends on whoever picks the task up. Close that gap, and fix
+one inaccurate boundary paragraph while in the file.
+
+## Scope history
+
+This task originally proposed a separate `se-enhance-skills` skill. Reading the
+current source showed `se-review-skills` already performs almost the whole
+proposed workflow — session mining, evidence-backed findings, canonical source
+boundaries, cross-repo routing, consent-gated task creation, and gotcha
+reporting — capability that landed in `093809c` on 2026-07-22, six days before
+this PRD was written. The task became an extension of `se-review-skills`.
+
+It was then scoped to two capabilities: a session-first `scope=session` selector
+and this Gotchas mandate. Four rounds of adversarial planning review found
+blocking defects in the selector every round — it turned out to reach into the
+report schema, the bundled analyzer's payload contract, the session privacy
+boundary, snapshot replay, and `mode=apply`. **`scope=session` was split into
+its own task** with that ledger as its starting evidence. This task is the half
+that was stable: two authored files, no open concerns.
 
 ## Requirements
 
-- Skill source at `templates/skills/se-enhance-skills/SKILL.md` (this repo's
-  skill source tree) plus the pack's standard per-platform command wrappers,
-  passing existing generator/manifest validation.
-- Workflow the skill encodes:
-  1. Inventory skills used in the current conversation only (no transcript
-     archaeology beyond the session). Scope: `sd-*` and `se-*` skills;
-     `trellis-*` explicitly out of scope for v1.
-  2. For each used skill, extract evidence-backed friction: errors hit,
-     retries, gates that fired late, ambiguous instructions, workarounds the
-     agent had to invent. Evidence must cite the concrete failure (command,
-     error line, or misstep), not vibes.
-  3. Map each skill to its upstream source repo — `sd-*` →
-     sd-ai-command-pack (`templates/.agents/skills/...`), `se-*` →
-     se-ai-command-pack (`templates/skills/...`) — and target the source
-     tree, never a consumer's installed copy.
-  4. With per-repo Trellis task-creation consent, create one improvement task
-     per affected skill (dedupe against existing open tasks first). Each task
-     carries: evidence, proposed instruction change, and the mandatory
-     Gotchas-section requirement.
-  5. Report a per-skill summary: task created, deduped against existing task,
-     or no actionable friction.
-- Gotchas contract: an improvement task is only complete when the target
-  SKILL.md has a `## Gotchas` section containing the new entry; create the
-  section when absent.
-- The enhancer itself is planning-only: it creates tasks and reports; it never
-  edits skill sources directly in the invoking session.
-- Cross-repo behavior: resolve sibling checkouts; when an upstream repo is
-  missing or has no Trellis, report the routing gap instead of failing or
-  silently dropping the finding.
-- Dry-run mode listing proposed tasks without creating anything.
-- Boundary with neighbors, to be kept explicit in the SKILL.md: `sd-retro`
-  owns incident/debugging retrospectives and journal capture;
-  `sd-review-learnings` owns PR-review feedback patterns; `se-review-skills`
-  owns on-demand review of a bounded skill collection (defects, overlap,
-  metadata) independent of any session. `se-enhance-skills` owns
-  skill-instruction defects observed in live usage of the current
-  conversation. Reuse their consent-gating and task-creation conventions; do
-  not duplicate their workflows.
+- Every task `mode=task` creates from a **gotcha-qualifying** observed-use
+  finding states, as an acceptance requirement, that the touched SKILL.md gains
+  or extends a `## Gotchas` section carrying the trigger, failure, prevention,
+  recovery, and regression method already defined in
+  `references/session-evidence.md`, *Gotchas and regression records*. Create the
+  section when absent, placed last in the skill body.
+- "Gotcha-qualifying" is that reference's existing gate — a recurring or
+  high-consequence edge case whose evidence can state all five parts. The
+  mandate must not force a gotcha for evidence the reference says does not
+  qualify, and must not broaden the gate to make more findings qualify. A task
+  built from non-qualifying observed-use evidence is created without the
+  requirement and says so.
+- The rule is written into `references/session-evidence.md` as well as
+  `SKILL.md`. That reference is the required reading for the observed-use pass,
+  so a rule stated only in the skill body does not reach the reader who follows
+  the citation.
+- The mandate follows the evidence class, not the skill: a task created from a
+  source-only finding with no session evidence is unchanged.
+- Keep the neighbor boundary accurate in the skill text: `sd-retro` owns
+  incident and debugging retrospectives, `sd-review-learnings` owns PR-review
+  feedback patterns, and `se-review-skills` owns skill-instruction defects from
+  source and observed use. This is the paragraph whose omission allowed the
+  duplicate-skill proposal above, so it is part of the deliverable.
+- No new skill, no new argument, no new family entry, no new runtime-profile
+  assignment, and no new shared-reference consumer. No change to the bundled
+  analyzer `templates/skills/se-review-skills/scripts/skill_review.py`, to
+  `references/report-schema.md`, to the session budgets,
+  the confirmation standard, the privacy boundary, or the causal-classification
+  table.
 
 ## Acceptance Criteria
 
-- [ ] Skill source + platform wrappers generated and passing pack validation
-      and tests.
-- [ ] Dry-run produces the per-skill friction report without side effects.
-- [ ] Live run creates correctly-routed upstream tasks only after per-repo
-      consent, with dedupe against existing open tasks.
-- [ ] Every created task embeds the Gotchas-section requirement.
-- [ ] `se-enhance-skills` SKILL.md itself contains a `## Gotchas` section
-      (dogfood).
-- [ ] Skill text documents the sd-retro / sd-review-learnings /
-      se-review-skills boundary.
-
-## Worked example (seed evidence, 2026-07-28 session in se-ai-command-pack)
-
-Findings the enhancer would have filed from that session:
-
-- `sd-create-pr`: publish preflight failed on a task committed earlier in the
-  same session — empty `task.json` description plus generated `_example`
-  scaffold rows in `implement.jsonl`/`check.jsonl`. `task.py create` only
-  warns; the failure surfaced at PR time. Gotcha candidate: when a new task
-  directory is in the intended diff, validate/fix task metadata and scaffold
-  rows at commit time, not first at publish preflight.
-- `sd-audit-repo`: Workflow-tool `args` can arrive as a JSON string; the
-  orchestration script must parse defensively
-  (`typeof args === 'string' ? JSON.parse(args) : args`) or `pipeline()`
-  throws. Gotcha candidate for the skill's workflow-authoring instructions.
-- `sd-finish-work` (work-loop tooling): `work-loop.py stop` validates via
-  `lock.json`, which paused loops release — stopping a paused loop errors.
-  Gotcha candidate: document the paused-loop stop path.
-- `sd-create-pr` × `sd-finish-work` interaction: sd-create-pr bundles the
-  sd-update-spec map refresh (`docs/repomix-map.md`) into the same commit as
-  task metadata; the later finish-work `final-bundle --mode planning`
-  journal-only-recovery gate then fails with
-  `planning_recovery_commit_scope_invalid` because a journal-referenced work
-  commit touches paths outside the task directory. Gotcha candidate: keep
-  task-directory changes and generated-map refreshes in separate commits when
-  a planning-mode finish-work will follow.
+- [ ] `se-review-skills` states the `## Gotchas` acceptance requirement for
+      every task it creates from a gotcha-qualifying observed-use finding,
+      referencing the five-part record in `references/session-evidence.md` and
+      leaving that reference's qualification gate unchanged.
+- [ ] The skill states the negative case: a task from non-qualifying
+      observed-use evidence is created without the requirement and says so.
+- [ ] `references/session-evidence.md` carries the same rule in its
+      *Gotchas and regression records* section.
+- [ ] The neighbor-boundary paragraph names `sd-retro` and
+      `sd-review-learnings` and what each owns.
+- [ ] `docs/SE_AI_COMMAND_PACK.md`, `### Skill-review workflow boundary`,
+      describes the Gotchas mandate, and the documentation path guard still
+      reports zero failures.
+- [ ] `make check` passes: generation parity, Ruff, mypy, the unittest suite,
+      and the release payload gate. New pins cover both the `SKILL.md` mandate
+      and the reference edit, and each pinned token is verified absent from the
+      unedited file so the assertion can fail.
+- [ ] `make generate` is idempotent; the release payload gate passes with a
+      patch bump to `0.67.1` and a dated CHANGELOG heading, because
+      `templates/**` and `generated/**` change.
 
 ## Out of scope
 
-- Editing skill sources directly from the enhancer session.
-- `trellis-*` skill improvements (v1).
-- Automated/scheduled invocation; v1 is on-demand only.
+- The `scope=session` session-first selector — split to its own task.
+- A separate `se-enhance-skills` skill.
+- Editing skill sources directly from the reviewing session beyond the existing
+  `mode=apply` contract.
+- `trellis-*` skill improvements.
+- Automated or scheduled invocation.
