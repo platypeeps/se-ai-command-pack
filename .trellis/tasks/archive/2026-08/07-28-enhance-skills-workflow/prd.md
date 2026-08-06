@@ -58,24 +58,24 @@ that was stable: two authored files, no open concerns.
 
 ## Acceptance Criteria
 
-- [ ] `se-review-skills` states the `## Gotchas` acceptance requirement for
+- [x] `se-review-skills` states the `## Gotchas` acceptance requirement for
       every task it creates from a gotcha-qualifying observed-use finding,
       referencing the five-part record in `references/session-evidence.md` and
       leaving that reference's qualification gate unchanged.
-- [ ] The skill states the negative case: a task from non-qualifying
+- [x] The skill states the negative case: a task from non-qualifying
       observed-use evidence is created without the requirement and says so.
-- [ ] `references/session-evidence.md` carries the same rule in its
+- [x] `references/session-evidence.md` carries the same rule in its
       *Gotchas and regression records* section.
-- [ ] The neighbor-boundary paragraph names `sd-retro` and
+- [x] The neighbor-boundary paragraph names `sd-retro` and
       `sd-review-learnings` and what each owns.
-- [ ] `docs/SE_AI_COMMAND_PACK.md`, `### Skill-review workflow boundary`,
+- [x] `docs/SE_AI_COMMAND_PACK.md`, `### Skill-review workflow boundary`,
       describes the Gotchas mandate, and the documentation path guard still
       reports zero failures.
-- [ ] `make check` passes: generation parity, Ruff, mypy, the unittest suite,
+- [x] `make check` passes: generation parity, Ruff, mypy, the unittest suite,
       and the release payload gate. New pins cover both the `SKILL.md` mandate
       and the reference edit, and each pinned token is verified absent from the
       unedited file so the assertion can fail.
-- [ ] `make generate` is idempotent; the release payload gate passes with a
+- [x] `make generate` is idempotent; the release payload gate passes with a
       patch bump to `0.67.1` and a dated CHANGELOG heading, because
       `templates/**` and `generated/**` change.
 
