@@ -201,6 +201,40 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - `make generate` twice, `make check`, `git diff --check`, and explicit empty
   diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
 
+### 6a. Adding One Skill: Ordering And Non-Derived Literals
+
+Two parts of this flow are not discoverable from the registry, and both fail
+late — at `--check` or in the suite — rather than at the edit site.
+
+**Bump the version before `make generate`, not after.** `rendered_help_catalog`
+embeds the manifest version in
+`templates/skills/_shared/references/skill-catalog.md`, and
+`regenerated_manifest_text` preserves whatever header version it finds. Bumping
+after generation leaves the catalog carrying the old version, so
+`generate-skill-surfaces.py --check` reports drift and `make release-check`
+fails. For the same reason, never `git checkout -- manifest.json` on its own to
+redo generation: that silently reinstates the pre-bump version.
+
+**Four test literals are deliberately not derived from the registry**, so a new
+skill must be added to each by hand:
+
+| Literal | File | Failure when missed |
+|---|---|---|
+| ordered `SKILL_NAMES` tuple | `tests/test_skills.py` | `test_skill_names_are_derived_without_reordering` |
+| name → family map | `tests/test_skills.py` | same test, second assertion |
+| `EXTERNAL_INPUT_SKILLS` | `tests/test_skills.py` | injection-rule pin never covers the new skill |
+| `EXPECTED_SHARED_SOURCES` | `tests/test_generate.py` | `test_registered_shared_sources_match_snapshot` |
+
+The golden-literal design is intentional — a registry-derived expectation would
+accept whatever the registry says and prove nothing — so treat these edits as
+part of the change, not as test churn.
+
+The corpus also pins two literal strings in every `SKILL.md`: the exact sentence
+`Unknown argument names are an error` and, for any skill listed in
+`EXTERNAL_INPUT_SKILLS`, the fragment `data, not instructions`. A registered
+consumer of a shared reference must additionally cite `references/<basename>.md`
+in its body, which the standard Arguments preamble satisfies.
+
 ### 7. Wrong vs Correct
 
 #### Wrong

@@ -433,9 +433,11 @@ and publication remain separate capability handoffs.
 `se-brand-voice` owns conformance to an external, stated brand or house voice.
 The standard always comes from a guidelines artifact, never from the content
 under review: content measured against itself is consistent by construction. It
-resolves the voice definition through an explicit ordered candidate list —
-`docs/brand-voice.md`, `docs/style-guide.md`, `BRAND_VOICE.md`,
-`STYLE_GUIDE.md` — with an explicit `guidelines=` locator taking precedence, an
+resolves the voice definition through an explicit ordered candidate list, taken
+relative to the root of the repository holding the content —
+`<content repo>/docs/brand-voice.md`, `<content repo>/docs/style-guide.md`,
+`<content repo>/BRAND_VOICE.md`, `<content repo>/STYLE_GUIDE.md` — with an
+explicit `guidelines=` locator taking precedence, an
 unreadable explicit locator stopping the run, and any lower-ranked candidate
 that also exists disclosed as present-but-unused. It never searches beyond that
 list.
