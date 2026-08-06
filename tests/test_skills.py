@@ -89,6 +89,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-tutorial",
     "se-video-notes",
     "se-watchlist",
+    "se-brand-voice",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -297,6 +298,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-tutorial",
                 "se-video-notes",
                 "se-watchlist",
+                "se-brand-voice",
             ),
         )
         self.assertEqual(
@@ -355,6 +357,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-tutorial": "create",
                 "se-video-notes": "understand",
                 "se-watchlist": "operate",
+                "se-brand-voice": "improve",
             },
         )
 
@@ -3914,6 +3917,129 @@ class SkillSafetyPinsTest(unittest.TestCase):
             self.assertIn(sibling, raw)
 
 
+class BrandVoiceSkillTest(unittest.TestCase):
+    def test_brand_voice_resolves_guidelines_through_a_fixed_ordered_list(
+        self,
+    ) -> None:
+        text = normalized("se-brand-voice").lower()
+        for phrase in (
+            "an explicit `guidelines=<locator>` or inline text always wins",
+            "an unreadable explicit locator stops the run",
+            "`docs/brand-voice.md`, `docs/style-guide.md`, `brand_voice.md`,",
+            "`style_guide.md`",
+            "present-but-unused",
+            "never search beyond that list",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_brand_voice_never_infers_a_voice_from_the_reviewed_content(
+        self,
+    ) -> None:
+        text = normalized("se-brand-voice").lower()
+        for phrase in (
+            "when no candidate resolves, stop validating and report the gap",
+            "offer bootstrap mode and say what it needs",
+            "never infer a brand voice from the content under review",
+            "content measured against itself is consistent by construction",
+            "never validate against an unstated voice",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_brand_voice_requires_mode_specific_arguments(self) -> None:
+        text = normalized("se-brand-voice").lower()
+        for phrase in (
+            "required in `mode=validate`; ignored in `mode=bootstrap`",
+            "missing in validate mode is a stop-and-report error",
+            "required in `mode=bootstrap`; optional supporting context",
+            "bootstrap with no samples is a stop-and-report error",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_brand_voice_documents_validate_and_bootstrap_examples(self) -> None:
+        text = normalized("se-brand-voice")
+        self.assertIn("`input=docs/launch-post.md", text)
+        self.assertIn("`mode=bootstrap sources=", text)
+
+    def test_brand_voice_covers_four_rule_groups(self) -> None:
+        text = normalized("se-brand-voice").lower()
+        for group in (
+            "**tone**",
+            "**terminology**",
+            "**style**",
+            "**audience fit**",
+        ):
+            self.assertIn(group, text)
+        self.assertIn("scope=all|tone|terminology|style|audience-fit", text)
+        self.assertIn("is reported as `not defined` and produces no", text)
+
+    def test_brand_voice_findings_carry_rule_location_text_and_rewrite(
+        self,
+    ) -> None:
+        text = normalized("se-brand-voice").lower()
+        for phrase in (
+            "the rule it violates as stated in the guidelines",
+            "the offending text quoted verbatim",
+            "a suggested rewrite",
+            "a finding without a rule the guidelines actually state is not a "
+            "finding",
+            "an unlocatable claim is an observation, not a violation",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_brand_voice_is_read_only_in_every_mode(self) -> None:
+        text = normalized("se-brand-voice").lower()
+        for phrase in (
+            "every mode is read-only",
+            "it never edits, saves, or publishes anything",
+            "return the draft inside the report",
+            "never write a file",
+            "suggested rewrites are proposals for the user to apply",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_brand_voice_boundary_is_stated_from_both_sides(self) -> None:
+        brand = normalized("se-brand-voice")
+        editor = normalized("se-technical-editor")
+        self.assertIn("`se-technical-editor`", brand)
+        self.assertIn("`se-brand-voice`", editor)
+        self.assertIn(
+            "measures a draft against *its own* representative language", brand
+        )
+        self.assertIn(
+            "Conformance to an external, stated brand or house voice belongs "
+            "to `se-brand-voice`",
+            editor,
+        )
+
+    def test_brand_voice_resources_and_final_report_contract(self) -> None:
+        raw = skill_text("se-brand-voice")
+        self.assertIn("references/voice-guidelines-schema.md", raw)
+        self.assertIn("references/argument-vocabulary.md", raw)
+        schema = normalized_resource(
+            "se-brand-voice", "references/voice-guidelines-schema.md"
+        ).lower()
+        for phrase in (
+            "preferred",
+            "banned",
+            "naming",
+            "exemptions",
+            "open questions",
+            "the skill writes no file",
+        ):
+            self.assertIn(phrase, schema)
+        for field in (
+            "**Scope and inputs**",
+            "**Guidelines resolution**",
+            "**Verdict summary**",
+            "**Findings**",
+            "**Observations**",
+            "**Coverage gaps**",
+            "**Bootstrap draft**",
+            "**Handoffs and limits**",
+        ):
+            self.assertIn(field, raw)
+
+
 class SkillDocumentationTest(unittest.TestCase):
     def test_operator_guide_covers_every_registered_skill(self) -> None:
         operator = (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md").read_text(
@@ -3973,6 +4099,24 @@ class SkillDocumentationTest(unittest.TestCase):
             "voice consistency",
         ):
             self.assertIn(phrase, readme)
+            self.assertIn(phrase, operator)
+
+    def test_brand_voice_docs_state_the_guidelines_sourced_boundary(self) -> None:
+        operator = " ".join(
+            (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md")
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        for phrase in (
+            "`se-brand-voice` owns conformance to an external, stated brand or "
+            "house voice",
+            "never from the content under review",
+            "with an explicit `guidelines=` locator taking precedence",
+            "disclosed as present-but-unused",
+            "Every mode is read-only",
+            "The split with `se-technical-editor` is the source of the "
+            "standard, not the artifact type",
+        ):
             self.assertIn(phrase, operator)
 
     def test_readme_lists_every_skill(self) -> None:

@@ -38,7 +38,8 @@ process. User-facing install/update/remove instructions live in the
   mastery-oriented paths with `se-learn` and source-traceable field mapping
   with `se-literature-map`, plus evidence-linked post-meeting reconciliation
   with `se-meeting-follow-through`, plus private cross-stream weekly reflection
-  with `se-weekly-review`.
+  with `se-weekly-review`, plus guidelines-sourced voice conformance checking
+  with `se-brand-voice`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
 - **Repo-local SD and Trellis helpers** support development in this checkout.
@@ -426,6 +427,33 @@ change ledger. The supplied draft's representative voice outranks profile
 preferences, confidential material stays out of broader searches, and topic
 discovery, original authorship, primary research, fact checking, red teaming,
 and publication remain separate capability handoffs.
+
+### Brand-voice workflow boundary
+
+`se-brand-voice` owns conformance to an external, stated brand or house voice.
+The standard always comes from a guidelines artifact, never from the content
+under review: content measured against itself is consistent by construction. It
+resolves the voice definition through an explicit ordered candidate list —
+`docs/brand-voice.md`, `docs/style-guide.md`, `BRAND_VOICE.md`,
+`STYLE_GUIDE.md` — with an explicit `guidelines=` locator taking precedence, an
+unreadable explicit locator stopping the run, and any lower-ranked candidate
+that also exists disclosed as present-but-unused. It never searches beyond that
+list.
+
+Every mode is read-only. Validation reports findings that each carry the rule
+the guidelines state, an exact location, the offending text quoted verbatim, a
+suggested rewrite, and a severity; judgments the guidelines do not cover are
+recorded as observations rather than violations, and a rule group the artifact
+does not define is reported as `not defined` instead of silently passing. With
+no resolvable guidelines the skill reports the gap and offers bootstrap, which
+drafts starter guidelines from supplied samples inside the report and writes no
+file.
+
+The split with `se-technical-editor` is the source of the standard, not the
+artifact type: `se-technical-editor` measures a technical draft against its own
+representative language while checking correctness, evidence, citations, and
+structure, and can apply explicitly approved edits. `se-brand-voice` checks
+voice only, against a stated external standard, and applies nothing.
 
 ### Explain workflow boundary
 

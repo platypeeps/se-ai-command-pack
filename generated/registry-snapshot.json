@@ -220,6 +220,10 @@
     {
       "name": "se-watchlist",
       "family": "operate"
+    },
+    {
+      "name": "se-brand-voice",
+      "family": "improve"
     }
   ],
   "platforms": [
@@ -343,7 +347,8 @@
       "se-tutorial",
       "se-video-notes",
       "se-watchlist",
-      "se-weekly-review"
+      "se-weekly-review",
+      "se-brand-voice"
     ],
     "_shared/references/skill-catalog.md": [
       "se-help"

@@ -27,6 +27,11 @@ Do not use for topic discovery (`se-topic-radar`), original article development
 (`se-fact-check`), adversarial premise review (`se-red-team`), or publication
 (`se-publish`). These are separate capability handoffs, not prerequisites.
 
+The `voice-consistency` pass here measures the draft against its own
+representative language. Conformance to an external, stated brand or house voice
+belongs to `se-brand-voice`, which validates any content against a guidelines
+artifact and reports only voice findings.
+
 ## Arguments
 
 Argument names and value sets follow the shared vocabulary in `references/argument-vocabulary.md`; reuse a canonical name and its value set before coining a new one.
