@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.67.1 - 2026-08-06
+
+- `se-review-skills` now requires every task it creates from a
+  gotcha-qualifying observed-use finding to carry a `## Gotchas` acceptance
+  requirement into the touched `SKILL.md`, so the five-part record survives into
+  the skill it is about instead of stopping at the review report. Evidence that
+  does not clear the existing qualification gate produces a task without the
+  requirement, stated explicitly.
+- The same rule is stated in `references/session-evidence.md`, which is the
+  required reading for the observed-use pass.
+- `se-review-skills` names its two session-reading neighbors and what each owns:
+  `sd-retro` for incident and debugging retrospectives, `sd-review-learnings`
+  for recurring pull-request review feedback patterns.
+
 ## 0.67.0 - 2026-08-06
 
 - Add `se-brand-voice`, an Improve workflow that validates written content

@@ -4040,6 +4040,63 @@ class BrandVoiceSkillTest(unittest.TestCase):
             self.assertIn(field, raw)
 
 
+class ReviewSkillsGotchaMandateTest(unittest.TestCase):
+    """A gotcha-qualifying observed-use finding must reach the skill it is
+    about, not stop at the review report. Each phrase below is absent from the
+    pre-change files, so every assertion here can fail."""
+
+    def test_created_tasks_require_a_gotchas_section_in_the_target(
+        self,
+    ) -> None:
+        text = normalized("se-review-skills").lower()
+        for phrase in (
+            "`## gotchas` section",
+            "placed last in the target skill body",
+            "rather than after a named heading the target may not have",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_nonqualifying_evidence_creates_a_task_without_the_requirement(
+        self,
+    ) -> None:
+        # The eligibility gate stays the reference's own; the mandate must not
+        # widen it to manufacture a gotcha for evidence that does not qualify.
+        text = normalized("se-review-skills").lower()
+        for phrase in (
+            "does not qualify",
+            "create the task without the requirement and say so",
+            "never widen the gate to manufacture a gotcha",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_session_evidence_guide_states_the_same_mandate(self) -> None:
+        # The guide is the required reading for the observed-use pass, so a
+        # rule stated only in SKILL.md never reaches a reader who follows the
+        # citation. Pin the guide separately from the skill body.
+        text = " ".join(
+            normalized_resource(
+                "se-review-skills", "references/session-evidence.md"
+            ).lower().split()
+        )
+        for phrase in (
+            "placed last in the skill body",
+            "never relax the five parts above to make a record qualify",
+        ):
+            self.assertIn(phrase, text)
+
+    def test_neighbor_boundary_names_the_two_session_reading_skills(
+        self,
+    ) -> None:
+        # The omission of this paragraph is what allowed a duplicate-skill
+        # proposal against this skill's own capabilities.
+        text = normalized("se-review-skills").lower()
+        for phrase in (
+            "`sd-retro` owns incident and debugging retrospectives",
+            "`sd-review-learnings` owns recurring pull-request review feedback",
+        ):
+            self.assertIn(phrase, text)
+
+
 class SkillDocumentationTest(unittest.TestCase):
     def test_operator_guide_covers_every_registered_skill(self) -> None:
         operator = (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md").read_text(

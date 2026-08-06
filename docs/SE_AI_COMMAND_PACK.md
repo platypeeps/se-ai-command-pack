@@ -310,11 +310,24 @@ into one finding set while retaining per-path drift evidence. Unverified copies
 are never merged by name alone. Every report ends with advisory suggested next
 steps, including exact selectors and installation-refresh guidance where useful.
 
+When the workflow creates a task from an observed-use finding that qualifies as
+a gotcha — a recurring or high-consequence edge case whose evidence states a
+trigger, failure, prevention, recovery, and regression method — that task
+carries an acceptance requirement that the touched skill gains or extends a
+`## Gotchas` section holding the record, placed last in the target skill body.
+The point is that the lesson lands in the skill it is about rather than stopping
+at the review report. Evidence that does not clear that gate produces a task
+without the requirement and says so; the gate is never widened to manufacture a
+gotcha from a one-off transcript error.
+
 Pack discovery and intent routing remain with `se-help`. Broader engineering
 repository audits remain with `sd-audit-repo`, while configured local
-code-review providers remain with `sd-review-local`. A skill review does
-not silently broaden into either workflow, edit installed copies, or treat a
-recommendation as authorization to mutate a repository.
+code-review providers remain with `sd-review-local`. Two neighbors also read
+past sessions for different subjects: `sd-retro` owns incident and debugging
+retrospectives, and `sd-review-learnings` owns recurring pull-request review
+feedback patterns. A skill review does not silently broaden into any of those
+workflows, edit installed copies, or treat a recommendation as authorization to
+mutate a repository.
 
 ### Personal-profile workflow boundary
 

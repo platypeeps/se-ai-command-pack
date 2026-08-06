@@ -37,6 +37,13 @@ Do not use this workflow to choose an ordinary end-user skill, audit arbitrary
 application code, or run a provider-only code review. Those remain owned by
 `se-help`, `sd-audit-repo`, and `sd-review-local`, respectively.
 
+Two neighbors also read past sessions, for different subjects. `sd-retro` owns
+incident and debugging retrospectives and their journal capture.
+`sd-review-learnings` owns recurring pull-request review feedback patterns.
+This skill owns skill-instruction defects, from source and from observed use.
+A finding about how a skill is written belongs here; a finding about how an
+incident unfolded or how reviewers keep responding belongs to them.
+
 Review mode is read-only. Task creation and application require a later
 explicit selector; a request to review never implies either.
 
@@ -184,7 +191,14 @@ an exact `skill=`, `root=`, or `installed-root=`.
     evidence, resolve the selector, preview every destination and affected
     template, then reconcile active and archived Trellis tasks. Reuse an
     accurate task, flag a stale task, or create at most one planning task per
-    affected skill and snapshot without starting it.
+    affected skill and snapshot without starting it. When a created task carries
+    an observed-use finding that qualifies as a gotcha under the session
+    evidence guide, state as an acceptance requirement that the touched
+    `SKILL.md` gains or extends a `## Gotchas` section holding that five-part
+    record, created when absent and placed last in the target skill body rather
+    than after a named heading the target may not have. When the evidence
+    **does not qualify** under that gate, create the task without the
+    requirement and say so; never widen the gate to manufacture a gotcha.
 11. Route verified SD and SE work to their respective upstream Trellis
    checkouts. Route other work to the repository owning the canonical source.
    If the checkout, remote, clean write boundary, or Trellis entrypoint cannot
