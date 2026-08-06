@@ -65,13 +65,22 @@ def generated_pack_file(kind: str, target: Path) -> PackFile:
     )
 
 
+def _read_process_umask() -> int:
+    # os has no portable getumask(), so the only way to read the umask is to
+    # set-and-restore it. Do that exactly once, here at import (single-threaded),
+    # instead of on every installed file. Capturing the ambient umask at startup
+    # is the correct semantic for a CLI; the installer never mutates it later.
+    current = os.umask(0)
+    os.umask(current)
+    return current
+
+
+_PROCESS_UMASK = _read_process_umask()
+
+
 def default_file_mode(*, executable: bool = False) -> int:
-    current_umask = os.umask(0)
-    try:
-        base_mode = 0o777 if executable else 0o666
-        return base_mode & ~current_umask
-    finally:
-        os.umask(current_umask)
+    base_mode = 0o777 if executable else 0o666
+    return base_mode & ~_PROCESS_UMASK
 
 
 def source_is_executable(source: Path) -> bool:
@@ -395,6 +404,45 @@ def install_file(
     )
 
 
+def _open_exclusive_backup(root: Path, destination: Path) -> tuple[int, Path]:
+    # Try .bak, then .bak1, .bak2, ... The exclusive+no-follow open is the
+    # source of truth: O_EXCL closes the check-then-use window and treats an
+    # existing symlink as occupied (FileExistsError -> advance), so a hostile
+    # .bak symlink is skipped rather than followed. Validation runs only AFTER
+    # a successful create: validate_resolved_target_path follows symlinks, so
+    # validating an unopened candidate would hard-fail on an escaping symlink
+    # instead of letting the loop skip past it.
+    # O_NOFOLLOW is POSIX-only; degrade to 0 (no-op) where it is absent, matching
+    # the repo's defensive os-attribute guarding (e.g. getattr(os, "geteuid")).
+    # O_EXCL still provides the atomic create there.
+    no_follow = getattr(os, "O_NOFOLLOW", 0)
+    index = 0
+    while True:
+        suffix = ".bak" if index == 0 else f".bak{index}"
+        candidate = destination.with_name(f"{destination.name}{suffix}")
+        try:
+            fd = os.open(
+                candidate,
+                os.O_CREAT | os.O_EXCL | os.O_WRONLY | no_follow,
+                0o600,
+            )
+        except FileExistsError:
+            index += 1
+            continue
+        try:
+            validate_resolved_target_path(root, candidate, "backup path")
+        except BaseException:
+            os.close(fd)
+            # Do not leave the just-created backup file behind on a validation
+            # failure (defensive: a fresh in-root regular file always validates).
+            try:
+                os.unlink(candidate)
+            except OSError:
+                pass
+            raise
+        return fd, candidate
+
+
 def backup_existing_file(
     root: Path,
     destination: Path,
@@ -404,13 +452,30 @@ def backup_existing_file(
 ) -> Path | None:
     if not backup or dry_run:
         return None
-    backup_path = next_backup_path(root, destination)
+    backup_path: Path | None = None
     try:
-        shutil.copyfile(destination, backup_path)
+        source_mode = destination.stat().st_mode & 0o777
+        fd, backup_path = _open_exclusive_backup(root, destination)
+        try:
+            os.fchmod(fd, source_mode)
+            with open(destination, "rb") as source, os.fdopen(fd, "wb") as target:
+                shutil.copyfileobj(source, target)
+        except BaseException:
+            # fdopen adopts the fd; if we failed before wrapping it, close here.
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+            raise
     except OSError as error:
+        where = (
+            display_path(root, backup_path)
+            if backup_path is not None
+            else "backup path"
+        )
         raise SystemExit(
             f"error: cannot create backup for {display_path(root, destination)}: "
-            f"{display_path(root, backup_path)} ({error})"
+            f"{where} ({error})"
         ) from None
     return backup_path
 

@@ -101,8 +101,10 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action="append",
         choices=PLATFORMS,
         help=(
-            "Install only this platform's skills, even if its anchor "
-            "directory is missing. Repeat to select several."
+            "Install this platform's anchored skills, even if its anchor "
+            "directory is missing. Repeat to select several. Pack-wide "
+            "always-install and if-not-exists files are installed regardless "
+            "of this filter."
         ),
     )
     parser.add_argument(

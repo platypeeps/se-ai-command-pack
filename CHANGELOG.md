@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.66.14 - 2026-08-05
+
+- Harden the installer's edge behavior to match the rest of the pack (task
+  `07-25-audit-installer-hardening`):
+  - `installer/management.py` `_run_git` now bounds git with a 60s timeout and
+    converts `TimeoutExpired`/`FileNotFoundError` into the same clean
+    `error:` + exit contract every other subprocess wrapper uses (A-013).
+  - `--backup` copies are created with `O_CREAT|O_EXCL|O_NOFOLLOW` and preserve
+    the source file's mode, closing a check-then-use symlink window and the
+    umask-default `0644` leak on backups of restricted-mode files (A-019).
+  - `default_file_mode` reads the process umask once into a module constant
+    instead of an `os.umask(0)`-and-restore on every installed file (A-011).
+  - The `--platform` help now states that pack-wide always-install and
+    if-not-exists files install regardless of the filter (A-008).
+
 ## 0.66.13 - 2026-08-05
 
 - Ship the first named SE worker agents and wire the pilot skills to them (task
