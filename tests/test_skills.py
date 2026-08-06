@@ -4054,7 +4054,7 @@ class ReviewSkillsGotchaMandateTest(unittest.TestCase):
             "placed last in the target skill body",
             "rather than after a named heading the target may not have",
         ):
-            self.assertIn(phrase, text)
+            self.assertIn(phrase, text, phrase)
 
     def test_nonqualifying_evidence_creates_a_task_without_the_requirement(
         self,
@@ -4067,7 +4067,7 @@ class ReviewSkillsGotchaMandateTest(unittest.TestCase):
             "create the task without the requirement and say so",
             "never widen the gate to manufacture a gotcha",
         ):
-            self.assertIn(phrase, text)
+            self.assertIn(phrase, text, phrase)
 
     def test_session_evidence_guide_states_the_same_mandate(self) -> None:
         # The guide is the required reading for the observed-use pass, so a
@@ -4082,7 +4082,7 @@ class ReviewSkillsGotchaMandateTest(unittest.TestCase):
             "placed last in the skill body",
             "never relax the five parts above to make a record qualify",
         ):
-            self.assertIn(phrase, text)
+            self.assertIn(phrase, text, phrase)
 
     def test_neighbor_boundary_names_the_two_session_reading_skills(
         self,
@@ -4094,7 +4094,7 @@ class ReviewSkillsGotchaMandateTest(unittest.TestCase):
             "`sd-retro` owns incident and debugging retrospectives",
             "`sd-review-learnings` owns recurring pull-request review feedback",
         ):
-            self.assertIn(phrase, text)
+            self.assertIn(phrase, text, phrase)
 
 
 class SkillDocumentationTest(unittest.TestCase):
