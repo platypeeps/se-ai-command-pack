@@ -1055,3 +1055,37 @@ Two defects in scripts/sd-ai-command-pack-work-loop.py surfaced during run 17ab8
 ### Next Steps
 
 - None - task complete
+
+
+## Session 130: Preserve and ship A-017 TOCTOU-hardening task record from stale branch
+
+**Date**: 2026-08-06
+**Task**: Preserve and ship A-017 TOCTOU-hardening task record from stale branch
+**Branch**: `task/08-05-audit-update-source-trust-toctou`
+
+### Summary
+
+Stale local branch followup/toctou-task-record held one unmerged commit whose task (08-05-audit-update-source-trust-toctou) existed nowhere on main or in the archive. Cherry-picked it onto a branch off current main, filled the required task.json description, and cleared the scaffold _example rows that prism flagged in check.jsonl and implement.jsonl. Shipped as PR #155 so the stale ref can be deleted without losing the record. Separately, work-loop run 17ab8b28 was stopped (operator_stop) to clear an iteration stuck in phase selected on a parent task that forbids direct implementation; that ledger gap is tracked in 08-06-work-loop-shipped-sha-after-branch-delete.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d10ba3c` | (see git log) |
+| `1d157b5` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
