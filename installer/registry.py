@@ -153,6 +153,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-tutorial", family="create"),
     SkillInfo(name="se-video-notes", family="understand"),
     SkillInfo(name="se-watchlist", family="operate"),
+    SkillInfo(name="se-brand-voice", family="improve"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 
@@ -240,6 +241,7 @@ RUNTIME_PROFILE_ASSIGNMENTS: tuple[
             "se-watchlist",
             "se-feedback",
             "se-premortem",
+            "se-brand-voice",
         ),
     ),
     (PERSONAL_DIALOGUE, ("se-ask-me", "se-socratic-review")),
@@ -453,6 +455,7 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-video-notes",
         "se-watchlist",
         "se-weekly-review",
+        "se-brand-voice",
     ),
     "_shared/references/skill-catalog.md": ("se-help",),
     "_shared/references/personal-profile-contract.md": (

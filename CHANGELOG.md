@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.67.0 - 2026-08-06
+
+- Add `se-brand-voice`, an Improve workflow that validates written content
+  against a stated brand voice across tone, terminology, style, and audience-fit
+  rule groups. Findings carry the violated rule, an exact location, the offending
+  text, and a suggested rewrite; judgments the guidelines do not cover are
+  reported as observations rather than violations.
+- Resolve the voice definition through an explicit ordered candidate list
+  (`docs/brand-voice.md`, `docs/style-guide.md`, `BRAND_VOICE.md`,
+  `STYLE_GUIDE.md`) with explicit-locator precedence and present-but-unused
+  disclosure; never infer a voice from the content under review. With no
+  guidelines, the skill reports the gap and offers a read-only bootstrap that
+  drafts starter guidelines from supplied samples inside the report.
+- Every mode is read-only: the skill suggests rewrites and drafts, and writes no
+  file. `se-technical-editor` keeps ownership of correctness-first review and its
+  own draft-relative voice pass; both bodies now state the boundary.
+
 ## 0.66.14 - 2026-08-05
 
 - Harden the installer's edge behavior to match the rest of the pack (task

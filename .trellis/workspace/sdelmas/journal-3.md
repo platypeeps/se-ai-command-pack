@@ -922,3 +922,50 @@ Shipped 07-25-audit-installer-hardening: _run_git timeout, symlink-safe mode-pre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 127: Add se-brand-voice, a guidelines-sourced brand voice validator
+
+**Date**: 2026-08-06
+**Task**: Add se-brand-voice, a guidelines-sourced brand voice validator
+**Branch**: `task/07-28-brand-voice-validator-skill`
+
+### Summary
+
+Shipped the pack's 54th skill, se-brand-voice: it validates written content against a stated brand-voice guidelines artifact and reports located findings with suggested rewrites, or drafts starter guidelines from representative samples when no standard exists. Every mode is read-only. Registered it in the improve family, the BOUNDED_SYNTHESIS runtime profile, and the argument-vocabulary shared-reference consumers, added the reciprocal boundary paragraph to se-technical-editor, regenerated all install surfaces at 0.67.0, and recorded the non-obvious add-skill ordering and test-literal contracts in the backend quality guidelines.
+
+### Main Changes
+
+- Added templates/skills/se-brand-voice/SKILL.md with validate and bootstrap modes, four rule groups, and a fixed ordered guidelines-resolution list it never searches beyond
+- Added references/voice-guidelines-schema.md defining the guidelines shape parsed and the bootstrap draft template returned in-report
+- Registered the skill in installer/registry.py: SKILLS (improve family), BOUNDED_SYNTHESIS runtime profile, and argument-vocabulary.md consumers
+- Added the reciprocal workflow boundary to se-technical-editor: its voice-consistency pass measures a draft against itself; external stated voice belongs to se-brand-voice
+- Regenerated manifest.json (0.66.14 -> 0.67.0), Claude overlays, registry snapshot, bundled catalog, README catalog, CHANGELOG, and docs/SE_AI_COMMAND_PACK.md
+- Recorded quality-guidelines section 6a: bump the manifest version before make generate, and the four test-side literal registries no generator derives
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ca388bd` | docs(task): converge planning for 07-28-brand-voice-validator-skill |
+| `47d1fb0` | feat: add se-brand-voice, a guidelines-sourced voice validator |
+| `738394a` | docs: capture add-skill spec contract and fix brand-voice locator prose |
+| `20587b2` | chore(task): check acceptance criteria before archive |
+
+### Testing
+
+- [OK] python -m unittest discover -s tests: Ran 571 tests, OK (skipped=1)
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs: 0 failures, 0 warnings
+- [OK] make generate run twice byte-identical; --check drift gate matches
+- [OK] ruff and mypy clean; coverage 87.9% against an 80% floor
+- [OK] release payload gate: version 0.66.14 -> 0.67.0; changelog heading matches
+- [OK] CI on PR #152: unittest 3.10/3.13 ubuntu, 3.13 macos, lint, release-payload-gate, ci-result all SUCCESS
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

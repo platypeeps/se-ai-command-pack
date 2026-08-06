@@ -63,6 +63,7 @@ Text.
 # reference and default to (). Adding a skill needs no new test method: a new
 # consumer only edits this dict.
 EXPECTED_SHARED_SOURCES: dict[str, tuple[str, ...]] = {
+    "se-brand-voice": ("_shared/references/argument-vocabulary.md",),
     "se-research": (
         "_shared/references/argument-vocabulary.md",
         "_shared/references/source-standards.md",

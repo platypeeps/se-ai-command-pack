@@ -111,6 +111,7 @@ come directly from canonical skill frontmatter.
 | `se-retro` | Use when the user wants an evidence-led, non-blaming retrospective of a project, research effort, meeting, launch, or operational period with lessons and proposed follow-ups. |
 | `se-weekly-review` | Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct. |
 | `se-review-skills` | Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, interaction design, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks. |
+| `se-brand-voice` | Use when the user wants written content validated against a defined brand voice - tone, terminology, style, and audience fit - with located findings and suggested rewrites, or wants starter voice guidelines drafted from representative samples when none exist. |
 <!-- SE_SKILL_CATALOG:END -->
 
 Skills that use external evidence share one quality bar: a
@@ -227,6 +228,15 @@ reader comprehension, confidentiality, title and opening, and voice consistency
 passes. It reports located
 findings before substantive rewriting, preserves representative author language
 and evidence states, and applies only explicitly approved edits without publishing.
+
+`se-brand-voice` validates written content against a stated brand voice across
+tone, terminology, style, and audience-fit rule groups. It resolves the voice
+definition through an explicit ordered candidate list, names the file it used,
+and never infers a voice from the content under review — with no guidelines it
+reports the gap and offers a bootstrap that drafts starter guidelines from
+supplied samples. Every mode is read-only: findings carry the violated rule, an
+exact location, the offending text, and a suggested rewrite, and nothing is
+applied. Correctness-first editorial review remains `se-technical-editor`.
 
 `se-bookmark-triage` turns a bounded saved-item collection into a small,
 evidence-labeled attention queue. It preserves original locators, keeps
