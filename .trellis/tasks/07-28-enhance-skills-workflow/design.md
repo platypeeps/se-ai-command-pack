@@ -105,12 +105,19 @@ introduces rather than restating prose. Each pins the shortest substring that
 carries the contract, so ordinary rewording does not break the test but deleting
 the contract does.
 
-| Test | Substrings pinned (lowercased) | Guards | File |
+| Test | Substrings pinned (lowercased) | Guards | Scoped to |
 |---|---|---|---|
-| `test_created_tasks_require_a_gotchas_section_in_the_target` | ``` `## gotchas` section ```; `placed last in the target skill body`; `rather than after a named heading the target may not have` | D1 mandate, D2 placement | `SKILL.md` |
-| `test_nonqualifying_evidence_creates_a_task_without_the_requirement` | `does not qualify`; `create the task without the requirement and say so`; `never widen the gate to manufacture a gotcha` | D1 negative case | `SKILL.md` |
-| `test_session_evidence_guide_states_the_same_mandate` | `placed last in the skill body`; `never relax the five parts above to make a record qualify` | D1 in the guide | `references/session-evidence.md` |
-| `test_neighbor_boundary_names_the_two_session_reading_skills` | ``` `sd-retro` owns incident and debugging retrospectives ```; ``` `sd-review-learnings` owns recurring pull-request review feedback ``` | D3 | `SKILL.md` |
+| `test_created_tasks_require_a_gotchas_section_in_the_target` | ``` `## gotchas` section ```; `placed last in the target skill body`; `rather than after a named heading the target may not have` | D1 mandate, D2 placement | `SKILL.md` `## Workflow` |
+| `test_nonqualifying_evidence_creates_a_task_without_the_requirement` | `does not qualify`; `create the task without the requirement and say so`; `never widen the gate to manufacture a gotcha` | D1 negative case | `SKILL.md` `## Workflow` |
+| `test_session_evidence_guide_states_the_same_mandate` | `placed last in the skill body`; `never relax the five parts above to make a record qualify` | D1 in the guide | guide `## Gotchas and regression records` |
+| `test_neighbor_boundary_names_the_two_session_reading_skills` | ``` `sd-retro` owns incident and debugging retrospectives ```; ``` `sd-review-learnings` owns recurring pull-request review feedback ``` | D3 | `SKILL.md` `## When to use` |
+
+Each pin is scoped to the section that must carry the contract, through the
+`section_body` / `skill_section` / `resource_section` helpers added alongside
+`normalized_resource`. Whole-file pins would pass on an incidental match
+anywhere in the file — the exact failure mode that produced the vacuous first
+draft below — and a renamed or deleted heading now fails loudly rather than
+silently widening the search back to the whole file.
 
 The ``` `## gotchas` section ``` pin is satisfied by the backticked mention
 inside the step 10 mandate. It is not an instruction to add a literal
