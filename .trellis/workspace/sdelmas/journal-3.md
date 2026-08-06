@@ -969,3 +969,53 @@ Shipped the pack's 54th skill, se-brand-voice: it validates written content agai
 ### Next Steps
 
 - None - task complete
+
+
+## Session 128: se-review-skills: carry qualifying gotchas into the reviewed skill
+
+**Date**: 2026-08-06
+**Task**: se-review-skills: carry qualifying gotchas into the reviewed skill
+**Branch**: `task/07-28-enhance-skills-workflow`
+
+### Summary
+
+Extended se-review-skills so a gotcha-qualifying observed-use finding survives into the skill it is about instead of stopping at the review report, and hardened the prose-contract test pins that prove it. Scope was cut to the Gotchas mandate after four adversarial planning rounds; scope=session was split into its own task.
+
+### Main Changes
+
+- se-review-skills step 10 now states the `## Gotchas` acceptance requirement for tasks created from gotcha-qualifying observed-use findings, placed last in the target skill body positionally, plus the negative case for evidence that does not qualify
+- references/session-evidence.md carries the same rule in its Gotchas and regression records section, so a reader who follows the citation sees it
+- The neighbor-boundary paragraph now names sd-retro and sd-review-learnings and what each owns - the omission that allowed a duplicate-skill proposal
+- Added .trellis/spec/backend/quality-guidelines.md 'Prose contracts: prove the pin can fail' with a runnable proof block, after a pin of '## Gotchas' was found permanently green against an existing heading
+- Test pins are scoped to the section that carries each contract via new section_body/skill_section/resource_section helpers, so an incidental match elsewhere cannot satisfy an assertion
+- Split scope=session into task 08-06-session-first-skill-review with the round-1..4 ledger as starting evidence; recreated 08-06-ship-gate-ordering-docs
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3bbfe5a` | docs(task): scope 07-28 to the Gotchas mandate after four review rounds |
+| `8639f46` | chore(task): record 08-06-session-first-skill-review |
+| `0cf48df` | chore(task): record 08-06-ship-gate-ordering-docs |
+| `3f2fb1e` | feat(se-review-skills): carry qualifying gotchas into the reviewed skill |
+| `13c2189` | docs(spec): require prose-contract test pins to be proven falsifiable |
+| `1344c60` | test: name the failing phrase in gotcha-mandate assertions |
+| `f50e484` | docs: align D5 pin table with the tests and name the falsifiability procedure |
+| `ef09309` | test: scope gotcha-mandate pins to the sections that carry the contract |
+| `d1ae55f` | docs: make the falsifiability proof block runnable as pasted |
+
+### Testing
+
+- [OK] make check: Ran 575 tests in 38.432s, OK (skipped=1); ruff and mypy clean
+- [OK] release payload gate: version 0.67.0 -> 0.67.1; changelog heading matches
+- [OK] falsifiability proof: source files restored from PR base give FAILED (failures=4); edits restored give OK
+- [OK] review preflight: 0 failure(s), 1 warning(s) (expected 3-task-directory count for the split)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

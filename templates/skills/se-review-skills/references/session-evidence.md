@@ -150,6 +150,14 @@ evidence can state all of these:
 - **regression method** — a fixture, forward evaluation, contract assertion, or
   other check that would fail if the protection disappeared.
 
+A record that clears this gate must survive into the skill it is about. When a
+task is created from one, require as an acceptance criterion that the target
+`SKILL.md` carries the record as a `## Gotchas` section, created when absent and
+placed last in the skill body — positionally, because a target in another
+repository may not have the heading you would otherwise anchor to. Evidence that
+does not clear the gate produces a task without that requirement, stated
+explicitly; never relax the five parts above to make a record qualify.
+
 Common traps to test explicitly include incidental name matches, nested or
 quoted transcripts, compaction that removes activation evidence, current-session
 indexing lag, missing outcomes, hidden child-agent turns, unavailable history

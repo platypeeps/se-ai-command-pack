@@ -95,6 +95,53 @@ boundary users exercise.
 - Run `make check`: generation parity, Ruff, mypy, the unittest suite, and the
   release payload/version gate must all pass.
 
+### Prose contracts: prove the pin can fail
+
+Most of this pack's behavior lives in Markdown, so its tests are substring pins
+against `SKILL.md` and skill-owned references (`normalized()`,
+`normalized_resource()`). Such a pin has a silent failure mode a code assertion
+does not: **if the file already contains the token, the assertion passes before
+the change and can never fail.** It then reads as coverage while proving
+nothing.
+
+Two rules, both cheap:
+
+1. Before adding a pin, `grep` the token against the *unedited* file and confirm
+   it is absent. Prefer a token that is distinctive to the new contract over one
+   that merely sounds like it.
+2. After writing both the edit and the pin, prove the pair: restore the source
+   files from `HEAD`, run the new tests, confirm they fail, restore the edits,
+   confirm they pass.
+
+Runnable as written — set `FILE` to the source file the pin asserts against and
+`TEST` to the new test class, then paste the block:
+
+```bash
+FILE=templates/skills/<skill>/SKILL.md
+TEST=<TestClass>
+TMP="$(mktemp)"
+
+cp "$FILE" "$TMP" && git checkout HEAD -- "$FILE"
+.venv/bin/python -m unittest discover -s tests -p test_skills.py -k "$TEST"   # expect FAILED
+cp "$TMP" "$FILE" && rm -f "$TMP"
+.venv/bin/python -m unittest discover -s tests -p test_skills.py -k "$TEST"   # expect OK
+```
+
+With more than one source file, list them all in the `git checkout` and restore
+each from its own copy; the pin is only proved when every file the tests read is
+back at its pre-change state for the failing run.
+
+Real example: a pin of `## Gotchas` against
+`se-review-skills/references/session-evidence.md` was accepted in review and
+would have been permanently green — the file's existing
+`## Gotchas and regression records` heading contains that substring. The
+heading-shaped token looked more rigorous than the phrase that actually carried
+the contract, which is exactly why the grep is not optional.
+
+Note that `normalized*()` collapse whitespace, so a pinned phrase survives
+rewrapping. Pin the shortest phrase that carries the contract: long enough that
+deleting the contract breaks it, short enough that rewording does not.
+
 ---
 
 ## Code Review Checklist
