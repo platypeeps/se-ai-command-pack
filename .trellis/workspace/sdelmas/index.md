@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 128
+- **Total Sessions**: 129
 - **Last Active**: 2026-08-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1018 | Active |
+| `journal-3.md` | ~1056 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 129 | 2026-08-06 | Record work-loop ledger gaps found while shipping PR #153 | `073d5be` | `task/08-06-work-loop-ledger-gaps` |
 | 128 | 2026-08-06 | se-review-skills: carry qualifying gotchas into the reviewed skill | `3bbfe5a`, `8639f46`, `0cf48df`, `3f2fb1e`, `13c2189`, `1344c60`, `f50e484`, `ef09309`, `d1ae55f` | `task/07-28-enhance-skills-workflow` |
 | 127 | 2026-08-06 | Add se-brand-voice, a guidelines-sourced brand voice validator | `ca388bd`, `47d1fb0`, `738394a`, `20587b2` | `task/07-28-brand-voice-validator-skill` |
 | 126 | 2026-08-05 | Installer subprocess and file-handling hardening | `06f9fa5`, `3f5ec22` | `task/07-25-audit-installer-hardening` |
