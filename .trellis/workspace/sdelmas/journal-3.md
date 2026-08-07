@@ -1323,3 +1323,44 @@ Audit of remaining work found two active Trellis task records — 08-06-ship-gat
 ### Next Steps
 
 - None - task complete
+
+
+## Session 137: Record that sd-review cannot dispose of a wrong local finding
+
+**Date**: 2026-08-06
+**Task**: Record that sd-review cannot dispose of a wrong local finding
+**Branch**: `task/08-07-sd-review-local-rebuttal-gap`
+
+### Summary
+
+Created the 08-06-sd-review-local-rebuttal-gap planning task. Local provider findings are written into the receipt as disposition outstanding and never revisited within a run, and the remote gate keys straight off that count. The receipt vocabulary already admits rebutted, but no command-line control can write it for a local finding: --remote-disposition applies only to remote rows, and the --family-evidence route requires localOutcome clean, so it is closed exactly when a rebuttal is needed. The failure mode is asymmetric — the gap cannot let wrong code ship, it pressures correct code to change to satisfy a wrong finding, and the resulting commit is indistinguishable from an ordinary review fix.
+
+### Main Changes
+
+- Add .trellis/tasks/08-06-sd-review-local-rebuttal-gap as a P2 planning task with the disposition-write evidence, the two non-applicable controls and why each fails, the PR #158 observation, five requirements covering auditability and per-finding explicitness, and five acceptance criteria
+- Correct the generated task.json base_branch from the feature branch to main and fill relatedFiles and notes
+- Curate implement.jsonl and check.jsonl with their real spec entry at creation time
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `25b6b2e` | docs(task): record that sd-review cannot dispose of a wrong local finding |
+
+### Testing
+
+- [OK] review preflight: 0 failure(s), 0 warning(s)
+- [OK] sd-check: 7 passed, 0 failed
+- [OK] base_branch enumerated across all task records from disk: Counter({'main': 19})
+- [OK] sd-review scope=pr attempt 1 at 25b6b2e: status ready, check passed, local clean
+- [OK] Copilot review of PR #161 at 25b6b2e: 4 of 4 files reviewed, no comments generated, 0 review comments
+- [OK] sd-review-learnings --github-pr 161 --dry-run: 0 findings, preview only, nothing written
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
