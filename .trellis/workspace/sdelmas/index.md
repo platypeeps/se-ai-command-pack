@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 134
+- **Total Sessions**: 135
 - **Last Active**: 2026-08-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1242 | Active |
+| `journal-3.md` | ~1281 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 135 | 2026-08-06 | Record that repository prism rules never reach the sd-review lane | `9ea5195` | `task/08-06-prism-rules-lane-divergence` |
 | 134 | 2026-08-06 | Record the finalization-ordering trap and a third blocked-reason variant | `e043ff2`, `808f72e` | `task/08-06-finalization-ordering-trap` |
 | 133 | 2026-08-06 | Address PR #157 review findings: citation ranges and imprecise descriptions | `81fc2cb` | `task/08-06-loop-doc-and-coordinator-gaps` |
 | 132 | 2026-08-06 | Close four ship-loop follow-ups from the PR #156 cycle | `392954f` | `task/08-06-loop-doc-and-coordinator-gaps` |
