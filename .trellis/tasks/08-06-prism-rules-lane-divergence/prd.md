@@ -155,10 +155,11 @@ because the upstream route may not be authorized.
   text prescribes — rather than by emptying them, which the convention in
   `quality-guidelines.md` forbids. That resolved the round without settling the
   underlying delivery gap.
-- Fourth instance of the vendored-artifact pattern, alongside
-  `08-06-watch-coordinator-infra-classification`,
-  `08-06-finalization-ordering-trap`, and
-  `08-06-work-loop-shipped-sha-after-branch-delete`. If a fifth appears, the
-  pattern itself is worth a task.
+- One of the vendored-artifact instances enumerated in the table in
+  `08-07-vendored-artifact-upstream-route/prd.md`, which is the canonical list
+  and the task that consolidates the pattern. Do not restate a count or a
+  membership list here. `08-06-work-loop-shipped-sha-after-branch-delete` was
+  previously listed as a member and is not one — it carries no
+  vendored-ownership constraint section.
 - Lightweight enough to stay PRD-only unless the upstream route is chosen,
-  which would warrant a `design.md` for the argv-validation contract.
+  which would warrant a `design.md` and an `implement.md` for the argv-validation contract.

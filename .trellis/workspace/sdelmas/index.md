@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 137
-- **Last Active**: 2026-08-06
+- **Total Sessions**: 138
+- **Last Active**: 2026-08-07
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1361 | Active |
+| `journal-3.md` | ~1409 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 138 | 2026-08-07 | Backlog planning hygiene: converge artifacts, then correct their factual errors | `ca7ae39`, `6312547`, `ef940aa` | `task/08-07-backlog-planning-hygiene` |
 | 137 | 2026-08-06 | Record that sd-review cannot dispose of a wrong local finding | `25b6b2e` | `task/08-07-sd-review-local-rebuttal-gap` |
 | 136 | 2026-08-06 | Retarget two task records from a deleted base branch to main | `67db265` | `task/08-07-fix-dead-base-branches` |
 | 135 | 2026-08-06 | Record that repository prism rules never reach the sd-review lane | `9ea5195` | `task/08-06-prism-rules-lane-divergence` |

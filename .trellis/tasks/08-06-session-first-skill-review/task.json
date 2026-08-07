@@ -20,7 +20,12 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "templates/skills/se-review-skills/SKILL.md",
+    "templates/skills/se-review-skills/scripts/skill_review.py",
+    "templates/skills/se-review-skills/references/report-schema.md",
+    "tests/test_skill_review.py"
+  ],
   "notes": "",
   "meta": {}
 }

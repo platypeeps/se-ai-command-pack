@@ -20,7 +20,10 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "scripts/sd-ai-command-pack-work-loop.py",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
   "notes": "",
   "meta": {}
 }

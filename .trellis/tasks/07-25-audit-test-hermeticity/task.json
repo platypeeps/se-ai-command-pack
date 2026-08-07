@@ -2,7 +2,7 @@
   "id": "audit-test-hermeticity",
   "name": "audit-test-hermeticity",
   "title": "Test hermeticity and update e2e coverage",
-  "description": "",
+  "description": "`make test` passes on any contributor machine regardless of global git configuration, and the `install.py update` lifecycle — the one command that mutates the user's checkout — has a real end-to-end test.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -20,7 +20,13 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "tests/test_release_gate.py",
+    "tests/test_skill_review.py",
+    "tests/test_management.py",
+    "installer/management.py",
+    ".trellis/audit/report-2026-07-25.md"
+  ],
   "notes": "",
   "meta": {}
 }

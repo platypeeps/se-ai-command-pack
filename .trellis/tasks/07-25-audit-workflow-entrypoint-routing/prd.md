@@ -19,3 +19,4 @@ One canonical entry point per workflow per platform: agents following the routin
 
 - Audit finding: A-005 (P3/S) — .trellis/audit/report-2026-07-25.md.
 - Evidence: AGENTS.md:13; .agents/skills/sd-finish-work/SKILL.md:11; .gemini/commands/sd/finish-work.toml:1.
+- Planning depth: PRD-only. Routing documentation across platforms; the canonical entry points already exist.

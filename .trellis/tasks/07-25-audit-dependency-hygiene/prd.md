@@ -21,3 +21,4 @@ Every third-party fetch this repo triggers is deliberate, pinned, and reproducib
 
 - Audit findings: A-032, A-033, A-034 (P3/S) — .trellis/audit/report-2026-07-25.md.
 - Evidence: .opencode/package.json:3; .opencode/lib/session-utils.js:2; requirements-dev.txt:5; .github/workflows/tests.yml:43; scripts/update_repomix:24; README.md:463.
+- Planning depth: PRD-only. Pinning and lifecycle-script review are bounded edits with no cross-layer contract. Escalate to `design.md` plus `implement.md` — the contract at `.trellis/workflow.md:164` requires both together — only if an unpinned transitive turns out to need a lockfile strategy.

@@ -2,7 +2,7 @@
   "id": "audit-repo-tooling-ownership",
   "name": "audit-repo-tooling-ownership",
   "title": "Repo-own tooling home and vendored-path documentation",
-  "description": "",
+  "description": "Contributors can tell editable repo-own source from installed vendored product at a glance, and no dead entry points linger to drift.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -20,7 +20,12 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "scripts/se-ai-command-pack-skill-review.py",
+    "Makefile",
+    "CONTRIBUTING.md",
+    ".trellis/audit/report-2026-07-25.md"
+  ],
   "notes": "",
   "meta": {}
 }

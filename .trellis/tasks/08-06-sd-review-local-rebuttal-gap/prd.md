@@ -147,12 +147,12 @@ locally, so the local-only route must stand on its own.
   `08-06-prism-rules-lane-divergence`'s scope: folding a rebuttal control into
   the task whose own findings needed rebutting would have let that task wave
   them through.
-- Fifth instance of the vendored-artifact pattern, alongside
-  `08-06-prism-rules-lane-divergence`,
-  `08-06-watch-coordinator-infra-classification`,
-  `08-06-finalization-ordering-trap`, and
-  `08-06-work-loop-shipped-sha-after-branch-delete`. At five, the pattern itself
-  is worth its own task rather than a note repeated in each PRD.
+- One of the vendored-artifact instances enumerated in the table in
+  `08-07-vendored-artifact-upstream-route/prd.md`, which is the canonical list
+  and the task that consolidates the pattern. Do not restate a count or a
+  membership list here. `08-06-work-loop-shipped-sha-after-branch-delete` was
+  previously listed as a member and is not one — it carries no
+  vendored-ownership constraint section.
 - Lightweight enough to stay PRD-only unless the upstream route is chosen,
-  which would warrant a `design.md` for the id-stability and receipt-schema
+  which would warrant a `design.md` and an `implement.md` for the id-stability and receipt-schema
   contract.

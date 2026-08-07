@@ -2,7 +2,7 @@
   "id": "audit-skill-review-internals",
   "name": "audit-skill-review-internals",
   "title": "skill_review internals cleanup",
-  "description": "",
+  "description": "The shipped skill_review.py has one path-containment predicate and one authoritative frontmatter grammar, so its boundary checks stay auditable and its metadata classification cannot diverge from what the generator validated.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -20,7 +20,12 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "templates/skills/se-review-skills/scripts/skill_review.py",
+    ".github/scripts/generate-skill-surfaces.py",
+    "tests/test_skill_review.py",
+    ".trellis/audit/report-2026-07-25.md"
+  ],
   "notes": "",
   "meta": {}
 }

@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the per-platform surface contracts recorded here; confirm the documented entry point is the one that preserves the SD wrappers' recording and gating steps."}

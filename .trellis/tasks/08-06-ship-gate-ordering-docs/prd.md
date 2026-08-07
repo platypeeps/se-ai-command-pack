@@ -82,3 +82,7 @@ location.
 - Adding a PR-body template or a check that authors the scope section.
 - Changing either gate's behavior or its failure message.
 - Broader review-learnings curation.
+
+## Notes
+
+- Planning depth: PRD-only. Documentation of two existing gates; neither gate's behaviour changes.

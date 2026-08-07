@@ -92,7 +92,12 @@ Cross-child acceptance (parent integration review, run when all children archive
 ## Notes
 
 - Keep `prd.md` focused on requirements, constraints, and acceptance criteria.
-- Complex task: `design.md` and `implement.md` required before `task.py start`.
+- Complex program. This parent is not an implementation target and should not be
+  started: it owns the requirement set, the task map, and cross-child acceptance
+  criteria, and `design.md` is the artifact that carries them. Each
+  implementation child must meet the complex-task requirement in full —
+  `prd.md`, `design.md`, and `implement.md` before its own `task.py start`
+  (`.trellis/workflow.md:164`).
 
 ## Cross-program coordination (2026-07-25 review; additive — does not alter R1-R7)
 
@@ -108,3 +113,4 @@ Cross-child acceptance (parent integration review, run when all children archive
 - Clarification for cross-child acceptance: "contract-identical final reports" means
   identical section structure, field vocabulary, and evidence rules — not identical
   content.
+- Planning depth: Parent task: owns the requirement set and cross-child acceptance criteria, with no direct implementation work, so `design.md` (present) is the correct depth here. `implement.md` belongs to each child, not to the parent.

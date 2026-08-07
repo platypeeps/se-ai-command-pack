@@ -138,3 +138,7 @@ Each verified against source; none has an accepted resolution.
 - The Gotchas mandate — shipped by `07-28-enhance-skills-workflow`.
 - A separate `se-enhance-skills` skill.
 - Automated or scheduled invocation.
+
+## Notes
+
+- Planning depth: **Complex — needs `design.md` and `implement.md` before `task.py start`.** A new `scope=session` mode introduces a new evidence source for the reviewed set, so it needs its selector precedence, its behaviour when no session evidence exists, and its interaction with the existing repository/installed-roots selection all specified before implementation.

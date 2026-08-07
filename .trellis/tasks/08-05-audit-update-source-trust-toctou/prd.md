@@ -45,3 +45,4 @@ and treats any existing `.git` entry as proof of a git repository.
 - Follow-up to A-017 (P2/S) — .trellis/audit/report-2026-07-25.md.
 - Origin: PR #143 accepted-residual disposition (adversarial review C-2 and
   local review re-flags on installer/management.py:_source_checkout).
+- Planning depth: **Complex — needs `design.md` and `implement.md` before `task.py start`.** A TOCTOU window is a concurrency contract: which handle is held, what is re-verified at use, and what the residual window is after the change. Security-sensitive, and 'measurably shrink' requires the measurement to be defined up front rather than asserted afterwards.

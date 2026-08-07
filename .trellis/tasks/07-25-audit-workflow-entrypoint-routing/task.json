@@ -2,7 +2,7 @@
   "id": "audit-workflow-entrypoint-routing",
   "name": "audit-workflow-entrypoint-routing",
   "title": "Canonical workflow entry points per platform",
-  "description": "",
+  "description": "One canonical entry point per workflow per platform: agents following the routing docs cannot silently bypass the SD wrappers' added recording and gating steps by invoking the wrapped trellis commands directly.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -20,7 +20,11 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "AGENTS.md",
+    ".agents/skills/sd-finish-work/SKILL.md",
+    ".gemini/commands/sd/finish-work.toml"
+  ],
   "notes": "",
   "meta": {}
 }

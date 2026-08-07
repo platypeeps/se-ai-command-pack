@@ -1,1 +1,1 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Holds the Stop retrying on a repeated failure signature subsection, the sanctioned home for a discrimination procedure; read it before adding guidance so the infrastructure-versus-real rule extends that subsection rather than starting a competing one."}

@@ -20,3 +20,4 @@ The shipped skill_review.py has one path-containment predicate and one authorita
 
 - Audit findings: A-009 (P3/S), A-010 (P3/M) — .trellis/audit/report-2026-07-25.md.
 - Evidence: templates/skills/se-review-skills/scripts/skill_review.py:211, :1545, :509, :1690, :412, :1532; .github/scripts/generate-skill-surfaces.py:161.
+- Planning depth: **Complex — needs `design.md` and `implement.md` before `task.py start`.** Unifying two path-containment predicates into one touches a security boundary in shipped payload, and collapsing two frontmatter grammars into one authoritative grammar is a contract change with a generator-side counterpart. Both need their contracts written down before any edit.

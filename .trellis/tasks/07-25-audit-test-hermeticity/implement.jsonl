@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Testing Requirements (:77) sets the assertion-point expectations a real end-to-end test must meet; Scenario: Pack Lifecycle CLI Changes (:1147) describes the install.py update lifecycle the new test has to cover."}

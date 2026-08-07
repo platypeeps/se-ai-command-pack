@@ -118,4 +118,5 @@ on its own, because the upstream option may not be authorized.
 - Deferred once by the operator on 2026-08-06, when the sibling convention fixes
   shipped as PR #156. Tasked rather than dropped so the evidence survives.
 - Lightweight enough to stay PRD-only unless the upstream route is chosen, which
-  would warrant a `design.md` for the outcome-vocabulary change.
+  would warrant a `design.md` and an `implement.md` for the outcome-vocabulary
+  change.

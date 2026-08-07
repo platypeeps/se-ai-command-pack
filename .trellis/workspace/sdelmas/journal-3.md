@@ -1364,3 +1364,51 @@ Created the 08-06-sd-review-local-rebuttal-gap planning task. Local provider fin
 ### Next Steps
 
 - None - task complete
+
+
+## Session 138: Backlog planning hygiene: converge artifacts, then correct their factual errors
+
+**Date**: 2026-08-07
+**Task**: Backlog planning hygiene: converge artifacts, then correct their factual errors
+**Branch**: `task/08-07-backlog-planning-hygiene`
+
+### Summary
+
+Swept the 22 active Trellis tasks for planning-artifact defects, filed three follow-up tasks for defects found along the way, then ran the sd-planning-adversarial-review contract over the result and corrected sixteen concerns it surfaced. PR #162.
+
+### Main Changes
+
+- Rewrote three stub PRDs (registry-snapshot sd-twin, ast-removal, layout-assumptions) that failed sd-work-backlog's actionability rule
+- Filed three follow-up tasks: task.py create base_branch inheritance, write_json trailing newline, and the vendored-artifact upstream route
+- Populated twelve entirely empty implement.jsonl/check.jsonl manifests -- zero entries, which task.py validate accepts as 'OK (0 entries)' and a grep for the _example scaffold row cannot detect
+- Recorded the ordering cluster for the nine tasks contending for quality-guidelines.md, with the membership criterion written down
+- Adversarial review, three rounds, host lane plus Codex lane: sixteen concerns, six reached independently by both lanes
+- Marked 08-04-audit-registry-snapshot-sd-twin blocked -- it needed external approval in AC #1 but carried no marker, so it sorted as order 0 ahead of every ordered P2 task and an autonomous run would have stalled on it
+- Corrected the base_branch task's premise: sd-create-pr never reads task.json base_branch (SKILL.md:112-124); the real cost is a stale record plus a weakened sd-finish-work guard
+- Corrected counts: write_json has 14 call sites not 15; trailing newline is missing from 22 of 22 task.json not 15 of 19
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ca7ae39` | chore(task): converge backlog planning artifacts and file three follow-ups |
+| `6312547` | chore(task): populate empty task context manifests and correct cluster note |
+| `ef940aa` | fix(task): correct factual errors in planning artifacts found by adversarial review |
+
+### Testing
+
+- [OK] Review preflight: 0 failures, 1 warning (22 task directories, one coherent sweep)
+- [OK] 22/22 task.json parse and pass task.py validate
+- [OK] candidate_block_status returns (True, reason) for sd-twin; candidate_order evaluated directly against the work-loop helper
+- [OK] All 7 CI checks pass on PR #162
+- [BLOCKED] sd-review scope=pr: 2 outstanding prism findings, both verified as pre-existing trailing-newline noise this PR did not introduce; no local rebuttal control exists (08-06-sd-review-local-rebuttal-gap)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Merge PR #162 through the housekeeping gate under explicit user authorization
+- 08-07-vendored-artifact-upstream-route (P2 order=5) is the next ranked task

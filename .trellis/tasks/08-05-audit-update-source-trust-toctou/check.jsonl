@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the lifecycle contract recorded here; confirm the residual window is stated with its measurement and that no trust check was relaxed to shrink it."}

@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the conventions recorded here; confirm both gates are named with their firing conditions and the ordering that avoids them, discoverable before they fire rather than after."}

@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Scenario: Skill Family Registry And Generated Catalog (:233) declares the source/generated boundary this task is enforcing; read it first, since the task's own goal is that the boundary hold or its exception be documented exactly there."}

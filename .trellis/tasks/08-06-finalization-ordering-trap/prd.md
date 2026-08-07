@@ -122,4 +122,6 @@ documentation-only route must be viable on its own.
 - Sibling of `08-06-work-loop-shipped-sha-after-branch-delete`: both are cases
   where a documented call shape cannot be satisfied against the state the
   preceding stage actually leaves behind.
-- Lightweight enough to stay PRD-only unless the upstream route is chosen.
+- Lightweight enough to stay PRD-only unless the upstream route is chosen,
+  which would warrant a `design.md` and an `implement.md` together — the
+  contract at `.trellis/workflow.md:164` requires both for a complex task.

@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the release contract recorded here; confirm the tagging and version-meaning policy does not contradict the existing bump-and-changelog requirement."}
