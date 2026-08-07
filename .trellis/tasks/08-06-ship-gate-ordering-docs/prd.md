@@ -10,10 +10,18 @@ where the next run reads them.
 
 ## Background
 
+> Line citations below are pinned to installed pack `0.64.3`:
+> `scripts/sd-ai-command-pack-review-scope.sh` at 414 lines and
+> `scripts/sd-ai-command-pack-pr-body-scope.py`. Both are `install: "always"` in
+> `.sd-ai-command-pack/manifest.json`, so a pack refresh overwrites them and the
+> line numbers move. Each citation also names its enclosing shell function —
+> re-locate by function name, not by line, on any other version.
+
 **`pack.review-scope`.** When a branch changes tooling/generated files, the PR
 body must contain a recognized scope heading — `Tooling/generated scope`,
 `Generated/tooling scope`, or `Copied/generated scope`
-(`scripts/sd-ai-command-pack-review-scope.sh:170`). Nothing prompts for it at PR
+(`github_pr_body_mentions_scope`,
+`scripts/sd-ai-command-pack-review-scope.sh:170`). Nothing prompts for it at PR
 creation time, and the failure surfaces only after `sd-review` runs its typed
 `sd-check`. Every skill-addition PR regenerates `generated/**`, `manifest.json`,
 and the bundled catalog, so every such PR needs the section.
@@ -34,6 +42,66 @@ names the condition without stating that a hand-authored section is now the
 operator's job. Combined with exit `3` being a non-error, a run that knows
 only "the preparer adds it" reads the info line as benign and retries the
 preparer instead of writing the section.
+
+**The third scope category fires after the PR body is already written.** The
+check recognizes three categories, not one — classified in `main`'s dispatch
+(`scripts/sd-ai-command-pack-review-scope.sh:348-356`): copied/generated Trellis
+or pack files (`is_copied_review_scope_path`), known repository-map files
+(`docs/repomix-map.md`, `scripts/update_repomix`), and **Trellis workspace
+journal/index files** — `.trellis/workspace/*/journal-*.md` and
+`.trellis/workspace/*/index.md` (`is_trellis_journal_scope_path`, `:154-162`).
+PR #152 and #156 both hit the first category, so this PRD originally described
+only that one.
+
+The journal/index case is structurally guaranteed rather than incidental, and it
+arrives late. A branch whose diff contains no scoped file at PR-creation time
+correctly gets no scope section and passes. Planning finalization then commits
+the journal and workspace index, and `pack.review-scope` fires on the
+successor-head re-entry — after the body was authored and judged complete.
+`--prepare-tooling-body` does not pre-empt it either — but **not** for the
+mixed-diff reason above, and getting this wrong points at the wrong remedy. Both
+`.trellis/tasks/**` and `.trellis/workspace/**` are tooling patterns in
+`DEFAULT_RULES` (`:117-118`), and `prepare_tooling_body` returns `3` only for an
+empty diff or one containing a path that no tooling pattern matches (`:615-644`).
+PR #163's diff was 19 files, all inside those two families — zero unmatched — so
+the preparer *would* have appended the section. It was never given the chance:
+`sd-create-pr` forbids running automatic preparation against a user-provided
+body, requiring it be preserved byte-for-byte
+(`.agents/skills/sd-create-pr/SKILL.md:276-279`), and these planning PRs all
+carry custom bodies.
+
+So this is a policy boundary, not a classification failure, and the remedy
+follows from that: for a custom-bodied PR the run must author the section itself,
+because the one tool that would have added it is deliberately not consulted. The
+genuinely mixed case above (PR #156) is a different failure with the same
+symptom — there `.trellis/spec/**` matches no tooling pattern, so the preparer
+declines on the merits even when it is run.
+
+Observed on PR #163 (2026-08-07): `sd-review` failed `pack.review-scope` twice
+before the body gained a hand-authored `Tooling/generated scope` section, then
+passed on attempt 3.
+
+PR #162 is the instructive comparison, and it is instructive in the opposite
+direction from the obvious guess. Its diff contained **no** pack-target or
+Trellis-runtime file — its own body states "No shipped file changes. Every path
+is under `.trellis/tasks/`", and `.trellis/tasks/**` matches neither
+`is_pack_target_path` (`:116-128`, exact installed targets plus three metadata
+paths) nor `is_trellis_runtime_path` (`:86-114`, which lists runtime and platform
+directories and excludes task artifacts). Its only scoped path was the same
+finalization journal/index pair. So both PRs triggered the gate through the same
+third category, and the difference in outcome was **not** in the diff: #162's
+body already carried a `Tooling/generated scope` section, written proactively to
+describe the task-metadata review surface, and #163's did not.
+
+That is the practical lesson and it is stronger than a diff-shape rule: a run
+cannot decide from the diff at PR-creation time whether the section will be
+needed, because the diff that decides it does not exist yet. Writing the section
+proactively is what worked. Note also that `.trellis/tasks/**` *is* in scope for
+the Python PR-body helper (`sd-ai-command-pack-pr-body-scope.py:107`), which is a
+wider path set than the shell check enforces (`DEFAULT_RULES`, `:117-120`, which
+lists `.trellis/tasks/**` and `.trellis/workspace/**` alongside the runtime
+directories) — two tools with different scopes, so neither one's coverage
+predicts the other's.
 
 **`knowledge.obsidian-kb`.** The KB check compares `.obsidian-kb` against the
 current tracked documentation set and fails when it drifts. It went stale twice
@@ -56,6 +124,14 @@ mutation rather than once at the start.
 - State that `--prepare-tooling-body` covers only tooling-only diffs, that a
   mixed diff exits `3` without writing, and that the section must then be
   hand-authored and checked against the accepted-heading pattern.
+- Enumerate all three scope categories, not just copied/generated files, and
+  state the ordering consequence of the journal/index one: a scope section that
+  was correctly absent at PR creation becomes required once planning
+  finalization commits the journal and workspace index, so the body needs the
+  section before the successor-head re-entry rather than at creation time.
+  Enumerate from the check's own predicates, not from the categories these
+  observed PRs happened to hit — the single-category reading is exactly the error
+  this task's first draft made.
 - Prefer documentation over new automation. Do not add a new check, a PR
   template requirement, or a generator rule as part of this task.
 
@@ -69,6 +145,20 @@ location.
 
 - [ ] `.trellis/spec/backend/quality-guidelines.md` names all three accepted
       scope headings and states which file families trigger the requirement.
+- [ ] The same document names all three *scope categories* the check recognizes
+      — a distinct set from the three accepted *headings* in the criterion above;
+      the headings are what the PR body may say, the categories are what makes it
+      required — including Trellis workspace journal/index files, and states that
+      the journal/index category is added by planning finalization rather than
+      present at PR creation. Verified by comparing the documented list against
+      the predicates in `sd-ai-command-pack-review-scope.sh`, not against the
+      categories any one PR triggered.
+- [ ] The same document states why `--prepare-tooling-body` does not cover the
+      journal/index case for a custom-bodied PR — because `sd-create-pr` will not
+      run it against a user-provided body, not because the diff fails the
+      tooling-only test — and therefore that authoring the section by hand is the
+      standing requirement for such PRs. A statement that blames the diff shape
+      is wrong and does not satisfy this criterion.
 - [ ] The same document states that `task.py archive` invalidates the KB and
       names the refresh command.
 - [ ] The same document states the mixed-scope limitation of
