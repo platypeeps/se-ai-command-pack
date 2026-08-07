@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 131
+- **Total Sessions**: 132
 - **Last Active**: 2026-08-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1125 | Active |
+| `journal-3.md` | ~1162 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 132 | 2026-08-06 | Close four ship-loop follow-ups from the PR #156 cycle | `392954f` | `task/08-06-loop-doc-and-coordinator-gaps` |
 | 131 | 2026-08-06 | Ship-loop convention fixes: false PRD claim, parked parent, prism/preflight scaffold disagreement, CI retry rule | `df1c8a9`, `0b8ad10` | `task/08-06-ship-loop-convention-fixes` |
 | 130 | 2026-08-06 | Preserve and ship A-017 TOCTOU-hardening task record from stale branch | `d10ba3c`, `1d157b5` | `task/08-05-audit-update-source-trust-toctou` |
 | 129 | 2026-08-06 | Record work-loop ledger gaps found while shipping PR #153 | `073d5be` | `task/08-06-work-loop-ledger-gaps` |
