@@ -1,0 +1,31 @@
+{
+  "id": "prism-rules-lane-divergence",
+  "name": "prism-rules-lane-divergence",
+  "title": "Repository prism rules never reach the sd-review lane",
+  "description": "The sd-review local provider builds its own prism command and omits --rules, --exclude, and --fail-on, so .prism/rules.json applies only in the shell review lane. Every repository-owned prism rule is silently inert under sd-review, which is the lane sd-ship Stage 2 uses. Decide between documenting the divergence locally and proposing an upstream fix to the built-in prism adapter.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "scripts/sd-ai-command-pack-review-local.py",
+    "scripts/sd-ai-command-pack-review-local.sh",
+    ".prism/rules.json",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "Observed on PR #158 (2026-08-06): prism reported the generated _example scaffold rows that .prism/rules.json's trellis-scaffold-convention rule (added by PR #156 to prevent exactly that) forbids reporting. Note that scripts/sd-ai-command-pack-review-local.py is installed from the sd-ai-command-pack (.sd-ai-command-pack/manifest.json) and is provenance-tracked and undrifted, so changing the built-in prism adapter is upstream work; .prism/rules.json is install: if-not-exists and therefore repo-owned. Fourth instance of the vendored-artifact pattern, alongside 08-06-watch-coordinator-infra-classification, 08-06-finalization-ordering-trap, and 08-06-work-loop-shipped-sha-after-branch-delete.",
+  "meta": {}
+}
