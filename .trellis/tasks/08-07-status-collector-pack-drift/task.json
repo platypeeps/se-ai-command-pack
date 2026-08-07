@@ -1,8 +1,8 @@
 {
   "id": "status-collector-pack-drift",
   "name": "status-collector-pack-drift",
-  "title": "Status collector reports pack drift as healthy in a consumer repository",
-  "description": "sd-status local mode cannot resolve a target pack version, so an installed pack behind the source checkout reports packState \"installed\" and SD status: healthy with no anomaly. Decide between an upstream fix to the vendored collector and local-only guidance.",
+  "title": "Status collector emits no pack-freshness signal in a consumer repository",
+  "description": "sd-status local mode cannot resolve a target pack version, so an installed pack behind the source checkout reports packState \"installed\" with a null targetPack and emits no anomaly, follow-up, or recommendation about pack freshness. The top-line SD status verdict is not part of this: render_local derives it from anomalies, working-tree state, and sync state, so it reads healthy or attention independently of the pack. Decide between an upstream fix to the vendored collector and local-only guidance.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -27,7 +27,7 @@
     ".sd-ai-command-pack/provenance.json",
     ".trellis/spec/backend/quality-guidelines.md"
   ],
-  "notes": "Vendored collector (manifest files[30], install: \"always\"), so a behaviour change is an upstream pull request against sd-ai-command-pack needing explicit per-PR approval. Instance of the vendored-artifact pattern whose canonical membership table lives in 08-07-vendored-artifact-upstream-route/prd.md. Ordered after 08-06-task-create-base-branch-default (order 50) in the quality-guidelines.md landing cluster. Observed 2026-08-07: installed 0.64.3 vs source 0.64.24 reported healthy.",
+  "notes": "Vendored collector (manifest files[30], install: \"always\"), so a behaviour change is an upstream pull request against sd-ai-command-pack needing explicit per-PR approval. Instance of the vendored-artifact pattern whose canonical membership table lives in 08-07-vendored-artifact-upstream-route/prd.md. Ordered after 08-06-task-create-base-branch-default (order 50) in the quality-guidelines.md landing cluster. Observed 2026-08-07: installed 0.64.3 vs source 0.64.24 reported healthy. That pair is the observation-time snapshot, not a fixture -- the source checkout reached 0.64.25 the same day. The reproducible invariant is the shape: installed strictly behind the resolvable source, with no pack-freshness signal emitted (packState installed, targetPack null, no anomaly, follow-up, or recommendation). The top-line 'SD status: healthy' is NOT part of it -- render_local derives that verdict from anomalies, working-tree state, and sync state, so it flips to attention on a dirty branch while the pack defect is unchanged. See the acceptance criteria in prd.md.",
   "meta": {},
   "order": 60
 }

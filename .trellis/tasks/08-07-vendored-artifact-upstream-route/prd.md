@@ -152,10 +152,16 @@ from scratch, because a filed task is not recorded guidance.
 - The last row was added on 2026-08-07 and is the strongest argument that the
   pattern is worth writing down: the status collector cannot resolve a target
   pack version in a consumer repository (`collect_versions`,
-  `sd-ai-command-pack-status.py:393-398`), so an installed pack behind the
-  source checkout reports `packState: "installed"` and `SD status: healthy` with
-  no anomaly. The collector is itself installed from the sd-pack, so the defect
-  that hides vendored drift is vendored. It carries its own task,
-  `08-07-status-collector-pack-drift`; this one still does not fix it.
+  `scripts/sd-ai-command-pack-status.py:393-398` as of installed pack `0.64.3`;
+  the file is `install: "always"`, so re-locate by symbol on any other version),
+  so an installed pack behind the source checkout reports
+  `packState: "installed"` with a null `targetPack` and emits no anomaly,
+  follow-up, or recommendation about pack freshness. The top-line `SD status`
+  verdict is not part of this — it comes from anomalies, working-tree state, and
+  sync state (`render_local`,
+  `scripts/sd-ai-command-pack-status.py:2095-2100`) — so do not restate this
+  defect as "reports healthy". The collector is itself installed from the
+  sd-pack, so the defect that hides vendored drift is vendored. It carries its
+  own task, `08-07-status-collector-pack-drift`; this one still does not fix it.
 - Planning depth: PRD-only. The deliverable is recorded guidance; the ownership
   procedure is a lookup, not a design.
