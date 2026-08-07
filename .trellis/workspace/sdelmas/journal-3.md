@@ -1203,3 +1203,43 @@ Copilot's auto-review landed after the first finalization and raised five findin
 ### Next Steps
 
 - None - task complete
+
+
+## Session 134: Record the finalization-ordering trap and a third blocked-reason variant
+
+**Date**: 2026-08-06
+**Task**: Record the finalization-ordering trap and a third blocked-reason variant
+**Branch**: `task/08-06-finalization-ordering-trap`
+
+### Summary
+
+Created the 08-06-finalization-ordering-trap planning task documenting why sd-ship Stage 4 cannot recompute a valid planning receipt when a remote review fix lands after Stage 2b's journal commit, and amended the watch-coordinator task PRD with a third merge_state_not_clean variant observed on PR #157: settled-blocked with every check green, blocked in fact by unresolved review threads that the probe's short-circuited thread list cannot name. Curated both task context manifests with their real spec entry after the local prism provider reported the generated _example scaffold rows; investigation showed .prism/rules.json reaches prism only through the shell review lane, never through the sd-review lane, which builds 'prism review range <base>..<head> --format json' with no --rules, --exclude, or --fail-on.
+
+### Main Changes
+
+- Add .trellis/tasks/08-06-finalization-ordering-trap as a P2 planning task with the failing commit-order diagram, both validator transcripts, the review-timing recurrence analysis, the vendored-stage constraint, and five acceptance criteria
+- Amend .trellis/tasks/08-06-watch-coordinator-infra-classification/prd.md with the PR #157 signature — all checks green, merge_state_not_clean, threads null — and a matching acceptance criterion
+- Curate implement.jsonl and check.jsonl for the new task with their real spec entry, the transition the scaffold's own text asks for rather than the emptying the convention forbids
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e043ff2` | docs(task): record the finalization-ordering trap and a third blocked-reason variant |
+| `808f72e` | docs(task): curate context manifests for the finalization-ordering-trap task |
+
+### Testing
+
+- [OK] sd-check: 7 passed, 0 failed
+- [OK] sd-review scope=pr attempt 2 at 808f72e: status ready, local clean, router absent with router-not-configured and zero-remote-confidence
+- [OK] Copilot review of PR #158 at e043ff2: 5 of 5 files reviewed, no comments generated
+- [OK] sd-review-learnings --github-pr 158 --dry-run: 0 findings, preview only, nothing written
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
