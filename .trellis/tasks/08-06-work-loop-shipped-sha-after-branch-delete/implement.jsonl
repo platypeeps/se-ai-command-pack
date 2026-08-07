@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Review And Retry Conventions (:147) and Shared State Sentinel Contracts (:1450) carry the reconciliation expectations for durable state that outlives the branch it refers to; read both before changing how a recorded shipped SHA is validated."}

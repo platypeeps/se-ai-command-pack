@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the testing conventions recorded here; confirm the suite passes regardless of global git configuration and that the update lifecycle has genuine end-to-end coverage rather than a mocked stand-in."}

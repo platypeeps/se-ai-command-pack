@@ -25,7 +25,7 @@
     ".prism/rules.json",
     "docs/SE_AI_COMMAND_PACK.md"
   ],
-  "notes": " Sequencing: eight active tasks edit .trellis/spec/backend/quality-guidelines.md. `order` 10 within the P2 band encodes the intended landing sequence (ship-loop gate ordering: the base the others cite). Tasks with no `order` sort as 0 and therefore run before this cluster, which is intended: they do not contend for this file.",
+  "notes": " Sequencing: nine active tasks edit .trellis/spec/backend/quality-guidelines.md. Cluster membership is decided by the PRD's stated deliverable -- a Requirement or acceptance criterion that writes to that file -- not by whether implement.jsonl lists it, since the manifest is a read-for-context list and several non-cluster tasks cite the file as a contract to read. `order` 10 within the P2 band encodes the intended landing sequence (ship-loop gate ordering: the base the others cite). Tasks with no `order` sort as 0 and therefore run before this cluster, which is intended: they do not contend for this file.",
   "meta": {},
   "order": 10
 }

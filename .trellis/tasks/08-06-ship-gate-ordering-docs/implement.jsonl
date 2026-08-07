@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Review And Retry Conventions (:147) is the sanctioned home for gate-ordering guidance; Scenario: Repository-Owned PR Full Check (:1365) covers the full-check gate itself. Read both before recording the two gates so the guidance lands beside the existing conventions rather than in a new section."}

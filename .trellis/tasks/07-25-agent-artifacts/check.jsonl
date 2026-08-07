@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Cross-child acceptance criteria are checked against the registry and pack-lifecycle contracts recorded here; confirm any agent kind is registered, generated, and installed the same way existing kinds are, with no degradation on platforms lacking sub-agent support."}

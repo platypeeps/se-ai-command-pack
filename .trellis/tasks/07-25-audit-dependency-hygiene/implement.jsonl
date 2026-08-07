@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Scenario: Repomix Repository Map Refresh (:1290) covers scripts/update_repomix, one of the fetch sites under audit; Required Patterns (:35) carries the determinism expectations that pinning serves."}
