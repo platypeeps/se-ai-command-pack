@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the conventions recorded here; confirm the guidance names both non-applicable controls with the localOutcome == clean reason, states the sanctioned response order, and rules out contriving a change purely to clear the gate."}

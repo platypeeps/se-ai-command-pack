@@ -1,0 +1,31 @@
+{
+  "id": "sd-review-local-rebuttal-gap",
+  "name": "sd-review-local-rebuttal-gap",
+  "title": "sd-review cannot record a rebutted local finding",
+  "description": "Local provider findings enter the receipt as disposition outstanding and there is no coordinator control that moves one to rebutted. --remote-disposition accepts only remote stable ids, and the family-evidence route requires localOutcome clean, so it cannot dispose of the finding that made the outcome non-clean. A verifiably wrong local finding therefore blocks the remote gate until code changes. Decide between documenting the constraint locally and proposing an upstream local-disposition control.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "scripts/sd-ai-command-pack-review.py",
+    "scripts/sd-ai-command-pack-review-local.py",
+    ".claude/skills/sd-review/SKILL.md",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "Observed on PR #158 (2026-08-06): two verifiably wrong prism findings blocked the sd-ship chain at Stage 2 with no control able to record the rebuttal. Deliberately excluded from 08-06-prism-rules-lane-divergence's scope, since folding it in would have let that task's own findings be waved through. All three surfaces are installed from the sd-ai-command-pack (.sd-ai-command-pack/manifest.json), provenance-tracked and undrifted, so adding a control is upstream work; only this repository's spec guidance is editable locally. Fifth instance of the vendored-artifact pattern, which now warrants a task of its own.",
+  "meta": {}
+}
