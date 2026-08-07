@@ -25,6 +25,7 @@
     "install.py",
     "tests/test_management.py"
   ],
-  "notes": "",
-  "meta": {}
+  "notes": "Ordered 1 in the P2 band: ahead of the quality-guidelines.md landing cluster (5-60), which it is not a member of -- it reads that file as a contract but no requirement or acceptance criterion writes it. The order is explicit rather than absent because an absent order is read as 0, which ranked this task first by accident rather than by decision. Security hardening lands before documentation consolidation.",
+  "meta": {},
+  "order": 1
 }

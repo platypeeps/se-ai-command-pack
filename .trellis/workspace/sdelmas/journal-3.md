@@ -1412,3 +1412,43 @@ Swept the 22 active Trellis tasks for planning-artifact defects, filed three fol
 
 - Merge PR #162 through the housekeeping gate under explicit user authorization
 - 08-07-vendored-artifact-upstream-route (P2 order=5) is the next ranked task
+
+
+## Session 139: File status-collector pack-drift task and reconcile cluster ordering
+
+**Date**: 2026-08-07
+**Task**: File status-collector pack-drift task and reconcile cluster ordering
+**Branch**: `task/08-07-status-collector-drift-and-ordering`
+
+### Summary
+
+Filed Trellis planning task 08-07-status-collector-pack-drift recording why sd-status local mode reports an out-of-date installed pack as healthy, then reconciled the two bookkeeping surfaces that filing it invalidated: the canonical vendored-artifact membership table and the quality-guidelines cluster size. Also assigned explicit order values to two previously unordered P2 tasks whose ranking was accidental. Planning artifacts only.
+
+### Main Changes
+
+- Filed 08-07-status-collector-pack-drift (P2, order 60) with a full root-cause trace: local mode never passes a target version, the only target source is name-gated on a root manifest named sd-ai-command-pack, so packState falls to "installed" and all three drift surfaces stay gated on "different".
+- Added the seventh member row to the canonical vendored-artifact table in 08-07-vendored-artifact-upstream-route/prd.md and reconciled every derived copy of the count (PRD prose, task.json description and notes, implement.jsonl).
+- Corrected eight sibling task.json notes that still recited the old quality-guidelines cluster figures (nine tasks, order range 10-50) to ten tasks and 10-60.
+- Assigned order 1 to 08-05-audit-update-source-trust-toctou and order 2 to 08-06-work-loop-shipped-sha-after-branch-delete, each with a note recording that an absent order is read as 0, so their prior ranking was accidental rather than decided.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b3548eb` | chore(task): file status-collector pack-drift task and reconcile cluster ordering |
+
+### Testing
+
+- [OK] sd-review coordinator: status ready, phase ready, exactHeadReady true, check passed (7 passed / 0 failed), prism 0 findings
+- [OK] Ranking verified through the real work-loop helper (candidate_block_status / candidate_order): P2 order 1, 2, 5 ... 60, all blocked tasks sorted last
+- [OK] Adversarial planning review: three automatic rounds (contract cap), host and Codex lanes, twelve concerns, all addressed
+- [OK] Review preflight: 0 failures; PR #163 CI 7/7 SUCCESS; Copilot reviewed 17 of 17 files with no comments
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
