@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 133
+- **Total Sessions**: 134
 - **Last Active**: 2026-08-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1202 | Active |
+| `journal-3.md` | ~1242 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 134 | 2026-08-06 | Record the finalization-ordering trap and a third blocked-reason variant | `e043ff2`, `808f72e` | `task/08-06-finalization-ordering-trap` |
 | 133 | 2026-08-06 | Address PR #157 review findings: citation ranges and imprecise descriptions | `81fc2cb` | `task/08-06-loop-doc-and-coordinator-gaps` |
 | 132 | 2026-08-06 | Close four ship-loop follow-ups from the PR #156 cycle | `392954f` | `task/08-06-loop-doc-and-coordinator-gaps` |
 | 131 | 2026-08-06 | Ship-loop convention fixes: false PRD claim, parked parent, prism/preflight scaffold disagreement, CI retry rule | `df1c8a9`, `0b8ad10` | `task/08-06-ship-loop-convention-fixes` |

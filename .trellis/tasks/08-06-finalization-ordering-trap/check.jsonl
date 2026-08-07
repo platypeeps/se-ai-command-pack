@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the conventions recorded here; confirm the recorded disposition names the recovery route, states that the in-chain Stage 4 rerun stays forbidden while a fresh invocation is not, and excludes the bookkeeping-only fix case."}

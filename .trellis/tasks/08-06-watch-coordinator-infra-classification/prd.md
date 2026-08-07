@@ -34,6 +34,29 @@ The cost is asymmetric and falls on the wrong side. Reading a real failure as
 infrastructure wastes retries; reading infrastructure as a real failure invites
 a run to "fix" code that was never executed.
 
+### The reason code is uninformative in a third way
+
+`merge_state_not_clean` does not separate failed checks from unresolved review
+threads either, so the ambiguity is broader than infrastructure-versus-real.
+
+Observed on PR #157 (2026-08-06). Stage 3 returned `settled-blocked` with
+`reasonCodes: ['merge_state_not_clean']` while **every** check was green — six
+`SUCCESS`, one `SKIPPED`. The actual blocker was five unresolved Copilot
+threads, discoverable only by querying GitHub separately
+(`mergeStateStatus: BLOCKED`, `mergeable: MERGEABLE`, `reviewDecision: ""`).
+Nothing in the probe result pointed at threads.
+
+The probe's own documented evidence limit compounds this: a merge-state-blocked
+result short-circuits before thread listing, so `threads` was `null` — and per
+`watch-coordinator.md`, consumers "must not treat an absent thread list in a
+blocked report as 'no threads'". The one field that would have named the cause
+is guaranteed absent in exactly the case where it is needed.
+
+So a single `merge_state_not_clean` currently spans at least three distinct
+conditions — infrastructure failure, genuine check failure, and unresolved
+threads — each with a different correct response. Any classification this task
+adds should be evaluated against all three, not only the first.
+
 ## Constraint: the coordinator is not owned by this repository
 
 `.claude/skills/sd-ship/references/watch-coordinator.md` is installed from the
@@ -72,6 +95,9 @@ on its own, because the upstream option may not be authorized.
 - [ ] A run reading the resulting guidance can classify the PR #155 signature as
       infrastructure using only evidence available at the time, without the
       benefit of hindsight.
+- [ ] The same guidance separates the PR #157 signature — all checks green,
+      `merge_state_not_clean`, `threads: null` — as unresolved threads rather
+      than a check failure, and names the query that confirms it.
 - [ ] The guidance names the concrete evidence to check and the exact command to
       obtain it.
 - [ ] The fail-toward-blocking property is stated explicitly and holds under

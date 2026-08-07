@@ -1,0 +1,30 @@
+{
+  "id": "finalization-ordering-trap",
+  "name": "finalization-ordering-trap",
+  "title": "Planning finalization cannot absorb a review fix that lands after the journal commit",
+  "description": "When a remote review lands after sd-ship Stage 2b's journal commit, the resulting review-fix commit sits between the captured finalization base and the head. Stage 4's receipt recomputation then fails bundle_scope_invalid for any fixed path that is not bookkeeping, and Stage 4 is forbidden from re-running finish-work, so the chain has no in-band exit. Give the chain a sanctioned route, or document the fresh sd-finish-work invocation as the required recovery.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".claude/skills/sd-ship/SKILL.md",
+    ".claude/skills/sd-finish-work/SKILL.md",
+    "scripts/sd-ai-command-pack-review-preflight.mjs"
+  ],
+  "notes": "Observed end-to-end on PR #157 (2026-08-06). Sibling of 08-06-work-loop-shipped-sha-after-branch-delete: both are cases where a documented call shape cannot be satisfied against the state the preceding stage actually leaves behind. Note that sd-ship and sd-finish-work are installed from the sd-ai-command-pack (.sd-ai-command-pack/manifest.json), so changing stage behaviour is upstream work; only this repository's spec guidance is editable locally.",
+  "meta": {}
+}
