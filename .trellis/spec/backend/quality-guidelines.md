@@ -155,9 +155,11 @@ with one `_example` row whose own text says to delete it once real entries are
 added. The review preflight exempts that pristine scaffold deliberately —
 `validateBookkeepingTaskContexts` in
 `scripts/sd-ai-command-pack-review-preflight.mjs` gates on
-`!archived && record.status === 'planning'` — so creating a task never fails
-either lane. `.prism/rules.json` carries the matching
-`trellis-scaffold-convention` rule.
+`!archived && isPlainObject(record) && record.status === 'planning'` — so
+creating a task never fails either lane. The `isPlainObject` term is not
+incidental: a missing or unparsable `task.json` leaves the planning status
+unproven, so the exemption switches off and the scaffold row is reported.
+`.prism/rules.json` carries the matching `trellis-scaffold-convention` rule.
 
 Do not empty these files to silence a review finding. Emptying is churn that
 contradicts the tooling, and the drift is already measurable: of 15 planning
