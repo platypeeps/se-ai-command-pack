@@ -9,7 +9,8 @@ status report rather than by comparing version strings by hand.
 The defect is the **silence**, not the verdict. `SD status: healthy` is not a
 claim about pack freshness and `SD status: attention` is not a denial of one —
 both are computed from anomalies, working-tree state, and sync state
-(`render_local`, `:2095-2100`), none of which consults the pack. Wherever this
+(`render_local`, `scripts/sd-ai-command-pack-status.py:2095-2100`), none of
+which consults the pack. Wherever this
 task is restated, state the missing signal; do not describe the defect as
 "reporting healthy".
 

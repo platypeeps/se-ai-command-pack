@@ -158,8 +158,9 @@ from scratch, because a filed task is not recorded guidance.
   a null `targetPack` and emits no anomaly, follow-up, or recommendation about
   pack freshness. The top-line `SD status` verdict is not part of this — it comes
   from anomalies, working-tree state, and sync state
-  (`render_local`, `:2095-2100`) — so do not restate this defect as "reports
-  healthy". The collector is itself installed from the sd-pack, so the defect
+  (`render_local`, `sd-ai-command-pack-status.py:2095-2100`) — so do not restate
+  this defect as "reports healthy". The collector is itself installed from the
+  sd-pack, so the defect
   that hides vendored drift is vendored. It carries its own task,
   `08-07-status-collector-pack-drift`; this one still does not fix it.
 - Planning depth: PRD-only. The deliverable is recorded guidance; the ownership

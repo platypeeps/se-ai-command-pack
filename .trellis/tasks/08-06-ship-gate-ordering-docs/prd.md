@@ -12,10 +12,11 @@ where the next run reads them.
 
 > Line citations below are pinned to installed pack `0.64.3`:
 > `scripts/sd-ai-command-pack-review-scope.sh` at 414 lines and
-> `scripts/sd-ai-command-pack-pr-body-scope.py`. Both are `install: "always"` in
-> `.sd-ai-command-pack/manifest.json`, so a pack refresh overwrites them and the
-> line numbers move. Each citation also names its enclosing shell function —
-> re-locate by function name, not by line, on any other version.
+> `scripts/sd-ai-command-pack-pr-body-scope.py` at 839 lines. Both are
+> `install: "always"` in `.sd-ai-command-pack/manifest.json`, so a pack refresh
+> overwrites them and the line numbers move. Two files are cited here, so every
+> citation names its file as well as its enclosing symbol — shell function or
+> Python definition. Re-locate by symbol, not by line, on any other version.
 
 **`pack.review-scope`.** When a branch changes tooling/generated files, the PR
 body must contain a recognized scope heading — `Tooling/generated scope`,
@@ -49,7 +50,8 @@ check recognizes three categories, not one — classified in `main`'s dispatch
 or pack files (`is_copied_review_scope_path`), known repository-map files
 (`docs/repomix-map.md`, `scripts/update_repomix`), and **Trellis workspace
 journal/index files** — `.trellis/workspace/*/journal-*.md` and
-`.trellis/workspace/*/index.md` (`is_trellis_journal_scope_path`, `:154-162`).
+`.trellis/workspace/*/index.md` (`is_trellis_journal_scope_path`,
+`scripts/sd-ai-command-pack-review-scope.sh:154-162`).
 PR #152 and #156 both hit the first category, so this PRD originally described
 only that one.
 
@@ -61,8 +63,10 @@ successor-head re-entry — after the body was authored and judged complete.
 `--prepare-tooling-body` does not pre-empt it either — but **not** for the
 mixed-diff reason above, and getting this wrong points at the wrong remedy. Both
 `.trellis/tasks/**` and `.trellis/workspace/**` are tooling patterns in
-`DEFAULT_RULES` (`:117-118`), and `prepare_tooling_body` returns `3` only for an
-empty diff or one containing a path that no tooling pattern matches (`:615-644`).
+`DEFAULT_RULES` (`scripts/sd-ai-command-pack-pr-body-scope.py:117-118`), and
+`prepare_tooling_body` returns `3` only for an empty diff or one containing a
+path that no tooling pattern matches
+(`scripts/sd-ai-command-pack-pr-body-scope.py:615-644`).
 PR #163's diff was 19 files, all inside those two families — zero unmatched — so
 the preparer *would* have appended the section. It was never given the chance:
 `sd-create-pr` forbids running automatic preparation against a user-provided
@@ -85,9 +89,10 @@ PR #162 is the instructive comparison, and it is instructive in the opposite
 direction from the obvious guess. Its diff contained **no** pack-target or
 Trellis-runtime file — its own body states "No shipped file changes. Every path
 is under `.trellis/tasks/`", and `.trellis/tasks/**` matches neither
-`is_pack_target_path` (`:116-128`, exact installed targets plus three metadata
-paths) nor `is_trellis_runtime_path` (`:86-114`, which lists runtime and platform
-directories and excludes task artifacts). Its only scoped path was the same
+`is_pack_target_path` (`scripts/sd-ai-command-pack-review-scope.sh:116-128`,
+exact installed targets plus three metadata paths) nor `is_trellis_runtime_path`
+(`scripts/sd-ai-command-pack-review-scope.sh:86-114`, which lists runtime and
+platform directories and excludes task artifacts). Its only scoped path was the same
 finalization journal/index pair. So both PRs triggered the gate through the same
 third category, and the difference in outcome was **not** in the diff: #162's
 body already carried a `Tooling/generated scope` section, written proactively to
@@ -97,8 +102,9 @@ That is the practical lesson and it is stronger than a diff-shape rule: a run
 cannot decide from the diff at PR-creation time whether the section will be
 needed, because the diff that decides it does not exist yet. Writing the section
 proactively is what worked. Note also that `.trellis/tasks/**` *is* in scope for
-the Python PR-body helper (`sd-ai-command-pack-pr-body-scope.py:107`), which is a
-wider path set than the shell check enforces (`DEFAULT_RULES`, `:117-120`, which
+the Python PR-body helper (`DEFAULT_RULES`,
+`scripts/sd-ai-command-pack-pr-body-scope.py:107`), which is a wider path set
+than the shell check enforces (`scripts/sd-ai-command-pack-pr-body-scope.py:117-120`
 lists `.trellis/tasks/**` and `.trellis/workspace/**` alongside the runtime
 directories) — two tools with different scopes, so neither one's coverage
 predicts the other's.
