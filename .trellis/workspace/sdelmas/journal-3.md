@@ -1123,3 +1123,83 @@ Audit of the previous run surfaced four items. The 08-06 work-loop PRD claimed -
 ### Next Steps
 
 - None - task complete
+
+
+## Session 132: Close four ship-loop follow-ups from the PR #156 cycle
+
+**Date**: 2026-08-06
+**Task**: Close four ship-loop follow-ups from the PR #156 cycle
+**Branch**: `task/08-06-loop-doc-and-coordinator-gaps`
+
+### Summary
+
+Amended the ship-gate-ordering PRD with the PR #156 recurrence and the mixed-scope exit-3 case, tasked the deferred watch-coordinator classification gap, disambiguated the scaffold convention for already-empty context files, and documented that a stopped work-loop run is inert. Documentation and Trellis task artifacts only.
+
+### Main Changes
+
+- Amended 08-06-ship-gate-ordering-docs/prd.md: PR #156 recurrence, mixed-scope background, one requirement, one acceptance criterion, placement note
+- Created 08-06-watch-coordinator-infra-classification (planning, P3) recording the PR #155 infra-vs-real signature and the upstream-ownership constraint
+- Clarified in quality-guidelines.md that empty and scaffold-bearing context files are both acceptable resting states; the forbidden move is the transition under review pressure
+- Documented in quality-guidelines.md that a stopped work-loop run is inert, with the start-path proof at work-loop.py:2864
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `392954f` | docs: close four ship-loop follow-ups from the PR #156 cycle |
+
+### Testing
+
+- [OK] sd-check: passed=7, failed=0, skipped=0, unavailable=0, invalid=0, indeterminate=0; state guard passed
+- [OK] Review preflight: 0 failure(s), 1 warning(s) (2 task directories, justified in the PR body)
+- [OK] sd-review scope=pr attempt 1: status=ready, prism clean, 0 findings
+- [OK] Obsidian KB refreshed: 525 copies, expected 525
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 133: Address PR #157 review findings: citation ranges and imprecise descriptions
+
+**Date**: 2026-08-06
+**Task**: Address PR #157 review findings: citation ranges and imprecise descriptions
+**Branch**: `task/08-06-loop-doc-and-coordinator-gaps`
+
+### Summary
+
+Copilot's auto-review landed after the first finalization and raised five findings on PR #157. Three were confirmed defects in citations and quoted output, one was a partly-correct framing issue, and one was an awkward phrasing. All five were fixed, replied to with evidence, and resolved.
+
+### Main Changes
+
+- Corrected watch-coordinator.md citation range from 60-65 to 58-65 in both the new task's prd.md and its task.json notes; settled-green occupies lines 58-59, so the old range omitted one of the four outcomes the sentence enumerates
+- Replaced the quoted status output 'Anomalies: none' with the collector's real rendering: a bare none under an ==> Anomalies header
+- Rewrote the exit-3 passage in the ship-gate-ordering PRD to state that --prepare-tooling-body does print an info: line, and that the defect is the message being descriptive rather than directive
+- Reworded an awkward appositive describing the stopped-run task pointer
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `81fc2cb` | fix(docs): correct citation ranges and two imprecise descriptions |
+
+### Testing
+
+- [OK] sd-check: passed=7, failed=0, skipped=0, unavailable=0, invalid=0, indeterminate=0
+- [OK] Repo-wide grep confirms no remaining 60-65 citation and no remaining 'Anomalies: none' quote
+- [OK] sd-review scope=pr attempt 3 at head 81fc2cb: status=ready, checks passed, local clean
+- [OK] PR #157 CI: 6 checks pass, 1 skipped, mergeStateStatus CLEAN, 0 unresolved review threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
