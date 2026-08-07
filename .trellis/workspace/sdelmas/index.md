@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 135
+- **Total Sessions**: 136
 - **Last Active**: 2026-08-06
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1281 | Active |
+| `journal-3.md` | ~1320 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 136 | 2026-08-06 | Retarget two task records from a deleted base branch to main | `67db265` | `task/08-07-fix-dead-base-branches` |
 | 135 | 2026-08-06 | Record that repository prism rules never reach the sd-review lane | `9ea5195` | `task/08-06-prism-rules-lane-divergence` |
 | 134 | 2026-08-06 | Record the finalization-ordering trap and a third blocked-reason variant | `e043ff2`, `808f72e` | `task/08-06-finalization-ordering-trap` |
 | 133 | 2026-08-06 | Address PR #157 review findings: citation ranges and imprecise descriptions | `81fc2cb` | `task/08-06-loop-doc-and-coordinator-gaps` |

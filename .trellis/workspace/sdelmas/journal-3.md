@@ -1283,3 +1283,43 @@ Created the 08-06-prism-rules-lane-divergence planning task after tracing why pr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 136: Retarget two task records from a deleted base branch to main
+
+**Date**: 2026-08-06
+**Task**: Retarget two task records from a deleted base branch to main
+**Branch**: `task/08-07-fix-dead-base-branches`
+
+### Summary
+
+Audit of remaining work found two active Trellis task records — 08-06-ship-gate-ordering-docs and 08-06-session-first-skill-review — carrying base_branch task/07-28-enhance-skills-workflow, a branch that exists neither locally nor on origin. Both are root tasks in planning, so each would have targeted a deleted branch at PR creation time. Root cause is task.py create writing the current branch unconditionally at .trellis/scripts/common/task_store.py:325; the review preflight does not catch it because it validates only that base_branch is a non-empty string and only for changed task records. Corrected the live data to main; left the generator alone pending a decision on whether a Trellis upgrade overwrites .trellis/scripts/.
+
+### Main Changes
+
+- Set base_branch to main on .trellis/tasks/08-06-ship-gate-ordering-docs/task.json and .trellis/tasks/08-06-session-first-skill-review/task.json, matching the other 16 active tasks
+- Restore the trailing newline that task.py set-base-branch strips, so each file's diff is the single intended line
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `67db265` | fix(task): retarget two task records from a deleted base branch to main |
+
+### Testing
+
+- [OK] enumerated every .trellis/tasks/*/task.json from disk after the edit: Counter({'main': 18}), zero non-main values remain
+- [OK] review preflight: 0 failure(s), 1 warning(s) — two task directories, one reviewable outcome
+- [OK] sd-check: 7 passed, 0 failed
+- [OK] sd-review scope=pr attempt 1 at 67db265: status ready, check passed, local clean
+- [OK] Copilot review of PR #160 at 67db265: 2 of 2 files reviewed, no comments generated, 0 review threads
+- [OK] sd-review-learnings --github-pr 160 --dry-run: 0 findings, preview only, nothing written
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
