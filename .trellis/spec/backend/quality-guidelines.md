@@ -146,7 +146,7 @@ deleting the contract breaks it, short enough that rewording does not.
 
 ## Review And Retry Conventions
 
-Two ship-loop conventions that cost rounds when a run rediscovers them.
+Three ship-loop conventions that cost rounds when a run rediscovers them.
 
 ### The `_example` scaffold row is sanctioned, not leftover
 
@@ -161,11 +161,20 @@ incidental: a missing or unparsable `task.json` leaves the planning status
 unproven, so the exemption switches off and the scaffold row is reported.
 `.prism/rules.json` carries the matching `trellis-scaffold-convention` rule.
 
-Do not empty these files to silence a review finding. Emptying is churn that
-contradicts the tooling, and the drift is already measurable: of 15 planning
-tasks, 12 have empty context files, 3 carry the scaffold, and none have real
-entries. Report such a file only when a row is malformed JSONL, references a
-path outside the allowed spec/research roots, or mixes real entries with the
+Empty and scaffold-bearing are both acceptable resting states, and neither is a
+finding. The preflight exemption turns the scaffold row into a non-issue; an
+empty file has no row to object to. Measured across the 15 planning tasks: 12
+have empty context files, 3 carry the scaffold, 0 have real entries.
+
+What the convention forbids is the *transition* — emptying a scaffold-bearing
+file in response to a review comment. That is churn that contradicts the
+tooling, and it is the specific move this section exists to stop. Do not
+normalize in the other direction either: mass-adding scaffold rows to the 12
+empty tasks would touch a dozen unrelated tasks to satisfy a consistency no
+gate asks for.
+
+Report such a file only when a row is malformed JSONL, references a path
+outside the allowed spec/research roots, or mixes real entries with the
 scaffold row.
 
 ### Stop retrying on a repeated failure signature
@@ -182,6 +191,28 @@ timeout, and no number of retries changes it. Check job steps
 (`gh api repos/<owner>/<repo>/actions/jobs/<id>`) before assuming a red lane
 ran anything: a `Set up job` failure means zero test evidence either way, so it
 is neither a passing nor a failing signal about the code.
+
+### A stopped work-loop run is inert, not pending cleanup
+
+`sd-work-backlog`'s status helper reports `recovery.reasonCode: run_stopped`
+for any run left in `status: stopped`, and that code routes to a recovery
+reference. On a run whose `branch`, `head`, `prNumber`, and `lastShippedSha`
+are all null and whose lock is absent, there is nothing to reconcile and no
+cleanup to perform. The recorded `task` may still name the last selected task
+— possibly one since parked — and that pointer is equally inert.
+
+The proof is in the helper's own `start` path: it resumes an existing run only
+when `state["status"] in {"active", "paused"}`
+(`scripts/sd-ai-command-pack-work-loop.py:2864`). A `stopped` run falls through
+to `new_state(...)`, so the next invocation begins a fresh run and never
+resumes into the stale task. Read that branch before treating a stopped run as
+an anomaly; the status collector already agrees, reporting `Anomalies: none`.
+
+This is documented here rather than in the recovery reference itself because
+`references/run-recovery.md` is installed from the sd-ai-command-pack (see
+`.sd-ai-command-pack/manifest.json`), so an edit in this repository would be
+overwritten by the next pack refresh. Fixing it at the source is an upstream
+change to that pack, not a change to this one.
 
 ---
 
