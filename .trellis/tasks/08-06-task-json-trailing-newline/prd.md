@@ -39,13 +39,20 @@ Trellis, not a convention either way.
 
 ### Blast radius
 
-`write_json` has fifteen call sites across `task.py` and `task_store.py` —
-create, start, set-base-branch, set-scope, and every parent/child link mutation.
-Every one produces a newline-less file.
+`write_json` has fourteen call sites — twelve in `task_store.py`, two in
+`task.py` — covering create, start, set-base-branch, set-scope, and every
+parent/child link mutation. Every one produces a newline-less file.
 
-Measured across the active task tree: **15 of 19** `task.json` files have no
-trailing newline. The four that do are the ones previously corrected by hand.
+Measured across the active task tree: **22 of 22** `task.json` files have no
+trailing newline. Not one exception remains.
 `.trellis/.template-hashes.json` is also affected.
+
+An earlier measurement on 2026-08-06 found 15 of 19, with four files that had
+been hand-corrected still holding their newline. All four have since been
+rewritten by ordinary `task.py` commands and lost it again. That is this PRD's
+own predicted failure mode, below, observed: a later `task.py` command silently
+reverts an editor's newline. Hand correction is therefore not a durable
+workaround, and the count of affected files only ever returns to 100%.
 
 Nothing in the repository enforces the convention: there is no `.gitattributes`
 and no `.editorconfig` `insert_final_newline` rule, so no check catches it.
@@ -88,9 +95,11 @@ editable locally.
     `.trellis/spec/backend/quality-guidelines.md` that `task.json` is written
     without a trailing newline, that a hand edit should not add one, and that a
     no-newline marker in a `task.json` diff is expected rather than a defect.
-- State what happens to the 15 existing files. A code change fixes only files
-  written after it lands; a bulk rewrite would touch 15 tasks in one commit for
-  cosmetic reasons. Pick one and say why — do not leave it implied.
+- State what happens to the 22 existing files. A code change fixes only files
+  written after it lands; a bulk rewrite would touch 22 tasks in one commit for
+  cosmetic reasons. Pick one and say why — do not leave it implied. Note that
+  files rewritten by any later `task.py` command converge on the fixed behaviour
+  on their own, so the bulk rewrite buys only the files nothing touches again.
 - Do not change `write_json`'s atomicity, its `mkstemp`/`os.replace` sequence,
   its error handling, or its return contract. The newline is the whole change.
 - Do not introduce a repository-level `.gitattributes` or `.editorconfig` rule
@@ -104,10 +113,15 @@ editable locally.
 - [ ] The record cites both writers by file and line — `io.py:37` and
       `active_task.py:428` — so the inconsistency is verifiable without
       re-deriving it.
-- [ ] The migration answer for the existing 15 files is stated explicitly, with
+- [ ] The migration answer for the existing 22 files is stated explicitly, with
       its reason.
 - [ ] If the upstream route is chosen, the proposal confirms the atomic-write
-      behaviour is unchanged.
+      behaviour is unchanged — the `mkstemp`/`os.replace` sequence, the error
+      handling, and the return contract are each named as unaltered, not left
+      implied by the diff's size.
+- [ ] No `.gitattributes` or `.editorconfig` rule was added by this task.
+      Verified by checking the repository root for both files, not by reviewing
+      the diff.
 - [ ] Whichever route is chosen, a reader hitting a `\ No newline at end of
       file` marker on a `task.json` can determine from the guidance alone
       whether it is expected.
@@ -124,12 +138,16 @@ editable locally.
 
 ## Notes
 
-- Measured 2026-08-06: 15 of 19 active `task.json` lack the trailing newline;
-  the 4 exceptions were hand-corrected earlier. `.trellis/.template-hashes.json`
-  is affected too but is regenerated, so it does not motivate the fix.
+- Measured 2026-08-07: 22 of 22 active `task.json` lack the trailing newline,
+  with no exception. The 2026-08-06 measurement of 15 of 19 held four
+  hand-corrected files; every one has since been rewritten by a `task.py`
+  command and lost the newline again. `.trellis/.template-hashes.json` is
+  affected too but is regenerated, so it does not motivate the fix.
 - Surfaced while correcting `base_branch` on two tasks, where a 2-line change
   rendered as a 4-line diff. The two defects were found together but are
   independent — same file tree, unrelated causes.
-- Seventh instance of the vendored-artifact pattern. That pattern now clearly
-  warrants its own task rather than a note repeated in each PRD.
+- One of the vendored-artifact instances enumerated in the table in
+  `08-07-vendored-artifact-upstream-route/prd.md`, which is the canonical list.
+  Do not restate a running count here: an ordinal maintained in several PRDs at
+  once drifts the moment one is added, and it already had.
 - Lightweight; PRD-only.

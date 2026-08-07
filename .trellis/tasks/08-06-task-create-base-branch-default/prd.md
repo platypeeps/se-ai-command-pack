@@ -2,8 +2,8 @@
 
 ## Goal
 
-Stop a newly created task from inheriting a short-lived feature branch as its
-PR target, so `base_branch` still names a live branch by the time the task is
+Stop a newly created task from recording a short-lived feature branch in
+`base_branch`, so the field still names a live branch by the time the task is
 actually worked.
 
 ## Problem
@@ -38,6 +38,38 @@ Nothing detects the result. `base_branch` is not validated at `create`, at
 `start`, or at PR creation, and no command warns that it names a branch that no
 longer exists. The task carries a dead ref until someone reads the JSON.
 
+### What actually consumes the field — and what does not
+
+The impact must be stated accurately, because the obvious assumption is wrong:
+
+- **`sd-create-pr` never reads it.** It resolves the PR base independently:
+  `SD_AI_COMMAND_PACK_CREATE_PR_BASE`, then `gh repo view --json
+  defaultBranchRef`, then the local `refs/remotes/origin/HEAD`
+  (`.agents/skills/sd-create-pr/SKILL.md:112-124`), and passes that value to
+  `gh pr create --base "$BASE_BRANCH"` (`:273`). A dead `base_branch` in
+  `task.json` therefore does **not** produce a wrong PR target.
+- **`sd-finish-work` reads it as an inequality guard only.** When it sets a
+  task's `branch`, it stops if the resolved working branch equals the record's
+  `base_branch` (`.agents/skills/sd-finish-work/SKILL.md:61-66`). A stale value
+  naming a deleted branch never equals the live one, so the guard passes — the
+  wrong value degrades a safety check into a no-op rather than tripping it.
+- **The review preflight checks the referent for child tasks, not just the
+  shape** — but permissively. Beyond the non-empty-string check at
+  `scripts/sd-ai-command-pack-review-preflight.mjs:3217`,
+  `validateTrellisPlanningBaseInheritance` (`:3223-3242`) requires a child's
+  `base_branch` to equal its parent's `base_branch` *or the parent's active
+  branch*, and `:3299-3309` requires `branch` to differ from `base_branch`.
+  Inheriting the parent's active branch is therefore explicitly allowed, so a
+  child created mid-cycle usually passes. It fails once the parent is no longer
+  active — verified by direct evaluation: the same record passes with an active
+  parent and fails after the parent moves to `completed`.
+
+So the defect is a stored dead reference plus a silently weakened guard, not a
+mis-targeted pull request. The one place it becomes a hard gate failure is a
+child task whose parent has since completed. That is a smaller blast radius than
+"wrong PR target" implies but not a cosmetic one, and the disposition below
+should be priced against this, not against an assumed PR-targeting failure.
+
 ### Observed
 
 Two tasks were found holding `"base_branch": "task/07-28-enhance-skills-workflow"`,
@@ -55,8 +87,8 @@ created the way follow-up tasks are supposed to be created.
 The correction is invisible unless someone already knows to look. A wrong
 `base_branch` produces no error at creation, no error at `start`, and no error
 at PR time — the value is simply carried. The cost lands on whoever works the
-task later, and a wrong PR target is then discovered after the PR exists rather
-than before.
+task later: the record asserts a PR target that no tool honours, and the one
+consumer that reads it silently loses the check it was meant to perform.
 
 The failure is also silent in the direction that matters: inheriting a
 *surviving* branch is indistinguishable from a deliberate stacked base, so no
@@ -122,10 +154,14 @@ stand on its own.
   `08-06-ship-gate-ordering-docs` (found stale, corrected), plus
   `08-06-prism-rules-lane-divergence` and `08-06-sd-review-local-rebuttal-gap`
   (created wrong, corrected immediately).
-- Sixth instance of the vendored-artifact pattern, alongside
-  `08-06-sd-review-local-rebuttal-gap`, `08-06-prism-rules-lane-divergence`,
-  `08-06-watch-coordinator-infra-classification`,
-  `08-06-finalization-ordering-trap`, and
-  `08-06-work-loop-shipped-sha-after-branch-delete`. The pattern now warrants a
-  task of its own rather than a note repeated in each PRD.
-- Lightweight enough to stay PRD-only unless the upstream route is chosen.
+- One of the vendored-artifact instances enumerated in the table in
+  `08-07-vendored-artifact-upstream-route/prd.md`, which is the canonical list.
+  Do not restate a running count or a membership list here; both drifted once
+  already. `08-06-work-loop-shipped-sha-after-branch-delete` was previously
+  listed as a member and is not one — it carries no vendored-ownership
+  constraint section, and it is ordinary unblocked planning work. (The recorded
+  operator deferral belongs to `08-06-watch-coordinator-infra-classification`,
+  not to it.)
+- Lightweight enough to stay PRD-only unless the upstream route is chosen,
+  which would warrant a `design.md` and an `implement.md` together — the
+  contract at `.trellis/workflow.md:164` requires both for a complex task.

@@ -37,9 +37,16 @@ That leaves the AST parser load-bearing fleet-wide, which is what blocks
 another repository is outside the autonomous run-level authority and needs
 explicit approval for that PR.
 
-Nothing in this repository changes. This task's deliverable here is the
-specification and the verification that the SD-side result actually satisfies
-the consumer; the producer change itself is external work.
+No shipped file in this repository changes — no source, no template, no
+generated payload. This task's deliverable here is the specification and the
+verification that the SD-side result actually satisfies the consumer, both of
+which are recorded in this task's own `.trellis/` artifacts; the producer change
+itself is external work.
+
+Because the external pull request cannot be opened under this repository's
+autonomous authority, `task.json` carries `blocked: true` and a `blockedOn`
+naming that approval, so a ranking helper skips the task instead of selecting it
+and stalling at the first acceptance criterion.
 
 ## Target schema
 
@@ -108,8 +115,12 @@ Two consumer behaviours matter for the producer:
       `installer/registry.py` and the committed snapshot.
 - [ ] Re-running the generator on an unchanged registry produces byte-identical
       output.
-- [ ] This repository is unchanged by the task, or every file it does change is
-      listed with its reason.
+- [ ] The SD pack's release gate treats the snapshot as shipped payload: a
+      change to it fails the gate without a version bump and a dated CHANGELOG
+      heading. Demonstrated by an induced change, not by reading the gate.
+- [ ] Only `.trellis/` task artifacts change in this repository. Any other
+      changed file here means the task exceeded its stated boundary and must be
+      listed with its reason before completion.
 
 ## Out of scope
 
@@ -130,4 +141,4 @@ Two consumer behaviours matter for the producer:
   completion depends on an approval this repository cannot grant itself.
 - Consumer contract verified against `skill_review.py` at `se-ai-command-pack`
   0.67.1.
-- Planning depth: PRD-only here, since this repository is unchanged. If the SD generator's shape differs materially from this pack's, the `design.md` belongs in that repository's task, not this one.
+- Planning depth: PRD-only here, since no shipped file in this repository changes. If the SD generator's shape differs materially from this pack's, the `design.md` and `implement.md` belong to that repository's task, not this one.

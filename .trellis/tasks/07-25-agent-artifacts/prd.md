@@ -92,7 +92,9 @@ Cross-child acceptance (parent integration review, run when all children archive
 ## Notes
 
 - Keep `prd.md` focused on requirements, constraints, and acceptance criteria.
-- Complex task: `design.md` and `implement.md` required before `task.py start`.
+- Complex task. `design.md` is required before `task.py start`; see the planning
+  depth note below for why `implement.md` sits with the children rather than
+  here. This parent is not itself an implementation target.
 
 ## Cross-program coordination (2026-07-25 review; additive — does not alter R1-R7)
 

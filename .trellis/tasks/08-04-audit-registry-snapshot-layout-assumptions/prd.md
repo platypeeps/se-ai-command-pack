@@ -13,10 +13,15 @@ conclusion is a success, not a failure to deliver.
 
 ## Problem
 
-The registry snapshot removed one coupling: `skill_review.py` no longer needs
-to parse another repository's `installer/registry.py` to learn family order,
-skill order, platforms, and shared references. Several values were left behind
-and still come from the tool's own constants or from directory layout.
+The registry snapshot was introduced to remove one coupling: `skill_review.py`
+learning family order, skill order, platforms, and shared references by parsing
+another repository's `installer/registry.py`. The snapshot is preferred where it
+exists, but the AST fallback is still live at `skill_review.py:421-428` and
+still the only path in an SD checkout — removing it is
+`08-04-audit-registry-snapshot-ast-removal`, gated on
+`08-04-audit-registry-snapshot-sd-twin`. Several values were left behind by the
+snapshot regardless, and still come from the tool's own constants or from
+directory layout. Those are what this task assesses.
 
 ### Candidate 1 — `FIRST_PARTY_REMOTES` (`:39-42`)
 
@@ -59,9 +64,12 @@ Weakest candidate; likely correctly layout-derived and tool-owned.
 
 A schema change is not cheap, and the assessment must price it:
 
-- **Two producers must ship it.** Both `se-ai-command-pack` and
-  `sd-ai-command-pack` generate their own snapshot. `sd-ai-command-pack` is a
-  separate repository, so any `schemaVersion` 2 needs a coordinated,
+- **Two producers must ship it.** `se-ai-command-pack` generates its own
+  snapshot today; `sd-ai-command-pack` does not yet, which is exactly what
+  `08-04-audit-registry-snapshot-sd-twin` exists to fix. So a `schemaVersion` 2
+  would have to be adopted by a producer that does not yet ship version 1.
+  `sd-ai-command-pack` is a separate repository, so any bump needs a
+  coordinated,
   approval-gated change there as well as here.
 - **The consumer must accept both versions during rollout.**
   `SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS` is currently
@@ -121,10 +129,15 @@ worth a coordinated two-repository schema migration?
 
 ## Notes
 
-- Ordered last of the three registry-snapshot tasks. It is not blocked by them
-  — the assessment can be done at any time — but its most likely accepted
+- Best *worked* last of the three registry-snapshot tasks: it is not blocked by
+  them — the assessment can be done at any time — but its most likely accepted
   change (adapter paths) is cheaper to land once both packs already ship
-  snapshots.
+  snapshots. This is a preference, not an encoded ordering. The task carries no
+  `order` in `task.json`, so a ranker sorts it as `0` and it ranks *ahead* of
+  `08-04-audit-registry-snapshot-ast-removal` (P3, `order` 30), not behind it.
+  That is deliberate: `order` is reserved for the tasks that contend for
+  `quality-guidelines.md`, and this one only reads that file. A run picking this
+  up early loses nothing but the discount described above.
 - Explicitly speculative. The task exists to close the question with evidence,
   and closing it as "no change" is a complete outcome.
 - Line references verified against `se-ai-command-pack` 0.67.1.

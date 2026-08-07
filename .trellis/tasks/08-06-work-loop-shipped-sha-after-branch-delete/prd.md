@@ -131,4 +131,6 @@ the run under a stop reason that is not true.
 
 ## Notes
 
-- Lightweight enough to stay PRD-only until design work proves otherwise.
+- Lightweight enough to stay PRD-only until design work proves otherwise, at
+  which point `design.md` and `implement.md` are both required
+  (`.trellis/workflow.md:164`).

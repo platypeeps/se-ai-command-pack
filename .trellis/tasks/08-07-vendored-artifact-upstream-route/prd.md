@@ -86,8 +86,10 @@ is evidence the rule exists; it just is not written anywhere.
   behaviour, and the fact that no upstream PR was opened.
 - Do not weaken the authority boundary. This task documents the route; it does
   not grant, presume, or create a standing approval for upstream pull requests.
-- Do not edit any vendored file as part of this task. The deliverable is
-  guidance in this repository's own `.trellis/spec/`.
+- Do not edit any vendored file as part of this task, whether it sits inside
+  `.trellis/` or outside it. The deliverable is guidance recorded in
+  `.trellis/spec/backend/quality-guidelines.md`, which is repo-owned and is the
+  file the rest of this ordering cluster also writes.
 
 ## Acceptance Criteria
 
@@ -105,7 +107,13 @@ is evidence the rule exists; it just is not written anywhere.
 - [ ] At least two of the six existing tasks can have their bespoke constraint
       section replaced by a reference to the recorded guidance without losing
       information. Demonstrated, not asserted.
-- [ ] No file outside `.trellis/` is modified.
+- [ ] The local-only record format names all four required fields — owning pack,
+      file, behaviour, and the explicit statement that no upstream PR was opened
+      — and a worked example shows each one filled in.
+- [ ] No file outside `.trellis/` is modified, and no file inside `.trellis/`
+      that appears in `.trellis/.template-hashes.json` is modified. Verified by
+      checking each changed path against that registry, since the vendored files
+      this task is about live inside `.trellis/`.
 
 ## Out of scope
 
@@ -118,10 +126,12 @@ is evidence the rule exists; it just is not written anywhere.
 
 ## Notes
 
-- Seventh instance of the pattern, counting the six tasks in the table above
-  plus this one. Three of those PRDs already say the pattern warrants its own
-  task; this is that task.
-- An eighth instance was found on 2026-08-07 in a different shape: the status
+- The table above is the canonical membership list for the vendored-artifact
+  pattern. This task consolidates those six; it is not a seventh instance of the
+  defect. Earlier drafts of two member PRDs each carried their own running
+  ordinal and both arrived at "seventh" — the ordinals have been removed in
+  favour of pointing here, so the count lives in exactly one place.
+- A seventh instance was found on 2026-08-07 in a different shape: the status
   collector cannot report pack-version drift in a consumer repository
   (`collect_versions`, `sd-ai-command-pack-status.py:392-399`), which is why an
   installed pack 21 releases behind read as healthy. It is itself a vendored

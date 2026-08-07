@@ -123,6 +123,9 @@ legitimate outcome of this task.
 - [ ] An absent snapshot raises `ReviewError`; a symlinked snapshot path raises
       `ReviewError` and is not opened. Both are covered by tests, and the
       symlink test asserts the path was not followed.
+- [ ] The two `ReviewError` messages are distinguishable — a test asserts on the
+      message text of each, so an absent snapshot cannot be mistaken for a
+      rejected one. Asserting only the exception type does not satisfy this.
 - [ ] The behaviour for non-first-party checkouts is recorded with its
       justification.
 - [ ] `quality-guidelines.md` contains no remaining claim that the consumer
@@ -147,5 +150,7 @@ legitimate outcome of this task.
   prose in this file's Goal, which no ranking helper can read — an autonomous
   run could have selected it.
 - Line references verified against `se-ai-command-pack` 0.67.1.
-- Complex enough to warrant `design.md` if the non-first-party-checkout question
-  turns out to have a non-trivial answer; PRD-only otherwise.
+- Complex enough to warrant `design.md` and `implement.md` if the
+  non-first-party-checkout question turns out to have a non-trivial answer;
+  PRD-only otherwise. The repository contract requires both together for a
+  complex task (`.trellis/workflow.md:164`), so the escalation is not partial.
