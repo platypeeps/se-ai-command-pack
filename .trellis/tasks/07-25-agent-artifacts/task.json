@@ -26,7 +26,11 @@
     "07-25-worker-agents"
   ],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "installer/manifest.py",
+    "installer/registry.py",
+    ".trellis/tasks/07-25-agent-artifacts/research/cross-platform-agent-support.md"
+  ],
   "notes": "Parent task: owns the requirement set and cross-child acceptance criteria, and has no direct implementation work. The PARKED: prefix is the canonical machine-visible marker (PARKED_PREFIX_RE, scripts/sd-ai-command-pack-work-loop.py:45) that keeps autonomous ranking from selecting it; without it a correct ranking selects a task whose PRD forbids starting it, and the loop has no legal skip from phase selected. Unpark when the one open acceptance criterion is met: an se-research run on a sub-agent-dispatch platform and one on an inline platform.",
   "meta": {}
 }

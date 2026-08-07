@@ -1,1 +1,1 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Line 296 defines the shipped-payload release cost and 835-845 the snapshot's purpose and sole-writer contract; both price any proposal to extend schemaVersion, so read them before assigning a verdict to a candidate."}

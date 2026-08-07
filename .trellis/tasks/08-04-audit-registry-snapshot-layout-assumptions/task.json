@@ -20,7 +20,11 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
-  "notes": "",
+  "relatedFiles": [
+    "templates/skills/se-review-skills/scripts/skill_review.py",
+    "generated/registry-snapshot.json",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "Read-only assessment; 'no schema change' is a complete outcome, not a failure to deliver. Three candidates assessed separately: FIRST_PARTY_REMOTES (:39-42), adapter paths (:442-446), and discovery globs / IGNORED_DIRECTORIES (:43+). Adapter paths are the strongest candidate; FIRST_PARTY_REMOTES has a self-reference problem (a pack-shipped snapshot cannot authoritatively assert that pack's own first-party remote -- a fork would claim its own). Any schemaVersion 2 is a coordinated two-repository migration gated by SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS (:31), which hard-fails unsupported versions.",
   "meta": {}
 }

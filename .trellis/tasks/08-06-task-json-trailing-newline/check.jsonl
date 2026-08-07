@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the conventions recorded here; confirm the record cites both io.py:37 and active_task.py:428, states the migration answer for the existing 15 files, and lets a reader classify a no-newline marker on task.json."}

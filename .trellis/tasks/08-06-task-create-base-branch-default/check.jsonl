@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the conventions recorded here; confirm the guidance cites task_store.py:325, names task.py set-base-branch as the correction route, and states that the correction must happen before the source branch is deleted."}

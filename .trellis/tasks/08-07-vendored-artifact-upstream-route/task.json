@@ -1,0 +1,32 @@
+{
+  "id": "vendored-artifact-upstream-route",
+  "name": "vendored-artifact-upstream-route",
+  "title": "Vendored-artifact defects have no recorded route to upstream",
+  "description": "Six active tasks independently rediscover the same constraint: the defect they describe lives in a file installed from sd-ai-command-pack or upstream Trellis, so the fix is an upstream pull request that this repository's run-level authority cannot approve. Each re-derives ownership from a different registry and each stalls at the same undocumented boundary. Record the ownership lookup, the upstream route, and the local-only fallback once.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-07",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".sd-ai-command-pack/manifest.json",
+    ".sd-ai-command-pack/provenance.json",
+    ".trellis/.template-hashes.json",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "Consolidates a constraint six active tasks each re-derived independently: 08-06-finalization-ordering-trap, 08-06-prism-rules-lane-divergence, 08-06-sd-review-local-rebuttal-gap, 08-06-watch-coordinator-infra-classification, 08-06-task-create-base-branch-default, and 08-06-task-json-trailing-newline. Three registries decide ownership (.sd-ai-command-pack/manifest.json, its provenance.json, and .trellis/.template-hashes.json) with no single lookup across them. Two non-obvious behaviours must be captured: install: if-not-exists means repo-owned after first install (this is how .prism/rules.json is classified, and it changed the prism task's remedy from 'clobbered' to 'undelivered'), and .github/copilot-instructions.md is dual-owned, so its Trellis hash reports permanent drift that is not drift. Sequencing: order 5 in the P2 band, ahead of the quality-guidelines.md cluster (10-50), because it defines the shared ownership section those tasks each extend.",
+  "meta": {},
+  "order": 5
+}

@@ -20,3 +20,4 @@ Contributors can tell editable repo-own source from installed vendored product a
 
 - Audit findings: A-004 (P3/M), A-026 (P3/S) — .trellis/audit/report-2026-07-25.md.
 - Evidence: scripts/se-ai-command-pack-skill-review.py:1, :9; Makefile:14; CONTRIBUTING.md:1.
+- Planning depth: PRD-only. Documentation plus removal of dead entry points.

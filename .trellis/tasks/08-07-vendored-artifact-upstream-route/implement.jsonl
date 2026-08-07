@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Holds the vendored-path and repo-own tooling conventions the six existing tasks each partially restate; read it before adding the ownership procedure so the guidance consolidates what is already there rather than starting a parallel section."}

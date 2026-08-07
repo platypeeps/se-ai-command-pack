@@ -1,0 +1,32 @@
+{
+  "id": "task-create-base-branch-default",
+  "name": "task-create-base-branch-default",
+  "title": "task.py create records the current branch as base_branch",
+  "description": "task.py create writes base_branch = current branch unconditionally (task_store.py:325). Creating a task from a feature branch records a base_branch that is deleted after the PR merges, leaving a dangling PR target that no command validates. Decide between defaulting to the repository default branch, adding an explicit --base-branch flag, or documenting the correction step.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/scripts/common/task_store.py",
+    ".trellis/scripts/task.py",
+    ".trellis/.template-hashes.json",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "Four confirmed occurrences (2026-08-06): 08-06-session-first-skill-review and 08-06-ship-gate-ordering-docs held the deleted branch task/07-28-enhance-skills-workflow; 08-06-prism-rules-lane-divergence and 08-06-sd-review-local-rebuttal-gap were created wrong from a feature branch and corrected immediately. Root cause at task_store.py:296-298 and :325 -- the `or \"main\"` fallback covers only detached HEAD, never the ordinary case. .trellis/scripts/common/task_store.py is tracked in .trellis/.template-hashes.json, so a code fix is upstream work needing its own approval; only .trellis/spec/ is editable locally. Independent of 08-06-task-json-trailing-newline -- same file tree, unrelated cause. Sequencing: eight active tasks edit .trellis/spec/backend/quality-guidelines.md. `order` 50 within the P2 band encodes the intended landing sequence (Trellis task hygiene; unrelated section, safe last in band). Tasks with no `order` sort as 0 and therefore run before this cluster, which is intended: they do not contend for this file.",
+  "meta": {},
+  "order": 50
+}

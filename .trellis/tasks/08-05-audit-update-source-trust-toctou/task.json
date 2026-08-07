@@ -20,7 +20,11 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    "installer/management.py",
+    "install.py",
+    "tests/test_management.py"
+  ],
   "notes": "",
   "meta": {}
 }

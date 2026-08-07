@@ -108,3 +108,4 @@ Cross-child acceptance (parent integration review, run when all children archive
 - Clarification for cross-child acceptance: "contract-identical final reports" means
   identical section structure, field vocabulary, and evidence rules — not identical
   content.
+- Planning depth: Parent task: owns the requirement set and cross-child acceptance criteria, with no direct implementation work, so `design.md` (present) is the correct depth here. `implement.md` belongs to each child, not to the parent.

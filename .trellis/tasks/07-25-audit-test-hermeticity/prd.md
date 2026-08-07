@@ -18,3 +18,4 @@
 
 - Audit findings: A-021 (P3/S), A-022 (P3/M) — .trellis/audit/report-2026-07-25.md.
 - Evidence: tests/test_release_gate.py:17, :51; tests/test_skill_review.py:904; tests/test_management.py:108; installer/management.py:146.
+- Planning depth: **Complex — needs `design.md` before `task.py start`.** A real end-to-end test for `install.py update` means designing a hermetic harness for the one command that mutates a user's checkout: fixture checkout, isolation from global git configuration, and rollback assertions. That harness is a design decision, not an implementation detail.

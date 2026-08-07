@@ -25,3 +25,4 @@ The source/generated boundary holds for every file: templates/skills/ contains o
 - Preferred route: implement WITHIN `07-25-agent-artifact-kind`'s renderer-hook refactor
   (same generator code); standalone is acceptable only if that task is deferred — avoid
   two concurrent conflicting edits to generate-skill-surfaces.py.
+- Planning depth: PRD-only. Moving one generated artifact and documenting the boundary where it is declared.

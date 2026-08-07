@@ -1,0 +1,132 @@
+# Vendored-artifact defects have no recorded route to upstream
+
+## Goal
+
+Record once — the ownership lookup, the upstream route, and the local-only
+fallback — so a run that finds a defect in an installed file can determine what
+it is allowed to do without re-deriving the answer from registries each time.
+
+## Problem
+
+Six active tasks independently reached the same wall and each wrote its own
+version of it:
+
+| Task | Its constraint heading |
+| --- | --- |
+| `08-06-finalization-ordering-trap` | the stages are not owned by this repository |
+| `08-06-prism-rules-lane-divergence` | the adapter is not owned by this repository |
+| `08-06-sd-review-local-rebuttal-gap` | all three surfaces are vendored |
+| `08-06-watch-coordinator-infra-classification` | the coordinator is not owned by this repository |
+| `08-06-task-create-base-branch-default` | the file is vendored |
+| `08-06-task-json-trailing-newline` | the file is vendored |
+
+Six headings, six phrasings, one fact. Each task spent its own investigation
+establishing ownership, and each arrived at the same two-option ending —
+document locally, or propose upstream — with no shared statement of what either
+option actually requires.
+
+### There are three registries, and which one applies is not obvious
+
+Ownership is decided by a different registry depending on where the file came
+from:
+
+| Registry | Governs | Notable behaviour |
+| --- | --- | --- |
+| `.sd-ai-command-pack/manifest.json` | files installed from sd-ai-command-pack | entry kinds: `install: "always"`, `install: "if-not-exists"`, and `kind: "managed-block"` with an `anchor` |
+| `.sd-ai-command-pack/provenance.json` | per-file hashes for the same pack | detects local drift against the installed version |
+| `.trellis/.template-hashes.json` | files installed from upstream Trellis | 148 entries, including 28 under `.trellis/scripts/` |
+
+A run holding a file path has no single lookup that answers "who owns this".
+Getting it wrong in either direction is costly: treating a repo-owned file as
+vendored abandons a fix that was always allowed, and treating a vendored file as
+repo-owned produces an edit the next pack refresh silently reverts.
+
+Two behaviours in particular are not obvious from the file alone:
+
+- **`install: "if-not-exists"` means repo-owned after first install.** This is
+  how `.prism/rules.json` is classified, and it is why
+  `08-06-prism-rules-lane-divergence` concluded the PR #156 rule was
+  *undelivered* rather than clobbered. That distinction changed the task's
+  entire remedy.
+- **A file can be dual-owned.** `.github/copilot-instructions.md` is recorded as
+  a whole-file hash by Trellis while the sd-pack legitimately appends its own
+  managed block, so the Trellis hash reports permanent drift that is not drift.
+  A run comparing hashes will see a false positive with no way to know it is
+  expected.
+
+### The boundary is real, not merely undocumented
+
+`sd-work-backlog`'s run-level authority explicitly excludes "an upstream Trellis
+pull request without explicit approval for that PR". So the block is genuine.
+What is missing is what happens next: whether the local-only fallback is a
+lesser outcome or a legitimate terminal one, what a run should write down so the
+upstream proposal survives the session, and how a later reader learns the
+proposal was never made.
+
+Every one of the six tasks resolved this the same way by convention rather than
+by rule — document locally, treat upstream as approval-gated. That convergence
+is evidence the rule exists; it just is not written anywhere.
+
+## Requirements
+
+- Record the ownership lookup as a procedure: given a repository-relative path,
+  which registry to consult in which order, and what each possible result means
+  for editability. It must resolve `install: "always"`,
+  `install: "if-not-exists"`, `kind: "managed-block"`, a `.template-hashes.json`
+  entry, and "in no registry" — including which of those are repo-owned.
+- Name the dual-ownership case explicitly, with `.github/copilot-instructions.md`
+  as the worked example, so a run that sees its permanent hash drift can
+  classify it as expected rather than investigating it again.
+- State the disposition rule for a vendored defect: that local documentation is
+  a legitimate terminal outcome and not a partial failure, that an upstream
+  proposal requires explicit per-PR approval, and that a run must not edit a
+  vendored file in place as a workaround.
+- Specify what a task records when it takes the local-only route, so the
+  unproposed upstream change stays discoverable: the owning pack, the file, the
+  behaviour, and the fact that no upstream PR was opened.
+- Do not weaken the authority boundary. This task documents the route; it does
+  not grant, presume, or create a standing approval for upstream pull requests.
+- Do not edit any vendored file as part of this task. The deliverable is
+  guidance in this repository's own `.trellis/spec/`.
+
+## Acceptance Criteria
+
+- [ ] A run holding an arbitrary repository-relative path can determine
+      ownership from the recorded procedure alone, without opening the three
+      registries to work out which applies.
+- [ ] The procedure is verified against at least four real files with known and
+      differing classifications — one `install: "always"`, one
+      `install: "if-not-exists"`, one `.template-hashes.json` entry, and one
+      repo-owned file in no registry — and each yields the correct answer.
+- [ ] `.github/copilot-instructions.md` is classified as dual-owned with its
+      drift named as expected.
+- [ ] The disposition rule states that local-only is terminal, and that an
+      upstream PR needs explicit approval.
+- [ ] At least two of the six existing tasks can have their bespoke constraint
+      section replaced by a reference to the recorded guidance without losing
+      information. Demonstrated, not asserted.
+- [ ] No file outside `.trellis/` is modified.
+
+## Out of scope
+
+- Fixing any of the six underlying defects. Each keeps its own task.
+- Opening an upstream pull request against `sd-ai-command-pack` or Trellis.
+- Building a tool or check that computes ownership. If the procedure turns out
+  to want automating, that is a separate task with its own justification.
+- Changing `sd-work-backlog`'s authority contract, which is itself a vendored
+  file.
+
+## Notes
+
+- Seventh instance of the pattern, counting the six tasks in the table above
+  plus this one. Three of those PRDs already say the pattern warrants its own
+  task; this is that task.
+- An eighth instance was found on 2026-08-07 in a different shape: the status
+  collector cannot report pack-version drift in a consumer repository
+  (`collect_versions`, `sd-ai-command-pack-status.py:392-399`), which is why an
+  installed pack 21 releases behind read as healthy. It is itself a vendored
+  file, so the defect that hides vendored drift is vendored. Not folded in here
+  — it needs its own task — but it is the strongest argument that the pattern is
+  worth writing down.
+- Planning depth: PRD-only. The deliverable is recorded guidance; the ownership
+  procedure is a lookup, not a design.

@@ -1,0 +1,32 @@
+{
+  "id": "task-json-trailing-newline",
+  "name": "task-json-trailing-newline",
+  "title": "write_json omits the trailing newline on every task.json",
+  "description": "common/io.py:37 builds its payload with json.dumps and writes it with no trailing newline, so every task.json written through write_json ends mid-line. 15 of 19 active task.json files are affected. Any later hand-edit that restores the newline doubles the resulting diff and shows a spurious 'No newline at end of file' marker.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P3",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-06",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    ".trellis/scripts/common/io.py",
+    ".trellis/scripts/common/active_task.py",
+    ".trellis/scripts/common/task_store.py",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "io.py:37 writes json.dumps output with no trailing newline; active_task.py:428 appends + \"\\n\" to an otherwise identical call, so the two writers in the same script family disagree -- an internal inconsistency, not a convention. Fifteen write_json call sites across task.py and task_store.py are affected. Measured 2026-08-06: 15 of 19 active task.json lack the newline; the 4 exceptions were hand-corrected. No .gitattributes and no .editorconfig insert_final_newline rule, so nothing catches it. io.py is tracked in .trellis/.template-hashes.json, so a code fix is upstream work. Independent of 08-06-task-create-base-branch-default. Sequencing: eight active tasks edit .trellis/spec/backend/quality-guidelines.md. `order` 20 within the P3 band encodes the intended landing sequence (Trellis task hygiene; pairs with the base_branch task). Tasks with no `order` sort as 0 and therefore run before this cluster, which is intended: they do not contend for this file.",
+  "meta": {},
+  "order": 20
+}

@@ -19,3 +19,4 @@ Every changelog version is fetchable and version numbers carry documented meanin
 
 - Audit findings: A-041, A-042 (P3/S) — .trellis/audit/report-2026-07-25.md.
 - Evidence: CHANGELOG.md:91, :129, :675; docs/SE_AI_COMMAND_PACK.md:837; .github/scripts/create-release-tag.py:57.
+- Planning depth: PRD-only. Policy plus tag hygiene; no code contract changes.
