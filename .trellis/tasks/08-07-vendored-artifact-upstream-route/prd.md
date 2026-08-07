@@ -8,8 +8,10 @@ it is allowed to do without re-deriving the answer from registries each time.
 
 ## Problem
 
-Six active tasks independently reached the same wall and each wrote its own
-version of it:
+Seven active tasks hit the same wall and each wrote its own version of it. The
+first six reached it independently, before this consolidation task existed; the
+seventh was written after it and still needed its own constraint section,
+because the shared guidance this task proposes does not exist yet:
 
 | Task | Its constraint heading |
 | --- | --- |
@@ -19,8 +21,10 @@ version of it:
 | `08-06-watch-coordinator-infra-classification` | the coordinator is not owned by this repository |
 | `08-06-task-create-base-branch-default` | the file is vendored |
 | `08-06-task-json-trailing-newline` | the file is vendored |
+| `08-07-status-collector-pack-drift` | the collector is vendored |
 
-Six headings, six phrasings, one fact. Each task spent its own investigation
+Seven headings, six phrasings, one fact — two tasks reached the identical
+wording independently. Each task spent its own investigation
 establishing ownership, and each arrived at the same two-option ending —
 document locally, or propose upstream — with no shared statement of what either
 option actually requires.
@@ -63,9 +67,16 @@ lesser outcome or a legitimate terminal one, what a run should write down so the
 upstream proposal survives the session, and how a later reader learns the
 proposal was never made.
 
-Every one of the six tasks resolved this the same way by convention rather than
-by rule — document locally, treat upstream as approval-gated. That convergence
-is evidence the rule exists; it just is not written anywhere.
+All seven tasks are still in planning, so none has yet *chosen* a disposition.
+What converged is the framing: every one independently reduced the problem to
+the same two options — document locally, or propose upstream — and read the
+authority boundary the same way, that an upstream pull request is approval-gated
+and local documentation is available without it. Seven independent derivations
+of one framing is evidence the rule exists; it just is not written anywhere.
+
+The seventh is the sharpest evidence: it was authored on 2026-08-07 with this
+consolidation task already filed, and still had to restate the whole constraint
+from scratch, because a filed task is not recorded guidance.
 
 ## Requirements
 
@@ -104,7 +115,7 @@ is evidence the rule exists; it just is not written anywhere.
       drift named as expected.
 - [ ] The disposition rule states that local-only is terminal, and that an
       upstream PR needs explicit approval.
-- [ ] At least two of the six existing tasks can have their bespoke constraint
+- [ ] At least two of the seven existing tasks can have their bespoke constraint
       section replaced by a reference to the recorded guidance without losing
       information. Demonstrated, not asserted.
 - [ ] The local-only record format names all four required fields — owning pack,
@@ -117,7 +128,7 @@ is evidence the rule exists; it just is not written anywhere.
 
 ## Out of scope
 
-- Fixing any of the six underlying defects. Each keeps its own task.
+- Fixing any of the seven underlying defects. Each keeps its own task.
 - Opening an upstream pull request against `sd-ai-command-pack` or Trellis.
 - Building a tool or check that computes ownership. If the procedure turns out
   to want automating, that is a separate task with its own justification.
@@ -127,16 +138,24 @@ is evidence the rule exists; it just is not written anywhere.
 ## Notes
 
 - The table above is the canonical membership list for the vendored-artifact
-  pattern. This task consolidates those six; it is not a seventh instance of the
-  defect. Earlier drafts of two member PRDs each carried their own running
-  ordinal and both arrived at "seventh" — the ordinals have been removed in
-  favour of pointing here, so the count lives in exactly one place.
-- A seventh instance was found on 2026-08-07 in a different shape: the status
-  collector cannot report pack-version drift in a consumer repository
-  (`collect_versions`, `sd-ai-command-pack-status.py:392-399`), which is why an
-  installed pack 21 releases behind read as healthy. It is itself a vendored
-  file, so the defect that hides vendored drift is vendored. Not folded in here
-  — it needs its own task — but it is the strongest argument that the pattern is
-  worth writing down.
+  pattern. This task consolidates those seven; it is not itself an eighth
+  instance of the defect. Earlier drafts of two member PRDs each carried their
+  own running ordinal and both arrived at "seventh" — those ordinals have been
+  removed in favour of pointing here.
+- Membership has one source of truth: the table. The count does not — "seven"
+  also appears in this PRD's prose, in this task's `task.json` description and
+  notes, and in its `implement.jsonl`, and every one of those is derived. Adding
+  a member means appending the row **and** reconciling each derived copy in the
+  same edit; a member task must not carry its own ordinal at all. This is the
+  weakness of the arrangement, stated rather than hidden: the table is
+  authoritative, but nothing enforces that the derived copies agree with it.
+- The last row was added on 2026-08-07 and is the strongest argument that the
+  pattern is worth writing down: the status collector cannot resolve a target
+  pack version in a consumer repository (`collect_versions`,
+  `sd-ai-command-pack-status.py:393-398`), so an installed pack behind the
+  source checkout reports `packState: "installed"` and `SD status: healthy` with
+  no anomaly. The collector is itself installed from the sd-pack, so the defect
+  that hides vendored drift is vendored. It carries its own task,
+  `08-07-status-collector-pack-drift`; this one still does not fix it.
 - Planning depth: PRD-only. The deliverable is recorded guidance; the ownership
   procedure is a lookup, not a design.

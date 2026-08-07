@@ -1,0 +1,33 @@
+{
+  "id": "status-collector-pack-drift",
+  "name": "status-collector-pack-drift",
+  "title": "Status collector reports pack drift as healthy in a consumer repository",
+  "description": "sd-status local mode cannot resolve a target pack version, so an installed pack behind the source checkout reports packState \"installed\" and SD status: healthy with no anomaly. Decide between an upstream fix to the vendored collector and local-only guidance.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-07",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "scripts/sd-ai-command-pack-status.py",
+    "scripts/sd_ai_command_pack_fleet_lib.py",
+    ".sd-ai-command-pack/manifest.json",
+    ".sd-ai-command-pack/provenance.json",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "Vendored collector (manifest files[30], install: \"always\"), so a behaviour change is an upstream pull request against sd-ai-command-pack needing explicit per-PR approval. Instance of the vendored-artifact pattern whose canonical membership table lives in 08-07-vendored-artifact-upstream-route/prd.md. Ordered after 08-06-task-create-base-branch-default (order 50) in the quality-guidelines.md landing cluster. Observed 2026-08-07: installed 0.64.3 vs source 0.64.24 reported healthy.",
+  "meta": {},
+  "order": 60
+}
