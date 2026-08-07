@@ -198,15 +198,16 @@ is neither a passing nor a failing signal about the code.
 for any run left in `status: stopped`, and that code routes to a recovery
 reference. On a run whose `branch`, `head`, `prNumber`, and `lastShippedSha`
 are all null and whose lock is absent, there is nothing to reconcile and no
-cleanup to perform. The recorded `task` may still name the last selected task
-— possibly one since parked — and that pointer is equally inert.
+cleanup to perform. The recorded `task` may still name the last selected task,
+which may since have been parked, and that pointer is equally inert.
 
 The proof is in the helper's own `start` path: it resumes an existing run only
 when `state["status"] in {"active", "paused"}`
 (`scripts/sd-ai-command-pack-work-loop.py:2864`). A `stopped` run falls through
 to `new_state(...)`, so the next invocation begins a fresh run and never
 resumes into the stale task. Read that branch before treating a stopped run as
-an anomaly; the status collector already agrees, reporting `Anomalies: none`.
+an anomaly; the status collector already agrees, printing a bare `none` under
+its `==> Anomalies` header.
 
 This is documented here rather than in the recovery reference itself because
 `references/run-recovery.md` is installed from the sd-ai-command-pack (see

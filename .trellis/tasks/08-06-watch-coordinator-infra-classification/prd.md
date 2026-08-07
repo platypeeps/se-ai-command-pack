@@ -9,7 +9,7 @@ collapsing both into one outcome that invites the wrong response.
 ## Problem
 
 Stage 3's coordinator ends in exactly one of four outcomes
-(`.claude/skills/sd-ship/references/watch-coordinator.md:60-65`):
+(`.claude/skills/sd-ship/references/watch-coordinator.md:58-65`):
 
 - `settled-green`
 - `settled-blocked` — "checks completed but the probe reports blocking"

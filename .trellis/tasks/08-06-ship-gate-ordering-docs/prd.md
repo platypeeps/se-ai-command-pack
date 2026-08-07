@@ -27,9 +27,13 @@ changed `.prism/rules.json` (tooling) together with
 `.trellis/spec/backend/quality-guidelines.md` (authored prose), so the
 preparer correctly declined while `pack.review-scope` still failed. The run
 must then hand-author the section and verify it against the check's own
-`grep -Eiq` pattern. A run that knows only "the preparer adds it" will retry
-the preparer and stall — exit `3` is a non-error, so nothing in its output
-announces that a human edit is now required.
+`grep -Eiq` pattern. The helper is not silent — it prints an `info:` line
+saying the body was left unchanged because the diff is not
+tooling/generated-only — but that message is descriptive, not directive: it
+names the condition without stating that a hand-authored section is now the
+operator's job. Combined with exit `3` being a non-error, a run that knows
+only "the preparer adds it" reads the info line as benign and retries the
+preparer instead of writing the section.
 
 **`knowledge.obsidian-kb`.** The KB check compares `.obsidian-kb` against the
 current tracked documentation set and fails when it drifts. It went stale twice
