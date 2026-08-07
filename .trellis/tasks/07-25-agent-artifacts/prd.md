@@ -4,6 +4,10 @@ Status: ACCEPTED as parent task (user, 2026-07-25). Requirements R1-R7 are bindi
 Delivery is decomposed into child tasks (see Task map); the parent owns the source
 requirement set, cross-child acceptance criteria, and final integration review. The parent
 has no direct implementation work and must not be started; start children instead.
+That constraint is prose, which a candidate list cannot read, so `task.json` also carries
+the canonical `PARKED:` title prefix — the one machine-visible marker the backlog selector
+and the status board both honor. Remove the prefix only when the last open acceptance
+criterion below is met.
 
 ## Goal
 

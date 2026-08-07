@@ -1089,3 +1089,37 @@ Stale local branch followup/toctou-task-record held one unmerged commit whose ta
 ### Next Steps
 
 - None - task complete
+
+
+## Session 131: Ship-loop convention fixes: false PRD claim, parked parent, prism/preflight scaffold disagreement, CI retry rule
+
+**Date**: 2026-08-06
+**Task**: Ship-loop convention fixes: false PRD claim, parked parent, prism/preflight scaffold disagreement, CI retry rule
+**Branch**: `task/08-06-ship-loop-convention-fixes`
+
+### Summary
+
+Audit of the previous run surfaced four items. The 08-06 work-loop PRD claimed --recover-stale-lock was unimplemented; it exists on start and reconcile-terminal, and only reconcile lacks it. 07-25-agent-artifacts is a parent task whose PRD forbids starting it, but that lived only in prose, so ranking selected it three times; it now carries the canonical PARKED: title prefix that the selector and status board both honor. Prism was reporting the generated _example scaffold row that the review preflight exempts on purpose, so every new-task PR produced a finding whose fix contradicted the tooling; .prism/rules.json gains trellis-scaffold-convention and quality-guidelines.md records the convention plus a CI retry rule: a lane failing in Set up job, or several lanes ending at an identical duration, is infrastructure, and a second identical signature is the answer rather than a reason to retry. Copilot found two real defects in the first push - an omitted isPlainObject term in the quoted exemption gate, and a cited path missing its scripts/ prefix - both fixed and verified against source.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `df1c8a9` | (see git log) |
+| `0b8ad10` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
