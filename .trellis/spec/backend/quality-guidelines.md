@@ -144,6 +144,45 @@ deleting the contract breaks it, short enough that rewording does not.
 
 ---
 
+## Review And Retry Conventions
+
+Two ship-loop conventions that cost rounds when a run rediscovers them.
+
+### The `_example` scaffold row is sanctioned, not leftover
+
+`task.py create` seeds a planning task's `implement.jsonl` and `check.jsonl`
+with one `_example` row whose own text says to delete it once real entries are
+added. The review preflight exempts that pristine scaffold deliberately —
+`validateBookkeepingTaskContexts` in
+`scripts/sd-ai-command-pack-review-preflight.mjs` gates on
+`!archived && record.status === 'planning'` — so creating a task never fails
+either lane. `.prism/rules.json` carries the matching
+`trellis-scaffold-convention` rule.
+
+Do not empty these files to silence a review finding. Emptying is churn that
+contradicts the tooling, and the drift is already measurable: of 15 planning
+tasks, 12 have empty context files, 3 carry the scaffold, and none have real
+entries. Report such a file only when a row is malformed JSONL, references a
+path outside the allowed spec/research roots, or mixes real entries with the
+scaffold row.
+
+### Stop retrying on a repeated failure signature
+
+A CI lane that fails without running a step — GitHub's `Set up job` erroring
+with `Failed to resolve action download info` or `Service Unavailable`, or
+several lanes dying at an identical duration — is infrastructure, not the
+change. One retry is correct. A second identical signature is the answer:
+report the blocker instead of retrying again.
+
+The tell is duration, not conclusion. Four independent lanes finishing at
+`15m2s` while the one lane that acquired a runner passes in `8m51s` is a queue
+timeout, and no number of retries changes it. Check job steps
+(`gh api repos/<owner>/<repo>/actions/jobs/<id>`) before assuming a red lane
+ran anything: a `Set up job` failure means zero test evidence either way, so it
+is neither a passing nor a failing signal about the code.
+
+---
+
 ## Code Review Checklist
 
 - Is the change made in the canonical registry/template/module rather than a

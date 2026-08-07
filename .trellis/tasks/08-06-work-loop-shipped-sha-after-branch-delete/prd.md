@@ -122,8 +122,11 @@ the run under a stop reason that is not true.
 ## Out of scope
 
 - Changing when `sd-housekeeping` deletes the merged branch.
-- The `--recover-stale-lock` flag that `references/ownership-recovery.md` names
-  but this helper version does not implement; track that separately.
+- Extending `--recover-stale-lock` to `reconcile`. The flag is implemented on
+  `start` (line 2726) and `reconcile-terminal` (line 2782); only `reconcile`
+  lacks it, and no observed failure in this run needed it there. An earlier
+  revision of this PRD claimed the helper did not implement the flag at all —
+  that was generalized from one `reconcile --help` and is wrong.
 - Broader ledger schema changes.
 
 ## Notes

@@ -37,6 +37,10 @@
     {
       "id": "trellis-task-scope",
       "text": "Check that changes are limited to the active Trellis task and do not silently alter unrelated workflow, task, or platform files."
+    },
+    {
+      "id": "trellis-scaffold-convention",
+      "text": "Do not report the lone generated `_example` row in a planning task's implement.jsonl or check.jsonl as leftover placeholder content. `task.py create` writes that row, its own text says to delete it once real entries are added, and the review preflight exempts the pristine scaffold on purpose (validateBookkeepingTaskContexts in scripts/sd-ai-command-pack-review-preflight.mjs) so creating a task never fails either lane. Report these files only when a row is malformed JSONL, references a path outside the allowed spec/research roots, or mixes real entries with the scaffold row."
     }
   ]
 }

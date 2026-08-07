@@ -1,8 +1,8 @@
 {
   "id": "agent-artifacts",
   "name": "agent-artifacts",
-  "title": "Ship SE capabilities as cross-platform sub-agents",
-  "description": "",
+  "title": "PARKED: Ship SE capabilities as cross-platform sub-agents",
+  "description": "Parent task for shipping SE capabilities as cross-platform sub-agents: canonical agents authored once as neutral MD plus frontmatter, rendered per platform (Claude MD, Codex TOML) through the existing registry/generator/manifest/installer chain as manifest kind 'agent', with a capability-first inline fallback so non-dispatch platforms keep equivalent behavior. Owns requirements R1-R7 and the cross-child acceptance criteria; delivery happens in child tasks. Parked: no direct implementation work, and the last open acceptance criterion needs one se-research run on a sub-agent-dispatch platform and one on an inline platform.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -27,6 +27,6 @@
   ],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Parent task: owns the requirement set and cross-child acceptance criteria, and has no direct implementation work. The PARKED: prefix is the canonical machine-visible marker (PARKED_PREFIX_RE, sd-ai-command-pack-work-loop.py:45) that keeps autonomous ranking from selecting it; without it a correct ranking selects a task whose PRD forbids starting it, and the loop has no legal skip from phase selected. Unpark when the one open acceptance criterion is met: an se-research run on a sub-agent-dispatch platform and one on an inline platform.",
   "meta": {}
 }
