@@ -1243,3 +1243,43 @@ Created the 08-06-finalization-ordering-trap planning task documenting why sd-sh
 ### Next Steps
 
 - None - task complete
+
+
+## Session 135: Record that repository prism rules never reach the sd-review lane
+
+**Date**: 2026-08-06
+**Task**: Record that repository prism rules never reach the sd-review lane
+**Branch**: `task/08-06-prism-rules-lane-divergence`
+
+### Summary
+
+Created the 08-06-prism-rules-lane-divergence planning task after tracing why prism reported the generated _example scaffold rows on PR #158 despite the trellis-scaffold-convention rule added by PR #156. Two lanes invoke prism and only the shell lane passes --rules, --exclude, and --fail-on; the sd-review lane's built-in adapter builds 'prism review range <base>..<head> --format json' and nothing else, and prism does not auto-discover the rules file. That makes every repository-owned prism rule inert in the one lane sd-ship Stage 2 uses to gate shipping.
+
+### Main Changes
+
+- Add .trellis/tasks/08-06-prism-rules-lane-divergence as a P2 planning task with the two-lane evidence, the PR #158 surfacing, the secondary --fail-on and --exclude effects, the vendored-versus-repo-owned ownership asymmetry, five requirements, and six acceptance criteria
+- Correct the generated task.json base_branch from the feature branch to main and fill relatedFiles and notes
+- Curate implement.jsonl and check.jsonl with their real spec entry at creation time rather than leaving the generated scaffold row
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9ea5195` | docs(task): record that repository prism rules never reach the sd-review lane |
+
+### Testing
+
+- [OK] sd-check: 7 passed, 0 failed
+- [OK] review preflight: 0 failure(s), 0 warning(s)
+- [OK] sd-review scope=pr attempt 1 at 9ea5195: status ready, check passed, local clean
+- [OK] Copilot review of PR #159 at 9ea5195: 4 of 4 files reviewed, no comments generated
+- [OK] sd-review-learnings --github-pr 159 --dry-run: 0 findings, preview only, nothing written
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the conventions recorded here; confirm the guidance names both lanes and their exact prism commands, states the install: if-not-exists ownership of .prism/rules.json, and states the fail-closed property for an absent or unreadable rules file."}
