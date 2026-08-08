@@ -159,9 +159,10 @@ vendored-artifact pattern.
 - Reconcile the `quality-guidelines.md` cluster count and order band wherever they
   are restated. Because this task binds its deliverable to that file it becomes
   the eleventh member, moving the P2 band from 5-60 to 5-70. That count and band
-  appear as copied boilerplate in ten sibling `task.json` notes — eight saying
-  "ten active tasks edit", two saying "landing cluster (5-60)" — and every copy is
-  derived. This is a second instance of the same weakness
+  appeared as copied boilerplate in ten sibling `task.json` notes — eight saying
+  "ten active tasks edit", two saying "landing cluster (5-60)". All ten were
+  reconciled when this task was filed; the acceptance criterion below re-verifies
+  that none remain, because every copy is derived and nothing enforces agreement. This is a second instance of the same weakness
   `08-07-vendored-artifact-upstream-route`'s notes already name: the authoritative fact has no enforcement against its copies.
 
 ## Acceptance Criteria
