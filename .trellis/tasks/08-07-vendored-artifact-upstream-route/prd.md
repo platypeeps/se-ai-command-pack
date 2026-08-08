@@ -8,10 +8,10 @@ it is allowed to do without re-deriving the answer from registries each time.
 
 ## Problem
 
-Seven active tasks hit the same wall and each wrote its own version of it. The
+Eight active tasks hit the same wall and each wrote its own version of it. The
 first six reached it independently, before this consolidation task existed; the
-seventh was written after it and still needed its own constraint section,
-because the shared guidance this task proposes does not exist yet:
+seventh and eighth were written after it and still needed their own constraint
+sections, because the shared guidance this task proposes does not exist yet:
 
 | Task | Its constraint heading |
 | --- | --- |
@@ -22,8 +22,9 @@ because the shared guidance this task proposes does not exist yet:
 | `08-06-task-create-base-branch-default` | the file is vendored |
 | `08-06-task-json-trailing-newline` | the file is vendored |
 | `08-07-status-collector-pack-drift` | the collector is vendored |
+| `08-07-review-py-local-fork` | the fix has no route to durability |
 
-Seven headings, six phrasings, one fact — two tasks reached the identical
+Eight headings, seven phrasings, one fact — two tasks reached the identical
 wording independently. Each task spent its own investigation
 establishing ownership, and each arrived at the same two-option ending —
 document locally, or propose upstream — with no shared statement of what either
@@ -67,16 +68,25 @@ lesser outcome or a legitimate terminal one, what a run should write down so the
 upstream proposal survives the session, and how a later reader learns the
 proposal was never made.
 
-All seven tasks are still in planning, so none has yet *chosen* a disposition.
+All eight tasks are still in planning, so none has yet *chosen* a disposition.
 What converged is the framing: every one independently reduced the problem to
 the same two options — document locally, or propose upstream — and read the
 authority boundary the same way, that an upstream pull request is approval-gated
-and local documentation is available without it. Seven independent derivations
+and local documentation is available without it. Eight independent derivations
 of one framing is evidence the rule exists; it just is not written anywhere.
 
-The seventh is the sharpest evidence: it was authored on 2026-08-07 with this
-consolidation task already filed, and still had to restate the whole constraint
-from scratch, because a filed task is not recorded guidance.
+The seventh and eighth are the sharpest evidence, in two different ways. Both
+were authored on 2026-08-07 with this consolidation task already filed, and both
+still had to restate the whole constraint from scratch, because a filed task is
+not recorded guidance.
+
+The eighth goes further and raises the stakes of the local-only route.
+`08-07-review-py-local-fork` is the one case where the fix already **exists** —
+committed locally into an `install: "always"` file — so the local-only outcome is
+not a lesser-but-stable ending. It is a liability with an expiry date set by the
+next pack refresh, which reverts it silently apart from one test suite. Any
+guidance this task records must say that much: local-only is terminal for a
+*record*, but for a *code change* it survives only until the next refresh.
 
 ## Requirements
 
@@ -115,7 +125,7 @@ from scratch, because a filed task is not recorded guidance.
       drift named as expected.
 - [ ] The disposition rule states that local-only is terminal, and that an
       upstream PR needs explicit approval.
-- [ ] At least two of the seven existing tasks can have their bespoke constraint
+- [ ] At least two of the eight existing tasks can have their bespoke constraint
       section replaced by a reference to the recorded guidance without losing
       information. Demonstrated, not asserted.
 - [ ] The local-only record format names all four required fields — owning pack,
@@ -128,7 +138,7 @@ from scratch, because a filed task is not recorded guidance.
 
 ## Out of scope
 
-- Fixing any of the seven underlying defects. Each keeps its own task.
+- Fixing any of the eight underlying defects. Each keeps its own task.
 - Opening an upstream pull request against `sd-ai-command-pack` or Trellis.
 - Building a tool or check that computes ownership. If the procedure turns out
   to want automating, that is a separate task with its own justification.
@@ -138,11 +148,11 @@ from scratch, because a filed task is not recorded guidance.
 ## Notes
 
 - The table above is the canonical membership list for the vendored-artifact
-  pattern. This task consolidates those seven; it is not itself an eighth
-  instance of the defect. Earlier drafts of two member PRDs each carried their
+  pattern. This task consolidates those eight; it is not itself a member of the
+  pattern it describes. Earlier drafts of two member PRDs each carried their
   own running ordinal and both arrived at "seventh" — those ordinals have been
   removed in favour of pointing here.
-- Membership has one source of truth: the table. The count does not — "seven"
+- Membership has one source of truth: the table. The count does not — "eight"
   also appears in this PRD's prose, in this task's `task.json` description and
   notes, and in its `implement.jsonl`, and every one of those is derived. Adding
   a member means appending the row **and** reconciling each derived copy in the

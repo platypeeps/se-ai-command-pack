@@ -1,0 +1,33 @@
+{
+  "id": "review-py-local-fork",
+  "name": "review-py-local-fork",
+  "title": "Pack refresh destroys the local review.py stale-cache fix",
+  "description": "scripts/sd-ai-command-pack-review.py carries a local fix (bc01bc2) that no upstream version has: _resolve_check recomputes the deterministic sd-check every run instead of serving a cached report. The file is install: \"always\", so every pack refresh reverts the fix. Confirmed by refreshing 0.64.3 to 0.64.27, which reverted it and failed the five guard tests in tests/test_review_coordinator.py. Blocks the pack refresh until the fix is durable: either the behaviour lands upstream, or the fork is recorded so a refresh is a deliberate decision that re-applies it. Upstreaming is the only route that survives a refresh, but an upstream PR is approval-gated, so recording is a legitimate terminal outcome. Eighth instance of the vendored-artifact pattern, and the first where a refresh destroys a working fix rather than merely leaving a defect unfixed.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-07",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": null,
+  "relatedFiles": [
+    "scripts/sd-ai-command-pack-review.py",
+    "tests/test_review_coordinator.py",
+    ".sd-ai-command-pack/manifest.json",
+    ".sd-ai-command-pack/provenance.json",
+    ".trellis/spec/backend/quality-guidelines.md"
+  ],
+  "notes": "Local fork of a vendored install: \"always\" file: bc01bc2 added _resolve_check (recompute the deterministic sd-check every run) and tests/test_review_coordinator.py; 4d62cd9 re-recorded provenance so the install audit stays green. The symbol exists in no upstream version -- checked all 33 v0.6* tags across 1975 commits -- so this is a fork, not a reverted upstream change. Confirmed 2026-08-07 by refreshing 0.64.3 to 0.64.27: the fix was reverted and the 5 ResolveCheckTest tests errored; refresh then reverted. Eighth instance of the vendored-artifact pattern whose canonical membership table lives in 08-07-vendored-artifact-upstream-route/prd.md, and the first where a refresh destroys a working fix rather than leaving a defect unfixed. Blocks the pack refresh until the fork is durable -- upstreamed, or recorded with a re-apply step. Recording is terminal, not a partial failure. Upstream fix tracked separately in sd-ai-command-pack; no upstream PR opened. Deliverable is .trellis/spec/backend/quality-guidelines.md, named in a Requirement, which makes this the eleventh member of that landing cluster and moves the P2 band from 5-60 to 5-70; ten sibling task.json notes restated the old count or band; all ten were reconciled in this task's filing commit, and the acceptance criteria re-verify that zero remain.",
+  "meta": {},
+  "order": 70
+}
