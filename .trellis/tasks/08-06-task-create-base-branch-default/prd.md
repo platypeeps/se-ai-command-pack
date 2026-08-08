@@ -82,6 +82,29 @@ each created from the feature branch of the PR whose review surfaced it, each
 corrected immediately. The defect reproduces every time a follow-up task is
 created the way follow-up tasks are supposed to be created.
 
+A fifth occurrence on 2026-08-07 is the one that shows the cost, because it was
+not caught at creation. `08-07-review-py-local-fork` was created from
+`task/08-07-review-py-local-fork`, recorded that branch, and reached PR #166
+still holding it, where a paid Copilot round flagged it; corrected in `9f16829`.
+No deterministic check objected, and the reason is visible in the citations
+above: a freshly created task has `branch: null`, so the inequality at
+`scripts/sd-ai-command-pack-review-preflight.mjs:3299-3309` is guarded off
+before it can compare, and `validateTrellisPlanningBaseInheritance` constrains
+child tasks only. Both facts were confirmed by reading the record as created and
+the guard itself, not inferred.
+
+The same session filed a task in the source pack repository from that
+repository's own feature branch, and it reached that repository's pull request
+with the same wrong value and was caught the same way. The behaviour therefore
+follows the vendored script rather than this checkout. That repository tracks its
+own occurrence in its own task; do not restate its record or its counts here.
+
+A sweep on 2026-08-07 found all 25 active task records naming `main`, so this
+repository currently stores no dead reference. That is the product of five hand
+corrections, not evidence the defect is absent — and it is worth recording
+because the acceptance criterion below asks for exactly this sweep, which will
+pass on a repository that is still creating the value wrongly every time.
+
 ### Why it is worth fixing rather than remembering
 
 The correction is invisible unless someone already knows to look. A wrong
@@ -135,6 +158,13 @@ stand on its own.
       branch is deleted — not merely that it should happen eventually.
 - [ ] A sweep of active tasks confirms no remaining `base_branch` names a branch
       absent from `git branch -a`, or lists each exception with its reason.
+- [ ] The record states plainly that the local-only route does not satisfy the
+      Goal, and names which criteria it can satisfy anyway. This matters because
+      every criterion above except the upstream one is satisfiable by
+      documentation alone: the sweep passes on a repository that still records the
+      wrong value on every `create`, so a green sweep is not evidence the seeding
+      defect is fixed. Choosing local-only is legitimate — the file is vendored —
+      but it must be recorded as a mitigation, not as a fix.
 - [ ] If the upstream route is chosen, the proposal preserves an explicit way to
       request the current stacked-base behaviour, and the local documentation
       lands first without depending on the upstream change merging.
@@ -150,10 +180,11 @@ stand on its own.
 
 ## Notes
 
-- Four confirmed occurrences: `08-06-session-first-skill-review` and
+- Five confirmed occurrences: `08-06-session-first-skill-review` and
   `08-06-ship-gate-ordering-docs` (found stale, corrected), plus
   `08-06-prism-rules-lane-divergence` and `08-06-sd-review-local-rebuttal-gap`
-  (created wrong, corrected immediately).
+  (created wrong, corrected immediately), plus `08-07-review-py-local-fork`
+  (created wrong, reached PR #166, corrected only after a paid review round).
 - One of the vendored-artifact instances enumerated in the table in
   `08-07-vendored-artifact-upstream-route/prd.md`, which is the canonical list.
   Do not restate a running count or a membership list here; both drifted once
