@@ -1395,7 +1395,7 @@ installed sha256 != prior provenance -> conflict + no writes
 Both `scripts/sd-ai-command-pack-status.py` and
 `scripts/sd_ai_command_pack_fleet_lib.py` are vendored with
 `install: "always"` (`.sd-ai-command-pack/manifest.json`), so a local edit is
-overwritten by the next pack refresh. A behaviour change is therefore an
+overwritten by the next pack refresh. A behavior change is therefore an
 upstream pull request against `sd-ai-command-pack`, which needs explicit
 per-PR approval that the autonomous run-level authority excludes. This
 section is the local-only disposition: it records what the collector cannot
