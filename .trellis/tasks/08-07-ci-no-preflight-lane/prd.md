@@ -140,21 +140,37 @@ this one — so the pattern is established there rather than being invented here
 
 ## Acceptance Criteria
 
-- [ ] The disposition is recorded with its reasoning, including what was
+- [x] The disposition is recorded with its reasoning, including what was
       rejected and why.
-- [ ] If enforced: a pull request carrying a deliberately broken documentation
+      SATISFIED 2026-08-09: enforce disposition in `design.md`, including the
+      rejected decline route and both upstream fail-open paths.
+- [x] If enforced: a pull request carrying a deliberately broken documentation
       path reference in a `prd.md` fails `ci-result`, demonstrated on a real pull
       request rather than asserted. The demonstration must be the required
       context failing, not a job log showing a non-zero exit somewhere
       `ci-result` ignores.
+      SATISFIED 2026-08-09: draft PR #174 (branch `demo/preflight-fail-demo`,
+      closed unmerged, branch deleted) carried
+      `FAIL .trellis/tasks/08-07-ci-no-preflight-lane/prd.md:201 references
+      missing path ./research/nonexistent-evidence-file.md.` and the required
+      context itself went red: `ci-result fail` (run 31315162320). First demo
+      commit used a bare `research/...` link the checker's prefix rules skip;
+      the checked `./`-relative form produced the failure.
 - [ ] If enforced: a pull request with no `.trellis/` change still passes,
       proving the Trellis validators do not fail closed on absence.
-- [ ] If enforced: the Node version the check runs on is stated and is not the
+- [x] If enforced: the Node version the check runs on is stated and is not the
       runner default, and the vendored script is shown to be invoked unmodified —
       proven by the workflow content, not by a claim.
-- [ ] If declined: the record names both fail-open paths in
+      SATISFIED 2026-08-09 by `tests.yml` content: `setup-node@v7` with
+      `node-version: "22"`, and the run line is the bare
+      `SD_AI_COMMAND_PACK_REVIEW_PREFLIGHT_BASE_REF="$EVENT_BASE_SHA" node
+      scripts/sd-ai-command-pack-review-preflight.mjs` — no flags, no wrapper.
+- [x] If declined: the record names both fail-open paths in
       `run_review_preflight`, says why each is tolerable, and says what makes a
       skill instruction sufficient where a required check is not.
+      NOT APPLICABLE 2026-08-09: the recorded disposition is enforce, not
+      decline; the conditional never triggers (both fail-open paths are still
+      named in `design.md` as part of the enforce reasoning).
 - [ ] Either way, `.github/workflows/tests.yml` and the required-context list on
       `main` agree with the recorded disposition, verified by reading branch
       protection rather than assuming it.
