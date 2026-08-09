@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Vendored-artifact conventions and gate-behaviour guidance; the check.json / pack-gates-only disposition must sit consistently beside the conventions recorded here."}
+{"file": ".trellis/spec/backend/index.md", "reason": "Spec index for the backend package; locates any additional gate or CI guidance the dispositions must not contradict."}
