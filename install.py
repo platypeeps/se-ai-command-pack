@@ -342,10 +342,13 @@ def _print_aggregate_results(
         1 for platform in per_platform if platform in PLATFORM_REGISTRY
     )
     action = "dry run complete (no changes written)" if dry_run else "install complete"
-    print(
-        f"{action}: {total_files} files across "
-        f"{platform_count} platform{'s' if platform_count != 1 else ''}"
-    )
+    if platform_count:
+        print(
+            f"{action}: {total_files} files across "
+            f"{platform_count} platform{'s' if platform_count != 1 else ''}"
+        )
+    else:
+        print(f"{action}: {total_files} files (no platform anchors selected)")
 
 
 def _print_install_summary(
