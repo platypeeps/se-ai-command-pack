@@ -50,6 +50,7 @@ LOCAL_VALUES = frozenset({"auto", "all", "none"})
 REMOTE_VALUES = frozenset({"auto", "cheap", "deep", "copilot", "none"})
 FIX_VALUES = frozenset({"auto", "ask", "none"})
 REMOTE_DISPOSITION_VALUES = frozenset({"rebutted"})
+LOCAL_DISPOSITION_VALUES = frozenset({"rebutted"})
 CAPABILITY_STATES = frozenset(
     {"ready", "absent", "invalid", "incompatible", "unavailable", "skipped"}
 )
@@ -162,6 +163,31 @@ def _receipt_latency(receipt: Mapping[str, Any]) -> int | None:
         minimum=0,
         maximum=MAX_REMOTE_LATENCY_MS,
     )
+
+
+def _parse_local_dispositions(values: Sequence[str]) -> dict[str, str]:
+    """Validate ``<stable-id>=rebutted`` pairs for the local review stage.
+
+    Deliberately the same grammar and the same single accepted value as the
+    remote channel below: a caller who has verified a finding is false should
+    not have to learn two vocabularies depending on which provider raised it.
+    """
+
+    dispositions: dict[str, str] = {}
+    for value in values:
+        identifier, separator, disposition = value.rpartition("=")
+        if (
+            not separator
+            or not identifier
+            or len(identifier) > 240
+            or any(ord(character) < 32 for character in identifier)
+            or disposition not in LOCAL_DISPOSITION_VALUES
+        ):
+            raise ReviewError("local dispositions must use <stable-id>=rebutted")
+        if identifier in dispositions:
+            raise ReviewError("local disposition ids must be unique")
+        dispositions[identifier] = disposition
+    return dispositions
 
 
 def _parse_remote_dispositions(values: Sequence[str]) -> dict[str, str]:
@@ -676,27 +702,6 @@ def _run_check(repo: Path) -> dict[str, Any]:
     return report
 
 
-def _resolve_check(repo: Path, state: dict[str, Any], state_path: Path) -> dict[str, Any]:
-    # Always recompute the deterministic sd-check. It is the cheap, idempotent
-    # gate and it reads live inputs -- the gitignored .obsidian-kb symlink
-    # target (knowledge.obsidian-kb) and the live PR body (pack.review-scope) --
-    # that the state identity deliberately does not capture (worktreeDigest
-    # excludes gitignored paths and is None for PR scope; only prNumber, not the
-    # body, is in identity). Memoizing the report would serve a stale pass/fail
-    # after those inputs change at an unchanged head, which false-blocks review.
-    # Persist the fresh report for reporting without regressing the phase on a
-    # resume; the expensive local/remote stages stay memoized because their
-    # inputs are captured by worktreeDigest/head.
-    check = _run_check(repo)
-    if state.get("check") is None:
-        _advance(state_path, state, "check", check=check)
-    else:
-        state["check"] = check
-        state["updatedAt"] = int(time.time())
-        _atomic_json(state_path, state)
-    return check
-
-
 def _run_local(
     repo: Path,
     *,
@@ -738,6 +743,10 @@ def _run_local(
     ]
     for family in args.finding_family:
         command.extend(("--finding-family", family))
+    for identifier, disposition in _parse_local_dispositions(
+        args.local_disposition
+    ).items():
+        command.extend(("--local-disposition", f"{identifier}={disposition}"))
     if args.family_evidence:
         command.extend(("--family-evidence", args.family_evidence))
     if args.bookkeeping_evidence:
@@ -1686,6 +1695,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--finding-family", action="append", default=[])
     parser.add_argument("--family-evidence")
     parser.add_argument("--bookkeeping-evidence")
+    parser.add_argument("--local-disposition", action="append", default=[])
     parser.add_argument("--remote-disposition", action="append", default=[])
     parser.add_argument("--attempt", type=int, default=1)
     parser.add_argument("--round-extension-authorized", action="store_true")
@@ -1814,7 +1824,10 @@ def run(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
                 limitations=(f"router-{cap_state}",),
             )
 
-    check = _resolve_check(repo, state, state_path)
+    if state.get("check") is None:
+        check = _run_check(repo)
+        _advance(state_path, state, "check", check=check)
+    check = state["check"]
     if not isinstance(check, dict) or check.get("status") != "passed":
         return 1, _report(
             state=state,
@@ -1837,7 +1850,9 @@ def run(args: argparse.Namespace) -> tuple[int, dict[str, Any]]:
     local = state["local"]
     if not isinstance(local, dict):
         raise ReviewError("local review state is invalid")
-    local_status = local.get("status")
+    # Prefer the canonical ``outcome`` verdict key; fall back to the deprecated
+    # ``status`` alias for the dual-emit window (A-077).
+    local_status = local.get("outcome", local.get("status"))
     if local_status == "findings":
         return 1, _report(
             state=state,

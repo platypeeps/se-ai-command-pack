@@ -1,0 +1,40 @@
+{
+  "audit": {
+    "exitCode": 0,
+    "output": "Pack version update check: installed 0.64.3 is behind upstream 0.64.32.\nSD AI command pack install audit passed: 210 targets checked.\nExpected target completeness: 210 manifest targets for claude, gemini, github, opencode.\nInstalled payload provenance: version 0.64.3; vouched file hashes match.",
+    "requested": true,
+    "status": "passed"
+  },
+  "changeCount": 36,
+  "counts": {
+    "conflict": 34,
+    "preserved": 2,
+    "unchanged": 172,
+    "updated": 2
+  },
+  "installedVersion": "0.64.3",
+  "pack": "sd-ai-command-pack",
+  "platforms": {
+    "active": [
+      "claude",
+      "gemini",
+      "github",
+      "opencode"
+    ],
+    "installed": [
+      "claude",
+      "gemini",
+      "github",
+      "opencode"
+    ]
+  },
+  "reasons": [
+    "Installed version is behind the source version.",
+    "A refresh would change 36 target(s)."
+  ],
+  "schemaVersion": 1,
+  "sourceVersion": "0.64.32",
+  "state": "refresh-required",
+  "target": "/Users/sven/repos/platypeeps/se-ai-command-pack",
+  "versionRelation": "behind"
+}

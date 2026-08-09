@@ -1,0 +1,11 @@
+PROBE1 PASS: malformed rejected: local dispositions must use <stable-id>=rebutted
+PROBE2 PASS: duplicate rejected: local disposition ids must be unique
+PROBE3 PASS: unmatched id rejected: local disposition ids match no finding at this head: ghost-id
+Traceback (most recent call last):
+  File "<stdin>", line 26, in <module>
+  File "/Users/sven/repos/platypeeps/se-ai-command-pack/scripts/sd-ai-command-pack-review-local.py", line 1896, in _apply_local_dispositions
+    raise ReviewInputError(
+    ...<2 lines>...
+    )
+rl.ReviewInputError: local disposition ids match no finding at this head: real-finding
+PROBE4 PASS: matching id applied; finding retained with disposition=rebutted (id key: 'id')
