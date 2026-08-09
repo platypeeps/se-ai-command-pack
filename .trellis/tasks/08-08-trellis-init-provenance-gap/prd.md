@@ -90,18 +90,41 @@ task takes the asymmetry as accepted and addresses only its durability.
 
 ## Acceptance Criteria
 
-- [ ] A written disposition covers the four in-scope areas (inventory
+- [x] A written disposition covers the four in-scope areas (inventory
       classification, integrity record, gitignore durability, variant/orphan
-      classification), each with its chosen route.
-- [ ] If a local checksum manifest is chosen: running its check command on a
+      classification), each with its chosen route. — The "Chosen routes"
+      list under Re-measurement, converged through three adversarial review
+      rounds plus host-lane closures.
+- [x] If a local checksum manifest is chosen: running its check command on a
       clean tree passes, and modifying one covered file by hand makes it
-      fail; both demonstrated, not asserted.
-- [ ] If the gitignore check is implemented: `git check-ignore` on a tracked
+      fail; both demonstrated, not asserted. — Demonstrated 2026-08-09 in a
+      disposable detached worktree of commit 68f6017: clean tree exit 0
+      ("trellis-provenance check: ok (54 hashed, 352 tracked platform files
+      covered)"); after appending a byte to the `.agents`
+      `trellis-update-spec` skill, exit 1 with "drifted:
+      .agents/skills/trellis-update-spec/SKILL.md". Also demonstrated:
+      registry-absent CI parity (exit 0 with no
+      `.trellis/.template-hashes.json` in the worktree) and `--write`
+      byte-stability (`cmp` byte-identical after regeneration).
+- [x] If the gitignore check is implemented: `git check-ignore` on a tracked
       `.claude` adapter path is exercised by the check, and the check fails
-      when a wholesale `.claude/` ignore is simulated.
-- [ ] The count of tracked platform-dot-dir files uncovered by the union of
+      when a wholesale `.claude/` ignore is simulated. — Same worktree:
+      appending `.claude/` to `.gitignore` produced exit 1 with 59
+      `ignored-tracked-path` findings (every tracked `.claude` path) plus
+      "drifted: .gitignore". The assertion uses `--no-index` with exact
+      exit-status mapping; both are locked by
+      `tests/test_trellis_provenance.py` (24 tests, all passing).
+- [x] The count of tracked platform-dot-dir files uncovered by the union of
       both registries is re-enumerated at completion and either reduced to
       zero or explicitly accepted with the number and classification stated.
+      — Re-enumerated on the shipped tree: 351 tracked dot-dir files,
+      original-union uncovered = 62, explicitly accepted and fully
+      classified (46 `.agents` + 7 `.codex` receipted in the manifest; 9
+      `.github` repo-own: the 6 CI/release files, the PR template, and the
+      new checker + manifest). The checker's four-set coverage metric is 0
+      uncovered ("352 tracked platform files covered", including
+      `.gitignore`), enforced continuously by `make check`, sd-check, and
+      the release-payload-gate CI job.
 
 ## Out of scope
 
