@@ -78,11 +78,13 @@ produces a second no-op-looking diff.
 
 ## Constraint: the file is vendored
 
-`.trellis/scripts/common/io.py` is tracked in `.trellis/.template-hashes.json`
-and is upstream-Trellis, not repo-owned. Changing it is an **upstream** pull
-request needing its own approval, which the autonomous run-level authority
-explicitly excludes. Only this repository's `.trellis/spec/` guidance is
-editable locally.
+`.trellis/scripts/common/io.py` classifies as a Registry A
+(`.trellis/.template-hashes.json`) entry under the ownership lookup in
+`.trellis/spec/backend/quality-guidelines.md` ("Vendored-Artifact Ownership
+And Upstream Route"): upstream-Trellis vendored, not editable locally. That
+section's disposition rule applies — an upstream PR needs explicit per-PR
+approval (excluded from run-level authority), and local-only is a legitimate
+terminal record with the four-field record format defined there.
 
 ## Requirements
 

@@ -134,3 +134,17 @@ the run under a stop reason that is not true.
 - Lightweight enough to stay PRD-only until design work proves otherwise, at
   which point `design.md` and `implement.md` are both required
   (`.trellis/workflow.md:164`).
+- 2026-08-09 (run 548ccf3e, iteration 3, PR #186): reproduced. The one-shot
+  merge-boundary evidence call failed twice — first "lastShippedSha evidence
+  must belong to the shipped branch" (deleted branch resolves to None, so the
+  ancestor check falls back to the remembered head, which was stale at the
+  pre-finalization commit), then "branch evidence may change only to the base
+  branch at a verified merge boundary" when the shipped SHA was omitted (the
+  branch flip requires it, `sd-ai-command-pack-work-loop.py:1905-1914`).
+  Workaround that succeeded: first advance `--head` alone to the final feature
+  commit (same-phase descendant update), then flip
+  `--branch main --head <merge> --base-branch main --pr-number N
+  --last-shipped-sha <final feature commit>` — the fallback tip then resolves
+  to the freshly remembered head and the ancestor check passes. The fix should
+  make the merge-boundary call work one-shot; the two-step dance is
+  undocumented order dependence.

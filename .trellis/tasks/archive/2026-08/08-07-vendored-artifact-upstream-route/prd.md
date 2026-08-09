@@ -8,7 +8,8 @@ it is allowed to do without re-deriving the answer from registries each time.
 
 ## Problem
 
-Eight active tasks hit the same wall and each wrote its own version of it. The
+Eight tasks hit the same wall and each wrote its own version of it — all were
+active when they did; three have since completed and archived. The
 first six reached it independently, before this consolidation task existed; the
 seventh and eighth were written after it and still needed their own constraint
 sections, because the shared guidance this task proposes does not exist yet:
@@ -68,8 +69,10 @@ lesser outcome or a legitimate terminal one, what a run should write down so the
 upstream proposal survives the session, and how a later reader learns the
 proposal was never made.
 
-All eight tasks are still in planning, so none has yet *chosen* a disposition.
-What converged is the framing: every one independently reduced the problem to
+Five of the eight are still in planning; three —
+`08-06-sd-review-local-rebuttal-gap`, `08-07-status-collector-pack-drift`, and
+`08-07-review-py-local-fork` — completed and archived on 2026-08-09, each after
+writing its own constraint section from scratch. What converged is the framing: every one independently reduced the problem to
 the same two options — document locally, or propose upstream — and read the
 authority boundary the same way, that an upstream pull request is approval-gated
 and local documentation is available without it. Eight independent derivations
@@ -95,6 +98,15 @@ guidance this task records must say that much: local-only is terminal for a
   for editability. It must resolve `install: "always"`,
   `install: "if-not-exists"`, `kind: "managed-block"`, a `.template-hashes.json`
   entry, and "in no registry" — including which of those are repo-owned.
+  It must also resolve the manifest's **default** mode: an entry with no
+  `install` key is `install: "if-anchor-exists"`
+  (`installer/manifest.py:87`, `IF_ANCHOR_EXISTS` in
+  `installer/registry.py:590`) — 694 of the 776 entries in the installed
+  `0.64.33` manifest, so it is the majority case, not an edge case. Anchor
+  gating affects only whether the file is installed; on refresh it is
+  overwritten exactly like `install: "always"` (only `if-not-exists` targets
+  are preserved, `installer/fileops.py:300`), so for editability it is
+  vendored.
 - Name the dual-ownership case explicitly, with `.github/copilot-instructions.md`
   as the worked example, so a run that sees its permanent hash drift can
   classify it as expected rather than investigating it again.
@@ -114,24 +126,30 @@ guidance this task records must say that much: local-only is terminal for a
 
 ## Acceptance Criteria
 
-- [ ] A run holding an arbitrary repository-relative path can determine
+- [x] A run holding an arbitrary repository-relative path can determine
       ownership from the recorded procedure alone, without opening the three
       registries to work out which applies.
-- [ ] The procedure is verified against at least four real files with known and
+- [x] The procedure is verified against at least five real files with known and
       differing classifications — one `install: "always"`, one
+      default-mode entry (no `install` key, i.e. `if-anchor-exists`), one
       `install: "if-not-exists"`, one `.template-hashes.json` entry, and one
       repo-owned file in no registry — and each yields the correct answer.
-- [ ] `.github/copilot-instructions.md` is classified as dual-owned with its
+- [x] `.github/copilot-instructions.md` is classified as dual-owned with its
       drift named as expected.
-- [ ] The disposition rule states that local-only is terminal, and that an
-      upstream PR needs explicit approval.
-- [ ] At least two of the eight existing tasks can have their bespoke constraint
-      section replaced by a reference to the recorded guidance without losing
-      information. Demonstrated, not asserted.
-- [ ] The local-only record format names all four required fields — owning pack,
+- [x] The disposition rule states all four parts, verified present
+      individually: local-only is terminal for a *record*; a local code change
+      to a vendored file survives only until the next pack refresh; editing a
+      vendored file in place as a workaround is forbidden; and an upstream PR
+      needs explicit per-PR approval. The unqualified headline "local-only is
+      terminal" alone does not satisfy this criterion.
+- [x] At least two of the member tasks still in planning can have their bespoke
+      constraint section replaced by a reference to the recorded guidance
+      without losing information. Demonstrated, not asserted. (Archived members
+      are not edited.)
+- [x] The local-only record format names all four required fields — owning pack,
       file, behaviour, and the explicit statement that no upstream PR was opened
       — and a worked example shows each one filled in.
-- [ ] No file outside `.trellis/` is modified, and no file inside `.trellis/`
+- [x] No file outside `.trellis/` is modified, and no file inside `.trellis/`
       that appears in `.trellis/.template-hashes.json` is modified. Verified by
       checking each changed path against that registry, since the vendored files
       this task is about live inside `.trellis/`.
@@ -159,8 +177,9 @@ guidance this task records must say that much: local-only is terminal for a
   same edit; a member task must not carry its own ordinal at all. This is the
   weakness of the arrangement, stated rather than hidden: the table is
   authoritative, but nothing enforces that the derived copies agree with it.
-- The last row was added on 2026-08-07 and is the strongest argument that the
-  pattern is worth writing down: the status collector cannot resolve a target
+- The status-collector row (added 2026-08-07; second-to-last in the table —
+  the last row is `08-07-review-py-local-fork`) is the strongest argument that
+  the pattern is worth writing down: the status collector cannot resolve a target
   pack version in a consumer repository (`collect_versions`,
   `scripts/sd-ai-command-pack-status.py:393-398` as of installed pack `0.64.3`;
   the file is `install: "always"`, so re-locate by symbol on any other version),
@@ -194,9 +213,43 @@ Member update: 08-07-review-py-local-fork closed overtaken-by-events on
 2026-08-09 (fork retired deliberately by the v0.64.32 refresh; its residual
 upstream concern is #397's related note).
 
+- Unfiled candidate (2026-08-09, run 548ccf3e iteration 3, PR #186, pack
+  v0.64.33): a stale `--local-disposition` id fails the local stage *after*
+  providers run but *before* the durable receipt persists
+  (`sd-ai-command-pack-review-local.py`: `_apply_local_dispositions` at the
+  merge step precedes `_atomic_json(receipt_path, ...)`), leaving a run dir
+  that blocks retry ("attempt ... already exists without a reusable exact
+  receipt") while the coordinator caches the `invalid` local outcome and
+  replays it on every disposition-less rerun
+  (`sd-ai-command-pack-review.py:1876` re-runs local only when dispositions
+  are supplied). Recovery required deleting the incomplete run dir plus the
+  coordinator's private state file. Upstream fix candidates: persist the
+  receipt before applying dispositions, or treat a cached `invalid` local
+  outcome as re-runnable. Route with the next relay batch.
 - platypeeps/sd-ai-command-pack#399 — superseded review commands
   (`sd-review-local`, `sd-review-pr`) carry no supersession signal at the
   command choice point; catalog's "transitional until 0.62.0" horizon expired
   thirty-plus releases ago. Filed 2026-08-09 from
   `08-08-review-command-supersession-signal` (routing decision recorded in
   that task's `disposition.md`; not an instance-table enrollment).
+
+## Completion evidence (2026-08-09, PR #187)
+
+- Guidance recorded as "Vendored-Artifact Ownership And Upstream Route" in
+  `.trellis/spec/backend/quality-guidelines.md` (commits 50e27e0, 60ca753).
+- Procedure verified against six real files (both registry lookups match the
+  recorded table): `scripts/sd-ai-command-pack-review.py` (always),
+  `.claude/rules/sd-planning-adversarial-review.md` (default/if-anchor-exists),
+  `.prism/rules.json` (if-not-exists), `.github/copilot-instructions.md`
+  (dual-owned managed-block), `.trellis/scripts/common/task_store.py`
+  (template-hashes), `.trellis/spec/backend/quality-guidelines.md`
+  (no registry).
+- Constraint sections replaced with references in
+  `08-06-task-create-base-branch-default` and
+  `08-06-task-json-trailing-newline` (both still in planning).
+- AC "no file outside `.trellis/` modified": every changed path is under
+  `.trellis/` and absent from `.trellis/.template-hashes.json` (verified by
+  per-path jq lookup).
+- Copilot review round 1: one finding (Registry A file is gitignored and
+  machine-local) — verified true and fixed in 60ca753 (guarded snippet,
+  prerequisite stated); round 2 clean.

@@ -408,6 +408,138 @@ conflict is an upstream-version difference, not local drift.
 
 ---
 
+## Vendored-Artifact Ownership And Upstream Route
+
+Eight tasks independently re-derived the same three facts: which registry owns
+an installed file, what a run may do about a defect in one, and what it writes
+down when it takes the local-only route. This section records all three once.
+Canonical membership list: the table in
+`.trellis/tasks/archive/2026-08/08-07-vendored-artifact-upstream-route/prd.md`.
+
+### 1. Ownership lookup: given a repository-relative path
+
+Consult the two ownership registries in this order; `provenance.json` is not
+one of them (see step 3). Registry B is tracked in the repository; Registry
+A's hash file is **gitignored and machine-local** (`.gitignore:87`, written
+by the Trellis installer), so a clean checkout does not have it — its absence
+means "no Registry A evidence on this machine", never "not a member". Both
+lookups are runnable as written:
+
+```bash
+P=<repository-relative path>
+# Registry A: upstream Trellis (machine-local file; guard for absence)
+if [ -f .trellis/.template-hashes.json ]; then
+  jq --arg p "$P" '.hashes | has($p)' .trellis/.template-hashes.json
+else
+  echo "registry A unavailable (.trellis/.template-hashes.json absent)"
+fi
+# Registry B: sd-ai-command-pack
+jq --arg p "$P" '[.files[] | select(.target==$p)] | first // "absent"
+                 | if . == "absent" then . else {kind, install, anchor} end' \
+  .sd-ai-command-pack/manifest.json
+```
+
+1. **Registry A hit** (`.trellis/.template-hashes.json`, `hashes` key): the
+   file is installed from upstream Trellis. Vendored — do not edit. If
+   Registry B *also* matches, the file is dual-owned (step 4).
+2. **Registry B hit** (`.sd-ai-command-pack/manifest.json`, `files[].target`):
+   classification depends on two entry fields, and the **default matters
+   more than the explicit values** — an entry with no `install` key is
+   `install: "if-anchor-exists"` (`installer/manifest.py:87`,
+   `IF_ANCHOR_EXISTS` in `installer/registry.py:590`): 694 of the 776 entries
+   in the installed `0.64.33` manifest, the majority case. Anchor gating
+   affects only whether the file is installed at all; on refresh it is
+   overwritten exactly like `install: "always"` — only `if-not-exists`
+   targets are preserved (`installer/fileops.py:300`).
+
+   | Entry shape | Ownership | Editable locally? |
+   | --- | --- | --- |
+   | `install: "always"` | pack-vendored | No — refresh overwrites |
+   | no `install` key (= `if-anchor-exists`) | pack-vendored | No — refresh overwrites |
+   | `install: "if-not-exists"` | repo-owned after first install | Yes — refresh preserves |
+   | `kind: "managed-block"` | pack owns the marker-bounded block only | Outside the block, per the file's other registry |
+3. **`provenance.json` is drift evidence, not an ownership decider.** Its
+   per-file hashes tell you whether an installed file still matches what the
+   pack shipped; membership and editability come from the manifest entry.
+4. **Both registries match: dual-owned.** Worked example, the only current
+   instance: `.github/copilot-instructions.md` is recorded as a whole-file
+   hash by Trellis (Registry A) while the sd-pack's `kind: "managed-block"`
+   entry (anchor `.github`) legitimately appends its own marker-bounded
+   block. The Trellis hash therefore reports **permanent drift that is not
+   drift** — classify that hash mismatch as expected, do not investigate it
+   as tampering, and edit neither the block nor the Trellis-hashed body.
+5. **Neither registry matches: repo-owned.** Edit freely under normal review.
+   This file (`.trellis/spec/backend/quality-guidelines.md`) is the standing
+   example.
+
+Verified against six real files with known, differing classifications — each
+lookup above yields exactly this row:
+
+| File | Classification |
+| --- | --- |
+| `scripts/sd-ai-command-pack-review.py` | Registry B, `install: "always"` — vendored |
+| `.claude/rules/sd-planning-adversarial-review.md` | Registry B, no `install` key (`if-anchor-exists`) — vendored |
+| `.prism/rules.json` | Registry B, `install: "if-not-exists"` — repo-owned after first install |
+| `.github/copilot-instructions.md` | Registry A + Registry B `managed-block` — dual-owned, drift expected |
+| `.trellis/scripts/common/task_store.py` | Registry A — upstream-Trellis vendored |
+| `.trellis/spec/backend/quality-guidelines.md` | no registry — repo-owned |
+
+Getting the lookup wrong is costly in both directions: treating a repo-owned
+file as vendored abandons a fix that was always allowed; treating a vendored
+file as repo-owned produces an edit the next pack refresh silently reverts
+(see the refresh gotcha in Vendored Pack Lifecycle above).
+
+### 2. Disposition rule for a defect in a vendored file
+
+Four parts, each load-bearing:
+
+1. **Local-only is a legitimate terminal outcome for a *record*** — guidance,
+   an operator procedure, a documented constraint — not a partial failure or
+   a lesser ending. Most vendored-defect tasks end here.
+2. **For a *code change*, local-only is not terminal**: an edit committed
+   into a vendored file survives only until the next pack refresh, which
+   reverts it silently (observed: local commit `bc01bc2` reverted by the
+   v0.64.32 refresh). A local fork is a liability with an expiry date, never
+   a resting state.
+3. **Do not edit a vendored file in place as a workaround**, whether it sits
+   inside `.trellis/` or outside it.
+4. **An upstream pull request requires explicit per-PR approval.** The
+   autonomous run-level authority excludes it; this section documents the
+   route and does not grant, presume, or create any standing approval.
+
+### 3. The local-only record: format and worked example
+
+When a task takes the local-only route, the unproposed upstream change must
+stay discoverable. Record all four fields, in the task's disposition and in
+whatever guidance section carries the constraint:
+
+1. **Owning pack** — which upstream owns the file (sd-ai-command-pack, or
+   upstream Trellis).
+2. **File** — the repository-relative path, with the registry entry that
+   classifies it.
+3. **Behaviour** — the defect or missing behaviour, precisely enough that an
+   upstream proposal could be drafted from the record alone.
+4. **No upstream PR was opened** — stated explicitly, so a later reader knows
+   the proposal was never made rather than made-and-lost.
+
+Worked example, each field filled in (the full record is this file's
+"Scenario: SD Status Pack-Freshness Signal" section):
+
+1. Owning pack: sd-ai-command-pack.
+2. File: `scripts/sd-ai-command-pack-status.py`, manifest entry
+   `install: "always"`.
+3. Behaviour: local-mode `collect_versions` resolves no target pack version
+   in a consumer repository, so a stale installed pack reports
+   `packState: "installed"` with no anomaly, follow-up, or recommendation.
+4. No upstream PR was opened; upstream approval was not sought. The section
+   heading records the disposition as "local-only guidance".
+
+Filed upstream relays (approved per-PR, the other side of the route) are
+precedented in the 08-07 task's relay log: platypeeps/sd-ai-command-pack#397,
+#398, #399.
+
+---
+
 ## Code Review Checklist
 
 - Is the change made in the canonical registry/template/module rather than a
