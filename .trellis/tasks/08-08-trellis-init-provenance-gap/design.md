@@ -118,10 +118,12 @@ Membership-conservative refresh:
   same named-decision path as later additions, no special mode.
 - Disjointness is preserved, not just validated after the fact: a `files`
   member that another receipt now covers (template snapshot, `repoOwn`, or
-  pack provenance) is dropped from the candidate with a printed reason, and
-  an `--accept` naming an already-covered path is an error — so a written
-  manifest always satisfies the pairwise-disjoint invariant the loader
-  enforces.
+  pack provenance) is dropped from the candidate with a printed reason, a
+  refreshed template snapshot excludes any path in `repoOwn` (printed as
+  excluded — `repoOwn` wins, and check mode's cross-check subtracts
+  `repoOwn` identically), and an `--accept` naming an already-covered path
+  is an error — so a written manifest always satisfies the pairwise-disjoint
+  invariant the loader enforces.
 - A tracked platform file outside every coverage set is **not** absorbed:
   `--write` exits 1 listing each such path unless it is explicitly named via
   repeatable `--accept <path>`. Each accepted addition is printed. This

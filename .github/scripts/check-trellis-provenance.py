@@ -225,7 +225,7 @@ def run_check(repo: Path) -> int:
 
     registry_keys = load_template_registry(repo)
     if registry_keys is not None:
-        live_platform = registry_keys & tracked_set
+        live_platform = (registry_keys & tracked_set) - set(manifest["repoOwn"])
         if live_platform != set(manifest["templateReceipted"]):
             findings.append(f"template-snapshot-stale: {TEMPLATE_REGISTRY_PATH}")
 
@@ -255,14 +255,19 @@ def run_write(repo: Path, accepted: list[str]) -> int:
         if path not in tracked_set:
             raise fail(f"--accept path is not a tracked platform file: {path}")
 
+    repo_own_set = set(manifest["repoOwn"])
     registry_keys = load_template_registry(repo)
     if registry_keys is None:
         template_receipted = list(manifest["templateReceipted"])
         print(f"notice: {TEMPLATE_REGISTRY_PATH} absent; keeping existing snapshot")
     else:
-        template_receipted = sorted(registry_keys & tracked_set)
+        template_receipted = []
+        for path in sorted(registry_keys & tracked_set):
+            if path in repo_own_set:
+                print(f"excluded from template snapshot (repoOwn): {path}")
+                continue
+            template_receipted.append(path)
 
-    repo_own_set = set(manifest["repoOwn"])
     other_covered = repo_own_set | set(template_receipted) | pack_covered
     already_covered = sorted(accepted_set & other_covered)
     if already_covered:

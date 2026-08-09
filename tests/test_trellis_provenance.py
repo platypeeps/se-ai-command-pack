@@ -264,6 +264,19 @@ class ProvenanceCheckerTest(unittest.TestCase):
         self.assertIn(self.repo.agents_file, manifest["templateReceipted"])
         self.assertIn("removed (now covered elsewhere)", output)
 
+    def test_write_snapshot_refresh_excludes_repo_own_paths(self) -> None:
+        self.repo.write(
+            ".trellis/.template-hashes.json",
+            json.dumps({"__version": 2, "hashes": {self.repo.manifest_path: "0" * 64}}),
+        )
+        status, output = self.repo.run_checker("--write")
+        self.assertEqual(status, 0, output)
+        self.assertIn("excluded from template snapshot (repoOwn)", output)
+        manifest = json.loads(self.manifest_bytes())
+        self.assertNotIn(self.repo.manifest_path, manifest["templateReceipted"])
+        status, output = self.repo.run_checker()
+        self.assertEqual(status, 0, output)
+
     def test_write_accept_of_covered_path_is_error(self) -> None:
         before = self.manifest_bytes()
         status, output = self.repo.run_checker("--write", "--accept", self.repo.manifest_path)
