@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 151
+- **Total Sessions**: 152
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1937 | Active |
+| `journal-3.md` | ~1983 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 152 | 2026-08-09 | Trellis init provenance gate: manifest, checker, and CI wiring (PR #185) | `68f6017`, `a5db639`, `11b4006`, `f8ef505`, `328b7e5`, `3ddd154`, `887f185` | `task/08-08-trellis-init-provenance-gap` |
 | 151 | 2026-08-09 | Backlog hygiene sweep: stale scheduling, write-set order repair, metadata reconciliation | `e8b1488`, `47c4995` | `task/08-08-trellis-backlog-hygiene` |
 | 150 | 2026-08-09 | Record upstream disposition for review-command supersession gap | `05e9344`, `1568832` | `task/08-08-review-command-supersession-signal` |
 | 149 | 2026-08-09 | Adopt --local-disposition rebuttal control via pack refresh (PR #180) | `52d8d4d` | `main` |
