@@ -239,3 +239,23 @@ vendored-artifact pattern.
   than a restatement of it.
 - Planning depth: PRD-only. The deliverable is a recorded fork register and a
   checkable precondition; there is no design to make.
+
+## Closure (2026-08-09): overtaken by events — fork retired deliberately
+
+PR #180 (merge 52d8d4d) refreshed the installed pack v0.64.3 → v0.64.32 under
+task 08-06-sd-review-local-rebuttal-gap. The refresh-diff unit review caught
+the reversion of `bc01bc2` before merge, and the reversion was accepted
+deliberately: upstream fixed both live inputs the fork guarded at their source
+(0.64.22 external-symlink KB row advisory; 0.64.4 review-scope ignores a
+CLOSED/MERGED PR body), and the task PRD forbade local forks of vendored
+payload. The fork's pinned test file was deleted with it.
+
+This task's goal — make the reversion a deliberate decision rather than a
+silent one, or get the fix upstream — is satisfied on both branches: the
+decision was deliberate and recorded, and the motivating inputs are fixed
+upstream. The durable guardrails now live in quality-guidelines.md's
+"Vendored Pack Lifecycle" section (silent fork-revert gotcha, pre-refresh
+`git log` check over payload paths). The residual upstream concern (the
+memoized sd-check report, plus the coordinator's cached-local rebuttal gap
+found by Copilot on PR #180) is relayed upstream and tracked through
+08-07-vendored-artifact-upstream-route. No further local work remains.
