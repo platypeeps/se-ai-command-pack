@@ -1775,3 +1775,51 @@ Task 08-07-status-collector-pack-drift, local-only disposition. New quality-guid
 ### Next Steps
 
 - None - task complete
+
+
+## Session 148: Ship 08-08-readme-quickstart-ux: README quick-start UX and aggregate install summary (PR #178)
+
+**Date**: 2026-08-09
+**Task**: Ship 08-08-readme-quickstart-ux: README quick-start UX and aggregate install summary (PR #178)
+**Branch**: `task/08-08-readme-quickstart-ux`
+
+### Summary
+
+Resumed the work loop post-/clear, converged PR #178 through review (3 review-driven fixes: zero-count status suppression, update --verbose forwarding, retired-backup counting), merged to main at 8c8214e, and finalized the task. sd-review coordinator could not converge on prism local findings (vendored scripts lack --local-disposition; tracked as 08-06-sd-review-local-rebuttal-gap); user approved round extension, then manual merge after CI green and Copilot clean.
+
+### Main Changes
+
+- README quick-start restructure with se-help entry point and single generated catalog (shipped in PR #178)
+- install.py aggregate per-platform summary with --verbose escape hatch
+- Review fixes: zero-count statuses dropped from summary counts, update --verbose forwarded to refresh subprocess, retired-target backups counted in aggregate backups line
+- Branch-metadata commit recorded task branch before archive
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0033446` | feat: README quick-start restructure and aggregate install summary |
+| `aac33a5` | docs(spec): record aggregate install summary output contract |
+| `6b64b7a` | docs: note the skill catalog table is generated and CI-gated |
+| `06de892` | test: cover aggregate, dry-run, and verbose install summary output |
+| `3047970` | fix: clearer completion line when no platform anchors are selected |
+| `24f561a` | test: cover anchor-skip aggregation, all platform rows, and unknown-status fallback |
+| `9ce0bfc` | fix: drop zero-count statuses from summary count formatting |
+| `487eed7` | fix: forward --verbose from the update command to its refresh process |
+| `f4cbc5e` | fix: count retired-target backups in the aggregate backups line |
+| `0a4123a` | chore(task): record branch for 08-08-readme-quickstart-ux |
+
+### Testing
+
+- [OK] make check green post-merge: 601 tests OK (1 skipped), generator --check clean, release payload gate 0.67.1 -> 0.67.2
+- [OK] CI green on f4cbc5e: lint, unittest 3.10/3.13 matrix, review-preflight, release-payload-gate
+- [OK] Copilot review round 4: zero new, zero suppressed comments; all threads resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
