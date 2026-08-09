@@ -419,12 +419,20 @@ Canonical membership list: the table in
 ### 1. Ownership lookup: given a repository-relative path
 
 Consult the two ownership registries in this order; `provenance.json` is not
-one of them (see step 3). Both lookups are runnable as written:
+one of them (see step 3). Registry B is tracked in the repository; Registry
+A's hash file is **gitignored and machine-local** (`.gitignore:87`, written
+by the Trellis installer), so a clean checkout does not have it — its absence
+means "no Registry A evidence on this machine", never "not a member". Both
+lookups are runnable as written:
 
 ```bash
 P=<repository-relative path>
-# Registry A: upstream Trellis
-jq -e --arg p "$P" '.hashes | has($p)' .trellis/.template-hashes.json
+# Registry A: upstream Trellis (machine-local file; guard for absence)
+if [ -f .trellis/.template-hashes.json ]; then
+  jq --arg p "$P" '.hashes | has($p)' .trellis/.template-hashes.json
+else
+  echo "registry A unavailable (.trellis/.template-hashes.json absent)"
+fi
 # Registry B: sd-ai-command-pack
 jq --arg p "$P" '[.files[] | select(.target==$p)] | first // "absent"
                  | if . == "absent" then . else {kind, install, anchor} end' \
