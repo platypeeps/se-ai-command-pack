@@ -61,22 +61,38 @@ Five independent fail-softs, all verified 2026-08-08:
 
 ## Acceptance Criteria
 
-- [ ] Each of the five fail-softs has a written disposition (fix or accept)
+- [x] Each of the five fail-softs has a written disposition (fix or accept)
       with reasoning, citing the current behaviour by file and line where a
       positive occurrence exists; dated GitHub API evidence for
       repository-external state (item 3), and bounded repository-search
       evidence for absences (item 4), satisfy the citation requirement.
-- [ ] If item 1 is fixed: the new behaviour is demonstrated dynamically, not
+      SATISFIED 2026-08-09: all five dispositions recorded in `design.md`
+      (items 1/2/4/5 fix, item 3 accept with reasoning and revisit triggers);
+      durable gate guidance added to
+      `.trellis/spec/backend/quality-guidelines.md`.
+- [x] If item 1 is fixed: the new behaviour is demonstrated dynamically, not
       by reading YAML — either a controlled workflow run with a lane forced
       to skip, or the aggregation logic extracted into a form exercised by a
       test with a synthetic `skipped` result. Static inspection of the
       aggregate does not satisfy this criterion.
-- [ ] If item 5 is fixed: `sd-check` fails on a tree with a deliberately broken
+      SATISFIED 2026-08-09 via the extraction route: aggregation moved to
+      `.github/scripts/aggregate-ci-result.py`;
+      `tests/test_aggregate_ci_result.py::test_required_lane_skipped_fails`
+      feeds a synthetic `unittest: skipped` payload and asserts nonzero exit.
+- [x] If item 5 is fixed: `sd-check` fails on a tree with a deliberately broken
       unit test; if accepted instead, the pack-gates-only scope of `sd-check`
       is stated in repository guidance a reader can find from the check output.
-- [ ] `08-07-ci-no-preflight-lane` remains the sole owner of the preflight
+      SATISFIED 2026-08-09: with a deliberately broken assertion in
+      `tests/test_aggregate_ci_result.py`, `sd-check` exited 1 with
+      `repo.test: failed`; after revert the run returned to overall passed
+      with `stateGuard: passed`.
+- [x] `08-07-ci-no-preflight-lane` remains the sole owner of the preflight
       lane decision — this task's changes neither add nor remove a preflight
       invocation in CI.
+      SATISFIED 2026-08-09: the diff touches no preflight invocation;
+      `review-preflight` had not landed at implementation time, so the
+      aggregator ships the design-time floor lane sets and the reconciliation
+      note in `implement.md` step 1 remains with that task.
 
 ## Out of scope
 

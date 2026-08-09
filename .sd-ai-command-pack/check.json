@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "prerequisites": [],
+  "checks": [
+    { "id": "repo.test", "argv": ["make", "gate-test"], "cwd": ".", "timeoutSeconds": 900 },
+    { "id": "repo.lint", "argv": ["make", "gate-lint"], "cwd": ".", "timeoutSeconds": 600 },
+    { "id": "repo.shellsyntax", "argv": ["make", "shell-syntax"], "cwd": ".", "timeoutSeconds": 60 }
+  ]
+}

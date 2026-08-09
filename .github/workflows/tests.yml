@@ -60,6 +60,8 @@ jobs:
       - run: python -m pip install -r requirements-dev.txt
       - run: python -m ruff check install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
       - run: python -m mypy installer install.py templates/skills/se-review-skills/scripts/skill_review.py
+      - name: Shell syntax check for vendored scripts
+        run: for f in scripts/*.sh; do bash -n "$f" || exit 1; done
 
   release-payload-gate:
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
@@ -98,27 +100,17 @@ jobs:
           BASE_REF: ${{ steps.gate-base.outputs.base }}
 
   ci-result:
-    needs: [unittest, lint, release-payload-gate]
+    needs: [unittest, lint, release-payload-gate, auto-tag-release]
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - name: Aggregate lane results
         env:
           NEEDS_JSON: ${{ toJSON(needs) }}
-        run: |
-          python3 - <<'EOF'
-          import json, os, sys
-          needs = json.loads(os.environ["NEEDS_JSON"])
-          failed = [
-              name
-              for name, data in needs.items()
-              if data.get("result") not in ("success", "skipped")
-          ]
-          if failed:
-              print("failed lanes:", ", ".join(sorted(failed)))
-              sys.exit(1)
-          print("all lanes green")
-          EOF
+        run: python3 .github/scripts/aggregate-ci-result.py
 
   auto-tag-release:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
