@@ -93,7 +93,8 @@ acceptable is a decision for the task, not a finding of this review.
 
 **Local relevance of the KB half is real, not hypothetical**: `.obsidian-kb` in
 this repo is an absolute external symlink
-(`.obsidian-kb -> /Users/sven/Documents/sdelmas-llm-wiki/raw/se-ai-command-pack`),
+(`.obsidian-kb` points at an external wiki checkout under the user home
+directory),
 so the 0.64.22 advisory downgrade does apply here.
 
 ---
@@ -654,7 +655,7 @@ refresh updates.
   control was read from source and the changelog; no local review round was
   executed against a real provider finding.
 - **Not verified**: whether the other repo test suites pass after the refresh.
-  Only `tests/test_review_coordinator.py` was executed, chosen because the diff
+  Only `test_review_coordinator.py` (since deleted) was executed, chosen because the diff
   showed it targeted the reverted symbol.
 - **`.gito/config.toml` is not in the change set.** The 0.64.21/0.64.24 scope
   widenings install `if-not-exists` and therefore do not apply to this repo

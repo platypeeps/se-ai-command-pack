@@ -389,7 +389,8 @@ conflict is an upstream-version difference, not local drift.
 > overwritten without a distinct notice — it surfaces only as one more
 > "conflict" row in the dry run. The v0.64.32 refresh reverted local commit
 > `bc01bc2` (`_resolve_check` in `scripts/sd-ai-command-pack-review.py`) and
-> stranded `tests/test_review_coordinator.py` pinning the removed symbol.
+> stranded the local `test_review_coordinator.py` regression tests (since
+> deleted) pinning the removed symbol.
 >
 > Before any refresh, `git log --oneline -- <payload paths>` for local
 > commits, and review the refresh diff as a unit for reverted local fixes.

@@ -66,7 +66,7 @@ live inputs the fork guarded against at their source instead:
 
 Disposition: the revert is accepted — the task PRD forbids local forks of the
 vendored surfaces, and the fork's motivating inputs are fixed at source.
-`tests/test_review_coordinator.py` (5 tests, all pinning the removed
+`test_review_coordinator.py` (5 tests, all pinning the removed
 `_resolve_check`) is deleted with it. The fork lifecycle is the subject of
 `08-07-review-py-local-fork`, which should be re-scoped or closed against this
 retirement.

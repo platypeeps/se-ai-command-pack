@@ -145,7 +145,7 @@ adoption is now a refresh.
     an id matching no finding must each fail the invocation with the
     documented error, not be ignored.
   - The refreshed version's upstream behavioral tests (e.g.
-    `tests/test_review_stage.py` local-disposition cases) pass in the upstream
+    `../sd-ai-command-pack/tests/test_review_stage.py` local-disposition cases) pass in the upstream
     checkout at the version being installed, cited as evidence.
 - Document in `.trellis/spec/backend/quality-guidelines.md` when and how a run
   may use the control:
