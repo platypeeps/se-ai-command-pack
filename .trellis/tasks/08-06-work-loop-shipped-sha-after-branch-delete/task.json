@@ -24,7 +24,7 @@
     "scripts/sd-ai-command-pack-work-loop.py",
     ".trellis/spec/backend/quality-guidelines.md"
   ],
-  "notes": "Ordered 2 in the P2 band: ahead of the quality-guidelines.md landing cluster (5-70), which it is not a member of -- it reads that file as a contract but no requirement or acceptance criterion writes it. The order is explicit rather than absent because an absent order is read as 0, which ranked this task first by accident rather than by decision. It blocks the autonomous work loop, so it lands before documentation consolidation.",
+  "notes": "Ordered 2 in the P2 band: ahead of the quality-guidelines.md landing cluster (documented in .trellis/tasks/08-08-trellis-backlog-hygiene/record.md), which it is not a member of -- it reads that file as a contract but no requirement or acceptance criterion writes it. The order is explicit rather than absent because an absent order is read as 0, which ranked this task first by accident rather than by decision. It blocks the autonomous work loop, so it lands before documentation consolidation.",
   "meta": {},
   "order": 2
 }

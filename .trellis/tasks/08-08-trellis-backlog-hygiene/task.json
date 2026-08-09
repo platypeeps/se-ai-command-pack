@@ -2,8 +2,8 @@
   "id": "trellis-backlog-hygiene",
   "name": "trellis-backlog-hygiene",
   "title": "Trellis backlog hygiene: stale unmarked tasks, order collisions, committed detritus",
-  "description": "Metadata hygiene for the task tree: seven unmarked stale tasks (createdAt on or before 2026-07-25) with no PARKED/blocked marker, order collisions (10/20/30 each used twice, 12 tasks unordered) with the quality-guidelines.md write-set unserialized, the orphan 'Sven Delmas' workspace dir whose non-empty journal must be preserved before removal, a PARKED parent whose five children all shipped, and the never-updated Active Developers index. Zero-byte archive manifests are explicitly out of scope (sanctioned resting state per quality-guidelines.md).",
-  "status": "planning",
+  "description": "Metadata hygiene for the task tree, as measured 2026-08-08 (see the PRD Re-measurement section for the 2026-08-09 execution-time deltas and decided dispositions, and record.md for evidence): seven unmarked stale tasks (createdAt on or before 2026-07-25) with no PARKED/blocked marker, order collisions with the quality-guidelines.md write-set unserialized, the orphan 'Sven Delmas' workspace dir, retained byte-identical with an identity annotation because the vendored append-only journal gate forbids removal, a PARKED parent whose five children all shipped (archived before execution), and the never-updated Active Developers index. Zero-byte archive manifests are explicitly out of scope (sanctioned resting state per quality-guidelines.md).",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -20,7 +20,9 @@
   "subtasks": [],
   "children": [],
   "parent": null,
-  "relatedFiles": [],
+  "relatedFiles": [
+    ".trellis/tasks/08-08-trellis-backlog-hygiene/record.md"
+  ],
   "notes": "",
   "meta": {}
 }
