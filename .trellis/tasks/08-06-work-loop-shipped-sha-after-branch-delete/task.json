@@ -3,7 +3,7 @@
   "name": "work-loop-shipped-sha-after-branch-delete",
   "title": "Work-loop ledger gaps: lastShippedSha after branch delete, and no skip from selected",
   "description": "sd-work-backlog tells the controller to record branch, head, and the final shipped feature SHA after housekeeping returns, but housekeeping has already deleted the merged feature branch by then. Three validations in sd-ai-command-pack-work-loop.py reject every ordering of that call, and each rejection drives contextHealth to red on an iteration that actually merged cleanly. Observed on run 17ab8b28, iteration 2, PR #153. Second gap in the same run: LEGAL_TRANSITIONS gives 'selected' no route to 'inventory' or 'complete', so the skill's documented 'skip current' control has no sanctioned implementation when a PRD read after selection disqualifies the task.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -12,7 +12,7 @@
   "assignee": "sdelmas",
   "createdAt": "2026-08-06",
   "completedAt": null,
-  "branch": null,
+  "branch": "task/08-06-work-loop-shipped-sha-after-branch-delete",
   "base_branch": "main",
   "worktree_path": null,
   "commit": null,
@@ -24,7 +24,7 @@
     "scripts/sd-ai-command-pack-work-loop.py",
     ".trellis/spec/backend/quality-guidelines.md"
   ],
-  "notes": "Ordered 2 in the P2 band: ahead of the quality-guidelines.md landing cluster (documented in .trellis/tasks/08-08-trellis-backlog-hygiene/record.md), which it is not a member of -- it reads that file as a contract but no requirement or acceptance criterion writes it. The order is explicit rather than absent because an absent order is read as 0, which ranked this task first by accident rather than by decision. It blocks the autonomous work loop, so it lands before documentation consolidation.",
+  "notes": "Ordered 2 in the P2 band by explicit choice (history in the archived 08-08-trellis-backlog-hygiene record.md). Amended 2026-08-09: the disposition amendment made this task a quality-guidelines.md WRITER (its Local ACs deliver the four-field local-only record there), superseding the earlier non-member/reader claim recorded before the vendored-artifact guidance existed. The write-set record predates this amendment and is archived; it is not updated retroactively.",
   "meta": {},
   "order": 2
 }
