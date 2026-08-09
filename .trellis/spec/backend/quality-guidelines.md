@@ -166,7 +166,7 @@ deleting the contract breaks it, short enough that rewording does not.
 
 ## Review And Retry Conventions
 
-Five ship-loop conventions that cost rounds when a run rediscovers them.
+Six ship-loop conventions that cost rounds when a run rediscovers them.
 
 ### The `pack.review-scope` gate: three categories, three headings, late arrival
 
@@ -268,6 +268,59 @@ Report such a file only when a row is malformed JSONL, references a path
 outside the allowed spec/research roots, or mixes real entries with the
 scaffold row.
 
+### Rebutting a verified-wrong local finding: `--local-disposition`
+
+Since pack v0.64.26 (installed v0.64.32), a local provider finding that a run
+has **verified to be wrong against the checkout** can be closed with
+`--local-disposition '<stable-id>=rebutted'` on the review coordinator. This is
+the only sanctioned way to clear a local finding without changing code. Before
+that version no control reached a local finding, and two still do not:
+
+- `--remote-disposition` validates against remote receipt rows only; it never
+  touches the local receipt.
+- The `--finding-family` / `--family-evidence` route admits evidence only when
+  `audit["localOutcome"] == "clean"` — and a local finding is by definition why
+  the outcome is not clean. It is a repeated-family round-extension gate, not a
+  disposition mechanism.
+
+Rules of use:
+
+- **Only after verification.** Rebut a finding only when the run has checked it
+  against the checkout and can state why it is wrong. State those grounds in
+  the run's report; the receipt records the disposition, the report records the
+  reasoning. When verification is not conclusive, do not rebut — stop the chain
+  and report.
+- **Fail-closed grammar.** One flag per finding, `<stable-id>=rebutted`.
+  Malformed values ("local dispositions must use <stable-id>=rebutted"),
+  duplicate ids ("local disposition ids must be unique"), and ids matching no
+  finding at the current head ("local disposition ids match no finding at this
+  head") each fail the invocation. There is no bulk form, severity threshold,
+  or waiver, deliberately.
+- **Per-head contract.** Finding ids are stable across heads, but dispositions
+  are **not inherited**: a rebuttal applies to the head it was recorded
+  against. Re-supplying a still-matching id on a new head is permitted but
+  obliges the run to re-verify the finding is still wrong at that head.
+- **Unchanged-head rebuttal needs a fresh `--attempt-id`.** The coordinator
+  memoizes the local result in its per-attempt state and skips the local stage
+  when that state exists, so re-invoking at the same head with the same
+  (default) attempt id returns the cached findings and never forwards the
+  disposition. Pass a new explicit `--attempt-id`: the fresh coordinator state
+  re-enters the local stage, which reuses the stored receipt after exact-match
+  validation and applies the rebuttal without re-running any provider. (A
+  moved head gets a fresh state anyway.) This is an upstream ergonomics gap in
+  the vendored coordinator, not something to patch locally.
+- **Auditable, not silent.** The finding stays in the receipt with
+  `disposition: rebutted` under `disposition.localDispositions`; the
+  `outstanding` count that drives `_remote_gate` is recomputed from remaining
+  outstanding rows. A later reader can see what was rejected.
+- **No interaction with the family gate.** A rebuttal does not satisfy the
+  repeated-family round-extension requirement; `_remote_gate` still blocks on
+  the family gate after outstanding findings are cleared. The two mechanisms
+  answer different questions.
+- **Still forbidden:** contriving a code change purely to clear the gate. When
+  a finding is correct, fix the code; when it is verified wrong, rebut it with
+  grounds; when neither is established, stop with a report.
+
 ### Stop retrying on a repeated failure signature
 
 A CI lane that fails without running a step — GitHub's `Set up job` erroring
@@ -305,6 +358,53 @@ This is documented here rather than in the recovery reference itself because
 `.sd-ai-command-pack/manifest.json`), so an edit in this repository would be
 overwritten by the next pack refresh. Fixing it at the source is an upstream
 change to that pack, not a change to this one.
+
+---
+
+## Vendored Pack Lifecycle
+
+The sd-ai-command-pack payload (`scripts/sd-ai-command-pack-*`,
+`.claude/skills/sd-*`, `.agents/skills/sd-*`, `docs/SD_AI_COMMAND_PACK.md`,
+`.claude/sd-ai-command-pack/`) is installed and vouched via
+`.sd-ai-command-pack/manifest.json` + `provenance.json`. Three contracts,
+learned on the v0.64.3 → v0.64.32 refresh (2026-08-09):
+
+### Convention: refresh only from a clean pinned source
+
+**What**: Run `install.py <target> --force --backup` from a worktree checked
+out at a tag (or exact recorded clean commit) of the upstream repo — never
+from a sibling checkout with uncommitted changes.
+
+**Why**: Post-refresh provenance vouches that the consumer matches the
+*source checkout*, whatever it contained. A dirty source launders uncommitted
+upstream edits into vouched provenance. Record the tag/commit in the task.
+Capture `--check --json` (structured) and `--dry-run` (per-file) before
+forcing; a pre-refresh audit line "vouched file hashes match" proves every
+conflict is an upstream-version difference, not local drift.
+
+### Gotcha: installer `.bak` backups fail the structural audit
+
+> **Warning**: `--backup` writes `<file>.bak` beside each overwritten target,
+> and the very next `--check` fails with "pack-like file is not listed in
+> installed targets: <file>.bak" for each one.
+>
+> Archive the `.bak` files elsewhere and remove them from the tree before
+> re-running the audit. Git HEAD already holds every pre-refresh original, so
+> `git checkout <pre-refresh-sha> -- <file>` is the durable restore path.
+
+### Gotcha: a refresh silently reverts local forks of payload files
+
+> **Warning**: Any locally committed edit to a vendored payload file is
+> overwritten without a distinct notice — it surfaces only as one more
+> "conflict" row in the dry run. The v0.64.32 refresh reverted local commit
+> `bc01bc2` (`_resolve_check` in `scripts/sd-ai-command-pack-review.py`) and
+> stranded the local `test_review_coordinator.py` regression tests (since
+> deleted) pinning the removed symbol.
+>
+> Before any refresh, `git log --oneline -- <payload paths>` for local
+> commits, and review the refresh diff as a unit for reverted local fixes.
+> Local tests that pin vendored internals go down with the fork they pin;
+> prefer upstreaming the fix (see `08-07-vendored-artifact-upstream-route`).
 
 ---
 

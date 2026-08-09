@@ -320,6 +320,14 @@ harness quality, and uncategorized evidence. Cluster summaries retain counts,
 PRs, path families, observed dates, and bounded examples, and explicitly report
 truncation. Preventive actions appear only for detected recurring categories.
 
+The managed block is rendered wholesale from whatever GitHub scope the run
+requested, so a narrowly scoped run renders a block holding only that scope's
+clusters. Stage 2b's `--dry-run` never writes, but the same `--github-pr`
+invocation combined with `--update` would replace a repository-wide snapshot
+with one PR's signals. An update that would delete clusters already recorded in
+the snapshot is refused and names them; `--allow-narrowing` accepts the
+deletion deliberately.
+
 The routed-review workflow may invoke the same scanner once per attempt with
 `--planning-attempt ID --json`, an explicit `--github-repo`, and either a
 bounded `--github-days` window or repeated `--github-pr`. The schema-version-1
@@ -740,11 +748,21 @@ files is a checkable claim. The source checkout's current manifest version
 can intentionally be newer than the provenance version in a target repo when
 the newer release did not change installed payload bytes; a passing audit
 reports the installed payload provenance version and confirms the vouched
-hashes still match.
+hashes still match. The install audit and `provenance.json` vouch pack-owned
+receipt targets only — the files the installer wrote and recorded in
+`installed-targets.txt`. When a consumer relaxes its ignore policy so a
+Trellis-owned platform adapter becomes newly tracked, that adapter is not added
+to the pack manifest, `installed-targets.txt`, or `provenance.json` to widen the
+vouch; it stays outside the pack-vouched set and is covered instead by the fleet
+review classifier's integration-only eligibility — which forces the normal
+remote-review loop for any changed path missing from the receipt — and by the
+consumer's own integration and readiness checks.
 The copied/generated scope preflight reads
 `.sd-ai-command-pack/installed-targets.txt`, reports changed pack/Trellis
 runtime files, known repository-map files when present, and Trellis workspace
-journal/index files as integration-only review surface. When the GitHub CLI can
+journal/index files as integration-only review surface. Reporting a path here
+marks it for review attention; it never extends the pack audit's vouch to a
+Trellis-owned adapter. When the GitHub CLI can
 resolve a current PR, it checks that the PR body includes a
 `Tooling/generated scope:` section before review cycles spend attention on
 copied or generated surfaces. Markdown headings without the colon, such as
@@ -1170,8 +1188,10 @@ steps. Repo-wide inventory remains context rather than a cleanup blocker.
 Pass `--json` to reserve stdout for one schema-version-1 housekeeping result;
 progress and diagnostics move to stderr. The result embeds the existing PR
 eligibility JSON unchanged, stable coded actions/anomalies, and the complete
-delegated `sd-status --json` report. Its final `outcome.status` is
-`clean|blocked|indeterminate|failed`. When an environment or authority boundary
+delegated `sd-status --json` report. Its final `outcome.verdict` is
+`clean|blocked|indeterminate|failed` (the `outcome.status` alias emits the same
+value for one deprecation release and is dropped in 0.66.0). When an environment
+or authority boundary
 refuses a Git-metadata or KB-refresh write, the result also carries an additive
 `environmentBlocks` array of `environment_blocked` fragments — each naming the
 exact boundary, last verified checkpoint, mutation state, and a bounded,
@@ -1698,6 +1718,15 @@ of bypassing the cache contract.
   tree with the merge base of this ref and `HEAD`, so upstream-only changes do
   not inflate the advisory. If no merge base exists, the preflight warns and
   conservatively falls back to the configured or discovered base ref.
+- `SD_AI_COMMAND_PACK_DEFAULT_BRANCH`: explicit repository default-branch NAME
+  (for example `main`) for the review preflight's root-task `base_branch`
+  rule. This is a statement of the default branch, not a diff base: the
+  branch-diff base-ref variables above are deliberately ignored by this rule
+  because their values (a stacked-PR base, in CI an exact SHA) have different
+  semantics. When unset, the rule discovers the default from the
+  `origin/HEAD` symbolic ref and skips itself when neither source resolves.
+  CI exports it from the event payload because a pinned-SHA checkout never
+  establishes `origin/HEAD`.
 - `SD_AI_COMMAND_PACK_FULL_CHECK_REVIEW_PREFLIGHT=0`: skip
   repo-local review preflight.
 - `SD_AI_COMMAND_PACK_FULL_CHECK_REVIEW_PREFLIGHT=required`: fail if no configured

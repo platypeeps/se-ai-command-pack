@@ -28,7 +28,7 @@ upstream version has:
 
 | | |
 | --- | --- |
-| `bc01bc2` (2026-08-04) | `fix(review): recompute deterministic sd-check every run, don't serve stale cache` — adds `_resolve_check`, plus `tests/test_review_coordinator.py` (5 tests) |
+| `bc01bc2` (2026-08-04) | `fix(review): recompute deterministic sd-check every run, don't serve stale cache` — adds `_resolve_check`, plus `test_review_coordinator.py` (5 tests; deleted by PR #180 with the fork's retirement) |
 | `4d62cd9` (2026-08-04) | `chore(provenance): record review.py hash after coordinator fix` — re-records provenance so the install audit stays green |
 
 The upstream bug `bc01bc2` fixes is real and still unfixed. Upstream's
@@ -138,7 +138,8 @@ vendored-artifact pattern.
 - State the refresh precondition as a checkable claim, not a warning: a refresh
   of this repository is safe only once `_resolve_check`'s behaviour exists
   upstream, or the fork is deliberately re-applied afterwards.
-- Name the existing guard and its limits. `tests/test_review_coordinator.py`
+- Name the existing guard and its limits. `test_review_coordinator.py`
+  (deleted by PR #180 when the v0.64.32 refresh retired the fork)
   detects the reversion, but only after the refresh has already been applied,
   and only when the suite is run. It is a detector, not a preventer. Record one
   further limit: those tests stub `_run_check` and construct synthetic passed and
@@ -205,7 +206,7 @@ vendored-artifact pattern.
 - Making the install audit detect deliberate forks. Real, distinct, and worth its
   own task with its own justification — provenance recording installed hashes is
   a design choice, not an oversight.
-- Any change to `tests/test_review_coordinator.py`. The five tests are correct
+- Any change to the former `test_review_coordinator.py`. The five tests were correct
   and caught this; weakening them to accommodate a refresh would delete the only
   detector.
 
