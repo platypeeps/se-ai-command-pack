@@ -359,6 +359,50 @@ This is documented here rather than in the recovery reference itself because
 overwritten by the next pack refresh. Fixing it at the source is an upstream
 change to that pack, not a change to this one.
 
+### Merge-boundary evidence after housekeeping deletes the branch: two steps
+
+Local-only record (format per "Vendored-Artifact Ownership And Upstream
+Route" below; task `08-06-work-loop-shipped-sha-after-branch-delete`):
+
+1. **Owning pack**: sd-ai-command-pack.
+2. **File**: `scripts/sd-ai-command-pack-work-loop.py` (`install: "always"`),
+   with the documented call shape in `.agents/skills/sd-work-backlog/SKILL.md`
+   (`install: "always"`) and `.claude/skills/sd-work-backlog/SKILL.md`
+   (no `install` key = `if-anchor-exists`) — all pack-vendored.
+3. **Behaviour**: the one-shot merge-boundary evidence call the skill
+   documents fails after housekeeping deletes the merged branch — the branch
+   flip requires `lastShippedSha` in the same call, but the ancestry check
+   resolves the deleted branch to `None` and falls back to the stale
+   remembered head, so every one-shot ordering is rejected. Same helper:
+   `LEGAL_TRANSITIONS` gives `selected` no route back to `inventory`, so the
+   skill's documented pre-mutation `skip current` has no sanctioned
+   implementation.
+4. **Upstream**: relayed as platypeeps/sd-ai-command-pack#404 (issue, not a
+   pull request). No upstream PR was opened; a PR needs explicit per-PR
+   approval.
+
+Operator procedure that works today, from a green or amber ledger — both
+steps are `evidence` subcommand calls, in this exact order:
+
+```bash
+# 1. same-phase descendant update: head only, nothing else
+bash scripts/sd-ai-command-pack-toolchain.sh run-python -- \
+  scripts/sd-ai-command-pack-work-loop.py evidence --repo . \
+  --run-id <id> --head <final feature commit>
+# 2. verified merge-boundary flip: all five evidence flags in one call
+bash scripts/sd-ai-command-pack-toolchain.sh run-python -- \
+  scripts/sd-ai-command-pack-work-loop.py evidence --repo . \
+  --run-id <id> --branch main --head <merge commit> --base-branch main \
+  --pr-number <N> --last-shipped-sha <final feature commit>
+```
+
+Step 1 refreshes the remembered head so step 2's fallback tip resolves to a
+commit that actually has the shipped SHA as an ancestor. Do not use
+`reconcile` for this: a run already holding a blocked recovery checkpoint
+from rejected `reconcile` calls must satisfy reconcile's
+complete-recovery-evidence requirement instead — partial `evidence` updates
+do not clear a recovery checkpoint.
+
 ---
 
 ## Vendored Pack Lifecycle
