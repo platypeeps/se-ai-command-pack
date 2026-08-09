@@ -193,3 +193,10 @@ absorb them as precedent:
 Member update: 08-07-review-py-local-fork closed overtaken-by-events on
 2026-08-09 (fork retired deliberately by the v0.64.32 refresh; its residual
 upstream concern is #397's related note).
+
+- platypeeps/sd-ai-command-pack#399 — superseded review commands
+  (`sd-review-local`, `sd-review-pr`) carry no supersession signal at the
+  command choice point; catalog's "transitional until 0.62.0" horizon expired
+  thirty-plus releases ago. Filed 2026-08-09 from
+  `08-08-review-command-supersession-signal` (routing decision recorded in
+  that task's `disposition.md`; not an instance-table enrollment).
