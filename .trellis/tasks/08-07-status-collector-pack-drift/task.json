@@ -3,7 +3,7 @@
   "name": "status-collector-pack-drift",
   "title": "Status collector emits no pack-freshness signal in a consumer repository",
   "description": "sd-status local mode cannot resolve a target pack version, so an installed pack behind the source checkout reports packState \"installed\" with a null targetPack and emits no anomaly, follow-up, or recommendation about pack freshness. The top-line SD status verdict is not part of this: render_local derives it from anomalies, working-tree state, and sync state, so it reads healthy or attention independently of the pack. Decide between an upstream fix to the vendored collector and local-only guidance.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
