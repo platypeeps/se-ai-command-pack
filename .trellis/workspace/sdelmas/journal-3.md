@@ -1937,3 +1937,49 @@ Executed 08-08-trellis-backlog-hygiene through the work-loop (iteration 2 of run
 ### Next Steps
 
 - None - task complete
+
+
+## Session 152: Trellis init provenance gate: manifest, checker, and CI wiring (PR #185)
+
+**Date**: 2026-08-09
+**Task**: Trellis init provenance gate: manifest, checker, and CI wiring (PR #185)
+**Branch**: `task/08-08-trellis-init-provenance-gap`
+
+### Summary
+
+Closed the integrity-receipt gap for 54 tracked platform files: added a repo-own trellis-provenance manifest plus generator/checker gate wired into make check, sd-check, and CI; refreshed the vendored pack 0.64.32 to 0.64.33 to fix the review coordinator's local-rebuttal gate; converged PR #185 through Codex planning review, Copilot, and local review to ready.
+
+### Main Changes
+
+- Added .github/scripts/check-trellis-provenance.py: strict-schema manifest loader, coverage/integrity/gitignore-durability check mode, membership-conservative atomic --write with --accept
+- Added .github/trellis-provenance.json covering 54 files with repoOwn and templateReceipted receipts
+- Wired gate into Makefile check chain, .sd-ai-command-pack/check.json, and tests.yml release-payload-gate
+- Added tests/test_trellis_provenance.py (29 unittest cases incl. write-mode atomicity and disjointness preservation)
+- Refreshed vendored sd-ai-command-pack 0.64.32 to 0.64.33 (local-rebuttal gate fix)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `68f6017` | feat(provenance): local integrity gate for unreceipted Trellis platform files |
+| `a5db639` | task(08-08): record acceptance-criteria evidence for provenance gate |
+| `11b4006` | fix(provenance): map filesystem failures to exit 2 and classify broken symlinks |
+| `f8ef505` | chore(pack): refresh sd-ai-command-pack 0.64.32 -> 0.64.33 |
+| `328b7e5` | fix(provenance): refuse non-regular files in write mode, test exception atomicity |
+| `3ddd154` | fix(provenance): preserve manifest disjointness in write mode |
+| `887f185` | fix(provenance): exclude repoOwn paths from refreshed template snapshot |
+
+### Testing
+
+- [OK] .venv/bin/python -m unittest tests.test_trellis_provenance: 29 tests OK
+- [OK] checker clean run: ok (54 hashed, 352 tracked platform files covered)
+- [OK] ruff clean on .github/scripts; review coordinator attempt 8: status ready, 0 outstanding
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
