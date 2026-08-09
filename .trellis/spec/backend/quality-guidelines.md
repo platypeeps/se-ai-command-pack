@@ -414,7 +414,7 @@ Eight tasks independently re-derived the same three facts: which registry owns
 an installed file, what a run may do about a defect in one, and what it writes
 down when it takes the local-only route. This section records all three once.
 Canonical membership list: the table in
-`.trellis/tasks/08-07-vendored-artifact-upstream-route/prd.md`.
+`.trellis/tasks/archive/2026-08/08-07-vendored-artifact-upstream-route/prd.md`.
 
 ### 1. Ownership lookup: given a repository-relative path
 
