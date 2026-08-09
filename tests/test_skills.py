@@ -4175,9 +4175,8 @@ class SkillDocumentationTest(unittest.TestCase):
         )
 
     def test_technical_editor_docs_use_canonical_pass_names(self) -> None:
-        readme = " ".join(
-            (PACK_ROOT / "README.md").read_text(encoding="utf-8").split()
-        )
+        # The README carries only the generated catalog table; the operator
+        # guide is the canonical prose home for the pass names.
         operator = " ".join(
             (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md")
             .read_text(encoding="utf-8")
@@ -4196,7 +4195,6 @@ class SkillDocumentationTest(unittest.TestCase):
             "title and opening",
             "voice consistency",
         ):
-            self.assertIn(phrase, readme)
             self.assertIn(phrase, operator)
 
     def test_brand_voice_docs_state_the_guidelines_sourced_boundary(self) -> None:

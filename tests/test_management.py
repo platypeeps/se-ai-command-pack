@@ -178,6 +178,33 @@ class UpdateCommandTest(TempDirTestCase):
         self.assertNotIn("--dry-run", run_process.call_args_list[1].args[0])
         self.assertIn("--all", run_process.call_args_list[0].args[0])
         self.assertIn("--all", run_process.call_args_list[1].args[0])
+        self.assertNotIn("--verbose", run_process.call_args_list[1].args[0])
+
+    def test_update_forwards_verbose_to_refresh_process(self) -> None:
+        home = self._installed_home()
+        with (
+            mock.patch("installer.management._run_git") as run_git,
+            mock.patch("installer.management.subprocess.run") as run_process,
+        ):
+            run_git.return_value = ""
+            run_process.side_effect = [
+                subprocess.CompletedProcess([], 0),
+                subprocess.CompletedProcess([], 0),
+            ]
+
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                verbose=True,
+            )
+
+        self.assertEqual(result, 0)
+        self.assertIn("--verbose", run_process.call_args_list[0].args[0])
+        self.assertIn("--verbose", run_process.call_args_list[1].args[0])
 
     @mock.patch("installer.management._run_git")
     def test_update_refuses_dirty_checkout(self, run_git: mock.Mock) -> None:

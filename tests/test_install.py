@@ -244,6 +244,7 @@ class ReceiptAwareRefreshTest(TempDirTestCase):
             "--platform",
             "codex",
             "--dry-run",
+            "--verbose",
         )
         for target, prior_content in targets.items():
             self.assertIn(f"updated     {target}", dry_run.stdout)
@@ -257,6 +258,7 @@ class ReceiptAwareRefreshTest(TempDirTestCase):
             "claude",
             "--platform",
             "codex",
+            "--verbose",
         )
 
         refreshed_provenance = read_provenance(home)
@@ -279,6 +281,91 @@ class ModesAndFlagsTest(TempDirTestCase):
         self.assertIn("mode: dry-run", result.stdout)
         self.assertIn("created", result.stdout)
         self.assertEqual(tree_paths(home), set())
+
+    def test_default_summary_is_aggregate(self) -> None:
+        home = make_home(self.base)
+        result = install_ok("--root", str(home))
+        for platform in ("agents", "claude", "codex", "pack"):
+            self.assertRegex(
+                result.stdout,
+                rf"(?m)^{platform}: \d+ files \(created \d+\)$",
+            )
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^install complete: \d+ files across \d+ platforms$",
+        )
+        self.assertNotRegex(result.stdout, r"(?m)^created\s+\.claude/")
+
+    def test_default_summary_aggregates_anchor_skips(self) -> None:
+        home = make_home(self.base, anchors=("claude",))
+        result = install_ok("--root", str(home))
+        self.assertRegex(result.stdout, r"(?m)^claude: \d+ files \(created \d+\)$")
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^skipped codex: \d+ files \(anchor \.codex not present\)$",
+        )
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^install complete: \d+ files across 1 platform$",
+        )
+        self.assertNotRegex(result.stdout, r"(?m)^skipped\s+\.codex/")
+
+    def test_aggregate_backups_line_counts_retired_target_backups(self) -> None:
+        import contextlib
+        import io
+        from pathlib import Path
+
+        from install import _print_aggregate_results
+        from installer.fileops import RemoveResult
+        from installer.status import RemoveStatus
+
+        retired = [
+            RemoveResult(
+                Path(".claude/skills/old/SKILL.md"),
+                RemoveStatus.RETIRED,
+                backup=Path(".claude/skills/old/SKILL.md.bak"),
+            )
+        ]
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            _print_aggregate_results([], retired, [], dry_run=False)
+        self.assertIn("backups: 1 .bak files written", stdout.getvalue())
+        self.assertIn("retired targets: retired 1", stdout.getvalue())
+
+    def test_dry_run_summary_names_dry_run_completion(self) -> None:
+        home = make_home(self.base)
+        result = install_ok("--root", str(home), "--dry-run")
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^dry run complete \(no changes written\): \d+ files",
+        )
+        self.assertEqual(tree_paths(home), set())
+
+    def test_verbose_prints_per_file_lines(self) -> None:
+        home = make_home(self.base)
+        result = install_ok("--root", str(home), "--verbose")
+        self.assertRegex(result.stdout, r"(?m)^created\s+\.claude/")
+        self.assertNotIn("install complete:", result.stdout)
+
+    def test_status_count_formatter_keeps_unknown_statuses_visible(self) -> None:
+        from install import _format_status_counts
+
+        self.assertEqual(
+            _format_status_counts(
+                {"zz-future": 2, "created": 3, "unchanged": 1}
+            ),
+            "created 3, unchanged 1, zz-future 2",
+        )
+
+    def test_status_count_formatter_drops_zero_counts(self) -> None:
+        from install import _format_status_counts
+
+        self.assertEqual(
+            _format_status_counts(
+                {"created": 0, "zz-future": 0, "updated": 2}
+            ),
+            "updated 2",
+        )
 
     def test_version_prints_identity(self) -> None:
         result = install_ok("--version")

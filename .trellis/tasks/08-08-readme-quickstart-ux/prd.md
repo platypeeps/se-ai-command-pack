@@ -61,19 +61,19 @@ Measured 2026-08-08 against README.md at 34,834 bytes:
 
 ## Acceptance Criteria
 
-- [ ] `## Install` content (or a quick-start equivalent) begins within the
+- [x] `## Install` content (or a quick-start equivalent) begins within the
       first ~60 lines of README.md.
-- [ ] `se-help` is named as the post-install entry point in the quick-start
+- [x] `se-help` is named as the post-install entry point in the quick-start
       path, not only in the catalog table.
-- [ ] Exactly one catalog listing exists, or the second is a labelled tier
+- [x] Exactly one catalog listing exists, or the second is a labelled tier
       with stated criteria; verified by reading the file, not the diff.
-- [ ] A minimum Python version appears in the README install section,
+- [x] A minimum Python version appears in the README install section,
       consistent with the CI matrix (3.10 is the lowest tested).
-- [ ] The README explains why `/sd:*` commands appear in a fresh clone.
-- [ ] `python3 install.py --user` on a machine with anchors present ends with
+- [x] The README explains why `/sd:*` commands appear in a fresh clone.
+- [x] `python3 install.py --user` on a machine with anchors present ends with
       an aggregate summary line; the 553-per-file wall is no longer the
       default success output.
-- [ ] `make check` passes, including `generate-skill-surfaces.py --check` and
+- [x] `make check` passes, including `generate-skill-surfaces.py --check` and
       the README wording contract in `tests/test_installer_docs.py`.
 
 ## Out of scope

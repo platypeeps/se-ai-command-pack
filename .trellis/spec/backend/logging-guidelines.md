@@ -17,7 +17,10 @@ contract.
 ## Output Categories
 
 - **Status/summary:** installed version, root, source checkout, selected
-  platforms, and result counts.
+  platforms, and result counts. Since 0.67.2 the install/refresh success path
+  prints an aggregate per-platform summary (`<platform>: <N> files
+  (<status counts>)`) plus one completion line; the per-file status wall is
+  behind `install.py --verbose`. Conflict reporting is unchanged and per-file.
 - **Plan:** dry-run actions such as create, preserve, remove, or backup before
   any applying run.
 - **Warning/preservation detail:** explain why user-modified or unvouched files
