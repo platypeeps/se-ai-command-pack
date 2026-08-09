@@ -282,6 +282,31 @@ class ModesAndFlagsTest(TempDirTestCase):
         self.assertIn("created", result.stdout)
         self.assertEqual(tree_paths(home), set())
 
+    def test_default_summary_is_aggregate(self) -> None:
+        home = make_home(self.base)
+        result = install_ok("--root", str(home))
+        self.assertRegex(result.stdout, r"(?m)^claude: \d+ files \(created \d+\)$")
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^install complete: \d+ files across \d+ platforms$",
+        )
+        self.assertNotRegex(result.stdout, r"(?m)^created\s+\.claude/")
+
+    def test_dry_run_summary_names_dry_run_completion(self) -> None:
+        home = make_home(self.base)
+        result = install_ok("--root", str(home), "--dry-run")
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^dry run complete \(no changes written\): \d+ files",
+        )
+        self.assertEqual(tree_paths(home), set())
+
+    def test_verbose_prints_per_file_lines(self) -> None:
+        home = make_home(self.base)
+        result = install_ok("--root", str(home), "--verbose")
+        self.assertRegex(result.stdout, r"(?m)^created\s+\.claude/")
+        self.assertNotIn("install complete:", result.stdout)
+
     def test_version_prints_identity(self) -> None:
         result = install_ok("--version")
         self.assertEqual(
