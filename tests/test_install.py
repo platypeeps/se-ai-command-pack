@@ -310,6 +310,28 @@ class ModesAndFlagsTest(TempDirTestCase):
         )
         self.assertNotRegex(result.stdout, r"(?m)^skipped\s+\.codex/")
 
+    def test_aggregate_backups_line_counts_retired_target_backups(self) -> None:
+        import contextlib
+        import io
+        from pathlib import Path
+
+        from install import _print_aggregate_results
+        from installer.fileops import RemoveResult
+        from installer.status import RemoveStatus
+
+        retired = [
+            RemoveResult(
+                Path(".claude/skills/old/SKILL.md"),
+                RemoveStatus.RETIRED,
+                backup=Path(".claude/skills/old/SKILL.md.bak"),
+            )
+        ]
+        stdout = io.StringIO()
+        with contextlib.redirect_stdout(stdout):
+            _print_aggregate_results([], retired, [], dry_run=False)
+        self.assertIn("backups: 1 .bak files written", stdout.getvalue())
+        self.assertIn("retired targets: retired 1", stdout.getvalue())
+
     def test_dry_run_summary_names_dry_run_completion(self) -> None:
         home = make_home(self.base)
         result = install_ok("--root", str(home), "--dry-run")

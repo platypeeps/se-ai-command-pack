@@ -325,16 +325,18 @@ def _print_aggregate_results(
         counts[status] = counts.get(status, 0) + 1
         if result.backup:
             backups += 1
+    retired_counts: dict[str, int] = {}
+    for retired in retired_results:
+        status = str(retired.status)
+        retired_counts[status] = retired_counts.get(status, 0) + 1
+        if retired.backup:
+            backups += 1
     for platform in sorted(per_platform):
         counts = per_platform[platform]
         total = sum(counts.values())
         print(f"{platform}: {total} files ({_format_status_counts(counts)})")
     if backups:
         print(f"backups: {backups} .bak files written")
-    retired_counts: dict[str, int] = {}
-    for retired in retired_results:
-        status = str(retired.status)
-        retired_counts[status] = retired_counts.get(status, 0) + 1
     if retired_counts:
         print(f"retired targets: {_format_status_counts(retired_counts)}")
     skipped_groups: dict[tuple[str, str], int] = {}
