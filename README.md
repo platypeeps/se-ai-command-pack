@@ -45,7 +45,9 @@ instead of per-repo adapters, and has no Trellis dependency.
 ## Skills
 
 The catalog is grouped by each skill's primary outcome family. Descriptions
-come directly from canonical skill frontmatter.
+come directly from canonical skill frontmatter: the table below is generated
+by `make generate` and CI fails if it drifts from the skill sources, so it
+never goes stale by hand-editing.
 
 <!-- SE_SKILL_CATALOG:START -->
 ### Understand
