@@ -92,8 +92,28 @@ boundary users exercise.
   between planning and application.
 - Mock Git/subprocess boundaries when asserting lifecycle sequencing, while
   retaining end-to-end CLI tests for parsing, exit codes, and installed files.
-- Run `make check`: generation parity, Ruff, mypy, the unittest suite, and the
-  release payload/version gate must all pass.
+- Run `make check`: generation parity, Ruff, mypy, the unittest suite, the
+  release payload/version gate, and vendored-shell syntax (`bash -n` via
+  `shell-syntax`) must all pass.
+- `sd-check` runs the repo-own gates registered in
+  `.sd-ai-command-pack/check.json` (`repo.test`, `repo.lint`,
+  `repo.shellsyntax`). Registered commands must stay guard-safe: `gate-test`
+  and `gate-lint` are the cache-free variants of `test`/`lint` (no
+  `.coverage`, no `.ruff_cache`) because sd-check's state guard fails any
+  check that writes a guarded path. Do not "simplify" them back to
+  `test`/`lint`, and keep `gate-lint`'s path list on the shared
+  `LINT_PATHS`/`MYPY_PATHS` Makefile variables so it cannot drift from
+  `lint`. `check.json` is repo-authored configuration, not pack payload —
+  `provenance.json` must never list it. CI's `ci-result` lane aggregates via
+  `.github/scripts/aggregate-ci-result.py`: required lanes must be exactly
+  `success` (a skipped required lane fails), `auto-tag-release` is
+  conditional, and an undeclared or missing lane fails closed — a job rename
+  in `tests.yml` must update the script's lane sets. Vendored shell gets
+  syntax checking only; deep lint (shellcheck) is deliberately declined for
+  upstream-owned files. Branch protection stays `strict: false` with zero
+  required approvals — accepted disposition recorded in
+  `08-08-ci-gate-fail-softs/design.md`, revisit if a second maintainer joins
+  or a stale-merge breakage reaches `main`.
 
 ### Prose contracts: prove the pin can fail
 
