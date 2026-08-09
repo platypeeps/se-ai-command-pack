@@ -39,3 +39,13 @@
 - Sessions are appended to journal files
 - New journal file created when current exceeds 2000 lines
 - Use `add_session.py` to record sessions
+## Identity annotation (2026-08-09, 08-08-trellis-backlog-hygiene)
+
+- This directory records the init-day developer identity "Sven Delmas";
+  `.trellis/.developer` has said `name=sdelmas` since the same init day
+  (2026-07-17), and all later sessions live under `../sdelmas/`.
+- The directory is retained, not migrated: the vendored review preflight
+  (`checkTrellisJournalRecords`) enforces per-directory append-only journal
+  history and offers no migration path, so removing this directory would
+  read as deleting historical Session 1. Treat `../sdelmas/` as the sole
+  active workspace; nothing new is appended here.

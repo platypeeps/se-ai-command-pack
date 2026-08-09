@@ -1896,3 +1896,44 @@ Executed Trellis task 08-08-review-command-supersession-signal end to end under 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 151: Backlog hygiene sweep: stale scheduling, write-set order repair, metadata reconciliation
+
+**Date**: 2026-08-09
+**Task**: Backlog hygiene sweep: stale scheduling, write-set order repair, metadata reconciliation
+**Branch**: `task/08-08-trellis-backlog-hygiene`
+
+### Summary
+
+Executed 08-08-trellis-backlog-hygiene through the work-loop (iteration 2 of run 3f82b2fb): scheduled the seven unmarked 07-25-audit-* tasks (orders 110-170), repaired the quality-guidelines.md write-set to seven writers with a band-aware landing sequence documented in the task record.md, replaced stale cluster claims in nine live task.json notes with record pointers, retained the orphan 'Sven Delmas' workspace with an identity annotation after the vendored append-only journal gate refused removal, and updated the workspace Active Developers index. PR #184.
+
+### Main Changes
+
+- Scheduled seven stale 07-25-audit-* tasks with orders 110-170 and dated notes
+- Write-set order repair: trailing-newline 20->25, ast-removal 30->40; band-aware sequence in record.md
+- Nine task.json stale cluster claims replaced with record.md pointers
+- Orphan 'Sven Delmas' workspace retained byte-identical with identity annotation (vendored gate forbids removal)
+- Workspace index Active Developers row updated to sdelmas snapshot
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e8b1488` | chore(trellis): backlog hygiene — schedule stale tasks, repair write-set orders, reconcile cluster metadata |
+| `47c4995` | chore(task): record branch for 08-08-trellis-backlog-hygiene |
+
+### Testing
+
+- [OK] review preflight: 0 failures (journal append-only gate passes after retain-and-annotate reshape)
+- [OK] all 8 PRD acceptance criteria verified by enumerated checks (stale grep, order uniqueness, byte-identical journal diff)
+- [OK] sd-review coordinator: local stage clean (prism), Copilot review clean (0 inline comments)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

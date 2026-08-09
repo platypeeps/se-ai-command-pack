@@ -26,6 +26,7 @@
     "tests/test_skill_review.py",
     ".trellis/audit/report-2026-07-25.md"
   ],
-  "notes": "",
-  "meta": {}
+  "notes": "Scheduled (order 150) by 08-08-trellis-backlog-hygiene on 2026-08-09: deliberately deferred audit follow-up, kept actionable in the autonomous backlog rather than parked or archived; see .trellis/tasks/08-08-trellis-backlog-hygiene/record.md.",
+  "meta": {},
+  "order": 150
 }

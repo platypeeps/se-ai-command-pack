@@ -27,7 +27,12 @@ workspace/
 
 | Developer | Last Active | Sessions | Active File |
 |-----------|-------------|----------|-------------|
-| (none yet) | - | - | - |
+| sdelmas | 2026-08-09 | 150 | journal-3.md |
+
+> Maintained manually (last reconciled 2026-08-09 by
+> 08-08-trellis-backlog-hygiene from `sdelmas/index.md`); the vendored
+> automation that should update this row does not, so expect staleness
+> between manual reconciliations.
 
 ---
 

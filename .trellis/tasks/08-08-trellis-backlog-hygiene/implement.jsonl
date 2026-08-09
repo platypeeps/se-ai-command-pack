@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Sanctions empty/scaffold context files as acceptable resting states and forbids churn transitions; the hygiene sweep must not contradict this."}
-{"file": ".trellis/spec/backend/index.md", "reason": "Spec index; locates task-metadata and ordering guidance the sweep must follow."}
