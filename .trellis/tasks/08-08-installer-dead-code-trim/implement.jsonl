@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Repo-own code conventions; deletions must follow the recorded quality guidance and keep make check green."}
+{"file": ".trellis/spec/backend/index.md", "reason": "Spec index; locates installer-layer guidance relevant to the trim."}

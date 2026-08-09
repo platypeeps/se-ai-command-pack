@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 139
-- **Last Active**: 2026-08-07
+- **Total Sessions**: 140
+- **Last Active**: 2026-08-08
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1451 | Active |
+| `journal-3.md` | ~1490 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 140 | 2026-08-08 | File six improvement-opportunity tasks from deep repo review | `463f39a` | `task/08-08-file-deep-review-tasks` |
 | 139 | 2026-08-07 | File status-collector pack-drift task and reconcile cluster ordering | `b3548eb` | `task/08-07-status-collector-drift-and-ordering` |
 | 138 | 2026-08-07 | Backlog planning hygiene: converge artifacts, then correct their factual errors | `ca7ae39`, `6312547`, `ef940aa` | `task/08-07-backlog-planning-hygiene` |
 | 137 | 2026-08-06 | Record that sd-review cannot dispose of a wrong local finding | `25b6b2e` | `task/08-07-sd-review-local-rebuttal-gap` |
