@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 144
+- **Total Sessions**: 145
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1652 | Active |
+| `journal-3.md` | ~1696 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 145 | 2026-08-09 | Enforce vendored review preflight as required CI lane | `901870f`, `ddfd2d4`, `798531c`, `1aa2bce`, `0816a9b`, `3b81e53` | `task/08-07-ci-no-preflight-lane` |
 | 144 | 2026-08-09 | Close CI aggregate and gate fail-softs | `4afe767`, `cab8e2f`, `bff7fe8`, `a0c74eb` | `task/08-08-ci-gate-fail-softs` |
 | 143 | 2026-08-09 | Close agent-artifacts parent task via two-platform se-research contract check | `2e9ceba`, `915de3b` | `task/08-09-agent-artifacts-closure` |
 | 142 | 2026-08-09 | Design consumer CI review-preflight lane (until=design work-backlog run) | `824d4be` | `task/08-09-ci-no-preflight-lane-design` |

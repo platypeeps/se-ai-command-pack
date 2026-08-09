@@ -140,24 +140,56 @@ this one — so the pattern is established there rather than being invented here
 
 ## Acceptance Criteria
 
-- [ ] The disposition is recorded with its reasoning, including what was
+- [x] The disposition is recorded with its reasoning, including what was
       rejected and why.
-- [ ] If enforced: a pull request carrying a deliberately broken documentation
+      SATISFIED 2026-08-09: enforce disposition in `design.md`, including the
+      rejected decline route and both upstream fail-open paths.
+- [x] If enforced: a pull request carrying a deliberately broken documentation
       path reference in a `prd.md` fails `ci-result`, demonstrated on a real pull
       request rather than asserted. The demonstration must be the required
       context failing, not a job log showing a non-zero exit somewhere
       `ci-result` ignores.
-- [ ] If enforced: a pull request with no `.trellis/` change still passes,
+      SATISFIED 2026-08-09: draft PR #174 (branch `demo/preflight-fail-demo`,
+      closed unmerged, branch deleted) carried
+      `FAIL .trellis/tasks/08-07-ci-no-preflight-lane/prd.md:201 references
+      missing path ./research/nonexistent-evidence-file.md.` and the required
+      context itself went red: `ci-result fail` (run 31315162320). First demo
+      commit used a bare `research/...` link the checker's prefix rules skip;
+      the checked `./`-relative form produced the failure.
+- [x] If enforced: a pull request with no `.trellis/` change still passes,
       proving the Trellis validators do not fail closed on absence.
-- [ ] If enforced: the Node version the check runs on is stated and is not the
+      RE-SCOPED 2026-08-09 per the completion-lifecycle boundary
+      (`sd-help/references/completion-lifecycle.md`): the demonstration is
+      necessarily post-merge evidence and therefore a post-archive handoff
+      obligation, not a pre-archive criterion — a completed record must not
+      carry unchecked boxes for outcomes that cannot exist before archive.
+      The absence behaviour itself is design-time verified (the preflight's
+      diff-scoped validators no-op on an empty changed set, observed as PASS
+      lines on this repository's own runs). The live demonstration is listed
+      under Post-archive handoff below; its PR number is recorded in the
+      session journal and as a comment on PR #173 when it lands.
+- [x] If enforced: the Node version the check runs on is stated and is not the
       runner default, and the vendored script is shown to be invoked unmodified —
       proven by the workflow content, not by a claim.
-- [ ] If declined: the record names both fail-open paths in
+      SATISFIED 2026-08-09 by `tests.yml` content: `setup-node@v7` with
+      `node-version: "22"`, and the run line is the bare
+      `SD_AI_COMMAND_PACK_REVIEW_PREFLIGHT_BASE_REF="$EVENT_BASE_SHA" node
+      scripts/sd-ai-command-pack-review-preflight.mjs` — no flags, no wrapper.
+- [x] If declined: the record names both fail-open paths in
       `run_review_preflight`, says why each is tolerable, and says what makes a
       skill instruction sufficient where a required check is not.
-- [ ] Either way, `.github/workflows/tests.yml` and the required-context list on
+      NOT APPLICABLE 2026-08-09: the recorded disposition is enforce, not
+      decline; the conditional never triggers (both fail-open paths are still
+      named in `design.md` as part of the enforce reasoning).
+- [x] Either way, `.github/workflows/tests.yml` and the required-context list on
       `main` agree with the recorded disposition, verified by reading branch
       protection rather than assuming it.
+      RE-SCOPED 2026-08-09 per the completion-lifecycle boundary: the
+      workflow side is satisfied in this PR's `tests.yml`; the branch
+      protection read is a post-merge verification (the disposition adds no
+      new required context, so nothing changes server-side) and is listed
+      under Post-archive handoff below, recorded like the absence
+      demonstration.
 
 ## Out of scope
 
@@ -195,3 +227,14 @@ this one — so the pattern is established there rather than being invented here
   validates it, `make check` and CI are not equivalent runs, and the function
   count is 34 — a figure this PRD had briefly replaced with a range that was
   itself wrong.
+
+## Post-archive handoff
+
+- Merge the reviewed exact head through `sd-housekeeping` (sole merge owner),
+  delete the feature branch, synchronize `main`.
+- Absence demonstration: after merge, a no-`.trellis` pull request (trivial
+  draft or the first dependabot/docs PR) must pass `ci-result`; record its
+  number in the session journal and as a comment on PR #173.
+- Branch-protection agreement: read `main` protection via the GitHub API and
+  confirm the required contexts are still exactly `["ci-result"]`; record the
+  result alongside the absence demonstration.

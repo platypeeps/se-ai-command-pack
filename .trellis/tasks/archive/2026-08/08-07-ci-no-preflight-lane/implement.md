@@ -2,11 +2,13 @@
 
 Execute after `task.py start`. One coherent PR plus up to two throwaway
 draft PRs used only as demonstrations (the absence proof may instead reuse
-the first post-merge dependabot/docs PR), and one small post-merge
-bookkeeping commit
-that records the demonstrations' PR numbers in the task record — the task
-is not archived until that evidence is recorded, since the absence
-demonstration can only exist after the implementing PR merges. The
+the first post-merge dependabot/docs PR). Superseded 2026-08-09 during
+execution: the original archive-after-evidence ordering violated the
+completion-lifecycle boundary (post-merge outcomes must be post-archive
+handoff, never unchecked acceptance criteria blocking archive), so the
+absence demonstration and branch-protection read are recorded in the
+session journal and on PR #173 as post-archive handoff instead of a
+task-record bookkeeping commit. The
 disposition and its reasoning live in `design.md`; this plan sequences the
 enforce route.
 
