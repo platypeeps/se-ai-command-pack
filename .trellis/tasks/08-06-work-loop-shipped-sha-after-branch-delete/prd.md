@@ -74,21 +74,36 @@ section (below, filled at implementation) and the guidance section itself:
   must do, and are verifiable only upstream. The locally verifiable outcomes
   are in "Local acceptance criteria" below.
 
+Filled four-field record (2026-08-09):
+
+1. **Owning pack**: sd-ai-command-pack.
+2. **File**: `scripts/sd-ai-command-pack-work-loop.py` (`install: "always"`);
+   documented call shape in `.agents/skills/sd-work-backlog/SKILL.md`
+   (`install: "always"`) and `.claude/skills/sd-work-backlog/SKILL.md`
+   (default mode, `if-anchor-exists`).
+3. **Behaviour**: one-shot merge-boundary evidence rejected after
+   housekeeping deletes the merged branch (stale fallback tip); no legal
+   `selected -> inventory` transition for the documented pre-mutation skip.
+4. **Upstream**: relayed as platypeeps/sd-ai-command-pack#404 (issue). No
+   upstream PR was opened; a PR needs explicit per-PR approval. The relay
+   batch also filed platypeeps/sd-ai-command-pack#405 for the 08-07 relay
+   log's unfiled sd-review stale-disposition candidate.
+
 ## Local acceptance criteria
 
-- [ ] The filled four-field local-only record for this defect exists in
+- [x] The filled four-field local-only record for this defect exists in
       **both** required places — this PRD's Disposition section and
       `.trellis/spec/backend/quality-guidelines.md` — following the recorded
       format, and the guidance copy includes the two-step evidence workaround
       as the operator procedure, naming the exact subcommand (`evidence`).
-- [ ] An upstream relay issue exists on `platypeeps/sd-ai-command-pack`
+- [x] An upstream relay issue exists on `platypeeps/sd-ai-command-pack`
       carrying both gaps (merge-boundary evidence and the missing
       pre-mutation skip) with the reproduction evidence, and its number is
       recorded in this PRD.
-- [ ] The unfiled sd-review stale-disposition candidate from the 08-07 relay
+- [x] The unfiled sd-review stale-disposition candidate from the 08-07 relay
       log ("route with the next relay batch") is filed in the same relay
       batch, and its issue number is recorded here.
-- [ ] No vendored file is modified.
+- [x] No vendored file is modified.
 
 ## Workaround used
 
