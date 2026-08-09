@@ -1528,3 +1528,43 @@ sd-work-backlog until=design selector=needs-design run 824bb89eac2c430d9c82e346c
 ### Next Steps
 
 - None - task complete
+
+
+## Session 142: Design consumer CI review-preflight lane (until=design work-backlog run)
+
+**Date**: 2026-08-09
+**Task**: Design consumer CI review-preflight lane (until=design work-backlog run)
+**Branch**: `task/08-09-ci-no-preflight-lane-design`
+
+### Summary
+
+Ran sd-work-backlog until=design selector=needs-design (run e136224089dc43c08b73e9d2a7243a02): selected 08-07-ci-no-preflight-lane, authored design.md and implement.md recording the enforce disposition (new review-preflight CI job running the vendored preflight unmodified on pinned Node 22 with explicit event base and fail-closed guards, joining ci-result), and reconciled 08-08-ci-gate-fail-softs so a landed review-preflight lane joins REQUIRED_LANES from aggregator step 1. Three-round adversarial review (host + Codex lanes), ledger C-15..C-22 resolved. Published as PR #170 via sd-ship.
+
+### Main Changes
+
+- Created .trellis/tasks/08-07-ci-no-preflight-lane/design.md: enforce disposition, review-preflight job spec with exact-head checkout, fail-closed base guards, fork/initial-ref risk notes, post-merge absence-demonstration choreography
+- Created .trellis/tasks/08-07-ci-no-preflight-lane/implement.md: 3-step execution, 5-step validation with fail/absence demos, post-merge bookkeeping commit gate before archive
+- Updated 08-07 prd.md Notes: PRD-only framing superseded by needs-design planning run
+- Reconciled 08-08-ci-gate-fail-softs design.md/implement.md: review-preflight classified into REQUIRED_LANES from step 1, included in synthetic test payloads, ci-result needs list extended not replaced
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `824d4be` | chore(task): design consumer CI review-preflight lane and reconcile gate plan |
+
+### Testing
+
+- [OK] python3 ./.trellis/scripts/task.py validate .trellis/tasks/08-07-ci-no-preflight-lane — all validations passed
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs — 0 failures, 1 warning (two task dirs, one coherent outcome)
+- [OK] Codex adversarial round 3 — zero blocking findings; residual wording fixes grep-verified
+- [OK] sd-review scope=pr — status clean, prism clean, receipt 51ad3aff469931df
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

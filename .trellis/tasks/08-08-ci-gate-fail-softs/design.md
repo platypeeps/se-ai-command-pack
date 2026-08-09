@@ -49,6 +49,13 @@ any lane. Policy:
   `NEEDS_JSON` all exit nonzero with a diagnostic naming the lane.
 - Exit 0 only when every declared lane is accounted for and acceptable.
 
+Cross-task reconciliation with `08-07-ci-no-preflight-lane`: if its
+`review-preflight` job has landed by the time this is implemented, that lane
+is **required** — it runs unconditionally, so it joins `REQUIRED_LANES`
+(never the conditional set), every synthetic test payload includes it, and
+`review-preflight: skipped` must exit nonzero. The lane sets above are the
+floor at design time, not a frozen ceiling.
+
 This satisfies the PRD's dynamic-proof acceptance criterion via the
 "aggregation logic extracted into a form exercised by a test" route: a new
 unit test module feeds the script synthetic `needs` payloads — including a

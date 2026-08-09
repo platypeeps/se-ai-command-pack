@@ -10,7 +10,11 @@ the item 3 acceptance and the item 4 shellcheck declination) are recorded in
    reads `NEEDS_JSON` env, declares
    `REQUIRED_LANES = {"unittest", "lint", "release-payload-gate"}` and
    `CONDITIONAL_LANES = {"auto-tag-release"}`, applies the policy from
-   design.md ("Data And Command Contracts"), exits 0/1/2 accordingly. Match
+   design.md ("Data And Command Contracts"), exits 0/1/2 accordingly.
+   Perform design.md's cross-task reconciliation **here, in this step**: if
+   `review-preflight` has landed by now, it joins `REQUIRED_LANES` in this
+   initial version of the script — not later — so the tests added in step 2
+   pass against it and steps 1–2 stay independently commit-able. Match
    the style of the existing `.github/scripts/*.py`, keep it stdlib-only,
    and make it importable (`main()` guarded by `if __name__ == "__main__"`)
    so the test can exercise it in-process.
@@ -19,13 +23,21 @@ the item 3 acceptance and the item 4 shellcheck declination) are recorded in
    `unittest: skipped` → nonzero (the PRD's required dynamic proof);
    `auto-tag-release: skipped` → 0; `auto-tag-release: failure` → nonzero;
    `lint: cancelled` → nonzero; undeclared extra lane → nonzero; declared
-   lane absent → nonzero; malformed JSON → nonzero. Import the hyphenated
+   lane absent → nonzero; malformed JSON → nonzero. If `review-preflight`
+   has landed by now (step 1's reconciliation), include it in every payload
+   as a required lane and add `review-preflight: skipped` → nonzero. Import the hyphenated
    script via `importlib.util.spec_from_file_location`, following the
    existing precedent in `tests/test_release_gate.py:26-30` exactly
    (including its subprocess-coverage plumbing where applicable).
 3. **Wire the workflow.** In `.github/workflows/tests.yml`:
-   - `ci-result.needs` becomes `[unittest, lint, release-payload-gate,
-     auto-tag-release]`; keep `if: always()`.
+   - `ci-result.needs`: add `auto-tag-release` to the existing list —
+     extend, do not replace, so any lane added since this plan was written
+     (e.g. `review-preflight` from `08-07-ci-no-preflight-lane`) survives.
+     Every lane in the final `needs` list must be declared in the script's
+     lane sets, with the classification design.md's reconciliation note
+     fixes and step 1 already applied: `review-preflight`, if present, is
+     unconditional and lives in `REQUIRED_LANES`, never
+     `CONDITIONAL_LANES`. Keep `if: always()`.
    - Add a checkout step to the `ci-result` job (it currently has none —
      fresh workspace, no repository): `uses: actions/checkout@v7` with
      `persist-credentials: false`, matching the other read-only jobs
