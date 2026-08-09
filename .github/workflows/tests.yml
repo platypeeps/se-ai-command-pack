@@ -61,7 +61,7 @@ jobs:
       - run: python -m ruff check install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
       - run: python -m mypy installer install.py templates/skills/se-review-skills/scripts/skill_review.py
       - name: Shell syntax check for vendored scripts
-        run: for f in scripts/*.sh; do bash -n "$f" || exit 1; done
+        run: make shell-syntax
 
   release-payload-gate:
     if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref == 'refs/heads/main')

@@ -26,6 +26,7 @@ def load_aggregate_module() -> ModuleType:
     spec = importlib.util.spec_from_file_location(
         "aggregate_ci_result", AGGREGATE_SCRIPT
     )
+    assert spec is not None
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
@@ -103,18 +104,19 @@ class EvaluateTests(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertTrue(any("missing from needs" in m for m in messages))
 
-    def test_lane_entry_without_result_fails(self) -> None:
+    def test_lane_entry_without_result_is_malformed(self) -> None:
         needs = payload()
         needs["unittest"] = {}
-        code, _ = aggregate.evaluate(needs)
-        self.assertEqual(code, 1)
+        code, messages = aggregate.evaluate(needs)
+        self.assertEqual(code, 2)
+        self.assertIn("malformed lane entries: unittest", messages)
 
-    def test_lane_entry_not_a_dict_fails(self) -> None:
+    def test_lane_entry_not_a_dict_is_malformed(self) -> None:
         needs = payload()
         needs["unittest"] = "success"
         code, messages = aggregate.evaluate(needs)
-        self.assertEqual(code, 1)
-        self.assertIn("failed lanes: unittest", messages)
+        self.assertEqual(code, 2)
+        self.assertIn("malformed lane entries: unittest", messages)
 
     def test_unexpected_result_value_fails(self) -> None:
         code, messages = aggregate.evaluate(payload(unittest="neutral"))

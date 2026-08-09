@@ -36,15 +36,23 @@ def evaluate(needs: dict[str, dict[str, object]]) -> tuple[int, list[str]]:
         return 2, messages
 
     failed: list[str] = []
+    malformed: list[str] = []
     for lane in sorted(needs):
         entry = needs[lane]
         result = entry.get("result") if isinstance(entry, dict) else None
+        if not isinstance(result, str):
+            messages.append(f"{lane}: malformed entry (no string result)")
+            malformed.append(lane)
+            continue
         acceptable = ("success",) if lane in REQUIRED_LANES else ("success", "skipped")
         verdict = "ok" if result in acceptable else "FAIL"
         messages.append(f"{lane}: {result} [{verdict}]")
         if verdict == "FAIL":
             failed.append(lane)
 
+    if malformed:
+        messages.append("malformed lane entries: " + ", ".join(malformed))
+        return 2, messages
     if failed:
         messages.append("failed lanes: " + ", ".join(failed))
         return 1, messages
