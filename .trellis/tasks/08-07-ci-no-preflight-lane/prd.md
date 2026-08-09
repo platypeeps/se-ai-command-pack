@@ -198,4 +198,4 @@ this one — so the pattern is established there rather than being invented here
 
 ## Demo note
 
-Evidence recorded in [`research/nonexistent-evidence-file.md`](research/nonexistent-evidence-file.md).
+Evidence recorded in [`./research/nonexistent-evidence-file.md`](./research/nonexistent-evidence-file.md).
