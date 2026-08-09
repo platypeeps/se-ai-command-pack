@@ -99,8 +99,37 @@ jobs:
           # On push the base is a ref (last release tag or HEAD), not a SHA.
           BASE_REF: ${{ steps.gate-base.outputs.base }}
 
+  review-preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - name: Run vendored review preflight
+        env:
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          EVENT_NAME: ${{ github.event_name }}
+          AFTER_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          if ! git rev-parse --verify --quiet "${EVENT_BASE_SHA}^{commit}" >/dev/null; then
+            echo "error: event base ${EVENT_BASE_SHA:-<empty>} does not resolve; failing closed." >&2
+            exit 1
+          fi
+          if [ "$EVENT_NAME" = "push" ] && ! git merge-base --is-ancestor "$EVENT_BASE_SHA" "$AFTER_SHA"; then
+            echo "error: push base is not an ancestor of the head (force push?); failing closed." >&2
+            exit 1
+          fi
+          SD_AI_COMMAND_PACK_REVIEW_PREFLIGHT_BASE_REF="$EVENT_BASE_SHA" \
+            node scripts/sd-ai-command-pack-review-preflight.mjs
+
   ci-result:
-    needs: [unittest, lint, release-payload-gate, auto-tag-release]
+    needs: [unittest, lint, release-payload-gate, auto-tag-release, review-preflight]
     if: always()
     runs-on: ubuntu-latest
     steps:
