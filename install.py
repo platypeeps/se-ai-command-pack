@@ -298,7 +298,13 @@ _SUMMARY_STATUS_ORDER = (
 
 def _format_status_counts(counts: dict[str, int]) -> str:
     ordered = [status for status in _SUMMARY_STATUS_ORDER if counts.get(status)]
-    ordered.extend(sorted(status for status in counts if status not in ordered))
+    ordered.extend(
+        sorted(
+            status
+            for status in counts
+            if counts[status] and status not in ordered
+        )
+    )
     return ", ".join(f"{status} {counts[status]}" for status in ordered)
 
 

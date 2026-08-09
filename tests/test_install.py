@@ -335,6 +335,16 @@ class ModesAndFlagsTest(TempDirTestCase):
             "created 3, unchanged 1, zz-future 2",
         )
 
+    def test_status_count_formatter_drops_zero_counts(self) -> None:
+        from install import _format_status_counts
+
+        self.assertEqual(
+            _format_status_counts(
+                {"created": 0, "zz-future": 0, "updated": 2}
+            ),
+            "updated 2",
+        )
+
     def test_version_prints_identity(self) -> None:
         result = install_ok("--version")
         self.assertEqual(
