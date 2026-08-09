@@ -92,9 +92,9 @@ Order inside `_source_checkout` (tier-1):
      dangling `gitdir: /elsewhere/.git`). The file is read through
      `dir_fd`; it must match `gitdir: <path>` on its first line; the
      target (resolved against the pinned directory when relative) must
-     exist and pass the same current-user-ownership check. A malformed,
-     dangling, or foreign-owned `gitdir` target refuses with a new
-     explicit error
+     exist, be a directory, and pass the same current-user-ownership
+     check. A malformed, dangling, non-directory, or foreign-owned
+     `gitdir` target refuses with a new explicit error
      (`error: recorded source checkout .git file points to an unverified
      gitdir: <target>`), and no git/exec runs. No recursion into
      `commondir` or nested pointers — one hop, validated, is the bounded

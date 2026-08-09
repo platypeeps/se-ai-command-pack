@@ -590,6 +590,26 @@ class UpdateSourceTrustTest(UpdateFixtureMixin, TempDirTestCase):
                     confirm_source=True,
                 )
 
+    def test_refuses_non_directory_gitdir_target(self) -> None:
+        """A gitdir target that exists but is not a directory is refused."""
+        home = self._installed_home()
+        plain = self.base / "plain-file-target"
+        plain.write_text("not a git directory\n", encoding="utf-8")
+        src = self._make_foreign_checkout(git=False, git_as_file=True, gitdir=plain)
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with no_git, no_exec:
+            with self.assertRaisesRegex(SystemExit, "unverified gitdir"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
     def test_refuses_malformed_gitdir_pointer(self) -> None:
         home = self._installed_home()
         src = self._make_foreign_checkout(git=False)
@@ -878,7 +898,8 @@ class SourcePinningTest(UpdateFixtureMixin, TempDirTestCase):
         (src / "manifest.json").write_text(
             json.dumps({"name": PACK_NAME, "version": "0.0.0"}), encoding="utf-8"
         )
-        self._git("init", "-q", "-b", "main", cwd=src)
+        self._git("init", "-q", cwd=src)
+        self._git("checkout", "-q", "-b", "main", cwd=src)
         self._git("add", "-A", cwd=src)
         self._git("commit", "-q", "-m", "initial", cwd=src)
         if upstream:

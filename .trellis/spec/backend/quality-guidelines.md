@@ -1391,7 +1391,7 @@ are positional commands; do not add parallel action flags such as `--remove`.
   single-threaded CLI — do not reuse the pinned-child helper from threaded
   code. A symlinked `.git` or `install.py` is refused (never followed), and
   a `.git` worktree/submodule pointer file is accepted only after a one-hop
-  `gitdir:` target validation (exists + current-user-owned, bounded read,
+  `gitdir:` target validation (exists + is a directory + current-user-owned, bounded read,
   no `commondir` recursion). The residual window is entries *inside* the
   pinned, owned checkout; the external-path window is closed on tier 1.
 - After pulling, `update` launches a fresh Python process, runs a dry-run, and
@@ -1411,7 +1411,7 @@ are positional commands; do not add parallel action flags such as `--remove`.
 | Status receipts are absent or invalid | Report not installed and return 1. |
 | Recorded source checkout is missing or is the wrong pack | Exit before Git or filesystem writes. |
 | Recorded source is not a git repository, or (on POSIX) not owned by the current user | Refuse before any Git or exec. |
-| `.git` or `install.py` is a symlink, or a `.git` file's `gitdir` target is missing/foreign-owned | Refuse before any Git or exec; the opened directory fd is closed on every refusal. |
+| `.git` or `install.py` is a symlink, or a `.git` file's `gitdir` target is missing/non-directory/foreign-owned | Refuse before any Git or exec; the opened directory fd is closed on every refusal. |
 | Recorded source differs from the running checkout and is not confirmed | Refuse before any Git or exec (or prompt when interactive); `--confirm-source` authorizes a relocated checkout. |
 | Source checkout is dirty | Exit before fetch, pull, or refresh. |
 | Fast-forward pull fails | Exit with the Git failure; never merge or rebase. |

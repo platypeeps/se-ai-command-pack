@@ -230,8 +230,9 @@ def _verify_gitdir_pointer(source_root: Path, dir_fd: int | None) -> None:
     """Validate a ``.git`` file's ``gitdir:`` target, one hop, no recursion.
 
     A worktree/submodule pointer redirects the repository outside the checked
-    directory, so the target must exist and be current-user-owned before any
-    git runs. ``commondir`` and nested pointers are deliberately not followed.
+    directory, so the target must exist, be a directory, and be
+    current-user-owned before any git runs. ``commondir`` and nested pointers
+    are deliberately not followed.
     """
     raw = _read_bytes_at(source_root, ".git", dir_fd, GITDIR_READ_LIMIT) or b""
     lines = raw.decode("utf-8", errors="replace").splitlines()
@@ -257,7 +258,7 @@ def _verify_gitdir_pointer(source_root: Path, dir_fd: int | None) -> None:
         )
     except OSError:
         raise SystemExit(unverified) from None
-    if not _uid_owned_by_current_user(info.st_uid):
+    if not stat.S_ISDIR(info.st_mode) or not _uid_owned_by_current_user(info.st_uid):
         raise SystemExit(unverified)
 
 
