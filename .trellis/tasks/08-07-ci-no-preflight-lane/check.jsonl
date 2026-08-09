@@ -1,1 +1,1 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": "tests/test_aggregate_ci_result.py", "reason": "Synthetic payloads must include review-preflight as required, with the skipped-fails case proving the lane cannot pass silently."}

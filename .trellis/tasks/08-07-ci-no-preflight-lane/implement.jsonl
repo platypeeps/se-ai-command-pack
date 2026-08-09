@@ -1,1 +1,2 @@
-{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".github/workflows/tests.yml", "reason": "Single workflow gaining the review-preflight job and the extended ci-result needs list; design.md fixes the exact job shape (exact-head checkout, Node 22 pin, fail-closed base guards, unmodified script invocation)."}
+{"file": ".github/scripts/aggregate-ci-result.py", "reason": "Aggregator landed by 08-08-ci-gate-fail-softs; reconciliation adds review-preflight to REQUIRED_LANES so a skipped lane fails closed."}
