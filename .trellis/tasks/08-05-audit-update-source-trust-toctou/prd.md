@@ -40,8 +40,8 @@ and treats any existing `.git` entry as proof of a git repository.
   `test_refuses_symlinked_git_entry` with `_fail_if_git_or_exec` spies.
 - [x] Test: existing A-017 refusal and same-checkout/confirm paths still pass
   unchanged — pre-existing `UpdateSourceTrustTest` cases untouched;
-  `unittest discover -p test_management.py`: 40 tests OK; full
-  `make check`: 639 tests OK (skipped=1, pre-existing A-025 skip).
+  `unittest discover -p test_management.py`: 41 tests OK; full
+  `make check`: 640 tests OK (skipped=1, pre-existing A-025 skip).
 - [x] Changelog + version bump discipline applied (installer is consumer
   contract) — 0.67.2 → 0.68.0, dated CHANGELOG entry, release payload gate
   green.
@@ -55,6 +55,9 @@ and treats any existing `.git` entry as proof of a git repository.
 - Check-pass observations, accepted (theoretical, below fix threshold): a
   failing `os.fdopen` on the dir_fd-relative manifest read would leak the
   raw fd until the process-ending refusal (`management.py` ~:184); the
-  unverified-gitdir refusal embeds the bounded, replace-decoded first line
-  of the attacker-supplied `.git` file (terminal-escape surface consistent
-  with existing path-embedding message style).
+  unverified-gitdir refusal embeds the bounded, replace-decoded, repr-quoted
+  first line of the attacker-supplied `.git` file (consistent with existing
+  path-embedding message style).
+- PR #186 Copilot review: `gitdir` target validation tightened to require a
+  directory (`test_refuses_non_directory_gitdir_target`); test fixture git
+  init made portable (`git init` + `git checkout -b main`).
