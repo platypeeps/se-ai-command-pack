@@ -1697,3 +1697,41 @@ Implemented the enforce disposition for 08-07-ci-no-preflight-lane: new review-p
 ### Next Steps
 
 - None - task complete
+
+
+## Session 146: Record ship-loop gate ordering conventions
+
+**Date**: 2026-08-09
+**Task**: Record ship-loop gate ordering conventions
+**Branch**: `task/08-06-ship-gate-ordering-docs`
+
+### Summary
+
+Documented the two recurring mid-ship sd-check blockers as Review And Retry Conventions in quality-guidelines.md: pack.review-scope (three trigger categories enumerated from the check's own predicates, three accepted headings verbatim, the late-arriving journal/index consequence, and both prepare-tooling-body gaps — mixed-diff exit 3 and the custom-body policy boundary) and knowledge.obsidian-kb (staleness sources including task.py archive, exact remediation command, refresh-after-last-documentation-mutation rule). PRD-only task; no behavior change. Shipped as PR #176.
+
+### Main Changes
+
+- quality-guidelines.md: two new Review And Retry Conventions subsections (pack.review-scope, knowledge.obsidian-kb); section intro count updated
+- prd.md: all six ACs ticked with evidence; task.json branch recorded
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ae74816` | docs(spec): record ship-loop gate ordering for pack.review-scope and knowledge.obsidian-kb |
+| `375e02e` | chore(task): record branch for completion lifecycle |
+
+### Testing
+
+- [OK] documented lists verified against sd-ai-command-pack-review-scope.sh predicates
+- [OK] make check green; review preflight 0 failures, 0 warnings
+- [OK] sd-review scope=pr attempt 1 — status ready, head ae74816
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

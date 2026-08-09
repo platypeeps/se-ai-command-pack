@@ -166,7 +166,78 @@ deleting the contract breaks it, short enough that rewording does not.
 
 ## Review And Retry Conventions
 
-Three ship-loop conventions that cost rounds when a run rediscovers them.
+Five ship-loop conventions that cost rounds when a run rediscovers them.
+
+### The `pack.review-scope` gate: three categories, three headings, late arrival
+
+The check lives in `scripts/sd-ai-command-pack-review-scope.sh` (vendored,
+`install: "always"` — re-locate by symbol, not line, after any pack refresh).
+It fails when the branch diff contains a scoped file and the PR body lacks a
+recognized scope heading. Two distinct lists matter, and conflating them is
+the recurring mistake:
+
+**Categories** — what makes the section *required*, classified in `main`'s
+dispatch, one predicate each:
+
+1. Copied/generated Trellis or sd-ai-command-pack files
+   (`is_copied_review_scope_path`: any exact installed pack target via
+   `is_pack_target_path`, or a Trellis runtime path via
+   `is_trellis_runtime_path` — which excludes `.trellis/tasks/**` task
+   artifacts).
+2. Known repository-map files (`is_repository_map_scope_path`: exactly
+   `docs/repomix-map.md` and `scripts/update_repomix`).
+3. Trellis workspace journal/index files (`is_trellis_journal_scope_path`:
+   `.trellis/workspace/*/journal-*.md` and `.trellis/workspace/*/index.md`).
+
+**Headings** — what the PR body may *say*, matched case-insensitively by
+`github_pr_body_mentions_scope` (leading blockquote/heading/list markers and a
+trailing colon are tolerated): `Tooling/generated scope`,
+`Generated/tooling scope`, or `Copied/generated scope`.
+
+The third category arrives late by construction: finalization commits the
+session journal and workspace index, so a body that correctly needed no
+section at PR-creation time fails `pack.review-scope` on the successor-head
+re-entry — after the body was authored and judged complete. Write the section
+before that re-entry, or proactively at creation; the diff that decides the
+requirement does not exist yet when the PR is opened (PR #162 passed with a
+proactive section, PR #163 burned two rounds without one).
+
+`--prepare-tooling-body` (`scripts/sd-ai-command-pack-pr-body-scope.py`) does
+not close this gap, for two different reasons that share one symptom:
+
+- **Mixed diff**: the preparer appends the section only when *every* changed
+  path matches a tooling pattern. A diff mixing tooling with authored prose
+  (e.g. `.trellis/spec/**`, which matches no tooling pattern) exits `3` and
+  writes nothing. Exit `3` is a non-error and its `info:` line is descriptive,
+  not directive — the operator must then hand-author the section (observed on
+  PR #156 and again on PR #172).
+- **Custom-bodied PR**: `sd-create-pr` forbids running automatic preparation
+  against a user-provided body (byte-for-byte preservation), so for such PRs
+  the preparer is deliberately never consulted — even when the diff is
+  all-tooling and the preparer would have matched every path. Blaming the
+  diff shape here points at the wrong remedy: hand-authoring the section is
+  the standing requirement for custom-bodied PRs.
+
+### The Obsidian KB refresh point: after the last documentation-shaped mutation
+
+`knowledge.obsidian-kb` compares the gitignored local `.obsidian-kb` copies
+against the current tracked documentation set. It goes stale — and blocks the
+typed `sd-check` mid-ship — after *any* documentation-affecting mutation that
+lands later than the last refresh, which in practice means it fires twice per
+ship if refreshed only once: documentation edits made after `sd-update-spec`
+already ran, and the `task.py archive` commit that moves the task directory
+under `.trellis/tasks/archive/` (task `start` metadata writes count too).
+
+Remediation is one idempotent command that touches only gitignored paths and
+needs no commit:
+
+```bash
+python3 scripts/sd-ai-command-pack-update-spec-kb.py --if-present
+```
+
+The ordering rule: refresh after the **last** documentation-affecting mutation
+of the branch — including the archive commit — not merely once during
+`sd-update-spec`.
 
 ### The `_example` scaffold row is sanctioned, not leftover
 

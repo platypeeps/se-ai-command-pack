@@ -149,9 +149,14 @@ location.
 
 ## Acceptance Criteria
 
-- [ ] `.trellis/spec/backend/quality-guidelines.md` names all three accepted
+- [x] `.trellis/spec/backend/quality-guidelines.md` names all three accepted
       scope headings and states which file families trigger the requirement.
-- [ ] The same document names all three *scope categories* the check recognizes
+      SATISFIED 2026-08-09: the new `pack.review-scope` convention in
+      `## Review And Retry Conventions` lists `Tooling/generated scope`,
+      `Generated/tooling scope`, `Copied/generated scope` (verbatim from
+      `github_pr_body_mentions_scope`) and the triggering file families per
+      category.
+- [x] The same document names all three *scope categories* the check recognizes
       — a distinct set from the three accepted *headings* in the criterion above;
       the headings are what the PR body may say, the categories are what makes it
       required — including Trellis workspace journal/index files, and states that
@@ -159,19 +164,37 @@ location.
       present at PR creation. Verified by comparing the documented list against
       the predicates in `sd-ai-command-pack-review-scope.sh`, not against the
       categories any one PR triggered.
-- [ ] The same document states why `--prepare-tooling-body` does not cover the
+      SATISFIED 2026-08-09: the three categories are enumerated one predicate
+      each (`is_copied_review_scope_path`, `is_repository_map_scope_path`,
+      `is_trellis_journal_scope_path`), verified against the `main` dispatch in
+      `sd-ai-command-pack-review-scope.sh`, with the journal/index category
+      stated as added by finalization after the body was authored.
+- [x] The same document states why `--prepare-tooling-body` does not cover the
       journal/index case for a custom-bodied PR — because `sd-create-pr` will not
       run it against a user-provided body, not because the diff fails the
       tooling-only test — and therefore that authoring the section by hand is the
       standing requirement for such PRs. A statement that blames the diff shape
       is wrong and does not satisfy this criterion.
-- [ ] The same document states that `task.py archive` invalidates the KB and
+      SATISFIED 2026-08-09: the custom-bodied-PR bullet states the preparer is
+      deliberately never consulted (`sd-create-pr` byte-for-byte body
+      preservation) even when every path would match, and that hand-authoring
+      is the standing requirement; it explicitly warns that blaming the diff
+      shape points at the wrong remedy.
+- [x] The same document states that `task.py archive` invalidates the KB and
       names the refresh command.
-- [ ] The same document states the mixed-scope limitation of
+      SATISFIED 2026-08-09: the KB convention names the archive commit as a
+      staleness source and quotes the exact refresh command
+      (`update-spec-kb.py --if-present`).
+- [x] The same document states the mixed-scope limitation of
       `--prepare-tooling-body`, including that exit `3` is a non-error that
       requires a hand-authored section.
-- [ ] No behavior change: no new or modified check, generator rule, or test
+      SATISFIED 2026-08-09: the mixed-diff bullet states exit `3` is a
+      non-error that writes nothing and requires a hand-authored section
+      (observed PR #156, PR #172).
+- [x] No behavior change: no new or modified check, generator rule, or test
       beyond what documenting these facts requires.
+      SATISFIED 2026-08-09: the diff touches only
+      `quality-guidelines.md` and this task's artifacts.
 
 ## Out of scope
 
