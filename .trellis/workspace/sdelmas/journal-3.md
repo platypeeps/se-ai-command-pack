@@ -1735,3 +1735,43 @@ Documented the two recurring mid-ship sd-check blockers as Review And Retry Conv
 ### Next Steps
 
 - None - task complete
+
+
+## Session 147: Record sd-status pack-freshness silence guidance
+
+**Date**: 2026-08-09
+**Task**: Record sd-status pack-freshness silence guidance
+**Branch**: `task/08-07-status-collector-pack-drift`
+
+### Summary
+
+Task 08-07-status-collector-pack-drift, local-only disposition. New quality-guidelines scenario documents that sd-status local mode cannot resolve a target pack version in a consumer repository: packState 'installed' means unknown rather than current, the drift gates (collect_follow_ups, next_steps) are unreachable without a target, and the read-only by-hand procedure resolves the fleet profile via fleet_profile_path. All three candidate target sources accounted for (profile accepted; bare path convention and GitHub release list rejected). Defect shape reproduced live: installed 0.64.3 strictly behind profile-resolved 0.64.32 with all freshness fields silent, exit 0. Shipped as PR #177.
+
+### Main Changes
+
+- quality-guidelines.md: new Scenario 'SD Status Pack-Freshness Signal' (disposition, load-bearing citations by symbol pinned to 0.64.3, packState semantics, operator procedure, source accounting, recorded reproduction)
+- prd.md: all acceptance criteria ticked with evidence; task.json branch recorded
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `132676a` | docs(spec): record sd-status pack-freshness silence and by-hand drift check |
+| `f0c44bd` | chore(task): record branch for completion lifecycle |
+| `94ef24a` | chore(task): tick citation-symbol acceptance criterion |
+
+### Testing
+
+- [OK] every cited symbol re-located in installed collector 0.64.3 before writing
+- [OK] live reproduction: sd-status --no-network exit 0, packState installed, targetPack null, no pack anomaly/follow-up
+- [OK] changed paths vs .sd-ai-command-pack/manifest.json targets: zero intersection
+- [OK] make check green; review preflight 0 failures; sd-review attempt 2 status ready at 132676a
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

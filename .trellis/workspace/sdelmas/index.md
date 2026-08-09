@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 146
+- **Total Sessions**: 147
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1735 | Active |
+| `journal-3.md` | ~1774 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 147 | 2026-08-09 | Record sd-status pack-freshness silence guidance | `132676a`, `f0c44bd`, `94ef24a` | `task/08-07-status-collector-pack-drift` |
 | 146 | 2026-08-09 | Record ship-loop gate ordering conventions | `ae74816`, `375e02e` | `task/08-06-ship-gate-ordering-docs` |
 | 145 | 2026-08-09 | Enforce vendored review preflight as required CI lane | `901870f`, `ddfd2d4`, `798531c`, `1aa2bce`, `0816a9b`, `3b81e53` | `task/08-07-ci-no-preflight-lane` |
 | 144 | 2026-08-09 | Close CI aggregate and gate fail-softs | `4afe767`, `cab8e2f`, `bff7fe8`, `a0c74eb` | `task/08-08-ci-gate-fail-softs` |
