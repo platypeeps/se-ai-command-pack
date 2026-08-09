@@ -266,7 +266,7 @@ criterion satisfied only by text in this `prd.md` is not satisfied.
       verify the chain.
       SATISFIED 2026-08-09: deliverable section "The load-bearing code" cites
       all four anchors plus the state ladder and Delivery line.
-- [ ] Every citation in the deliverable names its enclosing symbol and states the
+- [x] Every citation in the deliverable names its enclosing symbol and states the
       pack version its line numbers were taken from. Both cited files are
       `install: "always"`, so a bare line number may stop resolving at any
       refresh — whether it does is per file and not predictable from the version
