@@ -226,6 +226,32 @@ class ProvenanceCheckerTest(unittest.TestCase):
         manifest = json.loads(self.manifest_bytes())
         self.assertIn(".codex/hooks/new.py", manifest["files"])
 
+    def test_write_accept_refuses_symlink(self) -> None:
+        link = self.repo.root / ".codex/hooks/link.py"
+        link.parent.mkdir(parents=True, exist_ok=True)
+        link.symlink_to(self.repo.root / ".gitignore")
+        self.repo.git("add", ".codex/hooks/link.py")
+        before = self.manifest_bytes()
+        status, output = self.repo.run_checker("--write", "--accept", ".codex/hooks/link.py")
+        self.assertEqual(status, 2, output)
+        self.assertIn("non-regular file", output)
+        self.assertEqual(self.manifest_bytes(), before)
+
+    def test_write_exception_leaves_manifest_untouched(self) -> None:
+        before = self.manifest_bytes()
+        real_replace = checker.os.replace
+
+        def failing_replace(*args: object, **kwargs: object) -> None:
+            raise OSError("simulated replace failure")
+
+        checker.os.replace = failing_replace
+        try:
+            status, output = self.repo.run_checker("--write")
+        finally:
+            checker.os.replace = real_replace
+        self.assertEqual(status, 2, output)
+        self.assertEqual(self.manifest_bytes(), before)
+
     def test_write_preserves_repo_own(self) -> None:
         before = json.loads(self.manifest_bytes())["repoOwn"]
         status, _ = self.repo.run_checker("--write")

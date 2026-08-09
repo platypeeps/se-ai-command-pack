@@ -267,7 +267,10 @@ def run_write(repo: Path, accepted: list[str]) -> int:
         if path not in tracked_set:
             print(f"removed: {path}")
             continue
-        digest = sha256_file(repo / path)
+        absolute = repo / path
+        if absolute.is_symlink() or not absolute.is_file():
+            raise fail(f"refusing to hash a non-regular file: {path}")
+        digest = sha256_file(absolute)
         previous = manifest["files"].get(path)
         if previous is None:
             print(f"added: {path}")
