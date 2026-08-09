@@ -1652,3 +1652,48 @@ Implemented all five dispositions from 08-08-ci-gate-fail-softs: extracted ci-re
 ### Next Steps
 
 - None - task complete
+
+
+## Session 145: Enforce vendored review preflight as required CI lane
+
+**Date**: 2026-08-09
+**Task**: Enforce vendored review preflight as required CI lane
+**Branch**: `task/08-07-ci-no-preflight-lane`
+
+### Summary
+
+Implemented the enforce disposition for 08-07-ci-no-preflight-lane: new review-preflight job in tests.yml (exact-head checkout, Node 22 pin, fail-closed base guards, vendored script invoked unmodified) joining ci-result.needs and the 08-08 aggregator's REQUIRED_LANES with extended synthetic-payload tests. Live fail demonstration on draft PR #174: broken ./research doc path in prd.md produced a preflight FAIL and a red ci-result required context; closed unmerged, branch deleted. First demo attempt used a bare research/ link outside the checker's prefix rules — the checked ./-relative form was required. Post-merge acceptance evidence (absence demonstration, branch-protection read) re-scoped to post-archive handoff per the completion-lifecycle boundary; recorded on PR #173 when performed. Shipped as PR #173.
+
+### Main Changes
+
+- tests.yml: review-preflight job per design.md; ci-result.needs gains review-preflight
+- aggregate-ci-result.py: review-preflight joins REQUIRED_LANES (skipped fails)
+- test_aggregate_ci_result.py: review-preflight in all payloads; skipped and failure cases exit nonzero
+- prd.md: ACs ticked with PR #174 evidence; post-merge items re-scoped under Post-archive handoff; implement.md preamble superseded accordingly
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `901870f` | feat(ci): enforce vendored review preflight as a required CI lane |
+| `ddfd2d4` | chore(task): ground no-preflight-lane jsonl manifests |
+| `798531c` | chore(task): empty no-preflight-lane jsonl manifests — no spec/research context applies |
+| `1aa2bce` | test: cover review-preflight hard failure in the aggregate |
+| `0816a9b` | chore(task): record fail-demo evidence (PR #174) and satisfied ACs |
+| `3b81e53` | chore(task): re-scope post-merge evidence to post-archive handoff; record branch |
+
+### Testing
+
+- [OK] make test — 593 tests OK; make check green; tests.yml parses
+- [OK] PR #173 CI: review-preflight pass, ci-result pass with extended needs
+- [OK] Fail demo PR #174: FAIL prd.md:201 references missing path ./research/nonexistent-evidence-file.md; ci-result fail (run 31315162320)
+- [OK] pre-archive gate: pre_archive_valid
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
