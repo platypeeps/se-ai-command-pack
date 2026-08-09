@@ -14,6 +14,7 @@ import io
 import json
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
+from types import ModuleType
 from unittest.mock import patch
 
 from install_test_support import PACK_ROOT
@@ -21,7 +22,7 @@ from install_test_support import PACK_ROOT
 AGGREGATE_SCRIPT = PACK_ROOT / ".github" / "scripts" / "aggregate-ci-result.py"
 
 
-def load_aggregate_module():
+def load_aggregate_module() -> ModuleType:
     spec = importlib.util.spec_from_file_location(
         "aggregate_ci_result", AGGREGATE_SCRIPT
     )
@@ -42,7 +43,11 @@ def payload(**overrides: str) -> dict[str, dict[str, str]]:
         "release-payload-gate": "success",
         "auto-tag-release": "skipped",
     }
-    lanes.update({lane.replace("_", "-"): result for lane, result in overrides.items()})
+    for lane, result in overrides.items():
+        key = lane.replace("_", "-")
+        if key not in lanes:
+            raise KeyError(f"override names unknown lane: {lane}")
+        lanes[key] = result
     return {lane: {"result": result} for lane, result in lanes.items()}
 
 
@@ -135,9 +140,22 @@ class MainTests(unittest.TestCase):
         )
         declared = aggregate.REQUIRED_LANES | aggregate.CONDITIONAL_LANES
         marker = "ci-result:"
+        self.assertIn(marker, workflow, "ci-result job renamed or removed")
         section = workflow[workflow.index(marker) :]
         needs_line = next(
-            line for line in section.splitlines() if line.strip().startswith("needs:")
+            (
+                line
+                for line in section.splitlines()
+                if line.strip().startswith("needs:")
+            ),
+            None,
+        )
+        self.assertIsNotNone(needs_line, "ci-result has no needs: line")
+        assert needs_line is not None
+        self.assertIn(
+            "[",
+            needs_line,
+            "ci-result needs: is no longer an inline list; update this parser",
         )
         lanes = {
             lane.strip()
