@@ -1490,3 +1490,41 @@ Deep 5-lane repo review distilled into six Trellis tasks (CI gate fail-softs, RE
 ### Next Steps
 
 - None - task complete
+
+
+## Session 141: Design ci-gate-fail-softs through needs-design work loop
+
+**Date**: 2026-08-09
+**Task**: Design ci-gate-fail-softs through needs-design work loop
+**Branch**: `task/08-09-ci-gate-fail-softs-design`
+
+### Summary
+
+sd-work-backlog until=design selector=needs-design run 824bb89eac2c430d9c82e346c6b5ea76: selected P1 task 08-08-ci-gate-fail-softs, authored design.md and implement.md recording all five gate-fail-soft dispositions (fix aggregate skip policy, surface auto-tag-release, accept branch protection with reasoning, bash -n shell lane, guard-safe check.json registration). Passed the two-lane planning adversarial review: host lane plus three Codex rounds, 14 concerns (C-1..C-14) all addressed, including sd-check state-guard incompatibility and the missing ci-result checkout step. Published as PR #169.
+
+### Main Changes
+
+- Authored design.md with five recorded dispositions and guard-safe check.json design
+- Authored implement.md with 5-step execution order and demonstrated-proof validation plan
+- Widened PRD acceptance criterion 1 for API and absence evidence; recorded planning escalation in Notes
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0b14fe4` | chore(task): add adversarially reviewed design and implementation plan for ci-gate-fail-softs |
+
+### Testing
+
+- [OK] task.py validate 08-08-ci-gate-fail-softs: pass
+- [OK] review preflight pre-publish: 0 failures, 0 warnings
+- [OK] sd-review scope=pr attempt 1: ready, prism clean (0 findings)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
