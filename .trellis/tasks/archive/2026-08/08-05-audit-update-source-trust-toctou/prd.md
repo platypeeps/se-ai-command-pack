@@ -31,14 +31,20 @@ and treats any existing `.git` entry as proof of a git repository.
 
 ## Acceptance Criteria
 
-- [ ] Design records the chosen TOCTOU-narrowing approach and its platform
-  fallbacks, with the residual (if any) stated explicitly.
-- [ ] Test: a `.git` symlink is handled per the documented decision (rejected
-  or ownership-validated), with no git/exec on refusal.
-- [ ] Test: existing A-017 refusal and same-checkout/confirm paths still pass
-  unchanged.
-- [ ] Changelog + version bump discipline applied (installer is consumer
-  contract).
+- [x] Design records the chosen TOCTOU-narrowing approach and its platform
+  fallbacks, with the residual (if any) stated explicitly — `design.md` tier
+  ladder + per-tier residual section; metric: external `source_root`
+  pathname re-resolutions 4 → 0 on tier 1.
+- [x] Test: a `.git` symlink is handled per the documented decision (rejected
+  or ownership-validated), with no git/exec on refusal — decision: rejected;
+  `test_refuses_symlinked_git_entry` with `_fail_if_git_or_exec` spies.
+- [x] Test: existing A-017 refusal and same-checkout/confirm paths still pass
+  unchanged — pre-existing `UpdateSourceTrustTest` cases untouched;
+  `unittest discover -p test_management.py`: 41 tests OK; full
+  `make check`: 640 tests OK (skipped=1, pre-existing A-025 skip).
+- [x] Changelog + version bump discipline applied (installer is consumer
+  contract) — 0.67.2 → 0.68.0, dated CHANGELOG entry, release payload gate
+  green.
 
 ## Notes
 
@@ -46,3 +52,12 @@ and treats any existing `.git` entry as proof of a git repository.
 - Origin: PR #143 accepted-residual disposition (adversarial review C-2 and
   local review re-flags on installer/management.py:_source_checkout).
 - Planning depth: **Complex — needs `design.md` and `implement.md` before `task.py start`.** A TOCTOU window is a concurrency contract: which handle is held, what is re-verified at use, and what the residual window is after the change. Security-sensitive, and 'measurably shrink' requires the measurement to be defined up front rather than asserted afterwards.
+- Check-pass observations, accepted (theoretical, below fix threshold): a
+  failing `os.fdopen` on the dir_fd-relative manifest read would leak the
+  raw fd until the process-ending refusal (`management.py` ~:184); the
+  unverified-gitdir refusal embeds the bounded, replace-decoded, repr-quoted
+  first line of the attacker-supplied `.git` file (consistent with existing
+  path-embedding message style).
+- PR #186 Copilot review: `gitdir` target validation tightened to require a
+  directory (`test_refuses_non_directory_gitdir_target`); test fixture git
+  init made portable (`git init` + `git checkout -b main`).
