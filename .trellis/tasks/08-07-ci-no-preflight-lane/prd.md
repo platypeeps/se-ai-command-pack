@@ -195,3 +195,7 @@ this one — so the pattern is established there rather than being invented here
   validates it, `make check` and CI are not equivalent runs, and the function
   count is 34 — a figure this PRD had briefly replaced with a range that was
   itself wrong.
+
+## Demo note
+
+Evidence recorded in [`research/nonexistent-evidence-file.md`](research/nonexistent-evidence-file.md).
