@@ -205,10 +205,13 @@ def run_check(repo: Path) -> int:
 
     for path, expected in sorted(manifest["files"].items()):
         absolute = repo / path
+        if absolute.is_symlink():
+            findings.append(f"not-regular-file: {path}")
+            continue
         if path not in tracked_set or not absolute.exists():
             findings.append(f"missing: {path}")
             continue
-        if absolute.is_symlink() or not absolute.is_file():
+        if not absolute.is_file():
             findings.append(f"not-regular-file: {path}")
             continue
         if sha256_file(absolute) != expected:
@@ -329,6 +332,9 @@ def main(argv: list[str] | None = None) -> int:
         return run_check(repo)
     except CheckError as exc:
         print(f"error: {exc}", file=sys.stderr)
+        return 2
+    except OSError as exc:
+        print(f"error: filesystem failure: {exc}", file=sys.stderr)
         return 2
 
 
