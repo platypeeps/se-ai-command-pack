@@ -126,30 +126,30 @@ guidance this task records must say that much: local-only is terminal for a
 
 ## Acceptance Criteria
 
-- [ ] A run holding an arbitrary repository-relative path can determine
+- [x] A run holding an arbitrary repository-relative path can determine
       ownership from the recorded procedure alone, without opening the three
       registries to work out which applies.
-- [ ] The procedure is verified against at least five real files with known and
+- [x] The procedure is verified against at least five real files with known and
       differing classifications — one `install: "always"`, one
       default-mode entry (no `install` key, i.e. `if-anchor-exists`), one
       `install: "if-not-exists"`, one `.template-hashes.json` entry, and one
       repo-owned file in no registry — and each yields the correct answer.
-- [ ] `.github/copilot-instructions.md` is classified as dual-owned with its
+- [x] `.github/copilot-instructions.md` is classified as dual-owned with its
       drift named as expected.
-- [ ] The disposition rule states all four parts, verified present
+- [x] The disposition rule states all four parts, verified present
       individually: local-only is terminal for a *record*; a local code change
       to a vendored file survives only until the next pack refresh; editing a
       vendored file in place as a workaround is forbidden; and an upstream PR
       needs explicit per-PR approval. The unqualified headline "local-only is
       terminal" alone does not satisfy this criterion.
-- [ ] At least two of the member tasks still in planning can have their bespoke
+- [x] At least two of the member tasks still in planning can have their bespoke
       constraint section replaced by a reference to the recorded guidance
       without losing information. Demonstrated, not asserted. (Archived members
       are not edited.)
-- [ ] The local-only record format names all four required fields — owning pack,
+- [x] The local-only record format names all four required fields — owning pack,
       file, behaviour, and the explicit statement that no upstream PR was opened
       — and a worked example shows each one filled in.
-- [ ] No file outside `.trellis/` is modified, and no file inside `.trellis/`
+- [x] No file outside `.trellis/` is modified, and no file inside `.trellis/`
       that appears in `.trellis/.template-hashes.json` is modified. Verified by
       checking each changed path against that registry, since the vendored files
       this task is about live inside `.trellis/`.
@@ -232,3 +232,24 @@ upstream concern is #397's related note).
   thirty-plus releases ago. Filed 2026-08-09 from
   `08-08-review-command-supersession-signal` (routing decision recorded in
   that task's `disposition.md`; not an instance-table enrollment).
+
+## Completion evidence (2026-08-09, PR #187)
+
+- Guidance recorded as "Vendored-Artifact Ownership And Upstream Route" in
+  `.trellis/spec/backend/quality-guidelines.md` (commits 50e27e0, 60ca753).
+- Procedure verified against six real files (both registry lookups match the
+  recorded table): `scripts/sd-ai-command-pack-review.py` (always),
+  `.claude/rules/sd-planning-adversarial-review.md` (default/if-anchor-exists),
+  `.prism/rules.json` (if-not-exists), `.github/copilot-instructions.md`
+  (dual-owned managed-block), `.trellis/scripts/common/task_store.py`
+  (template-hashes), `.trellis/spec/backend/quality-guidelines.md`
+  (no registry).
+- Constraint sections replaced with references in
+  `08-06-task-create-base-branch-default` and
+  `08-06-task-json-trailing-newline` (both still in planning).
+- AC "no file outside `.trellis/` modified": every changed path is under
+  `.trellis/` and absent from `.trellis/.template-hashes.json` (verified by
+  per-path jq lookup).
+- Copilot review round 1: one finding (Registry A file is gitignored and
+  machine-local) — verified true and fixed in 60ca753 (guarded snippet,
+  prerequisite stated); round 2 clean.
