@@ -1,4 +1,8 @@
-# Fifty-nine tracked platform files lack any integrity receipt and the gitignore allowlist is fragile
+# Sixty tracked platform files lack any integrity receipt and the gitignore allowlist is fragile
+
+> Count in the title updated from fifty-nine by the 2026-08-09 re-measurement
+> below; the original 2026-08-08 figures remain in the Problem section as the
+> filing-time record.
 
 ## Goal
 
@@ -125,3 +129,96 @@ task takes the asymmetry as accepted and addresses only its durability.
   count is 59, and the tracking-symmetry question was cut as already decided.
 - Lightweight; PRD-only unless the local-manifest route is chosen and grows a
   generator — then add design.md before start.
+
+## Re-measurement (2026-08-09, execution session)
+
+Fresh enumeration before acting, per the Notes requirement. Corrections to
+the 2026-08-08 figures:
+
+- **Uncovered count is 60, not 59.** 349 tracked files under the six platform
+  dot-dirs; the registry union covers 289; uncovered = 60: `.agents` 46,
+  `.codex` 7, `.github` 7 (the earlier count had `.github` 6). The
+  `.trellis/.template-hashes.json` reader must use the v2 schema (hashes
+  nested under a `"hashes"` key); reading it flat under-counts coverage.
+- **`.github` classification:** 6 of the 7 are repo-own (added by this repo's
+  release/CI commits, absent from `installed-targets.txt`):
+  `.github/dependabot.yml`, `.github/workflows/tests.yml`,
+  `.github/scripts/generate-skill-surfaces.py`,
+  `.github/scripts/aggregate-ci-result.py`,
+  `.github/scripts/check-release-payload.py`,
+  `.github/scripts/create-release-tag.py`. The 7th,
+  `.github/PULL_REQUEST_TEMPLATE.md`, is a
+  pack install target (`installed-targets.txt:132`) absent from
+  `provenance.json`, as is `.gitignore` (`installed-targets.txt:155`) — but
+  see the next bullet: both absences are intentional upstream, so the
+  template is classified repo-own (user-tunable), not
+  pack-installed-unreceipted.
+- **The remaining 53 (46 `.agents` + 7 `.codex`) are Trellis init output**:
+  all added by the Trellis init commit `ef34a2b` and unmodified since. All 53
+  are in scope for a receipt.
+- **The variant picture confirms the original filing: three distinct
+  contents across four copies.** `trellis-update-spec` hashes (sha256 first
+  8): `.agents` `003ce08a` (unique, unreceipted), `.claude` == `.opencode`
+  `d975db7a` (receipted via the OpenCode entry; the `.claude` copy is
+  untracked by policy), `.github` `e37452de` (receipted).
+- **The pack-provenance omissions are intentional, not upstream defects.**
+  Upstream pack source (`installer/provenance.py:88`) deliberately excludes
+  force-preserved targets and `.gitignore` from provenance, and
+  `PULL_REQUEST_TEMPLATE.md` is force-preserved (`installer/registry.py:1951`)
+  — i.e., user-tunable after install. No upstream issue is warranted for
+  either. Consequence: `PULL_REQUEST_TEMPLATE.md` is classified repo-own
+  (user-tunable), not pack-installed-unreceipted; `.gitignore` is hashed
+  locally as an explicit durability policy, not as a defect remedy.
+
+**Chosen routes** (the written disposition the first AC requires):
+
+1. **Inventory:** 53 Trellis-output files (46 `.agents` + 7 `.codex`) in
+   scope for a receipt; 7 `.github` files classified repo-own and excluded —
+   the 6 CI/release files (git history is their integrity record) plus
+   `PULL_REQUEST_TEMPLATE.md` (force-preserved by the pack, user-tunable).
+   Local receipt covers 54 files: the 53 plus `.gitignore` (explicit local
+   durability policy).
+2. **Integrity record:** a repo-local checksum manifest generated from the
+   current known-good state, checked by a repo-own generator/checker script;
+   both live under the repo-own `.github` area (exact prospective paths and
+   schema are in `design.md`, which owns forward-looking detail). The
+   manifest is
+   self-contained for CI: `.trellis/.template-hashes.json` is gitignored and
+   untracked, so the manifest snapshots that registry's covered-path list
+   and the checker consults the live registry only when present locally.
+   Wiring: a guard-safe check registered in `.sd-ai-command-pack/check.json`
+   (repo-customizable registration file — tracked, absent from
+   `installed-targets.txt` and `provenance.json`), a `make` target on the
+   `check:` chain, and an explicit CI step in the `release-payload-gate`
+   job (a release prerequisite via `auto-tag-release`/`ci-result` `needs`).
+   An upstream request (that `trellis init` write provenance the way the sd
+   installer does) is recorded as routable via
+   `08-07-vendored-artifact-upstream-route`; the local manifest is the
+   defense until that lands. Per the Notes rule this route grows a
+   generator, so `design.md` is added before start.
+3. **Gitignore durability:** the same check script asserts every tracked
+   `.claude` path is not ignored — `git check-ignore --no-index` must exit
+   nonzero for each (`--no-index` is required: without it Git suppresses
+   ignore reporting for tracked paths and the assertion is vacuous) — so a
+   re-run of `trellis init` re-asserting a wholesale `.claude/` ignore fails
+   the gate. `.gitignore` itself is hashed in the manifest.
+4. **Variant/orphan:** each case classified per the requirement's
+   intended-or-defect binary. The `.agents` `trellis-update-spec` divergent
+   content and the `trellis-start` skill/command asymmetry are classified
+   **suspected upstream defects** — unmodified init output proves origin,
+   not intent, and no upstream contract demonstrating intent was found —
+   and both are routed upstream as questions via the
+   `08-07-vendored-artifact-upstream-route` contract at routing time
+   (recorded locally now; Trellis upstream is external, no filing under
+   current authority). Both files are receipted in the manifest meanwhile,
+   so any further drift is visible. The `.claude` `trellis-update-spec`
+   copy is explicitly exempt: untracked by settled policy, so no
+   tracked-content receipt can apply to it.
+
+**AC4 metrics, stated up front:** shipping the script and manifest adds two
+tracked `.github` files, so the original two-registry-union uncovered count
+becomes 62 at completion — explicitly accepted, every path classified above
+(53 receipted Trellis output, 7 + 2 repo-own including the new checker and
+manifest). The checker's own four-set coverage metric (union plus manifest
+`files`/`repoOwn`/snapshot) must be zero on the shipped tree. Both numbers
+are reported at completion.

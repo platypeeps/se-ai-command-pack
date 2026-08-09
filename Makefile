@@ -7,7 +7,7 @@ RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON
 LINT_PATHS = install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
 MYPY_PATHS = installer install.py templates/skills/se-review-skills/scripts/skill_review.py
 
-.PHONY: setup generate repomix sync test lint release-check check shell-syntax gate-test gate-lint
+.PHONY: setup generate repomix sync test lint release-check check shell-syntax gate-test gate-lint trellis-provenance
 
 setup:
 	"$(PYTHON)" -m venv "$(VENV)"
@@ -49,4 +49,8 @@ release-check:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check
 	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py --base auto
 
-check: test lint release-check shell-syntax
+# Guard-safe (read-only): coverage + integrity of unreceipted platform files.
+trellis-provenance:
+	"$(RUN_PYTHON)" .github/scripts/check-trellis-provenance.py
+
+check: test lint release-check shell-syntax trellis-provenance

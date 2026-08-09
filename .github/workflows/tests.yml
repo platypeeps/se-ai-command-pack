@@ -79,6 +79,7 @@ jobs:
           cache-dependency-path: requirements-dev.txt
       - run: python -m pip install -r requirements-dev.txt
       - run: python .github/scripts/generate-skill-surfaces.py --check
+      - run: python .github/scripts/check-trellis-provenance.py
       - name: Resolve payload gate base
         id: gate-base
         env:
