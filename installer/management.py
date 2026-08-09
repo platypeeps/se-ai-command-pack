@@ -198,6 +198,7 @@ def _installer_args(
     backup: bool,
     platforms: list[str] | None,
     install_all: bool,
+    verbose: bool,
 ) -> list[str]:
     args = ["refresh", "--root", str(root)]
     for platform in platforms or []:
@@ -210,6 +211,8 @@ def _installer_args(
         args.append("--force")
     if backup:
         args.append("--backup")
+    if verbose:
+        args.append("--verbose")
     return args
 
 
@@ -221,6 +224,7 @@ def update_pack(
     backup: bool,
     platforms: list[str] | None,
     install_all: bool,
+    verbose: bool = False,
     confirm_source: bool = False,
 ) -> int:
     """Fast-forward the recorded checkout and refresh with a new process."""
@@ -253,6 +257,7 @@ def update_pack(
                     backup=backup,
                     platforms=platforms,
                     install_all=install_all,
+                    verbose=verbose,
                 ),
             ],
             check=False,
@@ -271,6 +276,7 @@ def update_pack(
                 backup=backup,
                 platforms=platforms,
                 install_all=install_all,
+                verbose=verbose,
             ),
         ],
         check=False,
@@ -288,6 +294,7 @@ def update_pack(
                 backup=backup,
                 platforms=platforms,
                 install_all=install_all,
+                verbose=verbose,
             ),
         ],
         check=False,

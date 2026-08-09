@@ -430,6 +430,7 @@ def main(argv: list[str] | None = None) -> int:
             backup=args.backup,
             platforms=args.platform,
             install_all=args.all,
+            verbose=args.verbose,
             confirm_source=args.confirm_source,
         )
 
