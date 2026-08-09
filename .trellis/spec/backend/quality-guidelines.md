@@ -300,6 +300,15 @@ Rules of use:
   are **not inherited**: a rebuttal applies to the head it was recorded
   against. Re-supplying a still-matching id on a new head is permitted but
   obliges the run to re-verify the finding is still wrong at that head.
+- **Unchanged-head rebuttal needs a fresh `--attempt-id`.** The coordinator
+  memoizes the local result in its per-attempt state and skips the local stage
+  when that state exists, so re-invoking at the same head with the same
+  (default) attempt id returns the cached findings and never forwards the
+  disposition. Pass a new explicit `--attempt-id`: the fresh coordinator state
+  re-enters the local stage, which reuses the stored receipt after exact-match
+  validation and applies the rebuttal without re-running any provider. (A
+  moved head gets a fresh state anyway.) This is an upstream ergonomics gap in
+  the vendored coordinator, not something to patch locally.
 - **Auditable, not silent.** The finding stays in the receipt with
   `disposition: rebutted` under `disposition.localDispositions`; the
   `outstanding` count that drives `_remote_gate` is recomputed from remaining
