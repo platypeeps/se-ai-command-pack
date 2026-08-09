@@ -182,7 +182,12 @@ def _read_bytes_at(
             with open(source_root / name, "rb") as stream:
                 return stream.read() if limit is None else stream.read(limit)
         handle = os.open(name, os.O_RDONLY, dir_fd=dir_fd)
-        with os.fdopen(handle, "rb") as stream:
+        try:
+            stream = os.fdopen(handle, "rb")
+        except Exception:
+            os.close(handle)
+            raise
+        with stream:
             return stream.read() if limit is None else stream.read(limit)
     except OSError:
         return None
@@ -234,9 +239,11 @@ def _verify_gitdir_pointer(source_root: Path, dir_fd: int | None) -> None:
     target = (
         first[len(GITDIR_PREFIX) :].strip() if first.startswith(GITDIR_PREFIX) else ""
     )
+    # repr-quote the attacker-controlled pointer text so control and escape
+    # bytes from the .git file cannot reach the terminal raw.
     unverified = (
         "error: recorded source checkout .git file points to an unverified "
-        f"gitdir: {target or first}"
+        f"gitdir: {(target or first)!r}"
     )
     if not target:
         raise SystemExit(unverified)
