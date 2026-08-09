@@ -89,19 +89,19 @@ to vendored files.
 
 ## Acceptance Criteria
 
-- [ ] `disposition.md` exists in this task directory as the single
+- [x] `disposition.md` exists in this task directory as the single
       authoritative record, quoting sd-review's supersession text with its
       file path.
-- [ ] The route chosen is upstream (per the Disposition decision section):
+- [x] The route chosen is upstream (per the Disposition decision section):
       the proposal text exists in `disposition.md`, names the exact
       files/surfaces to change, and was filed upstream with the issue URL
       recorded — or the concrete blocker that prevented filing is recorded in
       its place.
-- [ ] `git status` shows no local edits to provenance-tracked sd-* files from
+- [x] `git status` shows no local edits to provenance-tracked sd-* files from
       this task.
-- [ ] The three adjacent ambiguities are listed in the record with their
+- [x] The three adjacent ambiguities are listed in the record with their
       status (deferred / included in proposal).
-- [ ] The expired "transitional until 0.62.0" promise is explicitly
+- [x] The expired "transitional until 0.62.0" promise is explicitly
       reconciled in the disposition (superseded deadline restated, removal
       proposed, or expiry accepted with reason).
 
