@@ -4,10 +4,12 @@ Status: ACCEPTED as parent task (user, 2026-07-25). Requirements R1-R7 are bindi
 Delivery is decomposed into child tasks (see Task map); the parent owns the source
 requirement set, cross-child acceptance criteria, and final integration review. The parent
 has no direct implementation work and must not be started; start children instead.
-That constraint is prose, which a candidate list cannot read, so `task.json` also carries
+That constraint was prose, which a candidate list cannot read, so `task.json` carried
 the canonical `PARKED:` title prefix — the one machine-visible marker the backlog selector
-and the status board both honor. Remove the prefix only when the last open acceptance
-criterion below is met.
+and the status board both honor — while the last acceptance criterion stayed open. The
+prefix was removed 2026-08-09 when that criterion was met (see the two-platform run
+evidence below); the task then proceeds directly to archive, so no selector can pick it
+up in the unparked window.
 
 ## Goal
 
@@ -71,14 +73,19 @@ Cross-child acceptance (parent integration review, run when all children archive
 
 - [x] Full `make check` green with all child changes merged. (Verified on merged main:
       coverage 88.3%, ruff + mypy clean, generator `--check` matches, release gate clean.)
-- [ ] One se-research run on a sub-agent-dispatch platform and one on an inline platform
+- [x] One se-research run on a sub-agent-dispatch platform and one on an inline platform
       produce contract-identical final reports (execution strategy differs, outcome does not).
-      DEFERRED — not executed in this closeout. Static evidence supports the contract: the
-      dispatch section's design (one worker per unit, orchestrator owns synthesis, workers
-      return the same expected artifact under the same stop condition, inline fallback opening)
-      makes the final report shape platform-independent by construction, and no code path forks
-      the report contract on platform. A live two-platform run remains the outstanding empirical
-      check and is tracked as a follow-up; this AC stays unchecked until that run is done.
+      SATISFIED 2026-08-09: live two-platform run executed with the 0.67.1 skill rendering —
+      Claude Code (dispatch: 3 parallel se-source-reader lane workers, then 3 parallel
+      se-claim-verifier workers, orchestrator-owned synthesis) and Codex CLI (inline,
+      sequential single context), same question and arguments (`depth=brief min_sources=3
+      format=brief`). Both reports carry all four contract sections, the exact confidence
+      vocabulary, graded and dated sources, a recorded disconfirmation pass, and identical
+      substantive verdicts; the differences observed are execution-strategy differences, one
+      of them a documented deviation (disconfirmation queries ran inside the
+      refutation-default verification workers rather than as a separate fan-out wave, with
+      phase ordering preserved). Full evidence, both verbatim reports, and the
+      section-by-section comparison: `research/dispatch-inline-contract-check.md`.
 - [x] Operator docs match shipped behavior (profiles, agents, dispatch). (docs/SE_AI_COMMAND_PACK.md
       carries the Shipped agents inventory, runtime-profile/overlay explanation, and delegation.)
 

@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 142
+- **Total Sessions**: 143
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1567 | Active |
+| `journal-3.md` | ~1608 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 143 | 2026-08-09 | Close agent-artifacts parent task via two-platform se-research contract check | `2e9ceba`, `915de3b` | `task/08-09-agent-artifacts-closure` |
 | 142 | 2026-08-09 | Design consumer CI review-preflight lane (until=design work-backlog run) | `824d4be` | `task/08-09-ci-no-preflight-lane-design` |
 | 141 | 2026-08-09 | Design ci-gate-fail-softs through needs-design work loop | `0b14fe4` | `task/08-09-ci-gate-fail-softs-design` |
 | 140 | 2026-08-08 | File six improvement-opportunity tasks from deep repo review | `463f39a` | `task/08-08-file-deep-review-tasks` |
