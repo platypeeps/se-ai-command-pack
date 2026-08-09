@@ -252,6 +252,25 @@ class ProvenanceCheckerTest(unittest.TestCase):
         self.assertEqual(status, 2, output)
         self.assertEqual(self.manifest_bytes(), before)
 
+    def test_write_drops_file_now_covered_by_template_registry(self) -> None:
+        self.repo.write(
+            ".trellis/.template-hashes.json",
+            json.dumps({"__version": 2, "hashes": {self.repo.agents_file: "0" * 64}}),
+        )
+        status, output = self.repo.run_checker("--write")
+        self.assertEqual(status, 0, output)
+        manifest = json.loads(self.manifest_bytes())
+        self.assertNotIn(self.repo.agents_file, manifest["files"])
+        self.assertIn(self.repo.agents_file, manifest["templateReceipted"])
+        self.assertIn("removed (now covered elsewhere)", output)
+
+    def test_write_accept_of_covered_path_is_error(self) -> None:
+        before = self.manifest_bytes()
+        status, output = self.repo.run_checker("--write", "--accept", self.repo.manifest_path)
+        self.assertEqual(status, 2, output)
+        self.assertIn("already covered", output)
+        self.assertEqual(self.manifest_bytes(), before)
+
     def test_write_preserves_repo_own(self) -> None:
         before = json.loads(self.manifest_bytes())["repoOwn"]
         status, _ = self.repo.run_checker("--write")

@@ -87,14 +87,16 @@ Every finding prints one line with the path and the failure class.
    non-symlink file, and hash to the recorded value. Content mismatch fails
    as `drifted`; missing/untracked fails as `missing`; symlink fails as
    `not-regular-file`.
-3. **Gitignore durability:** for every tracked path under `.claude/`, run
-   `git check-ignore --no-index -q -- <path>` and map its exit status
-   exactly: `0` = the path is ignored, finding `ignored-tracked-path`;
-   `1` = not ignored, pass; **any other status (e.g. 128 fatal) = exit 2**,
+3. **Gitignore durability:** run one batched
+   `git check-ignore --no-index -- <all tracked .claude paths>` and map its
+   exit status exactly: `0` = at least one path is ignored, and stdout
+   enumerates the ignored paths, each reported as `ignored-tracked-path`;
+   `1` = none ignored, pass; **any other status (e.g. 128 fatal) = exit 2**,
    never a pass — treating all nonzero as "not ignored" would let a broken
-   Git invocation fail open. `--no-index` is load-bearing: without it Git
-   suppresses ignore evaluation for tracked paths and the assertion can
-   never fire. A wholesale `.claude/` ignore (the CONTRIBUTING.md:99-104
+   Git invocation fail open. The batch form is semantically identical to a
+   per-path `-q` loop under this mapping and avoids one subprocess per
+   path. `--no-index` is load-bearing: without it Git suppresses ignore
+   evaluation for tracked paths and the assertion can never fire. A wholesale `.claude/` ignore (the CONTRIBUTING.md:99-104
    re-init failure mode) then fails as `ignored-tracked-path` (and
    `.gitignore` itself as `drifted`).
 
@@ -114,6 +116,12 @@ Membership-conservative refresh:
   manifest, so the hand-curated `repoOwn` skeleton is written first and
   every initial `files` member enters through an explicit `--accept` — the
   same named-decision path as later additions, no special mode.
+- Disjointness is preserved, not just validated after the fact: a `files`
+  member that another receipt now covers (template snapshot, `repoOwn`, or
+  pack provenance) is dropped from the candidate with a printed reason, and
+  an `--accept` naming an already-covered path is an error — so a written
+  manifest always satisfies the pairwise-disjoint invariant the loader
+  enforces.
 - A tracked platform file outside every coverage set is **not** absorbed:
   `--write` exits 1 listing each such path unless it is explicitly named via
   repeatable `--accept <path>`. Each accepted addition is printed. This

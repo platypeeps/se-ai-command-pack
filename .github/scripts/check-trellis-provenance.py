@@ -262,10 +262,22 @@ def run_write(repo: Path, accepted: list[str]) -> int:
     else:
         template_receipted = sorted(registry_keys & tracked_set)
 
+    repo_own_set = set(manifest["repoOwn"])
+    other_covered = repo_own_set | set(template_receipted) | pack_covered
+    already_covered = sorted(accepted_set & other_covered)
+    if already_covered:
+        raise fail(
+            "--accept paths already covered by another receipt: "
+            + ", ".join(already_covered)
+        )
+
     candidate_files: dict[str, str] = {}
     for path in sorted(set(manifest["files"]) | accepted_set):
         if path not in tracked_set:
             print(f"removed: {path}")
+            continue
+        if path in other_covered:
+            print(f"removed (now covered elsewhere): {path}")
             continue
         absolute = repo / path
         if absolute.is_symlink() or not absolute.is_file():
