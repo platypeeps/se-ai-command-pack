@@ -1452,3 +1452,41 @@ Filed Trellis planning task 08-07-status-collector-pack-drift recording why sd-s
 ### Next Steps
 
 - None - task complete
+
+
+## Session 140: File six improvement-opportunity tasks from deep repo review
+
+**Date**: 2026-08-08
+**Task**: File six improvement-opportunity tasks from deep repo review
+**Branch**: `task/08-08-file-deep-review-tasks`
+
+### Summary
+
+Deep 5-lane repo review distilled into six Trellis tasks (CI gate fail-softs, README quickstart UX, review-command supersession signal, backlog hygiene, trellis-init provenance gap, installer dead-code trim); PRDs passed the two-lane planning adversarial review (host + two Codex rounds, 21 concerns resolved); committed and published as PR #168 with clean sd-review (prism 0 findings).
+
+### Main Changes
+
+- Created six 08-08 task directories with PRD-only planning artifacts and spec-scoped implement/check manifests
+- Remediated all blocking adversarial-review findings across two Codex rounds (counts, citations, scope narrowing, settled-decision guards)
+- Reworded ci-gate-fail-softs check.json reference to satisfy review-preflight path validation
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `463f39a` | chore(task): file six improvement-opportunity tasks from deep repo review |
+
+### Testing
+
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs pre-publish: pass
+- [OK] task.py validate x6: all pass
+- [OK] sd-review scope=pr attempt 1: ready, prism clean (0 findings)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
