@@ -386,11 +386,14 @@ steps are `evidence` subcommand calls, in this exact order:
 
 ```bash
 # 1. same-phase descendant update: head only, nothing else
-work-loop.py evidence --repo . --run-id <id> --head <final feature commit>
-# 2. verified merge-boundary flip: all four flags in one call
-work-loop.py evidence --repo . --run-id <id> --branch main \
-  --head <merge commit> --base-branch main --pr-number <N> \
-  --last-shipped-sha <final feature commit>
+bash scripts/sd-ai-command-pack-toolchain.sh run-python -- \
+  scripts/sd-ai-command-pack-work-loop.py evidence --repo . \
+  --run-id <id> --head <final feature commit>
+# 2. verified merge-boundary flip: all five evidence flags in one call
+bash scripts/sd-ai-command-pack-toolchain.sh run-python -- \
+  scripts/sd-ai-command-pack-work-loop.py evidence --repo . \
+  --run-id <id> --branch main --head <merge commit> --base-branch main \
+  --pr-number <N> --last-shipped-sha <final feature commit>
 ```
 
 Step 1 refreshes the remembered head so step 2's fallback tip resolves to a
