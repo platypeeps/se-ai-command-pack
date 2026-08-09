@@ -77,3 +77,38 @@ Recorded the vendored-artifact ownership lookup, disposition rule, and local-onl
 ### Next Steps
 
 - None - task complete
+
+
+## Session 155: sd-work-backlog run c441624d iteration 2: work-loop merge-boundary disposition + relay batch (08-06)
+
+**Date**: 2026-08-09
+**Task**: sd-work-backlog run c441624d iteration 2: work-loop merge-boundary disposition + relay batch (08-06)
+**Branch**: `task/08-06-work-loop-shipped-sha-after-branch-delete`
+
+### Summary
+
+Executed 08-06-work-loop-shipped-sha-after-branch-delete via the vendored-artifact route: four-field local-only record in PRD and quality-guidelines with the two-step evidence operator procedure; upstream relay batch filed as sd-ai-command-pack#404 and #405; PRD converged to disposition form with 3 Codex concerns addressed; shipped as PR #188 with one Copilot finding fixed.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `19fbaf2` | (see git log) |
+| `97d81a4` | (see git log) |
+| `3ba2a3c` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
