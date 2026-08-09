@@ -194,6 +194,19 @@ Member update: 08-07-review-py-local-fork closed overtaken-by-events on
 2026-08-09 (fork retired deliberately by the v0.64.32 refresh; its residual
 upstream concern is #397's related note).
 
+- Unfiled candidate (2026-08-09, run 548ccf3e iteration 3, PR #186, pack
+  v0.64.33): a stale `--local-disposition` id fails the local stage *after*
+  providers run but *before* the durable receipt persists
+  (`sd-ai-command-pack-review-local.py`: `_apply_local_dispositions` at the
+  merge step precedes `_atomic_json(receipt_path, ...)`), leaving a run dir
+  that blocks retry ("attempt ... already exists without a reusable exact
+  receipt") while the coordinator caches the `invalid` local outcome and
+  replays it on every disposition-less rerun
+  (`sd-ai-command-pack-review.py:1876` re-runs local only when dispositions
+  are supplied). Recovery required deleting the incomplete run dir plus the
+  coordinator's private state file. Upstream fix candidates: persist the
+  receipt before applying dispositions, or treat a cached `invalid` local
+  outcome as re-runnable. Route with the next relay batch.
 - platypeeps/sd-ai-command-pack#399 — superseded review commands
   (`sd-review-local`, `sd-review-pr`) carry no supersession signal at the
   command choice point; catalog's "transitional until 0.62.0" horizon expired
