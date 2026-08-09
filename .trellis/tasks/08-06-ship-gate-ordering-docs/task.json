@@ -3,7 +3,7 @@
   "name": "ship-gate-ordering-docs",
   "title": "Document ship-loop gate ordering: PR-body tooling scope and KB refresh points",
   "description": "Document two ship-loop gate orderings that cost review rounds in practice: the pack.review-scope check requires a Tooling/generated scope heading in the PR body whenever tooling or generated files change, and .obsidian-kb must be refreshed after every documentation-affecting mutation including task.py archive, not only during sd-update-spec.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
