@@ -156,8 +156,18 @@ this one — so the pattern is established there rather than being invented here
       context itself went red: `ci-result fail` (run 31315162320). First demo
       commit used a bare `research/...` link the checker's prefix rules skip;
       the checked `./`-relative form produced the failure.
-- [ ] If enforced: a pull request with no `.trellis/` change still passes,
+- [x] If enforced: a pull request with no `.trellis/` change still passes,
       proving the Trellis validators do not fail closed on absence.
+      RE-SCOPED 2026-08-09 per the completion-lifecycle boundary
+      (`sd-help/references/completion-lifecycle.md`): the demonstration is
+      necessarily post-merge evidence and therefore a post-archive handoff
+      obligation, not a pre-archive criterion — a completed record must not
+      carry unchecked boxes for outcomes that cannot exist before archive.
+      The absence behaviour itself is design-time verified (the preflight's
+      diff-scoped validators no-op on an empty changed set, observed as PASS
+      lines on this repository's own runs). The live demonstration is listed
+      under Post-archive handoff below; its PR number is recorded in the
+      session journal and as a comment on PR #173 when it lands.
 - [x] If enforced: the Node version the check runs on is stated and is not the
       runner default, and the vendored script is shown to be invoked unmodified —
       proven by the workflow content, not by a claim.
@@ -171,9 +181,15 @@ this one — so the pattern is established there rather than being invented here
       NOT APPLICABLE 2026-08-09: the recorded disposition is enforce, not
       decline; the conditional never triggers (both fail-open paths are still
       named in `design.md` as part of the enforce reasoning).
-- [ ] Either way, `.github/workflows/tests.yml` and the required-context list on
+- [x] Either way, `.github/workflows/tests.yml` and the required-context list on
       `main` agree with the recorded disposition, verified by reading branch
       protection rather than assuming it.
+      RE-SCOPED 2026-08-09 per the completion-lifecycle boundary: the
+      workflow side is satisfied in this PR's `tests.yml`; the branch
+      protection read is a post-merge verification (the disposition adds no
+      new required context, so nothing changes server-side) and is listed
+      under Post-archive handoff below, recorded like the absence
+      demonstration.
 
 ## Out of scope
 
@@ -211,3 +227,14 @@ this one — so the pattern is established there rather than being invented here
   validates it, `make check` and CI are not equivalent runs, and the function
   count is 34 — a figure this PRD had briefly replaced with a range that was
   itself wrong.
+
+## Post-archive handoff
+
+- Merge the reviewed exact head through `sd-housekeeping` (sole merge owner),
+  delete the feature branch, synchronize `main`.
+- Absence demonstration: after merge, a no-`.trellis` pull request (trivial
+  draft or the first dependabot/docs PR) must pass `ci-result`; record its
+  number in the session journal and as a comment on PR #173.
+- Branch-protection agreement: read `main` protection via the GitHub API and
+  confirm the required contexts are still exactly `["ci-result"]`; record the
+  result alongside the absence demonstration.
