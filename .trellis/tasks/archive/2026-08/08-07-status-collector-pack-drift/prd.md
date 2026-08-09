@@ -252,25 +252,43 @@ PRD. The deliverable is the guidance section in
 the upstream pull-request description when the upstream route is taken. A
 criterion satisfied only by text in this `prd.md` is not satisfied.
 
-- [ ] The disposition is recorded in the deliverable with its reasoning,
+- [x] The disposition is recorded in the deliverable with its reasoning,
       including whether upstream approval was sought.
-- [ ] The deliverable cites the load-bearing code — the name-gated source lookup
+      SATISFIED 2026-08-09: deliverable section "Disposition: local-only
+      guidance (upstream approval not sought)" records the route, the
+      `install: "always"` reasoning, and that per-PR upstream approval was
+      not sought.
+- [x] The deliverable cites the load-bearing code — the name-gated source lookup
       (`collect_versions`, `:393-398`), the omitted argument at the local-mode
       call site (`main`, `:2607-2619`), and the `packState == "different"` gate
       shared by both drift surfaces (`collect_follow_ups`, `:1769-1774`, and
       `next_steps`, `:1834-1837`) — so a reader who has not seen this PRD can
       verify the chain.
-- [ ] Every citation in the deliverable names its enclosing symbol and states the
+      SATISFIED 2026-08-09: deliverable section "The load-bearing code" cites
+      all four anchors plus the state ladder and Delivery line.
+- [x] Every citation in the deliverable names its enclosing symbol and states the
       pack version its line numbers were taken from. Both cited files are
       `install: "always"`, so a bare line number may stop resolving at any
       refresh — whether it does is per file and not predictable from the version
       numbers, which is why the symbol is required regardless. Verified by
       re-locating each cited symbol in the currently installed collector, not by
       trusting the line numbers.
-- [ ] A reader of the deliverable who has not seen this PRD can determine
+      SATISFIED 2026-08-09: every citation carries its enclosing symbol and the
+      pin to pack `0.64.3`; each symbol and gate line was re-read in the
+      installed collector (still `0.64.3`, 2631 lines) before writing.
+- [x] A reader of the deliverable who has not seen this PRD can determine
       whether `packState: "installed"` on their own repository means *current*
       or *unknown*.
-- [ ] The deliverable states the operator procedure for checking drift by hand
+      SATISFIED 2026-08-09: deliverable section "What packState installed
+      means" opens with "Unknown, not current" and explains the neutral rung.
+- [x] SATISFIED 2026-08-09: deliverable sections "Operator procedure" and
+      "Recorded reproduction" — procedure run live on this repository:
+      installed `0.64.3` strictly behind profile-resolved source `0.64.32`,
+      `sd-status --no-network --json` exit `0` with `packState: "installed"`,
+      `targetPack: null`, `sourcePack: null`, and no anomaly, follow-up, or
+      recommendation naming pack drift. Written against the shape, not the
+      version pair or the verdict.
+      The deliverable states the operator procedure for checking drift by hand
       under the chosen disposition, and a run of that procedure on this
       repository reproduces the defect *shape*: with an installed version
       strictly behind the resolvable source version, `sd-status` emits **no
@@ -290,7 +308,10 @@ criterion satisfied only by text in this `prd.md` is not satisfied.
       Do not pin the criterion to a version pair either — the source checkout
       advances on its own, and it moved from `0.64.24` to `0.64.25` within a day
       of the original observation.
-- [ ] If the installed pack has reached parity with the source before the
+- [x] N/A 2026-08-09: parity was not reached — installed `0.64.3` against
+      source `0.64.32` at writing time, so the shape was reproduced by a live
+      run rather than by citation of the historical record.
+      If the installed pack has reached parity with the source before the
       deliverable is written, say so plainly rather than implying a live run: at
       parity the shape **cannot** be reproduced by running `sd-status`, because
       `packState` legitimately becomes `current` once a target resolves — and in
@@ -300,21 +321,35 @@ criterion satisfied only by text in this `prd.md` is not satisfied.
       code path showing the target is still unresolvable in local mode. Naming
       historical version strings is not a reproduction and must not be presented
       as one.
-- [ ] Every target source considered is accounted for: each accepted one with
+- [x] Every target source considered is accounted for: each accepted one with
       the reason it was accepted and its position in the lookup order, each
       rejected one with its rejection reason. Absence from the list is not a
       rejection.
-- [ ] The deliverable states that a repository with no resolvable target still
+      SATISFIED 2026-08-09: fleet profile accepted at position 1; bare path
+      convention rejected (unrecorded guess); GitHub release list rejected
+      (network-dependent, unproven — empty `gh release list` on both
+      2026-08-07 and 2026-08-09).
+- [x] The deliverable states that a repository with no resolvable target still
       exits zero and is not reported as an error, and names what it does report
       instead.
-- [ ] The deliverable states that learning a version must not fetch, install,
+      SATISFIED 2026-08-09: section "What packState installed means" — exits
+      zero, reports `packState: "installed"` with `targetPack: null`, read as
+      "target unknown, freshness not checked".
+- [x] The deliverable states that learning a version must not fetch, install,
       refresh the pack, or create the fleet profile, and the disposition it
       records satisfies that constraint.
-- [ ] The `--no-network` behaviour of any network-dependent source is stated
+      SATISFIED 2026-08-09: the operator-procedure section opens with that
+      constraint and every step only reads existing files.
+- [x] The `--no-network` behaviour of any network-dependent source is stated
       explicitly and does not report `current` when it could not check.
-- [ ] No file installed by `.sd-ai-command-pack/manifest.json` is modified in
+      SATISFIED 2026-08-09: the release-list bullet states it must degrade
+      under `--no-network` and report "could not check", never `current`.
+- [x] No file installed by `.sd-ai-command-pack/manifest.json` is modified in
       this repository. Verified by checking each changed path against that
       manifest's `target` values, not by reading the diff.
+      SATISFIED 2026-08-09: every changed path checked against the manifest's
+      `target` list — zero intersection (verification recorded in the ship
+      run).
 
 ## Out of scope
 

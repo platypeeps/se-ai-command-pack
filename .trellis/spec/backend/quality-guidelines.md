@@ -1378,6 +1378,127 @@ installed sha256 == prior provenance -> updated + apply-time digest recheck
 installed sha256 != prior provenance -> conflict + no writes
 ```
 
+## Scenario: SD Status Pack-Freshness Signal
+
+### 1. Scope / Trigger
+
+- Trigger: reading an `sd-status` report in this consumer repository and
+  needing to know whether the installed SD command pack is current, or
+  interpreting the `versions.packState` field anywhere.
+- Why: local-mode `sd-status` cannot resolve a target pack version, so an
+  installed pack arbitrarily far behind its source reports no freshness
+  signal at all — no anomaly, no follow-up, no recommendation. An operator
+  who reads `packState: "installed"` as "current" is misled by silence.
+
+### 2. Disposition: local-only guidance (upstream approval not sought)
+
+Both `scripts/sd-ai-command-pack-status.py` and
+`scripts/sd_ai_command_pack_fleet_lib.py` are vendored with
+`install: "always"` (`.sd-ai-command-pack/manifest.json`), so a local edit is
+overwritten by the next pack refresh. A behavior change is therefore an
+upstream pull request against `sd-ai-command-pack`, which needs explicit
+per-PR approval that the autonomous run-level authority excludes. This
+section is the local-only disposition: it records what the collector cannot
+say and how an operator checks by hand. It is also the interim record an
+upstream proposal would require to land first, so choosing local-only now
+does not foreclose an upstream route later (the vendored-artifact upstream
+route is tracked as its own task).
+
+### 3. The load-bearing code
+
+All citations below are pinned to installed pack `0.64.3`
+(`sd-ai-command-pack-status.py` at 2631 lines) and were re-located by symbol
+in the currently installed collector on 2026-08-09. Both files are
+`install: "always"`, so on any other pack version re-locate by the named
+symbol, not the line number.
+
+- **Name-gated source lookup** — `collect_versions`, `:393-398`: the only
+  target source local mode consults is the repository's own root
+  `manifest.json`, and only when its `name` equals `sd-ai-command-pack`.
+  In any consumer repository (this one's manifest is named
+  `se-ai-command-pack`) the gate never opens and `sourcePack` stays `None`.
+- **Omitted argument at the local call site** — `main`, `:2607-2619`: the
+  local-mode `collect_local(` call passes no `target_pack_version`; the
+  parameter defaults to `None` (`collect_local`, `:1926`). Only the fleet
+  lane supplies a target (`collect_fleet`, `:2443`).
+- **The drift gate both surfaces share** — `collect_follow_ups`,
+  `:1769-1774`, and `next_steps`, `:1834-1837`: the refresh recommendation
+  and the numbered next step both fire only on
+  `versions.packState == "different"`. With no target, the state ladder
+  (`collect_versions`, `:399-407`) stops at `"installed"` and neither
+  surface can fire. The human `Delivery` line (`render_local`, `:2148-2150`)
+  likewise prints a target suffix only when a target resolved.
+
+### 4. What `packState: "installed"` means
+
+**Unknown, not current.** `"installed"` is the neutral rung reached when no
+target version resolved; it is emitted whether or not drift exists. Only
+`"current"` and `"different"` are freshness verdicts, and local mode in a
+consumer repository can produce neither. The top-line `SD status:
+healthy|attention` verdict carries no pack-freshness claim in either
+direction — `render_local` (`:2095-2100`) computes it from anomalies,
+working-tree state, and sync state only. A repository with no resolvable
+target still exits zero: the absence of a target is not an error, and the
+report it gives instead is exactly `packState: "installed"` with
+`targetPack: null` — read that pair as "target unknown, freshness not
+checked".
+
+### 5. Operator procedure: checking drift by hand
+
+Learning a version must not fetch, install, refresh the pack, or create the
+fleet profile; the procedure below only reads files that already exist.
+
+1. Installed version: `.sd-ai-command-pack/provenance.json` →
+   `packVersion` (this also appears as `versions.sdAiCommandPack` in the
+   report).
+2. Target version, first source — the machine fleet profile: resolve the
+   path the way `fleet_profile_path` does
+   (`sd_ai_command_pack_fleet_lib.py`, `:119-131`): `$XDG_CONFIG_HOME`
+   first, `~/.config` as fallback, then
+   `<base>/sd-ai-command-pack/config.json`. Read its `packSource`, then
+   that checkout's `manifest.json` → `version`.
+3. Compare. Installed strictly behind target means the pack is stale;
+   `sd-status` will not have said so.
+
+Target sources considered, with accept/reject reasons:
+
+- **Machine fleet profile** (accepted, lookup position 1): written by
+  `install.py TARGET --configure-fleet`, read through the documented
+  `fleet_profile_path` resolution, purely local. Absent on machines that
+  never ran `--configure-fleet` — in that case there is no resolvable
+  target and freshness is simply unknown (see section 4); do not create the
+  profile to answer the question.
+- **Sibling source checkout by bare path convention** (rejected): guessing
+  `../sd-ai-command-pack` without a profile recording it is an unrecorded
+  convention, wrong whenever the checkout lives elsewhere. When the profile
+  exists its `packSource` reaches the same checkout through a recorded
+  path, which is why the profile is the accepted route to it.
+- **GitHub release list** (rejected): network-dependent, so it must degrade
+  under `--no-network` rather than fail or silently report `current` — a
+  by-hand check that could not reach the network must report "could not
+  check", never "current". It is also unproven as a source:
+  `gh release list --repo platypeeps/sd-ai-command-pack` returned no
+  releases when checked on 2026-08-07 and again on 2026-08-09.
+
+### 6. Recorded reproduction of the defect shape
+
+2026-08-09, this repository: installed pack `0.64.3`
+(`provenance.json`), fleet profile resolved via `$XDG_CONFIG_HOME` to a
+`packSource` naming the local `sd-ai-command-pack` checkout at version
+`0.64.32` — installed strictly behind. `sd-status --no-network --json`
+exited `0` and reported:
+
+```json
+{"sdAiCommandPack": "0.64.3", "packState": "installed",
+ "sourcePack": null, "targetPack": null}
+```
+
+with no anomaly, follow-up, or recommendation naming pack freshness. The
+invariant is that shape — installed strictly behind a resolvable source
+with the freshness fields silent — not the version pair (the source
+checkout advances on its own; it was `0.64.24` when the defect was first
+observed on 2026-08-07) and not the top-line verdict (see section 4).
+
 ## Scenario: Repomix Repository Map Refresh
 
 ### 1. Scope / Trigger
