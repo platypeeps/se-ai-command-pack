@@ -109,6 +109,18 @@ class EvaluateTests(unittest.TestCase):
         code, _ = aggregate.evaluate(needs)
         self.assertEqual(code, 1)
 
+    def test_lane_entry_not_a_dict_fails(self) -> None:
+        needs = payload()
+        needs["unittest"] = "success"
+        code, messages = aggregate.evaluate(needs)
+        self.assertEqual(code, 1)
+        self.assertIn("failed lanes: unittest", messages)
+
+    def test_unexpected_result_value_fails(self) -> None:
+        code, messages = aggregate.evaluate(payload(unittest="neutral"))
+        self.assertEqual(code, 1)
+        self.assertIn("failed lanes: unittest", messages)
+
 
 class MainTests(unittest.TestCase):
     def test_malformed_json_fails(self) -> None:
