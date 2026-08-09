@@ -62,7 +62,10 @@ Five independent fail-softs, all verified 2026-08-08:
 ## Acceptance Criteria
 
 - [ ] Each of the five fail-softs has a written disposition (fix or accept)
-      with reasoning, citing the current behaviour by file and line.
+      with reasoning, citing the current behaviour by file and line where a
+      positive occurrence exists; dated GitHub API evidence for
+      repository-external state (item 3), and bounded repository-search
+      evidence for absences (item 4), satisfy the citation requirement.
 - [ ] If item 1 is fixed: the new behaviour is demonstrated dynamically, not
       by reading YAML — either a controlled workflow run with a lane forced
       to skip, or the aggregation logic extracted into a form exercised by a
@@ -93,5 +96,8 @@ Five independent fail-softs, all verified 2026-08-08:
   `sd-ai-command-pack-check.py:29`, absence of any `shellcheck`/`bash -n`
   invocation in `tests.yml` and `Makefile`. Branch-protection values came from
   the GitHub API during the review.
-- Lightweight; PRD-only. The five dispositions are small and independent; if
-  execution grows, split rather than add design.md.
+- Originally filed lightweight/PRD-only. Superseded 2026-08-08 by the
+  needs-design planning run: the dispositions interact (items 1/2 share the
+  aggregator, item 5 is constrained by sd-check's state guard), so full
+  `design.md` + `implement.md` were added. Scope still fits one PR; split
+  only if execution proves otherwise.
