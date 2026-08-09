@@ -1568,3 +1568,44 @@ Ran sd-work-backlog until=design selector=needs-design (run e136224089dc43c08b73
 ### Next Steps
 
 - None - task complete
+
+
+## Session 143: Close agent-artifacts parent task via two-platform se-research contract check
+
+**Date**: 2026-08-09
+**Task**: Close agent-artifacts parent task via two-platform se-research contract check
+**Branch**: `task/08-09-agent-artifacts-closure`
+
+### Summary
+
+Closure review of the 07-25-agent-artifacts parent (all five children previously archived): refreshed user installs to 0.67.1, executed the last open acceptance criterion as a live two-platform se-research run — Claude Code dispatch (3 se-source-reader lane workers, 3 se-claim-verifier refutation workers) vs Codex CLI inline, same question and arguments — and recorded the contract-identical result in research/dispatch-inline-contract-check.md. Ticked the AC, unparked the task, moved it to review for closure lifecycle, archived it, and shipped as PR #171. Three-round adversarial review (host + Codex), concerns C-23..C-27 addressed.
+
+### Main Changes
+
+- Added research/dispatch-inline-contract-check.md: both platforms' verbatim final reports plus section-by-section contract comparison; verdict contract-identical with execution-strategy differences only
+- prd.md: last cross-child AC flipped to satisfied with evidence pointer; intro moved to closure-state wording
+- task.json: PARKED title prefix removed, description and notes updated, status moved to review for the closure lifecycle
+- Archived 07-25-agent-artifacts to archive/2026-08/
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2e9ceba` | chore(task): close agent-artifacts parent — two-platform contract check satisfied |
+| `915de3b` | chore(task): move agent-artifacts to review for closure lifecycle |
+
+### Testing
+
+- [OK] task.py validate .trellis/tasks/07-25-agent-artifacts — all validations passed
+- [OK] review preflight — 0 failures, 0 warnings
+- [OK] Codex adversarial round 3 — C-25/C-27 resolved; one-line residual fixed and grep-verified
+- [OK] sd-review scope=pr attempt 2 — status ready, head 2e9ceba
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
