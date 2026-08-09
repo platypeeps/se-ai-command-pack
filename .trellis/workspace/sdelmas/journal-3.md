@@ -1609,3 +1609,46 @@ Closure review of the 07-25-agent-artifacts parent (all five children previously
 ### Next Steps
 
 - None - task complete
+
+
+## Session 144: Close CI aggregate and gate fail-softs
+
+**Date**: 2026-08-09
+**Task**: Close CI aggregate and gate fail-softs
+**Branch**: `task/08-08-ci-gate-fail-softs`
+
+### Summary
+
+Implemented all five dispositions from 08-08-ci-gate-fail-softs: extracted ci-result aggregation into a tested repo-own script with per-lane skip policy and fail-closed lane sets, added auto-tag-release to the aggregate as a conditional lane, recorded the branch-protection acceptance, added a bash -n shell-syntax lane (CI lint step reusing make shell-syntax plus make check), and registered guard-safe repo gates in .sd-ai-command-pack/check.json (repo.test/repo.lint/repo.shellsyntax via gate-test/gate-lint). Review loop: 4 prism rounds (3 fix commits, remainder rebutted), 4 Copilot findings all complied in a0c74eb, threads resolved. Shipped as PR #172.
+
+### Main Changes
+
+- New .github/scripts/aggregate-ci-result.py: required lanes must be exactly success, conditional lanes accept skipped, undeclared/missing lanes and malformed entries exit 2
+- tests/test_aggregate_ci_result.py: 16 tests including the PRD dynamic proof (required lane skipped exits nonzero) and a workflow-needs drift tripwire
+- tests.yml: ci-result checks out and runs the aggregator with auto-tag-release in needs; lint job runs make shell-syntax
+- Makefile: shell-syntax, gate-test, gate-lint targets; shared LINT_PATHS/MYPY_PATHS; check includes shell-syntax
+- .sd-ai-command-pack/check.json registers repo.test/repo.lint/repo.shellsyntax; quality-guidelines.md records the durable gate guidance
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4afe767` | fix(ci): close CI aggregate and gate fail-softs |
+| `cab8e2f` | fix(test): address prism review on PR #172 — strict payload overrides, hardened workflow-needs parser, typed loader |
+| `bff7fe8` | test: cover non-dict lane entries and unexpected result values |
+| `a0c74eb` | fix(ci): address Copilot review on PR #172 — malformed lane entries exit 2, CI reuses make shell-syntax, assert import spec |
+
+### Testing
+
+- [OK] make test — 591 tests OK, coverage 88.1% (floor 80)
+- [OK] sd-check overall passed, stateGuard passed, three repo.* rows; negative proof: broken assertion made repo.test fail rc 1, reverted to green
+- [OK] make check green; scratch-copy bash -n negative proof rc 2
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
