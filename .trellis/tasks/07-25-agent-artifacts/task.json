@@ -1,8 +1,8 @@
 {
   "id": "agent-artifacts",
   "name": "agent-artifacts",
-  "title": "PARKED: Ship SE capabilities as cross-platform sub-agents",
-  "description": "Parent task for shipping SE capabilities as cross-platform sub-agents: canonical agents authored once as neutral MD plus frontmatter, rendered per platform (Claude MD, Codex TOML) through the existing registry/generator/manifest/installer chain as manifest kind 'agent', with a capability-first inline fallback so non-dispatch platforms keep equivalent behavior. Owns requirements R1-R7 and the cross-child acceptance criteria; delivery happens in child tasks. Parked: no direct implementation work, and the last open acceptance criterion needs one se-research run on a sub-agent-dispatch platform and one on an inline platform.",
+  "title": "Ship SE capabilities as cross-platform sub-agents",
+  "description": "Parent task for shipping SE capabilities as cross-platform sub-agents: canonical agents authored once as neutral MD plus frontmatter, rendered per platform (Claude MD, Codex TOML) through the existing registry/generator/manifest/installer chain as manifest kind 'agent', with a capability-first inline fallback so non-dispatch platforms keep equivalent behavior. Owned requirements R1-R7 and the cross-child acceptance criteria; delivery happened in the five child tasks, all archived 2026-08-04/05. All acceptance criteria satisfied as of 2026-08-09 (archive pending in the closure ship): the last open criterion — one se-research run on a sub-agent-dispatch platform and one on an inline platform producing contract-identical final reports — was satisfied by a live two-platform run recorded in research/dispatch-inline-contract-check.md.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -31,6 +31,6 @@
     "installer/registry.py",
     ".trellis/tasks/07-25-agent-artifacts/research/cross-platform-agent-support.md"
   ],
-  "notes": "Parent task: owns the requirement set and cross-child acceptance criteria, and has no direct implementation work. The PARKED: prefix is the canonical machine-visible marker (PARKED_PREFIX_RE, scripts/sd-ai-command-pack-work-loop.py:45) that keeps autonomous ranking from selecting it; without it a correct ranking selects a task whose PRD forbids starting it, and the loop has no legal skip from phase selected. Unpark when the one open acceptance criterion is met: an se-research run on a sub-agent-dispatch platform and one on an inline platform.",
+  "notes": "Parent task: owns the requirement set and cross-child acceptance criteria, and has no direct implementation work. Unparked 2026-08-09: the one open acceptance criterion was met by a live two-platform se-research run (Claude Code dispatch + Codex CLI inline; evidence in research/dispatch-inline-contract-check.md), so the PARKED: title prefix that kept autonomous ranking from selecting it (PARKED_PREFIX_RE, scripts/sd-ai-command-pack-work-loop.py:45) is removed as part of closure. All five children archived 2026-08-04/05; all cross-child acceptance criteria now checked.",
   "meta": {}
 }
