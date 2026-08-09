@@ -1823,3 +1823,36 @@ Resumed the work loop post-/clear, converged PR #178 through review (3 review-dr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 149: Adopt --local-disposition rebuttal control via pack refresh (PR #180)
+
+**Date**: 2026-08-09
+**Task**: Adopt --local-disposition rebuttal control via pack refresh (PR #180)
+**Branch**: `main`
+
+### Summary
+
+Executed 08-06-sd-review-local-rebuttal-gap end to end: adversarial-reviewed PRD update recording the adopt-via-refresh disposition (upstream shipped the control in v0.64.26; installed pack was v0.64.3), refreshed the vendored sd-ai-command-pack to v0.64.32 from a clean pinned tag worktree, verified the control with fail-closed probes and 6/6 upstream behavioral tests, documented usage rules plus a Vendored Pack Lifecycle section in quality-guidelines.md, and accepted the refresh's deliberate retirement of local fork bc01bc2 (deleted its pinned test file). Copilot review surfaced a real coordinator gap (cached local state never forwards a rebuttal at an unchanged head) — documented the fresh --attempt-id working path in guidance; env-allowlist hardening and the coordinator fix are queued for upstream relay. PR #180 squash-merged as 52d8d4d. Also pinned trellis-research/trellis-implement agents to model opus. Follow-up: 08-07-review-py-local-fork is now moot (fork retired, inputs fixed at source) and should be re-scoped or archived; upstream relay items fit 08-07-vendored-artifact-upstream-route.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `52d8d4d` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
