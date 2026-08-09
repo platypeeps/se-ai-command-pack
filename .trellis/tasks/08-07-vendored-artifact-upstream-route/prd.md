@@ -175,3 +175,21 @@ guidance this task records must say that much: local-only is terminal for a
   own task, `08-07-status-collector-pack-drift`; this one still does not fix it.
 - Planning depth: PRD-only. The deliverable is recorded guidance; the ownership
   procedure is a lookup, not a design.
+
+## Relay log (2026-08-09)
+
+First concrete upstream relays, filed from the PR #180 review cycle while this
+task remains in planning; whatever route this task ultimately records should
+absorb them as precedent:
+
+- platypeeps/sd-ai-command-pack#397 — coordinator never forwards
+  `--local-disposition` at an unchanged head with the default attempt id
+  (verified against v0.64.32; consumer-side workaround documented in
+  quality-guidelines).
+- platypeeps/sd-ai-command-pack#398 — cache-env consumers export any all-caps
+  pair; restore allowlist membership derived from `CACHE_ENV_KEYS` at runtime
+  (A-080 follow-up, defense-in-depth).
+
+Member update: 08-07-review-py-local-fork closed overtaken-by-events on
+2026-08-09 (fork retired deliberately by the v0.64.32 refresh; its residual
+upstream concern is #397's related note).
