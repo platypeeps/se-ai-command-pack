@@ -1,21 +1,40 @@
 # SE AI Command Pack
 
-User-level knowledge-work skills for AI agent frameworks: personal profile
-maintenance and consultation, interview-driven technical authoring,
-destination-neutral capture, source-faithful destination adaptation,
-constructive adversarial review, bookmark and action-inbox triage,
-critical operational checklists, neutral alternative comparisons,
-evidence-traceable diagrams, auditable extreme distillation,
-rubric-driven evaluations, evidence-backed editorial opportunity ranking,
-report-first technical editing,
-decision-oriented agendas, evidence-linked meeting follow-through,
-portable baseline monitoring, methodologically gated research papers,
-outcome-based execution planning, evidence-linked blameless postmortems,
-evidence-backed personal weekly reviews,
-pack discovery,
-deep research, claim fact-checking, decision support, project-status reporting,
-daily briefs, meeting prep, landscape scans, and document digests — installed
-once per machine, centrally managed from this repository.
+A pack of user-level knowledge-work skills for AI agent frameworks (Claude
+Code / Cowork, OpenAI Codex, Amp-compatible tools): research, fact-checking,
+authoring, review, planning, meeting support, monitoring, and dozens of other
+evidence-disciplined workflows — installed once per machine, centrally managed
+from this repository.
+
+## Quick start
+
+Requires Python 3.10 or newer (the oldest version CI tests).
+
+```sh
+git clone https://github.com/platypeeps/se-ai-command-pack.git
+cd se-ai-command-pack
+python3 install.py --user
+```
+
+After installing, ask your agent for **`se-help`** — it is the pack's entry
+point: it recommends the right skill for the job at hand and returns a
+copy-ready prompt. All skills are natural-language-triggered; there are no
+slash commands to memorize.
+
+See [Install](#install) for variants, conflict handling, and the refresh
+contract.
+
+## Contents
+
+- [Skills](#skills)
+- [What gets installed where](#what-gets-installed-where)
+- [Install](#install) · [Update](#update) · [Remove](#remove)
+- [How it works](#how-it-works)
+- [Why a fresh clone shows `/sd:*` commands](#why-a-fresh-clone-shows-sd-commands)
+- [Maintaining the pack](#maintaining-the-pack)
+- [Repository map](#repository-map)
+- [Non-goals in v0.1](#non-goals-in-v01-designed-for-not-built)
+- [License](#license)
 
 The pack borrows the installer architecture of its sibling
 `sd-ai-command-pack` (manifest-driven payload, provenance receipts, vouched
@@ -119,245 +138,8 @@ Skills that use external evidence share one quality bar: a
 confidence vocabulary) is installed into each consumer's `references/`
 directory.
 
-`se-profile` maintains a private, portable `se-personal-profile/v1` Markdown
-artifact from explicit input and bounded user-authorized sources. The public
-pack contains the schema and workflow only: profile content, locators,
-credentials, and destination configuration remain private. Obsidian is the
-preferred user-selected destination, with an explicit user-selected Notion
-fallback; the skill implements no connector and never silently mirrors both.
-Every mutation previews the change, preserves user-owned content, writes, reads
-back, and verifies stable IDs. Any other skill that adopts the contract is a
-read-only consumer and must never write back merely because it used the profile.
-
-`se-ask-me` is the first read-only profile consumer. It keeps profile facts,
-prediction, aligned advice, reflection, and outward-facing drafts distinct;
-current context outranks historical patterns, uncertain or conflicting evidence
-stays visible, and outward drafts use only eligible `outward-safe` assertions.
-It never treats the profile as identity, consent, authority, or permission to act.
-
-`se-author` develops original technical articles through topic qualification, a
-one-question-at-a-time interview, an explicitly approved editorial brief,
-claim-specific evidence work, ordered drafting passes, and resumable workspace
-checkpoints. It preserves user testimony separately from assistant framing and
-returns a publication package without publishing or writing to a destination.
-
-`se-paper` develops a research question through a one-question interview,
-feasibility and ethics gates, an explicitly approved research brief, a dated
-literature-search protocol, traceable method and evidence decisions, disciplined
-drafting, validity review, and a reproducibility inventory. It preserves
-negative and null findings and returns a venue-aware package without submitting,
-publishing, claiming approval, or fabricating execution.
-
-`se-topic-radar` ranks technical writing opportunities from explicitly
-authorized personal activity, dated external developments, and prior-content
-coverage. It traces every component score, keeps private evidence out of
-outward-facing rationales, penalizes duplicate angles, and returns exactly ten
-only when the evidence supports ten materially distinct candidates. Selection
-hands off to `se-author` or `se-paper`; it does not draft or publish.
-
-`se-monitor` compares one bounded watched subject with an explicit portable
-baseline. It reports dated semantic changes, compresses unchanged items,
-preserves unverifiable gaps, and returns a minimized `se-monitor-state/v1`
-artifact for an authorized user or host capability to retain. The workflow does
-not persist state, schedule recurrence, subscribe, notify, or write externally.
-
-`se-plan` turns one accepted outcome into observable milestones, dependencies,
-risks, decision points, and immediate authorized actions. It keeps commitments
-separate from proposed owners, dates, and estimates, exposes cycles and missing
-prerequisites, and hands repository implementation planning to the local
-development workflow without creating tasks or competing technical artifacts.
-
-`se-study-guide` transforms a bounded source set into a durable concept map,
-definition and notation reference, worked examples, retrieval prompts,
-flashcards, varied practice, traceable solutions, common traps, and review
-order. It keeps source material distinct from generated scaffolding and
-unsupported gaps, preserves conflicts, and never teaches live, grades,
-certifies, schedules, or claims mastery.
-
-`se-stakeholder-map` maps people and groups relevant to one initiative or
-decision while keeping formal authority, informal influence, observed
-positions, user judgments, assistant inferences, dependencies, and information
-needs distinct. It pairs every inference with validation, exposes missing or
-conflicting perspectives, and proposes only transparent engagement sequencing;
-it does not profile, manipulate, contact, schedule, assign, or write externally.
-
-`se-thread-digest` turns a bounded Slack thread, channel window, or equivalent
-conversation into an evidence-linked outcome digest. It keeps proposals,
-decisions, explicit commitments, candidate actions, corrections, disputes,
-and unknowns distinct; preserves message and revision evidence; respects the
-audience and private-channel boundary; and never posts, reacts, monitors,
-assigns, or persists without a separate authorized operation.
-
-`se-tutorial` turns a declared technical starting state into a checkpoint-
-driven teaching path with prerequisite gates, environment and version branches,
-exact execution labels, expected results, recovery, final validation, and safe
-cleanup. It distinguishes verified, partially verified, and unverified examples
-and never implies that commands ran on the reader's system or that a plausible
-example works.
-
-`se-video-notes` turns supplied video metadata and transcripts into source-
-faithful, timestamped knowledge notes. It discloses complete, partial, metadata-
-only, and unavailable coverage; separates creator content from assistant
-analysis; and preserves timestamp, quotation, claim, language, edit, and
-comparison uncertainty without pretending the video was watched.
-
-`se-watchlist` reviews bounded channels, feeds, authors, searches, playlists,
-podcasts, or collections against an explicit checkpoint. It separates source
-coverage from an empty delta, deduplicates conservatively, applies only
-evidenced exclusions, explains privacy-safe relevance, and returns a minimized
-next monitor state without persisting, scheduling, subscribing, or notifying.
-
-`se-premortem` stress-tests an accepted plan before execution by defining the
-failed state, developing evidence-labeled failure modes, preserving correlated
-and catastrophic-tail risks, and mapping prevention and contingencies to
-observable leading indicators. It exposes no-mitigation cases, decision points,
-stop conditions, and residual risk without predicting failure, inventing
-precision, approving the plan, assigning work, or executing controls.
-
-`se-postmortem` reconstructs a stable incident or failed outcome from a bounded
-source inventory and evidence-linked timeline. It keeps observations,
-interpretations, contributing factors, root causes, and counterfactuals
-distinct; examines detection, response, recovery, and safeguard behavior; and
-returns verifiable corrective-action proposals without assigning blame,
-inventing commitments, coordinating response, or executing changes.
-
-`se-technical-editor` reviews an existing technical draft through separate
-technical correctness, evidence and citations, hidden assumptions, code and
-examples, novelty and originality, skeptical-reader objections, structure,
-reader comprehension, confidentiality, title and opening, and voice consistency
-passes. It reports located
-findings before substantive rewriting, preserves representative author language
-and evidence states, and applies only explicitly approved edits without publishing.
-
-`se-brand-voice` validates written content against a stated brand voice across
-tone, terminology, style, and audience-fit rule groups. It resolves the voice
-definition through an explicit ordered candidate list, names the file it used,
-and never infers a voice from the content under review — with no guidelines it
-reports the gap and offers a bootstrap that drafts starter guidelines from
-supplied samples. Every mode is read-only: findings carry the violated rule, an
-exact location, the offending text, and a suggested rewrite, and nothing is
-applied. Correctness-first editorial review remains `se-technical-editor`.
-
-`se-bookmark-triage` turns a bounded saved-item collection into a small,
-evidence-labeled attention queue. It preserves original locators, keeps
-uncertain duplicates separate, distinguishes full-content review from snippets
-or metadata, and fits selected work to a disclosed time budget. It never
-mutates the source collection; deep viewing, durable capture, knowledge
-capture, and action extraction remain separate handoffs.
-
-`se-capture` normalizes one URL, file, pasted passage, connected record, or
-bounded thread into a destination-neutral Markdown artifact. It records actual
-retrieval coverage, separates source/user/derived metadata, uses a reproducible
-deduplication basis, and preserves source-stated claims without upgrading them
-to verified facts. Publication and every suggested downstream workflow remain
-separate, not-yet-run operations.
-
-`se-checklist` distills bounded authoritative procedures, policies, plans, or
-failure history into the smallest dependency-ordered set of checks that prevent
-a named failure or prove completion. Every item has an observable pass state,
-evidence rule, failure response, and source basis. It never executes the work,
-replaces a full procedure, or claims certification.
-
-`se-runbook` turns validated operational knowledge into a versioned procedure
-whose steps keep authority, exact target, action, expected result, read-back
-verification, failure response, decision point, and evidence together. It
-distinguishes validated, partially validated, and proposed steps; reconciles
-partial state before retry or recovery; separates rollback from recovery; and
-warns when the current environment, version, or date is outside validation.
-The workflow authors but never executes the runbook.
-
-`se-sop` turns observed and approved routine practice into a controlled,
-maintainable procedure. It preserves conflicts, unknowns, and undocumented
-exceptions; keeps proposed improvements outside current practice; makes every
-step and mandatory control operationally testable; and records authority,
-compliance scope, document control, and staleness. Event-driven failure,
-rollback, and recovery remain `se-runbook` work, and the workflow never executes
-or approves the SOP.
-
-`se-compare` applies one fair, source-aware frame to a known set of
-alternatives. It preserves version and evidence asymmetry, explicit unknown and
-conflicting cells, conditional tradeoffs, eligibility, and qualitative
-sensitivity without ranking or recommending a winner. Choice remains a separate
-handoff to `se-decide`.
-
-`se-diagram` builds a traceable element-and-relationship ledger before choosing
-the smallest useful visual form. It emits conservative Mermaid when faithful or
-a tool-neutral brief when rendering constraints would distort the model, while
-preserving cycles, boundaries, conflicts, uncertainty, and an accessible description.
-
-`se-presentation` turns an approved source artifact into an outcome-led story
-arc and timed, one-claim-per-slide specification. It keeps claims, citations,
-visual states, speaker notes, variants, omissions, and accessibility traceable,
-then hands the accepted blueprint to presentation tooling without creating or
-publishing a deck itself.
-
-`se-proposal` develops a decision-ready case through a one-question interview
-and explicitly approved proposal brief. It keeps observed evidence, estimates,
-assumptions, and advocacy distinct; compares credible alternatives including do
-nothing; exposes authority, stakeholder, investment, and rejection gaps; and
-hands an accepted outcome to `se-plan` without implying approval or execution.
-
-`se-publish` adapts an already approved source artifact into a Slack message or
-canvas, Notion page, memo, announcement, briefing, or YouTube outline. It keeps
-load-bearing claims and citations traceable, records every material adaptation
-and omission, checks audience widening and sensitive content, and returns an
-exact preview plus connector-ready handoff without sending or publishing.
-
-`se-red-team` steelmans a proposal, decision, article, conclusion, or plan
-before testing its assumptions, contrary evidence, incentives, misuse, failure
-modes, security/privacy boundaries, strongest counterargument, and reversal
-conditions. Findings retain evidence and uncertainty classes, sensitive detail
-is minimized, and strong artifacts may return an honest no-findings result.
-
-`se-retro` reviews a completed project, research effort, meeting, launch, or
-operational period by inventorying evidence and reconstructing a factual
-timeline before interpreting outcomes or contributing conditions. It keeps
-verified facts, attributed participant perspectives, and assistant inference
-distinct; preserves disagreement and uncertainty; and returns lessons plus a
-small set of proposed follow-ups without recording, assigning, or creating
-work. Software-delivery debugging and gate retros route conditionally to the
-specialized `sd-retro` workflow when it is available.
-
-`se-review-skills` inventories a bounded skill, family, repository, or package
-before reviewing correctness, sibling overlap, missing capabilities,
-capability-preserving brevity, progressive disclosure, script-extraction
-opportunities, metadata, portability, context strategy, bounded subagent use,
-model routing, and evaluation coverage. Findings are evidence-backed and
-numbered for individual or grouped selection. Review is read-only; accepted
-work is reconciled into the canonical owner's Trellis repository before any
-template edit, and first-party SD/SE remediation is constrained to upstream
-templates. It also scans verified manifest-derived user installation roots,
-maps matching or drifted copies back to repository sources, and deduplicates
-multi-platform installs without losing per-copy drift evidence. Reports finish
-with suggested next steps and exact valid selectors.
-
-`se-distill` compresses a supplied corpus to an explicit information budget
-using a traceable importance map and invariant audit. It reports measured input
-and output size, preserves load-bearing attribution and disagreement, and
-returns a smallest-safe result plus an auditable loss ledger when 10% would be
-unsafe. The 80/10 goal remains a disclosed prioritization heuristic, not a
-semantic-retention guarantee.
-
-`se-evaluate` audits a rubric before assessing one defined subject. It maps
-every judgment to criterion-level evidence, keeps failure separate from missing
-or non-evaluable evidence, uses numbers only when scales and aggregation are
-meaningful, and exposes weight or threshold sensitivity plus the highest-value
-subject, rubric, and evidence improvements. It does not certify, score people,
-or make the final decision.
-
-`se-action-inbox` reconciles explicit assignments and commitments across a
-bounded source set while keeping requests, proposals, and opt-in inferred
-possibilities separate. It preserves every locator and conflicting value,
-suppresses resolved items visibly, and ranks active work with evidence-backed
-reasons. The workflow is read-only: task creation, reminders, replies, and
-handoff to `se-plan` require a separate request.
-
-`se-agenda` designs a meeting around an observable outcome, known authority,
-required evidence, and a verified time budget. It moves broadcast status and
-preparation out of synchronous time when practical, keeps missing decision
-roles visible, and can recommend an asynchronous alternative, split, cancel,
-or reschedule. Scheduling, invitations, delivery, notes, and follow-through
-remain separate operations.
+Each skill's full contract lives in its own `SKILL.md` under
+`templates/skills/<name>/` — the table above is the complete catalog.
 
 ## What gets installed where
 
@@ -385,11 +167,16 @@ redirect Codex's lookup.
 
 ## Install
 
+Requires Python 3.10 or newer (the oldest version CI tests).
+
 ```sh
 git clone https://github.com/platypeeps/se-ai-command-pack.git
 cd se-ai-command-pack
 python3 install.py --user
 ```
+
+The install ends with an aggregate per-platform summary; pass `--verbose`
+for one status line per file.
 
 Useful variants:
 
@@ -469,6 +256,16 @@ directories are pruned.
   - `installed-targets.txt` — every installed path, the removal record.
 - CI gates: the manifest must match the generated surfaces, and any payload
   change must bump the version with a dated `CHANGELOG.md` heading.
+
+## Why a fresh clone shows `/sd:*` commands
+
+This repository dogfoods its sibling `sd-ai-command-pack` and Trellis for its
+own development. The `/sd:*` commands, `trellis-*` skills, `.trellis/`
+directory, and `.agents/` adapters you see in a fresh clone are the
+**development workflow of this repository**, not part of the installed
+payload — `install.py` installs only the `se-*` skills from
+`templates/skills/`. Contributors: see
+[CONTRIBUTING.md](CONTRIBUTING.md) for how the sd surfaces are used.
 
 ## Maintaining the pack
 

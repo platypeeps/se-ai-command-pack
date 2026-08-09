@@ -137,6 +137,14 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Print planned changes without writing files.",
     )
     parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help=(
+            "Print one status line per file instead of the aggregate "
+            "per-platform summary."
+        ),
+    )
+    parser.add_argument(
         "--confirm-source",
         action="store_true",
         help=(
@@ -277,6 +285,69 @@ def _install_receipt_files(
     return kept_receipt_targets
 
 
+_SUMMARY_STATUS_ORDER = (
+    "created",
+    "updated",
+    "overwritten",
+    "unchanged",
+    "preserved",
+    "conflict",
+    "symlink-conflict",
+)
+
+
+def _format_status_counts(counts: dict[str, int]) -> str:
+    ordered = [status for status in _SUMMARY_STATUS_ORDER if counts.get(status)]
+    ordered.extend(sorted(status for status in counts if status not in ordered))
+    return ", ".join(f"{status} {counts[status]}" for status in ordered)
+
+
+def _print_aggregate_results(
+    results: list[InstallResult],
+    retired_results: list[RemoveResult],
+    skipped: list[tuple[PackFile, str]],
+    *,
+    dry_run: bool,
+) -> None:
+    """Print per-platform counts and one completion line instead of a
+    per-file wall; per-file output remains available with --verbose."""
+    per_platform: dict[str, dict[str, int]] = {}
+    backups = 0
+    for result in results:
+        counts = per_platform.setdefault(result.file.platform, {})
+        status = str(result.status)
+        counts[status] = counts.get(status, 0) + 1
+        if result.backup:
+            backups += 1
+    for platform in sorted(per_platform):
+        counts = per_platform[platform]
+        total = sum(counts.values())
+        print(f"{platform}: {total} files ({_format_status_counts(counts)})")
+    if backups:
+        print(f"backups: {backups} .bak files written")
+    retired_counts: dict[str, int] = {}
+    for retired in retired_results:
+        status = str(retired.status)
+        retired_counts[status] = retired_counts.get(status, 0) + 1
+    if retired_counts:
+        print(f"retired targets: {_format_status_counts(retired_counts)}")
+    skipped_groups: dict[tuple[str, str], int] = {}
+    for file, reason in skipped:
+        key = (file.platform, reason)
+        skipped_groups[key] = skipped_groups.get(key, 0) + 1
+    for (platform, reason), count in sorted(skipped_groups.items()):
+        print(f"skipped {platform}: {count} files ({reason})")
+    total_files = len(results)
+    platform_count = sum(
+        1 for platform in per_platform if platform in PLATFORM_REGISTRY
+    )
+    action = "dry run complete (no changes written)" if dry_run else "install complete"
+    print(
+        f"{action}: {total_files} files across "
+        f"{platform_count} platform{'s' if platform_count != 1 else ''}"
+    )
+
+
 def _print_install_summary(
     root: Path,
     *,
@@ -284,19 +355,28 @@ def _print_install_summary(
     retired_results: list[RemoveResult],
     skipped: list[tuple[PackFile, str]],
     kept_receipt_targets: list[tuple[Path, str]],
+    verbose: bool,
+    dry_run: bool,
 ) -> None:
     """Print install results, retired results, skips, hints, and notes."""
-    for result in results:
-        print(f"{result.status:11} {result.file.target}")
-        if result.backup:
-            print(f"{'backup':11} {display_path(root, result.backup)}")
-    for retired in retired_results:
-        suffix = f" ({retired.detail})" if retired.detail else ""
-        print(f"{retired.status:17} {display_path(root, retired.target)}{suffix}")
-        if retired.backup:
-            print(f"{'backup':17} {display_path(root, retired.backup)}")
-    for file, reason in skipped:
-        print(f"skipped     {file.target} ({reason})")
+    if verbose:
+        for result in results:
+            print(f"{result.status:11} {result.file.target}")
+            if result.backup:
+                print(f"{'backup':11} {display_path(root, result.backup)}")
+        for retired in retired_results:
+            suffix = f" ({retired.detail})" if retired.detail else ""
+            print(
+                f"{retired.status:17} {display_path(root, retired.target)}{suffix}"
+            )
+            if retired.backup:
+                print(f"{'backup':17} {display_path(root, retired.backup)}")
+        for file, reason in skipped:
+            print(f"skipped     {file.target} ({reason})")
+    else:
+        _print_aggregate_results(
+            results, retired_results, skipped, dry_run=dry_run
+        )
     anchor_missed_platforms = sorted(
         {
             file.platform
@@ -434,6 +514,8 @@ def main(argv: list[str] | None = None) -> int:
         retired_results=retired_results,
         skipped=skipped,
         kept_receipt_targets=kept_receipt_targets,
+        verbose=args.verbose,
+        dry_run=args.dry_run,
     )
 
     conflict_results = _conflict_results(results)

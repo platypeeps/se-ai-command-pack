@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.67.2 - 2026-08-09
+
+- `install.py` now ends with an aggregate per-platform summary and a
+  completion line by default; the per-file status wall moved behind a new
+  `--verbose` flag. Conflict reporting is unchanged.
+- README restructured: quick start (install command, Python 3.10 floor, and
+  the `se-help` entry point) now sits on the first screen with a table of
+  contents; the hand-written 34-skill prose subset was removed in favor of
+  the complete generated catalog table; a new section explains why a fresh
+  clone shows `/sd:*` and `trellis-*` development surfaces.
+
 ## 0.67.1 - 2026-08-06
 
 - `se-review-skills` now requires every task it creates from a

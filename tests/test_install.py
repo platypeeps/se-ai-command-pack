@@ -244,6 +244,7 @@ class ReceiptAwareRefreshTest(TempDirTestCase):
             "--platform",
             "codex",
             "--dry-run",
+            "--verbose",
         )
         for target, prior_content in targets.items():
             self.assertIn(f"updated     {target}", dry_run.stdout)
@@ -257,6 +258,7 @@ class ReceiptAwareRefreshTest(TempDirTestCase):
             "claude",
             "--platform",
             "codex",
+            "--verbose",
         )
 
         refreshed_provenance = read_provenance(home)
