@@ -182,12 +182,13 @@ this one — so the pattern is established there rather than being invented here
 - The vendored-ownership constraint is the same one enumerated in the table in
   `08-07-vendored-artifact-upstream-route/prd.md`, which is the canonical list.
   Do not restate a running count or a membership list here.
-- Lightweight enough to stay PRD-only: the deliverable is a disposition between
-  two named options, and this PRD deliberately states behaviour and constraints
-  without choosing a CI topology. If the enforce route is chosen and turns out to
-  need a Trellis-change detector to avoid failing closed on absence, that is a
-  real design question and reopens this as a complex task needing `design.md` and
-  `implement.md`.
+- Originally filed lightweight/PRD-only, with a reopen clause for the
+  Trellis-change-detector case. Superseded 2026-08-09 by the needs-design
+  planning run: `design.md` and `implement.md` were added recording the
+  enforce disposition and its CI topology. The detector turned out to be
+  unnecessary — the preflight's diff-scoped validators no-op on an empty
+  changed set — so the reopen clause's specific trigger never fired; the
+  escalation came from the planning workflow, not from that trigger.
 - An adversarial review on 2026-08-07 corrected four claims in this PRD before it
   was filed: the preflight is *not* reachable only through the full local check
   (`sd-create-pr` requires it), a CI job *does* read `.trellis/` even though none
