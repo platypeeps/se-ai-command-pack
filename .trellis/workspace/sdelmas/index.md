@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 141
+- **Total Sessions**: 142
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1528 | Active |
+| `journal-3.md` | ~1567 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 142 | 2026-08-09 | Design consumer CI review-preflight lane (until=design work-backlog run) | `824d4be` | `task/08-09-ci-no-preflight-lane-design` |
 | 141 | 2026-08-09 | Design ci-gate-fail-softs through needs-design work loop | `0b14fe4` | `task/08-09-ci-gate-fail-softs-design` |
 | 140 | 2026-08-08 | File six improvement-opportunity tasks from deep repo review | `463f39a` | `task/08-08-file-deep-review-tasks` |
 | 139 | 2026-08-07 | File status-collector pack-drift task and reconcile cluster ordering | `b3548eb` | `task/08-07-status-collector-drift-and-ordering` |
