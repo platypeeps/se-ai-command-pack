@@ -285,12 +285,30 @@ class ModesAndFlagsTest(TempDirTestCase):
     def test_default_summary_is_aggregate(self) -> None:
         home = make_home(self.base)
         result = install_ok("--root", str(home))
-        self.assertRegex(result.stdout, r"(?m)^claude: \d+ files \(created \d+\)$")
+        for platform in ("agents", "claude", "codex", "pack"):
+            self.assertRegex(
+                result.stdout,
+                rf"(?m)^{platform}: \d+ files \(created \d+\)$",
+            )
         self.assertRegex(
             result.stdout,
             r"(?m)^install complete: \d+ files across \d+ platforms$",
         )
         self.assertNotRegex(result.stdout, r"(?m)^created\s+\.claude/")
+
+    def test_default_summary_aggregates_anchor_skips(self) -> None:
+        home = make_home(self.base, anchors=("claude",))
+        result = install_ok("--root", str(home))
+        self.assertRegex(result.stdout, r"(?m)^claude: \d+ files \(created \d+\)$")
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^skipped codex: \d+ files \(anchor \.codex not present\)$",
+        )
+        self.assertRegex(
+            result.stdout,
+            r"(?m)^install complete: \d+ files across 1 platform$",
+        )
+        self.assertNotRegex(result.stdout, r"(?m)^skipped\s+\.codex/")
 
     def test_dry_run_summary_names_dry_run_completion(self) -> None:
         home = make_home(self.base)
@@ -306,6 +324,16 @@ class ModesAndFlagsTest(TempDirTestCase):
         result = install_ok("--root", str(home), "--verbose")
         self.assertRegex(result.stdout, r"(?m)^created\s+\.claude/")
         self.assertNotIn("install complete:", result.stdout)
+
+    def test_status_count_formatter_keeps_unknown_statuses_visible(self) -> None:
+        from install import _format_status_counts
+
+        self.assertEqual(
+            _format_status_counts(
+                {"zz-future": 2, "created": 3, "unchanged": 1}
+            ),
+            "created 3, unchanged 1, zz-future 2",
+        )
 
     def test_version_prints_identity(self) -> None:
         result = install_ok("--version")
