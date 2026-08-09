@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-3.md`
-- **Total Sessions**: 149
+- **Total Sessions**: 150
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-3.md` | ~1858 | Active |
+| `journal-3.md` | ~1895 | Active |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
 <!-- @@@/auto:active-documents -->
@@ -31,6 +31,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 150 | 2026-08-09 | Record upstream disposition for review-command supersession gap | `05e9344`, `1568832` | `task/08-08-review-command-supersession-signal` |
 | 149 | 2026-08-09 | Adopt --local-disposition rebuttal control via pack refresh (PR #180) | `52d8d4d` | `main` |
 | 148 | 2026-08-09 | Ship 08-08-readme-quickstart-ux: README quick-start UX and aggregate install summary (PR #178) | `0033446`, `aac33a5`, `6b64b7a`, `06de892`, `3047970`, `24f561a`, `9ce0bfc`, `487eed7`, `f4cbc5e`, `0a4123a` | `task/08-08-readme-quickstart-ux` |
 | 147 | 2026-08-09 | Record sd-status pack-freshness silence guidance | `132676a`, `f0c44bd`, `94ef24a` | `task/08-07-status-collector-pack-drift` |

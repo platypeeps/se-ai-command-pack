@@ -1856,3 +1856,43 @@ Executed 08-06-sd-review-local-rebuttal-gap end to end: adversarial-reviewed PRD
 ### Next Steps
 
 - None - task complete
+
+
+## Session 150: Record upstream disposition for review-command supersession gap
+
+**Date**: 2026-08-09
+**Task**: Record upstream disposition for review-command supersession gap
+**Branch**: `task/08-08-review-command-supersession-signal`
+
+### Summary
+
+Executed Trellis task 08-08-review-command-supersession-signal end to end under the sd-work-backlog loop: re-verified the supersession gap at pack v0.64.32, converged the PRD through a two-round host+Codex adversarial review (C-1..C-6 addressed), decided the upstream route, wrote disposition.md as the authoritative record, filed platypeeps/sd-ai-command-pack#399, and appended the relay-log entry to 08-07-vendored-artifact-upstream-route. No provenance-tracked file modified.
+
+### Main Changes
+
+- disposition.md: authoritative record with verbatim supersession quote, 12 installed surfaces, expired-promise reconciliation, three deferred adjacent ambiguities, proposal text, issue #399 URL
+- prd.md: facts re-verified at v0.64.32; disposition-decision section; AC bound to disposition.md and filed-URL requirement; all five AC verified and checked
+- 08-07-vendored-artifact-upstream-route/prd.md: relay-log entry for #399
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `05e9344` | task(08-08-review-command-supersession-signal): record upstream disposition for review-command supersession gap |
+| `1568832` | task(08-08-review-command-supersession-signal): check verified acceptance criteria |
+
+### Testing
+
+- [OK] review preflight: 0 failures, 1 advisory warning (two task dirs, one coherent outcome)
+- [OK] supersession quote diff-verified verbatim against .agents/skills/sd-review/SKILL.md:14-16
+- [OK] git-status x provenance.json intersection empty: zero provenance-tracked files modified
+- [OK] sd-review coordinator: status ready, prism clean, 0 findings at head 05e9344
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
