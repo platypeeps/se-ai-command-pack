@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
+import shutil
 import subprocess
+import sys
 import unittest
+from pathlib import Path
 from unittest import mock
 
 from install_test_support import (
@@ -17,8 +21,39 @@ from install_test_support import (
 )
 
 from install import main
-from installer.management import _run_git, update_pack
+from installer.management import (
+    _fd_pinning_tier,
+    _pinned_child_kwargs,
+    _run_git,
+    _source_checkout,
+    update_pack,
+)
 from installer.registry import PACK_NAME, PROVENANCE_FILE
+
+GIT_ENV = {
+    **os.environ,
+    "GIT_AUTHOR_NAME": "test",
+    "GIT_AUTHOR_EMAIL": "test@example.com",
+    "GIT_COMMITTER_NAME": "test",
+    "GIT_COMMITTER_EMAIL": "test@example.com",
+    "GIT_CONFIG_GLOBAL": os.devnull,
+    "GIT_CONFIG_SYSTEM": os.devnull,
+}
+
+
+class UpdateFixtureMixin:
+    """Installed root and provenance helpers shared by the update tests."""
+
+    def _installed_home(self):
+        home = make_home(self.base)
+        install_ok("--root", str(home))
+        return home
+
+    def _point_provenance(self, home, source_root) -> None:
+        prov = home / PROVENANCE_FILE
+        data = json.loads(prov.read_text(encoding="utf-8"))
+        data["sourceRoot"] = str(source_root)
+        prov.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
 class StatusCommandTest(TempDirTestCase):
@@ -81,12 +116,7 @@ class LifecycleCompatibilityTest(TempDirTestCase):
         self.assertIn("unrecognized arguments: --remove", result.stderr)
 
 
-class UpdateCommandTest(TempDirTestCase):
-    def _installed_home(self):
-        home = make_home(self.base)
-        install_ok("--root", str(home))
-        return home
-
+class UpdateCommandTest(UpdateFixtureMixin, TempDirTestCase):
     @mock.patch("install.update_pack", return_value=0)
     def test_cli_forwards_platform_selection(self, update: mock.Mock) -> None:
         home = self._installed_home()
@@ -222,33 +252,75 @@ class UpdateCommandTest(TempDirTestCase):
             )
 
 
-class UpdateSourceTrustTest(TempDirTestCase):
+class UpdateSourceTrustTest(UpdateFixtureMixin, TempDirTestCase):
     """Trust gate on the provenance-recorded source checkout (audit A-017)."""
 
-    def _installed_home(self):
-        home = make_home(self.base)
-        install_ok("--root", str(home))
-        return home
-
-    def _make_foreign_checkout(self, *, git=True, git_as_file=False, name=PACK_NAME):
+    def _make_foreign_checkout(
+        self,
+        *,
+        git=True,
+        git_as_file=False,
+        gitdir=None,
+        name=PACK_NAME,
+        where="foreign-checkout",
+    ):
         """A valid-looking pack checkout that is NOT the running checkout."""
-        src = self.base / "foreign-checkout"
+        src = self.base / where
         src.mkdir()
         (src / "install.py").write_text("# fake installer\n", encoding="utf-8")
         (src / "manifest.json").write_text(
             json.dumps({"name": name, "version": "0.0.0"}), encoding="utf-8"
         )
         if git_as_file:
-            (src / ".git").write_text("gitdir: /elsewhere/.git\n", encoding="utf-8")
+            target = self._real_gitdir(where) if gitdir is None else gitdir
+            (src / ".git").write_text(f"gitdir: {target}\n", encoding="utf-8")
         elif git:
             (src / ".git").mkdir()
         return src.resolve()
 
-    def _point_provenance(self, home, source_root) -> None:
-        prov = home / PROVENANCE_FILE
-        data = json.loads(prov.read_text(encoding="utf-8"))
-        data["sourceRoot"] = str(source_root)
-        prov.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+    def _real_gitdir(self, where="foreign-checkout") -> Path:
+        """A real, same-user gitdir a worktree pointer may legitimately name."""
+        target = self.base / "worktrees" / where
+        target.mkdir(parents=True)
+        return target
+
+    def _make_symlinked_git_checkout(self, where="symlinked-git") -> Path:
+        real = self.base / f"{where}-real"
+        (real / ".git").mkdir(parents=True)
+        src = self._make_foreign_checkout(git=False, where=where)
+        (src / ".git").symlink_to(real / ".git")
+        return src
+
+    @contextlib.contextmanager
+    def _fd_spy(self, opened: list[int], closed: list[int]):
+        """Record every os.open result and os.close argument in scope.
+
+        Patching ``os.open`` replaces the function object, so
+        ``os.open in os.supports_dir_fd`` turns false and
+        ``_fd_pinning_tier()`` reports tier 2 inside this scope: the entry
+        checks take their path fallback and the only spied descriptor is the
+        pinned directory fd. That is exactly the descriptor whose closure the
+        refusal tests assert, and the ``handle.close()``-on-refusal path under
+        test is tier-independent; tier 1's transient ``dir_fd`` reads are
+        closed by their ``os.fdopen`` context managers and are not covered
+        here.
+        """
+        real_open, real_close = os.open, os.close
+
+        def spy_open(*args, **kwargs):
+            handle = real_open(*args, **kwargs)
+            opened.append(handle)
+            return handle
+
+        def spy_close(handle):
+            closed.append(handle)
+            return real_close(handle)
+
+        with (
+            mock.patch.object(os, "open", spy_open),
+            mock.patch.object(os, "close", spy_close),
+        ):
+            yield
 
     def _fail_if_git_or_exec(self):
         """Patches that raise if any git or subprocess call is attempted."""
@@ -414,6 +486,7 @@ class UpdateSourceTrustTest(TempDirTestCase):
                 )
 
     def test_accepts_git_file_worktree(self) -> None:
+        """A .git pointer file is accepted once its gitdir target is verified."""
         home = self._installed_home()
         src = self._make_foreign_checkout(git=False, git_as_file=True)
         self._point_provenance(home, src)
@@ -456,6 +529,301 @@ class UpdateSourceTrustTest(TempDirTestCase):
             )
         self.assertEqual(result, 0)
 
+    def test_refuses_symlinked_git_entry(self) -> None:
+        """A symlinked .git re-points the repository outside the checked
+        directory and is refused before any git or exec."""
+        home = self._installed_home()
+        src = self._make_symlinked_git_checkout()
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with no_git, no_exec:
+            with self.assertRaisesRegex(SystemExit, "symlinked .git"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
+    def test_refuses_symlinked_installer(self) -> None:
+        """A symlinked install.py would let the relative exec escape the pinned
+        directory, so the checkout counts as unavailable."""
+        home = self._installed_home()
+        src = self._make_foreign_checkout()
+        elsewhere = self.base / "elsewhere-install.py"
+        elsewhere.write_text("# other installer\n", encoding="utf-8")
+        (src / "install.py").unlink()
+        (src / "install.py").symlink_to(elsewhere)
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with no_git, no_exec:
+            with self.assertRaisesRegex(SystemExit, "unavailable"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
+    def test_refuses_dangling_gitdir_pointer(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(
+            git=False, git_as_file=True, gitdir=self.base / "missing" / ".git"
+        )
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with no_git, no_exec:
+            with self.assertRaisesRegex(SystemExit, "unverified gitdir"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
+    def test_refuses_malformed_gitdir_pointer(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=False)
+        (src / ".git").write_text("not a pointer\n", encoding="utf-8")
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with no_git, no_exec:
+            with self.assertRaisesRegex(SystemExit, "unverified gitdir"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "requires POSIX geteuid")
+    def test_refuses_foreign_owned_gitdir_target(self) -> None:
+        """The gitdir target is validated before the directory ownership gate,
+        so a foreign-owned redirection is named as such."""
+        home = self._installed_home()
+        src = self._make_foreign_checkout(git=False, git_as_file=True)
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with (
+            no_git,
+            no_exec,
+            mock.patch(
+                "installer.management.os.geteuid", return_value=os.geteuid() + 1
+            ),
+        ):
+            with self.assertRaisesRegex(SystemExit, "unverified gitdir"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
+    def test_source_checkout_closes_fd_on_every_refusal(self) -> None:
+        """No refusal path leaks the pinned directory descriptor."""
+        home = self._installed_home()
+        scenarios = [
+            ("unavailable", self.base / "missing-checkout", "unavailable", True),
+            (
+                "wrong-pack",
+                self._make_foreign_checkout(name="other-pack", where="wrong-pack"),
+                f"is not {PACK_NAME}",
+                True,
+            ),
+            (
+                "non-repo",
+                self._make_foreign_checkout(git=False, where="non-repo"),
+                "not a git repository",
+                True,
+            ),
+            (
+                "symlinked-git",
+                self._make_symlinked_git_checkout(),
+                "symlinked .git",
+                True,
+            ),
+            (
+                "dangling-gitdir",
+                self._make_foreign_checkout(
+                    git=False,
+                    git_as_file=True,
+                    gitdir="/nonexistent/.git",
+                    where="dangling-gitdir",
+                ),
+                "unverified gitdir",
+                True,
+            ),
+            (
+                "unconfirmed",
+                self._make_foreign_checkout(where="unconfirmed"),
+                "--confirm-source",
+                False,
+            ),
+        ]
+        for label, source_root, fragment, confirm_source in scenarios:
+            with self.subTest(refusal=label):
+                self._point_provenance(home, source_root)
+                opened: list[int] = []
+                closed: list[int] = []
+                no_git, no_exec = self._fail_if_git_or_exec()
+                with (
+                    no_git,
+                    no_exec,
+                    mock.patch("installer.management.sys.stdin") as stdin,
+                    self._fd_spy(opened, closed),
+                ):
+                    stdin.isatty.return_value = False
+                    with self.assertRaisesRegex(SystemExit, fragment):
+                        update_pack(
+                            home,
+                            dry_run=False,
+                            force=False,
+                            backup=False,
+                            platforms=None,
+                            install_all=False,
+                            confirm_source=confirm_source,
+                        )
+                if label != "unavailable" and _fd_pinning_tier() < 3:
+                    self.assertTrue(opened, "expected a pinned directory fd")
+                self.assertLessEqual(set(opened), set(closed))
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "requires POSIX geteuid")
+    def test_foreign_owned_refusal_closes_fd(self) -> None:
+        home = self._installed_home()
+        src = self._make_foreign_checkout()
+        self._point_provenance(home, src)
+        opened: list[int] = []
+        closed: list[int] = []
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with (
+            no_git,
+            no_exec,
+            mock.patch(
+                "installer.management.os.geteuid", return_value=os.geteuid() + 1
+            ),
+            self._fd_spy(opened, closed),
+        ):
+            with self.assertRaisesRegex(SystemExit, "not owned by the current user"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+        if _fd_pinning_tier() < 3:
+            self.assertTrue(opened, "expected a pinned directory fd")
+        self.assertLessEqual(set(opened), set(closed))
+
+    def _record_handle_fds(self, fds: list[int | None]):
+        def record(source, *args: str) -> str:
+            fds.append(source.fd)
+            return ""
+
+        return mock.patch("installer.management._run_git", side_effect=record)
+
+    def test_tier_two_fallback_still_pins_execution(self) -> None:
+        """Without the dir_fd capability sets the entry checks fall back to
+        paths, but git and the installer still run inside the held fd."""
+        home = self._installed_home()
+        src = self._make_foreign_checkout()
+        self._point_provenance(home, src)
+        fds: list[int | None] = []
+        with (
+            mock.patch.object(os, "supports_dir_fd", set()),
+            mock.patch.object(os, "supports_follow_symlinks", set()),
+            self._record_handle_fds(fds),
+            mock.patch("installer.management.subprocess.run") as run_process,
+        ):
+            run_process.return_value = subprocess.CompletedProcess([], 0)
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=True,
+            )
+        self.assertEqual(result, 0)
+        self.assertIsNotNone(fds[0])
+        self.assertEqual(run_process.call_args.kwargs["pass_fds"], (fds[0],))
+        self.assertEqual(run_process.call_args.args[0][1], "install.py")
+
+    def test_tier_three_without_geteuid_uses_path_flow(self) -> None:
+        """Without an effective-uid primitive there is no descriptor to pin, so
+        the installer keeps its absolute path."""
+        home = self._installed_home()
+        src = self._make_foreign_checkout()
+        self._point_provenance(home, src)
+        fds: list[int | None] = []
+        with (
+            mock.patch.object(os, "geteuid", None, create=True),
+            self._record_handle_fds(fds),
+            mock.patch("installer.management.subprocess.run") as run_process,
+        ):
+            run_process.return_value = subprocess.CompletedProcess([], 0)
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=True,
+            )
+        self.assertEqual(result, 0)
+        self.assertIsNone(fds[0])
+        self.assertNotIn("pass_fds", run_process.call_args.kwargs)
+        self.assertEqual(
+            run_process.call_args.args[0][1], str(src / "install.py")
+        )
+
+    @unittest.skipUnless(hasattr(os, "geteuid"), "requires POSIX geteuid")
+    def test_tier_three_without_directory_fd_still_checks_ownership(self) -> None:
+        """geteuid without O_DIRECTORY/fchdir is the path tier, and its
+        ownership refusal still applies."""
+        home = self._installed_home()
+        src = self._make_foreign_checkout()
+        self._point_provenance(home, src)
+        no_git, no_exec = self._fail_if_git_or_exec()
+        with (
+            no_git,
+            no_exec,
+            mock.patch.object(os, "O_DIRECTORY", None, create=True),
+            mock.patch.object(os, "fchdir", None, create=True),
+            mock.patch(
+                "installer.management.os.geteuid", return_value=os.geteuid() + 1
+            ),
+        ):
+            with self.assertRaisesRegex(SystemExit, "not owned by the current user"):
+                update_pack(
+                    home,
+                    dry_run=False,
+                    force=False,
+                    backup=False,
+                    platforms=None,
+                    install_all=False,
+                    confirm_source=True,
+                )
+
     @mock.patch("install.update_pack", return_value=0)
     def test_cli_forwards_confirm_source(self, update: mock.Mock) -> None:
         home = self._installed_home()
@@ -468,6 +836,191 @@ class UpdateSourceTrustTest(TempDirTestCase):
         home = self._installed_home()
         main(["update", "--root", str(home)])
         self.assertFalse(update.call_args.kwargs["confirm_source"])
+
+
+@unittest.skipIf(_fd_pinning_tier() == 3, "requires directory-fd pinning")
+class SourcePinningTest(UpdateFixtureMixin, TempDirTestCase):
+    """The checked directory is the used directory (audit A-017 follow-up).
+
+    Every proof here swaps a decoy in at the recorded path after the trust
+    checks pass; a run that re-resolved sourceRoot by name would reach it.
+    """
+
+    def _git(self, *args: str, cwd) -> str:
+        result = subprocess.run(
+            ["git", *args],
+            cwd=str(cwd),
+            env=GIT_ENV,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if result.returncode != 0:
+            raise AssertionError(f"git {' '.join(args)} failed: {result.stderr}")
+        return result.stdout
+
+    def _make_checkout(self, where: str, installer_body: str) -> Path:
+        src = self.base / where
+        src.mkdir()
+        (src / "install.py").write_text(installer_body, encoding="utf-8")
+        (src / "manifest.json").write_text(
+            json.dumps({"name": PACK_NAME, "version": "0.0.0"}), encoding="utf-8"
+        )
+        (src / ".git").mkdir()
+        return src.resolve()
+
+    def _make_git_checkout(
+        self, where: str, installer_body: str, *, upstream: bool = False
+    ) -> Path:
+        src = self.base / where
+        src.mkdir()
+        (src / "install.py").write_text(installer_body, encoding="utf-8")
+        (src / "manifest.json").write_text(
+            json.dumps({"name": PACK_NAME, "version": "0.0.0"}), encoding="utf-8"
+        )
+        self._git("init", "-q", "-b", "main", cwd=src)
+        self._git("add", "-A", cwd=src)
+        self._git("commit", "-q", "-m", "initial", cwd=src)
+        if upstream:
+            bare = self.base / f"{where}-origin.git"
+            self._git("init", "-q", "--bare", str(bare), cwd=self.base)
+            self._git("remote", "add", "origin", str(bare), cwd=src)
+            self._git("push", "-q", "-u", "origin", "main", cwd=src)
+        return src.resolve()
+
+    def _sentinel_installer(self, sentinel: Path, marker: str) -> str:
+        return (
+            "import os\n"
+            "from pathlib import Path\n"
+            f"with open({str(sentinel)!r}, 'a', encoding='utf-8') as handle:\n"
+            f"    handle.write("
+            f"f'{marker}|{{os.getcwd()}}|{{Path(__file__).resolve()}}\\n')\n"
+        )
+
+    def test_handle_reads_through_pinned_fd_after_decoy_swap(self) -> None:
+        home = self._installed_home()
+        src = self._make_checkout("pinned", "# stub installer\n")
+        (src / "sentinel.txt").write_text("original\n", encoding="utf-8")
+        self._point_provenance(home, src)
+
+        handle = _source_checkout(home, confirm_source=True)
+        self.addCleanup(handle.close)
+        moved = self.base / "pinned-moved"
+        src.rename(moved)
+        decoy = self._make_checkout("pinned", "# decoy installer\n")
+        (decoy / "sentinel.txt").write_text("decoy\n", encoding="utf-8")
+
+        self.assertEqual(os.fstat(handle.fd).st_ino, moved.stat().st_ino)
+        self.assertNotEqual(moved.stat().st_ino, decoy.stat().st_ino)
+        raw = os.open("sentinel.txt", os.O_RDONLY, dir_fd=handle.fd)
+        with os.fdopen(raw, encoding="utf-8") as stream:
+            self.assertEqual(stream.read().strip(), "original")
+
+    def test_pinned_child_runs_inside_pinned_directory(self) -> None:
+        """pass_fds keeps the descriptor alive through default close_fds, so
+        the preexec_fn fchdir lands before exec."""
+        pinned = self.base / "child-cwd"
+        pinned.mkdir()
+        fd = os.open(pinned, os.O_RDONLY | os.O_DIRECTORY)
+        self.addCleanup(os.close, fd)
+
+        result = subprocess.run(
+            [sys.executable, "-c", "import os; print(os.getcwd())"],
+            text=True,
+            capture_output=True,
+            check=False,
+            **_pinned_child_kwargs(fd),
+        )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(result.stdout.strip(), os.path.realpath(pinned))
+
+    @unittest.skipUnless(shutil.which("git"), "requires git")
+    def test_git_runs_in_pinned_directory_after_decoy_swap(self) -> None:
+        """Unmocked: real git resolves the pinned directory, not the path."""
+        home = self._installed_home()
+        src = self._make_git_checkout("live", "# stub installer\n")
+        self._point_provenance(home, src)
+
+        handle = _source_checkout(home, confirm_source=True)
+        self.addCleanup(handle.close)
+        moved = self.base / "live-moved"
+        src.rename(moved)
+        decoy = self._make_git_checkout("live", "# decoy installer\n")
+
+        toplevel = _run_git(handle, "rev-parse", "--show-toplevel")
+
+        self.assertEqual(os.path.realpath(toplevel), os.path.realpath(moved))
+        self.assertNotEqual(os.path.realpath(toplevel), os.path.realpath(decoy))
+
+    @unittest.skipUnless(shutil.which("git"), "requires git")
+    def test_update_execs_installer_inside_pinned_directory(self) -> None:
+        """Unmocked update_pack: git and both installer processes stay inside
+        the pinned checkout after the recorded path is swapped mid-run."""
+        home = self._installed_home()
+        sentinel = self.base / "sentinel.txt"
+        src = self._make_git_checkout(
+            "shipped", self._sentinel_installer(sentinel, "pinned"), upstream=True
+        )
+        self._point_provenance(home, src)
+        moved = self.base / "shipped-moved"
+        handle_fds: list[int | None] = []
+
+        def swap_after_first_git(source, *args: str) -> str:
+            output = _run_git(source, *args)
+            if not handle_fds:
+                handle_fds.append(source.fd)
+                src.rename(moved)
+                decoy = self.base / "shipped"
+                decoy.mkdir()
+                (decoy / "install.py").write_text(
+                    self._sentinel_installer(sentinel, "decoy"), encoding="utf-8"
+                )
+            return output
+
+        with (
+            mock.patch(
+                "installer.management._run_git", side_effect=swap_after_first_git
+            ),
+            mock.patch(
+                "installer.management.subprocess.run", wraps=subprocess.run
+            ) as spy,
+        ):
+            result = update_pack(
+                home,
+                dry_run=False,
+                force=False,
+                backup=False,
+                platforms=None,
+                install_all=True,
+                confirm_source=True,
+            )
+
+        self.assertEqual(result, 0)
+        lines = sentinel.read_text(encoding="utf-8").splitlines()
+        self.assertEqual(len(lines), 2, lines)  # plan process, then apply process
+        for line in lines:
+            marker, cwd, resolved = line.split("|")
+            self.assertEqual(marker, "pinned")
+            self.assertEqual(os.path.realpath(cwd), os.path.realpath(moved))
+            self.assertEqual(
+                os.path.realpath(resolved), os.path.realpath(moved / "install.py")
+            )
+
+        pinned_fd = handle_fds[0]
+        git_calls = [c for c in spy.call_args_list if c.args[0][0] == "git"]
+        installer_calls = [
+            c for c in spy.call_args_list if c.args[0][0] == sys.executable
+        ]
+        self.assertTrue(git_calls)
+        self.assertEqual(len(installer_calls), 2)
+        for call in git_calls:
+            self.assertEqual(call.args[0][:3], ["git", "-C", "."])
+        for call in installer_calls:
+            self.assertEqual(call.args[0][1], "install.py")
+        for call in git_calls + installer_calls:
+            self.assertEqual(call.kwargs["pass_fds"], (pinned_fd,))
+            self.assertTrue(callable(call.kwargs["preexec_fn"]))
 
 
 if __name__ == "__main__":

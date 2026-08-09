@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.68.0 - 2026-08-09
+
+- `install.py update` now pins the provenance-recorded source checkout to one
+  open directory descriptor: the descriptor is opened before the trust checks,
+  the checks run relative to it, and every later `git` call and `install.py`
+  process runs inside it. Swapping the recorded path after the checks pass no
+  longer redirects the update. Platforms without the directory-fd primitives
+  keep the previous path-based flow, where the same-checkout /
+  `--confirm-source` gate remains the trust guarantee.
+- `install.py update` refuses two newly detected source shapes before any
+  `git` or exec: a symlinked `.git` (it re-points the repository outside the
+  checked directory), and a `.git` worktree pointer whose `gitdir:` target is
+  malformed, missing, or not owned by the current user. A symlinked
+  `install.py` is now reported as an unavailable checkout for the same reason.
+
 ## 0.67.2 - 2026-08-09
 
 - `install.py` now ends with an aggregate per-platform summary and a
