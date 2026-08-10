@@ -22,7 +22,7 @@ process. User-facing install/update/remove instructions live in the
 | `install.py` + `installer/` | The user-scope installer. |
 | `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |
 | `.github/scripts/generate-skill-surfaces.py` | Validates skills and atomically coordinates the manifest, README catalog, and bundled help catalog; `--check` gates drift in all three. |
-| `.github/scripts/check-release-payload.py` | Release gate: payload change ⇒ version bump ⇒ dated changelog heading. |
+| `.github/scripts/check-release-payload.py` | Release gate: payload change ⇒ version bump ⇒ dated changelog heading ⇒ exactly one new heading per branch. |
 | `scripts/` | Repository wrappers and maintenance helpers (`se-ai-command-pack-*` prefix); skill-bundled runtime helpers live with their canonical skill template. |
 
 ## Product and development surfaces
@@ -1082,7 +1082,11 @@ declared role does not resolve to an agent in this table.
 
 1. PR with the payload change, version bump, and dated
    `## <version> - YYYY-MM-DD` changelog heading (the release gate fails
-   otherwise, and fails any payload change without a bump).
+   otherwise, and fails any payload change without a bump). Exactly one
+   heading per PR: the tag comes from the version on `main` after the merge,
+   so an intermediate version bumped and re-bumped on one branch is never
+   tagged. `CONTRIBUTING.md` carries the patch-versus-minor policy and the
+   `**Removed:**` / `**Breaking:**` bullet convention.
 2. CI lanes: unittest (Linux/macOS), lint (ruff + mypy), release payload
    gate, aggregated in `ci-result`.
 3. On merge to `main`, CI tags `v<version>` if the tag does not exist.

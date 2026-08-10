@@ -397,6 +397,12 @@
 
 ## 0.53.0 - 2026-07-22
 
+> **Never released — no `v0.53.0` tag exists, and none will be backfilled.**
+> This version was bumped and then re-bumped to 0.53.1 inside PR #89, so `main`
+> went 0.52.1 → 0.53.1 in one step and the auto-tag workflow never saw 0.53.0.
+> Its changes shipped in 0.53.1. The release payload gate now rejects a branch
+> that adds more than one version heading, so this cannot recur.
+
 - Extend `se-review-skills` with bounded current and project-scoped session
   evidence, explicit invocation and version-provenance checks, and causal
   classification before observed mistakes can become findings.

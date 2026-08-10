@@ -56,6 +56,47 @@ best-effort — a stale `origin/main` can mask a missing bump, so `git fetch`
 first if in doubt. Merges to `main` are tagged `v<version>` automatically when
 the version changes.
 
+### One version per pull request
+
+A branch may add exactly one `## <version> - YYYY-MM-DD` heading, and the gate
+fails the branch that adds more. Tags come from the version on `main` after the
+merge, so a version that is bumped and then re-bumped on the same branch never
+becomes a merge-base state and never gets a tag. That is how `0.53.0` was
+written, superseded by `0.53.1` in PR #89, and left permanently untagged — its
+changelog entry now carries that disposition, and no `v0.53.0` will be
+backfilled.
+
+If you have already bumped and need to bump again, rewrite the heading you
+added rather than stacking a second one; ship genuinely separate releases as
+separate pull requests.
+
+### What earns a minor versus a patch
+
+The pack is pre-1.0, so the leading `0.` is fixed and the minor position
+carries the "something new or something gone" signal:
+
+- **Minor** (`0.X.0`) — a new skill or agent, a new artifact kind, a new
+  user-visible capability or argument, or a change in what an existing surface
+  refuses or requires. Recent examples: `0.65.0` added `se-propose-skills`,
+  `0.66.0` added `agent` as an artifact kind, `0.68.0` changed what
+  `install.py update` refuses.
+- **Patch** (`0.X.Y`) — everything else: fixes, refactors that keep behavior,
+  documentation, and regenerated surfaces. Moving a generated file without
+  changing an installed target is a patch (`0.68.3`).
+
+Removals and breaking changes take a minor **and** lead their changelog bullet
+with a bold marker, so a reader can find them without reading every entry:
+
+```markdown
+## 0.70.0 - 2026-08-11
+
+- **Removed:** `se-pack`; refreshes now drop its vouched installed copies.
+- **Breaking:** `install.py update` requires `--source` when provenance is absent.
+```
+
+Pre-1.0 means a minor may remove things. Anything relying on a surface should
+pin a version rather than track `main`.
+
 ## Dependency updates
 
 `.github/dependabot.yml` configures Dependabot to open weekly `pip` pull
