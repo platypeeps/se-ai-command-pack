@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 162
+- **Total Sessions**: 163
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~354 | Active |
+| `journal-4.md` | ~389 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 163 | 2026-08-09 | Record task.json trailing-newline disposition | `c0047c3`, `597ea59`, `9fbbadb` | `task/08-06-task-json-trailing-newline` |
 | 162 | 2026-08-09 | Watch coordinator settled-blocked classification | `f3986f2`, `43541cd` | `task/08-06-watch-coordinator-infra-classification` |
 | 161 | 2026-08-09 | Installer dead-code trim | `5abc7be`, `46bd081` | `task/08-08-installer-dead-code-trim` |
 | 160 | 2026-08-09 | Add scope=session to se-review-skills | `af35c4c`, `184ca6b` | `task/08-06-session-first-skill-review` |
