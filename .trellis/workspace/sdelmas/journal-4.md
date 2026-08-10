@@ -725,3 +725,40 @@ Follow-up from the 08-10-review-check-cache-pr-body iteration. pack.review-scope
 ### Next Steps
 
 - None - task complete
+
+
+## Session 172: Mark the review-scope late-arrival task blocked on upstream approval
+
+**Date**: 2026-08-10
+**Task**: Mark the review-scope late-arrival task blocked on upstream approval
+**Branch**: `chore/mark-review-scope-task-blocked`
+
+### Summary
+
+The 08-10-review-scope-late-arrival task was created without a blocked marker. Every candidate design in its PRD lands in a vendored script, so implementation requires an upstream sd-ai-command-pack pull request under per-PR approval this repository cannot grant itself. Unmarked it ranked actionable at P2 and would have outranked the four P3 audit tasks, been selected and branched, and only then stopped at the approval wall.
+
+### Main Changes
+
+- Set blocked: true and a blockedOn string on the task, matching the marker shape 08-04-audit-registry-snapshot-sd-twin already carries for the same condition.
+- Added a blocked callout to the PRD naming the dependency and stating that planning may proceed while implementation is gated.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a8234f1` | chore(task): mark the review-scope task blocked on upstream approval |
+
+### Testing
+
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs -> 0 failures, 0 warnings
+- [OK] sd-check -> passed, 11 passed / 0 failed / 1 advisory skip (knowledge.obsidian-kb, external symlink)
+- [OK] Copilot review -> COMMENTED, 0 inline comments, 0 unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
