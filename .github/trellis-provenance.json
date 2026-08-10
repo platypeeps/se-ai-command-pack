@@ -54,7 +54,7 @@
     ".codex/hooks.json": "522ba3c488c100027783e52ecff84c0bd799852dd77ad3f1936e86db105f01d6",
     ".codex/hooks/inject-workflow-state.py": "0946e5b5c4c154538c1848c25c7f92a76c8ecc863b9a1c0f4b2e03bee071fcd0",
     ".codex/hooks/session-start.py": "bcfc4e00c686fb711f817c2b2105b5186377f6702fc0bc827da7240296237f89",
-    ".github/scripts/check-dev-requirements-lock.py": "2e5005730528b9b484d525dddc02740707fc2b940c882788247d7c1069985539",
+    ".github/scripts/check-dev-requirements-lock.py": "5792953de5ed02296f3f2d6fb78a787ad0b8532071d44ddde38a36bcc067ea97",
     ".gitignore": "53a6031ea3c0c84046914a81b1aa7462c75973d3a7c4c4665b48e9ad9c38d6a8"
   },
   "repoOwn": [
