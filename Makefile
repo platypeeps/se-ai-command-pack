@@ -32,7 +32,7 @@ generate:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py
 
 repomix:
-	bash scripts/update_repomix
+	bash .github/scripts/update-repomix
 
 # Dogfood: refresh this machine's user-level install from templates/.
 sync:
@@ -58,7 +58,7 @@ gate-lint:
 	"$(RUN_PYTHON)" -m mypy $(MYPY_PATHS)
 
 shell-syntax:
-	for f in scripts/*.sh; do bash -n "$$f" || exit 1; done
+	for f in scripts/*.sh .github/scripts/update-repomix; do bash -n "$$f" || exit 1; done
 
 release-check:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check

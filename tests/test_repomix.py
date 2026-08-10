@@ -9,7 +9,7 @@ from install_test_support import PACK_ROOT
 
 CONFIG_PATH = PACK_ROOT / "repomix.config.json"
 MAP_PATH = PACK_ROOT / "docs" / "repomix-map.md"
-REFRESH_SCRIPT_PATH = PACK_ROOT / "scripts" / "update_repomix"
+REFRESH_SCRIPT_PATH = PACK_ROOT / ".github" / "scripts" / "update-repomix"
 
 REQUIRED_EXCLUSIONS = {
     "docs/repomix-map.md",

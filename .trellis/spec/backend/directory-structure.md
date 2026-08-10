@@ -32,7 +32,8 @@ generated/references/       # generated references fanned into consuming skills
   skill-catalog.md          # generated bundled catalog installed with se-help
 manifest.json               # generated payload inventory and release version
 README.md                   # generated family-grouped catalog inside markers
-scripts/                    # generation and release-validation tools
+.github/scripts/            # repo-own generation and release-validation tools
+scripts/                    # vendored SD-pack installs only — never edited here
 tests/                      # unittest modules mirroring installer concerns
 ```
 
@@ -56,6 +57,14 @@ tests/                      # unittest modules mirroring installer concerns
   other file types fail generation. A bundled script must expose a bounded,
   deterministic contract and leave semantic judgment and mutation authority in
   `SKILL.md`.
+- Put repo-own tooling in `.github/scripts/`, which the `Makefile` and
+  `.github/workflows/tests.yml` both call. `scripts/` holds SD-pack installs
+  only and has no exception, so a file appearing there is vendored by
+  definition; `tests/test_repo_tooling_ownership.py` enforces both halves.
+  A new `.github` file is an `uncovered:` provenance finding until it is
+  curated into `repoOwn` in `.github/trellis-provenance.json` — curate it
+  rather than absorbing it into `files`, which would hash-pin a file the
+  repository is meant to edit.
 - Keep root `package.json` limited to dependency-free wrappers for shared SD
   tooling. Python and Make remain the repository's implementation and quality
   interfaces; do not add a package lockfile.

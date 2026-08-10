@@ -762,3 +762,49 @@ The 08-10-review-scope-late-arrival task was created without a blocked marker. E
 ### Next Steps
 
 - None - task complete
+
+
+## Session 173: Repo-own tooling home, vendored-path documentation, and a CI-only test defect
+
+**Date**: 2026-08-10
+**Task**: Repo-own tooling home, vendored-path documentation, and a CI-only test defect
+**Branch**: `task/07-25-audit-repo-tooling-ownership`
+
+### Summary
+
+Gave repo-own tooling one documented home under .github/scripts/, deleted a dead wrapper, documented the vendored-vs-repo-own split in CONTRIBUTING, fixed a provenance misclassification, and repaired a new test that passed locally only because it read a gitignored file.
+
+### Main Changes
+
+- Moved scripts/update_repomix to .github/scripts/update-repomix and fixed its repo_root for the new depth, leaving scripts/ 100% vendored with no exception
+- Deleted the dead runpy wrapper scripts/se-ai-command-pack-skill-review.py, a keep/delete decision two earlier tasks deferred here
+- Added the CONTRIBUTING section 'Repo-own source vs vendored installs': nine do-not-edit families with their upstream source plus the four exceptions a blanket rule gets wrong
+- Curated .github/scripts/check-dev-requirements-lock.py from hash-pinned files into repoOwn, so the repo-own home is uniformly editable
+- Added tests/test_repo_tooling_ownership.py implementing the spec's two-registry ownership lookup rather than matching paths by name
+- Fixed that test reading the gitignored .trellis/.template-hashes.json unconditionally; naming the vendored Trellis runtime paths keeps its verdict identical with and without the receipt
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `564d252` | feat(tooling): give repo-own tooling one home and document vendored paths |
+| `7419878` | fix(test): make ownership lookup hermetic without Registry A's receipt |
+| `bc0c56a` | test: verify runtime-path coverage from the tracked tree, not only the receipt |
+| `2cae53f` | test: read the provenance manifest once in the receipt-coverage guard |
+
+### Testing
+
+- [OK] make check green: 695 tests, coverage 89.1% (floor 80), ruff and mypy clean, release payload gate and trellis-provenance ok
+- [OK] CI green at 2cae53f across all three unittest lanes, the environment where the first test version failed with errors=8
+- [OK] Ownership test verified in three conditions: receipt present OK, receipt hidden OK (skipped=1), deleted wrapper restored under hidden receipt still FAILED (failures=3)
+- [OK] Coverage guard falsified under the CI condition: a new .trellis/hooks/new_runtime.py yields AssertionError: Lists differ
+- [OK] Acceptance criterion 4 proven by probe: editing each of three .github/scripts files yields rc=0, where the same probe previously reported drifted:
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
