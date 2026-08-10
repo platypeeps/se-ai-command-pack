@@ -4138,6 +4138,75 @@ class ReviewSkillsGotchaMandateTest(unittest.TestCase):
             self.assertIn(phrase, text, phrase)
 
 
+class ReviewSkillsSessionScopeTest(unittest.TestCase):
+    """`scope=session` derives the reviewed set from confirmed invocations.
+
+    Each phrase is pinned against the section that must carry it rather than
+    the whole file, and every phrase was verified absent from its target
+    before the section gained the contract, per "Prose contracts: prove the
+    pin can fail" in ``.trellis/spec/backend/quality-guidelines.md``.
+    """
+
+    def test_scope_accepts_session_as_a_post_inventory_filter(self) -> None:
+        text = skill_section("se-review-skills", "## Arguments").lower()
+        for phrase in (
+            "scope=skill|family|repo|package|all|session",
+            "post-inventory filter",
+        ):
+            self.assertIn(phrase, text, phrase)
+
+    def test_session_scope_conflicts_are_argument_errors(self) -> None:
+        text = skill_section("se-review-skills", "## Arguments").lower()
+        for phrase in (
+            "`scope=session` with `sessions=off` is an argument error",
+            "`scope=session` also rejects `skill=` and `family=`",
+        ):
+            self.assertIn(phrase, text, phrase)
+
+    def test_join_rule_is_name_narrows_provenance_decides(self) -> None:
+        text = skill_section("se-review-skills", "## Workflow").lower()
+        for phrase in (
+            "name narrows, provenance decides",
+            "identity-unresolved",
+            "absent-from-inventory",
+            "never a fallback to repository-plus-installed discovery",
+        ):
+            self.assertIn(phrase, text, phrase)
+
+    def test_resolved_scope_is_distinguished_from_inventory_boundary(
+        self,
+    ) -> None:
+        text = skill_section("se-review-skills", "## Workflow").lower()
+        for phrase in (
+            "resolved review scope: session (post-inventory filter)",
+            "analyzer inventory boundary",
+        ):
+            self.assertIn(phrase, text, phrase)
+
+    def test_acting_modes_use_the_recorded_selection_and_digest(self) -> None:
+        text = skill_section("se-review-skills", "## Workflow").lower()
+        for phrase in (
+            "act only on the recorded selection",
+            "recomputed selection digest to equal the stamped digest",
+            "never re-derive the reviewed set by fresh session inspection",
+        ):
+            self.assertIn(phrase, text, phrase)
+
+    def test_report_schema_defines_the_session_selection_block(self) -> None:
+        text = resource_section(
+            "se-review-skills",
+            "references/report-schema.md",
+            "## Session-selection block (`scope=session`)",
+        ).lower()
+        for phrase in (
+            "selection digest",
+            'sort_keys=true, separators=(",", ":")',
+            "fails closed",
+            "never re-derived by fresh session inspection",
+        ):
+            self.assertIn(phrase, text, phrase)
+
+
 class SkillDocumentationTest(unittest.TestCase):
     def test_operator_guide_covers_every_registered_skill(self) -> None:
         operator = (PACK_ROOT / "docs/SE_AI_COMMAND_PACK.md").read_text(

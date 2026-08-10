@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.68.1 - 2026-08-09
+
+- `se-review-skills` gains `scope=session`: derive the reviewed set from the
+  skills a conversation actually invoked, as a post-inventory filter over the
+  unchanged analyzer inventory. Confirmed invocations join the deduplicated
+  inventory by name narrowed with provenance (`current-canonical` /
+  `installed-drift`); ambiguous or unknown-provenance confirmations are
+  identity-unresolved (counted, unreviewed, never routed). Session-scoped
+  reports record the selection under the analyzer's deduplication keys and
+  seal it with a deterministic selection digest; acting modes operate on the
+  recorded selection only and never re-derive the set by fresh session
+  inspection. `scope=session` with `sessions=off`, `skill=`, or `family=` is
+  an argument error; zero confirmed invocations is an honest empty result,
+  never a fallback to repository-plus-installed discovery. The report schema
+  gains the session-selection block; the bundled analyzer is unchanged.
+
 ## 0.68.0 - 2026-08-09
 
 - `install.py update` now pins the provenance-recorded source checkout to one

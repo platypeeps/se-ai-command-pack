@@ -8,7 +8,17 @@ observed-use evidence. Today the reviewed set comes from a skill selector or
 from repository plus installed roots; there is no way to say "review whatever
 this conversation actually used."
 
-## Status: planning, unresolved design
+## Status: design recorded
+
+The four open blockers below each have a recorded decision in this task's
+`design.md` (Decisions 1–4, with source evidence and current line numbers —
+the SKILL.md citations below drifted; `design.md` carries the verified 
+current map). The file scope is stated there: SKILL.md and
+`references/report-schema.md` (additive) change; the bundled
+`skill_review.py` and `references/session-evidence.md` do not. `implement.md`
+carries the ordered checklist including the pre-edit pin verification.
+
+## History
 
 This was split out of `07-28-enhance-skills-workflow` after **four rounds** of
 the planning adversarial-review contract. Every round found blocking defects,

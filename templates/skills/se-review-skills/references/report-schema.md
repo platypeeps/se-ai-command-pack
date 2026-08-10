@@ -146,6 +146,35 @@ snapshot. Before `task=` or `apply=`:
 waives safety gates, newly discovered tradeoffs, per-skill checkpoints, or
 cross-repository handoffs.
 
+## Session-selection block (`scope=session`)
+
+A session-scoped report adds one block after the snapshot section. It
+records:
+
+- the resolved review scope (`session`, post-inventory filter) paired with
+  the analyzer inventory boundary — the preserved payload's own scope value,
+  which the block never rewrites;
+- every selected entry under the analyzer's deduplication key (owned
+  entries: canonical root plus resolved canonical path; unowned entries:
+  normalized name plus content sha256), each with its confirming retained
+  evidence record(s);
+- the identity-unresolved confirmations, each with its redacted locator and
+  candidate entries by name and status — counted, selecting zero entries,
+  never `changeable`, never routed;
+- absent-from-inventory coverage notes naming each confirmed name and the
+  inventory boundary; and
+- the **selection digest** sealing the block: build
+  `payload = [{"key": [...], "records": [[locator, turns], ...]}, ...]`,
+  sort each entry's records by `json.dumps(record, ensure_ascii=True)` and
+  the entries by `json.dumps(entry["key"], ensure_ascii=True)`, serialize
+  with `json.dumps(payload, ensure_ascii=True, sort_keys=True,
+  separators=(",", ":"))`, encode UTF-8, hash sha256, hex-encode.
+
+Acting on a session-scoped report requires the recomputed digest to equal
+the stamped digest; a missing, corrupt, or non-matching block fails closed.
+The reviewed set is never re-derived by fresh session inspection across the
+snapshot boundary — new session evidence means a new review run.
+
 ## Trellis routing
 
 Reconcile active and archived tasks using snapshot ID, finding IDs, skill, and
