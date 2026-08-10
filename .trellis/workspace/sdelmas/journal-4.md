@@ -146,3 +146,37 @@ Documented the sanctioned out-of-chain recovery for an sd-ship planning-mode cha
 ### Next Steps
 
 - None - task complete
+
+
+## Session 157: Iteration 4: prism rules lane divergence guidance (PR #190)
+
+**Date**: 2026-08-09
+**Task**: Iteration 4: prism rules lane divergence guidance (PR #190)
+**Branch**: `task/08-06-prism-rules-lane-divergence`
+
+### Summary
+
+Documented that repository prism rules in .prism/rules.json reach only the shell review lane; the sd-review lane's built-in adapter passes no --rules/--exclude/--fail-on and never reads the file. Recorded gate mechanics, per-case per-lane degradation behaviour, ownership, and the four-field record. Filed upstream relay sd-ai-command-pack#409; archived task 08-06-prism-rules-lane-divergence.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `951e070` | (see git log) |
+| `d498910` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
