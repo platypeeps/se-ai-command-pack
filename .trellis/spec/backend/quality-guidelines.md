@@ -185,7 +185,7 @@ dispatch, one predicate each:
    `is_trellis_runtime_path` — which excludes `.trellis/tasks/**` task
    artifacts).
 2. Known repository-map files (`is_repository_map_scope_path`: exactly
-   `docs/repomix-map.md` and `scripts/update_repomix`).
+   `docs/repomix-map.md` and `.github/scripts/update-repomix`).
 3. Trellis workspace journal/index files (`is_trellis_journal_scope_path`:
    `.trellis/workspace/*/journal-*.md` and `.trellis/workspace/*/index.md`).
 
@@ -2185,7 +2185,7 @@ observed on 2026-08-07) and not the top-line verdict (see section 4).
 
 ```text
 make repomix
-bash scripts/update_repomix
+bash .github/scripts/update-repomix
 ```
 
 ### 3. Contracts
@@ -2194,7 +2194,7 @@ bash scripts/update_repomix
   parsable Markdown to `docs/repomix-map.md`.
 - Git change-count sorting is disabled so identical repository contents
   generate byte-stable file ordering on every regeneration.
-- `scripts/update_repomix` runs the pinned Repomix version through `npx`
+- `.github/scripts/update-repomix` runs the pinned Repomix version through `npx`
   without adding Node dependencies to this Python project.
 - The refresh script exports `NPM_CONFIG_IGNORE_SCRIPTS=true` **before** the
   `npx` invocation it constrains: `npx --yes` fetches and installs a package

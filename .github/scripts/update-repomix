@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 repomix_version="1.16.1"
 cache_root="${XDG_CACHE_HOME:-}"
 default_tmp="${TMPDIR:-/tmp}"
