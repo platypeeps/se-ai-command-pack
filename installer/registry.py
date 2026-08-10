@@ -11,7 +11,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 PACK_NAME = "se-ai-command-pack"
-ENV_PREFIX = "SE_AI_COMMAND_PACK_"
 
 
 @dataclass(frozen=True)
@@ -601,10 +600,6 @@ USER_SCOPE = "user"
 # "project" is reserved for a future per-folder install mode.
 KNOWN_SCOPES = frozenset({USER_SCOPE})
 
-# Targets --force must never overwrite (user-tunable configs). Empty in
-# v0.1; install_file keeps the preserve hook for future config-like files.
-FORCE_PRESERVED_TARGETS: frozenset[Path] = frozenset()
-
 RECEIPT_DIR = Path(f".{PACK_NAME}")
 INSTALLED_TARGETS_FILE = RECEIPT_DIR / "installed-targets.txt"
 PROVENANCE_FILE = RECEIPT_DIR / "provenance.json"
@@ -697,10 +692,8 @@ validate_registry()
 
 __all__ = [
     "ALWAYS_INSTALL",
-    "ENV_PREFIX",
     "FAMILY_DESCRIPTIONS",
     "FAMILY_LABELS",
-    "FORCE_PRESERVED_TARGETS",
     "IF_ANCHOR_EXISTS",
     "IF_NOT_EXISTS",
     "INSTALLED_TARGETS_FILE",

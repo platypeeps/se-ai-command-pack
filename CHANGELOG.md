@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.68.2 - 2026-08-09
+
+- Installer dead-code trim: removed the empty `preflight_checks()` seam (its
+  only action already runs for every command), the permanently empty
+  `FORCE_PRESERVED_TARGETS` frozenset with its two dead membership tests and
+  one empty expansion, and the unread `ENV_PREFIX` constant. `--user` stays
+  as an explicit-intent flag (documented, tested mutual exclusion with
+  `--root`); `KNOWN_SCOPES` validation is unchanged. No install behavior
+  changes.
+
 ## 0.68.1 - 2026-08-09
 
 - `se-review-skills` gains `scope=session`: derive the reviewed set from the

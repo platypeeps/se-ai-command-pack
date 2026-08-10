@@ -16,7 +16,6 @@ from installer.manifest import (
 )
 from installer.registry import (
     ALWAYS_INSTALL,
-    FORCE_PRESERVED_TARGETS,
     IF_ANCHOR_EXISTS,
     IF_NOT_EXISTS,
     USER_SCOPE,
@@ -297,7 +296,7 @@ def install_file(
         # Provenance vouches plain regular files only (lstat-based), so a
         # symlinked target must never report "unchanged"/vouchable even when
         # the linked content is identical.
-        if file.install == IF_NOT_EXISTS or file.target in FORCE_PRESERVED_TARGETS:
+        if file.install == IF_NOT_EXISTS:
             return InstallResult(
                 file,
                 InstallStatus.PRESERVED,
@@ -340,7 +339,7 @@ def install_file(
                 source_content=new_content,
                 source_executable=executable,
             )
-        if file.install == IF_NOT_EXISTS or file.target in FORCE_PRESERVED_TARGETS:
+        if file.install == IF_NOT_EXISTS:
             return InstallResult(
                 file,
                 InstallStatus.PRESERVED,

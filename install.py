@@ -47,7 +47,6 @@ __all__ = [
     "ManifestVersionAction",
     "main",
     "parse_args",
-    "preflight_checks",
     "resolve_install_root",
 ]
 
@@ -170,16 +169,6 @@ def resolve_install_root(args: argparse.Namespace) -> Path:
         "error: refusing to use the pack source checkout as the install root; "
         "pass --root pointing elsewhere"
     )
-
-
-def preflight_checks(root: Path, manifest_data: dict) -> None:
-    """Pack prerequisite checks before any write.
-
-    The seam for future backends: v0.1 only requires the install root to
-    exist. Keep new prerequisites here so install and remove share them.
-    """
-    del manifest_data
-    require_install_root(root)
 
 
 def _install_payload(
@@ -438,7 +427,6 @@ def main(argv: list[str] | None = None) -> int:
 
     manifest_data, files = load_manifest()
     validate_manifest(files)
-    preflight_checks(root, manifest_data)
 
     if command == "remove":
         return remove_installed_pack(
