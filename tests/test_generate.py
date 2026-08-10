@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import importlib.util
 import json
-import tempfile
 import unittest
 from collections import Counter
 from contextlib import ExitStack
@@ -559,8 +558,9 @@ class RealRepoGeneratorTest(unittest.TestCase):
             ("generated", ("scripts", "stray.json"), False),
             ("generated", ("templates", "skills", "_shared", "gen.json"), False),
         ):
-            root = Path(self.enterContext(tempfile.TemporaryDirectory()))
-            checkout = root / host / "se-ai-command-pack"
+            # A synthetic root that need not exist: the guard is a pure path
+            # predicate, so nothing here is created, read, or written.
+            checkout = Path("/checkouts") / host / "se-ai-command-pack"
             with self.subTest(host=host, tail="/".join(tail)):
                 with mock.patch.object(gen, "ROOT", checkout):
                     if accepted:
