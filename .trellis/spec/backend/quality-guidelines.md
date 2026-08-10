@@ -254,6 +254,28 @@ before that re-entry, or proactively at creation; the diff that decides the
 requirement does not exist yet when the PR is opened (PR #162 passed with a
 proactive section, PR #163 burned two rounds without one).
 
+**Writing the section after the failure does not clear it at that head.** The
+coordinator stores the check verdict per head, so once `pack.review-scope` has
+failed for a head, editing the PR body and rerunning replays the stored
+failure — a new attempt number does not help, and neither does a
+`--round-extension-authorized` attempt. The tell is exact: the replayed row
+carries a `durationMs` byte-identical to the original (PR #210: `1121` across
+three runs, while the helper invoked by hand against the corrected body exited
+`0`). Confirming the gate by hand is worth the ten seconds before concluding
+anything about the branch:
+
+```bash
+bash scripts/sd-ai-command-pack-review-scope.sh   # exit 0 once the body is fixed
+```
+
+The only sanctioned exit is a new head — the body lives off-head, so there is
+no way to prove an off-head fix at the head that already failed. Land a commit
+that carries real content and is legal in the finalization successor range
+(code, tests, specs, generated payload — never task, workspace, or
+finalization evidence), then rerun. Proactively authoring the section at
+PR-creation time remains strictly cheaper: it costs one paragraph and saves a
+round plus a commit. Tracked as `08-10-review-scope-late-arrival`.
+
 `--prepare-tooling-body` (`scripts/sd-ai-command-pack-pr-body-scope.py`) does
 not close this gap, for two different reasons that share one symptom:
 
