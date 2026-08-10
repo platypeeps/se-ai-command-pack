@@ -28,10 +28,10 @@ templates/skills/           # canonical shipped skill sources
   <skill>/scripts/*.py      # optional deterministic, stdlib-first helpers
 generated/skills/claude/    # generated Claude runtime-profile entrypoints
   <skill>/SKILL.md          # canonical body plus validated host frontmatter
+generated/references/       # generated references fanned into consuming skills
+  skill-catalog.md          # generated bundled catalog installed with se-help
 manifest.json               # generated payload inventory and release version
 README.md                   # generated family-grouped catalog inside markers
-templates/skills/_shared/references/skill-catalog.md
-                            # generated bundled catalog installed with se-help
 scripts/                    # generation and release-validation tools
 tests/                      # unittest modules mirroring installer concerns
 ```
@@ -92,6 +92,12 @@ tests/                      # unittest modules mirroring installer concerns
   flat.
 - Do not add hand-maintained platform-specific copies of skill content;
   platform adapters must be generated from the registry and canonical body.
+- Do not write generator output under `templates/`. That tree is the one place
+  skills are edited, so a generated file there reads as hand-editable and
+  invites the edit the next `make generate` silently discards. Generated
+  surfaces belong under `generated/`, which is why the bundled catalog is
+  registered as a `GENERATED_REFERENCES` source rather than a
+  `SHARED_REFERENCES` one.
 - Do not hide semantic decisions, approvals, or unbounded external actions in a
   bundled script merely to shorten the skill text.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI

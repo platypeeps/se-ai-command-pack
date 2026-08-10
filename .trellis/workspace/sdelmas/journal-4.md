@@ -473,3 +473,45 @@ Follow-up bookkeeping from PR #197. The local A-032 disposition is merged; the u
 ### Next Steps
 
 - None - task complete
+
+
+## Session 166: Move the generated skill catalog out of templates/ (A-003)
+
+**Date**: 2026-08-10
+**Task**: Move the generated skill catalog out of templates/ (A-003)
+**Branch**: `task/07-25-audit-generated-catalog-location`
+
+### Summary
+
+Relocated the generated bundled catalog to generated/references/skill-catalog.md, split shared vs generated reference registration in installer/registry.py, and turned the source/generated boundary from documented prose into an enforced test. Review added a generation-time check for a registered generated reference no writer produces, and path validation for reference sources in both registries.
+
+### Main Changes
+
+- Moved templates/skills/_shared/references/skill-catalog.md to generated/references/skill-catalog.md; installed targets unchanged on all three platforms, only the manifest source field moved
+- Added GENERATED_REFERENCES (repo-relative keys) beside SHARED_REFERENCES (templates-relative keys); build_rows builds each row's source from its own registry
+- Removed the GENERATED_SHARED_REFERENCES exemption, so a registered shared source missing from disk is now unconditionally a generation error
+- Added a generation-time check rejecting a registered generated reference this script writes no surface for, which would otherwise fail only in a user's install
+- validate_registry() now rejects absolute or '..'-containing reference sources in both registries, matching the platform-path arm and skill_review.py
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5c1badd4ffc29edfe239f7c4574b4efe26d5fcb6` | refactor(generate): move the bundled catalog out of templates/ |
+| `09a87ef772d636bb041ad5f09d956f6fd5a9e20e` | fix(generate): reject a generated reference no writer produces |
+| `532564a4d6cda762e5181177099eade88a498529` | fix(registry): reject reference sources that escape their tree |
+
+### Testing
+
+- [OK] make check: 667 tests OK, coverage 88.9% (floor 80), ruff/mypy clean, release payload gate 0.68.2 -> 0.68.3, trellis-provenance ok
+- [OK] grep -rlF for the generator do-not-edit marker across templates/: 0 files
+- [OK] install.py install --root <throwaway>: skill-catalog.md delivered byte-identically to .claude, .codex, .config/agents
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

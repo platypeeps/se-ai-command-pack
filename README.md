@@ -245,11 +245,13 @@ directories are pruned.
 ## How it works
 
 - `templates/skills/<name>/` holds the canonical skill definitions — the
-  only place skills are edited.
+  only place skills are edited. Nothing generated lives there; every
+  `make generate` output is written under `generated/`.
 - `installer/registry.py` declares platforms, ordered skill-family metadata,
   outcome descriptions, and shared-reference fan-out; `make generate`
   regenerates `manifest.json`, this README's grouped catalog, and the versioned
-  `se-help` catalog from one frontmatter parse.
+  `se-help` catalog (`generated/references/skill-catalog.md`) from one
+  frontmatter parse.
 - `install.py` owns the pack lifecycle and applies the manifest to your home directory (or `--root`
   elsewhere) and writes receipts under `~/.se-ai-command-pack/`:
   - `manifest.json` — copy of the installed manifest (version lookup);

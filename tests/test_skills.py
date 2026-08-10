@@ -431,6 +431,22 @@ class SkillFamilyRegistryTest(unittest.TestCase):
             (SkillInfo("test", "understand"),), "missing se- prefix"
         )
 
+    def test_registry_rejects_reference_sources_that_escape_their_tree(self) -> None:
+        """The prefix rule is not a path check on its own: both spellings below
+        satisfy it and still resolve outside the tree the generator joins them
+        onto."""
+        for registry, source in (
+            ("SHARED_REFERENCES", "_shared/../../etc/passwd"),
+            ("GENERATED_REFERENCES", "generated/../../etc/passwd"),
+        ):
+            with self.subTest(registry=registry):
+                with (
+                    mock.patch(f"installer.registry.{registry}", {source: ()}),
+                    self.assertRaises(RuntimeError) as caught,
+                ):
+                    validate_registry()
+                self.assertIn("unsafe source", str(caught.exception))
+
 
 class SkillSafetyPinsTest(unittest.TestCase):
     def test_external_input_skills_carry_injection_rule(self) -> None:

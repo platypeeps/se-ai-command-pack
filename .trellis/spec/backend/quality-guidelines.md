@@ -917,7 +917,7 @@ SKILL_NAMES = tuple(skill.name for skill in SKILLS)
 make generate
 python .github/scripts/generate-skill-surfaces.py --check
 <!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
-templates/skills/_shared/references/skill-catalog.md
+generated/references/skill-catalog.md
 ```
 
 `FAMILY_LABELS` order is public catalog order. `FAMILY_DESCRIPTIONS` must have
@@ -934,6 +934,15 @@ manifest/install order, and grouping must not reorder generated manifest rows.
   family with its canonical outcome description.
 - `SKILL_NAMES` is derived for compatibility; no consumer owns a second skill
   list.
+- The source/generated boundary is a location rule, not a comment rule.
+  `templates/` holds hand-edited sources only; every generated surface is
+  written under `generated/`. The bundled catalog therefore lives at
+  `generated/references/skill-catalog.md` and is registered in
+  `GENERATED_REFERENCES` (repo-relative keys), while `SHARED_REFERENCES` keeps
+  its `templates/skills/`-relative keys for authored references. Both fan out
+  identically, so the split costs nothing at install time and buys one
+  invariant: a registered `SHARED_REFERENCES` source that is missing from disk
+  is unconditionally an error, with no generated-file exemption to weaken it.
 - The catalog description comes from the already validated frontmatter parse.
   Markdown table pipes are escaped deterministically; descriptions are not
   duplicated in registry code.
@@ -957,6 +966,8 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | Unknown family | Raise a registry `RuntimeError` naming the skill and family. |
 | Duplicate skill name, including cross-family membership | Raise a registry `RuntimeError`; never choose one row implicitly. |
 | Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
+| A registered `SHARED_REFERENCES` source is absent from `templates/skills/` | Raise a generation error naming the path; there is no exemption for generated sources, which are registered in `GENERATED_REFERENCES` instead. |
+| A file under `templates/` carries the generator's do-not-edit marker | `test_no_generated_file_lives_under_templates` fails, naming the offending path. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
 | Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
 | Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
@@ -985,6 +996,9 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - Consumer tests pin snapshot-preferred resolution matching the AST fallback,
   absent- and symlinked-snapshot fallback, and fail-closed `ReviewError` for
   unsupported/mistyped `schemaVersion` and malformed payloads.
+- One boundary test walks `templates/` from disk and fails on any file carrying
+  the generator's do-not-edit marker. It enumerates rather than checking known
+  paths, so it also catches a generated surface nobody thought to look for.
 - `make generate` twice, `make check`, `git diff --check`, and explicit empty
   diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
 
@@ -995,7 +1009,7 @@ late — at `--check` or in the suite — rather than at the edit site.
 
 **Bump the version before `make generate`, not after.** `rendered_help_catalog`
 embeds the manifest version in
-`templates/skills/_shared/references/skill-catalog.md`, and
+`generated/references/skill-catalog.md`, and
 `regenerated_manifest_text` preserves whatever header version it finds. Bumping
 after generation leaves the catalog carrying the old version, so
 `generate-skill-surfaces.py --check` reports drift and `make release-check`
@@ -1011,6 +1025,11 @@ skill must be added to each by hand:
 | name → family map | `tests/test_skills.py` | same test, second assertion |
 | `EXTERNAL_INPUT_SKILLS` | `tests/test_skills.py` | injection-rule pin never covers the new skill |
 | `EXPECTED_SHARED_SOURCES` | `tests/test_generate.py` | `test_registered_shared_sources_match_snapshot` |
+
+`EXPECTED_SHARED_SOURCES` pins `SHARED_REFERENCES` only. A generated reference
+is registered in `GENERATED_REFERENCES` and pinned separately by
+`test_help_catalog_reference_fans_into_help_only`, so do not add one to the
+shared golden literal.
 
 The golden-literal design is intentional — a registry-derived expectation would
 accept whatever the registry says and prove nothing — so treat these edits as

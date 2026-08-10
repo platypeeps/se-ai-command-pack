@@ -13,11 +13,11 @@ process. User-facing install/update/remove instructions live in the
 | `templates/agents/<name>.md` | Canonical agent definitions (neutral MD + frontmatter allowlist `name`, `description`, optional `tools`, `model`, `sandbox_mode`). The only place agents are edited. |
 | `generated/skills/claude/<name>/SKILL.md` | Per-platform skill overlays rendered by the generator: canonical body plus a Claude frontmatter block translated from the skill's registry runtime profile (see [Runtime profiles](#runtime-profiles)); never hand-edit. |
 | `generated/agents/claude/<name>.md`, `generated/agents/codex/<name>.toml` | Per-platform agent overlays rendered by the generator (Claude Markdown, Codex TOML); never hand-edit. |
-| `templates/skills/_shared/references/` | Shared references fanned into consuming skills' `references/` dirs by the generator. |
-| `templates/skills/_shared/references/skill-catalog.md` | Generated bundled family/skill catalog fanned into `se-help`; never hand-edit. |
+| `templates/skills/_shared/references/` | Hand-edited shared references (`SHARED_REFERENCES`) fanned into consuming skills' `references/` dirs by the generator. |
+| `generated/references/skill-catalog.md` | Generated bundled family/skill catalog (`GENERATED_REFERENCES`) fanned into `se-help`; never hand-edit. |
 | `templates/skills/_shared/references/personal-profile-contract.md` | Portable `se-personal-profile/v1` schema and privacy/consumer contract fanned into profile workflows. |
 | `templates/skills/_shared/references/state-schema.md` | Portable `se-monitor-state/v1` schema fanned into compatible bounded-delta workflows. |
-| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY` (incl. per-platform `agents_dir`), ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, install modes, receipt paths. |
+| `installer/registry.py` | Source of truth: `PLATFORM_REGISTRY` (incl. per-platform `agents_dir`), ordered `SKILLS` family metadata, derived `SKILL_NAMES`, `SHARED_REFERENCES`, `GENERATED_REFERENCES`, install modes, receipt paths. |
 | `manifest.json` | Generated install spec (header preserved, `files` rows derived). Never hand-edit rows. |
 | `install.py` + `installer/` | The user-scope installer. |
 | `README.md` | User guide with a marker-bounded, family-grouped skill catalog generated from registry metadata and canonical frontmatter. |

@@ -12,8 +12,17 @@ The source/generated boundary holds for every file: templates/skills/ contains o
 
 ## Acceptance Criteria
 
-- [ ] No do-not-edit generated file sits undocumented under templates/ (moved, or exception documented at the boundary declaration).
-- [ ] `make generate --check` green; se-help still ships the catalog to all platforms.
+- [x] No do-not-edit generated file sits undocumented under templates/ (moved, or exception documented at the boundary declaration).
+      Moved to `generated/references/skill-catalog.md`; `grep -rlF` for the
+      generator's do-not-edit marker across `templates/` returns 0 files, and
+      `tests/test_generate.py::test_no_generated_file_lives_under_templates`
+      re-walks the tree from disk so a future generator cannot reintroduce one.
+- [x] `make generate --check` green; se-help still ships the catalog to all platforms.
+      `--check` reports "manifest.json, README.md, skill-catalog.md,
+      registry-snapshot.json, Claude skills, and agent overlays match the
+      generated surfaces". A throwaway-root install delivered the catalog
+      byte-identically to `.claude`, `.codex`, and `.config/agents`; only the
+      manifest `source` field moved, targets are unchanged.
 
 ## Notes
 
