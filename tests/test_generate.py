@@ -509,6 +509,114 @@ class RealRepoGeneratorTest(unittest.TestCase):
         ]
         self.assertEqual(offenders, [])
 
+    def test_non_markdown_generated_file_under_templates_is_refused(self) -> None:
+        """The gap the marker walk above cannot close. DO_NOT_EDIT_MARKER is an
+        HTML comment, so a generated `.json` under templates/ carries no marker
+        in any syntax and that walk passes it. The write guard is checked on
+        the path, not the content, so the format is irrelevant."""
+        target = PACK_ROOT / "templates" / "skills" / "_shared" / "generated.json"
+        with self.assertRaises(gen.GenerationError) as raised:
+            gen.write_generated_surfaces([(target, '{"generated": true}\n', None)])
+        self.assertIn("templates/", str(raised.exception))
+        self.assertFalse(target.exists())
+
+    def test_write_outside_generated_is_refused(self) -> None:
+        """`generated/` or one of the two in-place surfaces — nothing else.
+        A stray write elsewhere in the repo is output nobody would think to
+        look for when reconciling drift."""
+        target = PACK_ROOT / "docs" / "stray-surface.md"
+        with self.assertRaises(gen.GenerationError) as raised:
+            gen.write_generated_surfaces([(target, "body\n", None)])
+        self.assertIn("neither under generated/", str(raised.exception))
+        self.assertFalse(target.exists())
+
+    def test_traversal_through_generated_is_refused(self) -> None:
+        """A component check reads what is written, not where the OS lands.
+        `generated/../docs/stray.md` carries a `generated` component and would
+        pass the boundary rules, and the write would still leave the file in
+        `docs/`."""
+        target = PACK_ROOT / "generated" / ".." / "docs" / "traversal.md"
+        # The one guard test whose write reaches the filesystem when it fails:
+        # a regression lands the file in the repo, where the next run's
+        # assertion would trip over the previous run's leftover.
+        self.addCleanup((PACK_ROOT / "docs" / "traversal.md").unlink, True)
+        with self.assertRaises(gen.GenerationError) as raised:
+            gen.write_generated_surfaces([(target, "body\n", None)])
+        self.assertIn("relative path component", str(raised.exception))
+        self.assertFalse((PACK_ROOT / "docs" / "traversal.md").exists())
+
+    def test_degenerate_path_shapes_are_refused(self) -> None:
+        """The base arm of the path-filesystem matrix. The guard performs no
+        filesystem access at all — it decides from components — so a symlink,
+        an oversized file, and a TOCTOU replacement have no surface here; that
+        exposure lives in `atomic_write_text`, which this change does not
+        touch. What the guard does owe is a verdict on every degenerate shape
+        reachable from a caller, and the answer is the same refusal."""
+        for label, target in (
+            ("empty", Path(".")),
+            ("bare name", Path("stray.md")),
+            ("option-like", Path("--generated")),
+            ("absolute root", Path("/")),
+        ):
+            with self.subTest(shape=label):
+                with self.assertRaises(gen.GenerationError):
+                    gen.assert_generated_write_target(target)
+
+    def test_in_place_surface_names_are_not_accepted_elsewhere(self) -> None:
+        """The two in-place surfaces are exact paths, not basenames. Matched on
+        the name alone, a stray `docs/README.md` reads as an allowed surface
+        and the whole boundary comes apart on the two commonest filenames in
+        any repository."""
+        for target in (
+            PACK_ROOT / "docs" / "README.md",
+            PACK_ROOT / "docs" / "manifest.json",
+        ):
+            with self.subTest(target=target.relative_to(PACK_ROOT).as_posix()):
+                with self.assertRaises(gen.GenerationError) as raised:
+                    gen.assert_generated_write_target(target)
+                self.assertIn("neither under generated/", str(raised.exception))
+
+    def test_in_place_surfaces_and_generated_paths_are_accepted(self) -> None:
+        """The guard must not reject what the generator legitimately writes:
+        both in-place surfaces by name, and any path under a `generated`
+        component — including the temporary trees the other tests redirect
+        output into, which is why a target outside the checkout falls back to
+        reading the whole path."""
+        for path in (
+            PACK_ROOT / "manifest.json",
+            PACK_ROOT / "README.md",
+            PACK_ROOT / "generated" / "references" / "skill-catalog.md",
+            PACK_ROOT / "generated" / "agents" / "codex" / "example.toml",
+            Path("/tmp/fixture-xyz/generated/skills/claude/se-test/SKILL.md"),
+        ):
+            with self.subTest(path=path.as_posix()):
+                gen.assert_generated_write_target(path)
+
+    def test_host_directory_names_do_not_decide_the_verdict(self) -> None:
+        """Nobody chooses where a clone is checked out, so no directory above
+        the repo root may change the answer. Read against the whole path, a
+        checkout under `templates/` refuses every write and one under
+        `generated/` accepts strays anywhere in the tree; both verdicts are
+        inverted from the truth, and both are what anchoring to ROOT fixes."""
+        for host, tail, accepted in (
+            ("templates", ("generated", "references", "skill-catalog.md"), True),
+            ("templates", ("docs", "stray.md"), False),
+            ("generated", ("scripts", "stray.json"), False),
+            ("generated", ("templates", "skills", "_shared", "gen.json"), False),
+        ):
+            # A synthetic root that need not exist: the guard is a pure path
+            # predicate, so nothing here is created, read, or written.
+            checkout = Path("/checkouts") / host / "se-ai-command-pack"
+            with self.subTest(host=host, tail="/".join(tail)):
+                with mock.patch.object(gen, "ROOT", checkout):
+                    if accepted:
+                        gen.assert_generated_write_target(checkout.joinpath(*tail))
+                    else:
+                        with self.assertRaises(gen.GenerationError):
+                            gen.assert_generated_write_target(
+                                checkout.joinpath(*tail)
+                            )
+
     def test_registered_shared_sources_match_snapshot(self) -> None:
         """One registry-driven check replacing the per-skill methods: each
         skill's registered shared sources must match the golden snapshot, and
@@ -745,7 +853,13 @@ class SandboxGeneratorTest(TempDirTestCase):
         self.skills_root.mkdir(parents=True)
         self.manifest_path = self.base / "manifest.json"
         self.readme_path = self.base / "README.md"
-        self.help_catalog_path = self.base / "skill-catalog.md"
+        # Mirrors the real layout (generated/references/skill-catalog.md), not
+        # just a unique temp name: the write guard checks path components, so a
+        # fixture that parks a generated surface at the tree root would be
+        # testing a shape the generator never produces.
+        self.help_catalog_path = (
+            self.base / "generated" / "references" / "skill-catalog.md"
+        )
         self.registry_snapshot_path = (
             self.base / "generated" / "registry-snapshot.json"
         )

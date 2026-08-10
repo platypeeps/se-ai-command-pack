@@ -97,7 +97,20 @@ tests/                      # unittest modules mirroring installer concerns
   invites the edit the next `make generate` silently discards. Generated
   surfaces belong under `generated/`, which is why the bundled catalog is
   registered as a `GENERATED_REFERENCES` source rather than a
-  `SHARED_REFERENCES` one.
+  `SHARED_REFERENCES` one. `write_generated_surfaces` enforces this at the
+  writer: every target must carry a `generated` path component or be one of
+  the two in-place surfaces at their configured paths — `MANIFEST_PATH` and
+  `README_PATH`, matched whole rather than by basename, so a stray `README.md`
+  written anywhere else in the tree is refused. Components are read
+  relative to `ROOT` for any target inside the checkout, so a directory above
+  the repository named `templates` or `generated` cannot decide the verdict;
+  only a target outside `ROOT` — the tests redirecting output into a temporary
+  tree — falls back to the whole path. A `..` component is refused outright
+  before those rules apply, since a component check reads what was written
+  rather than where the OS lands. Enforcing it there
+  rather than by scanning for the do-not-edit marker is what makes it hold for
+  non-Markdown output — the marker is an HTML comment and cannot appear in a
+  generated `.json` or `.toml` at all.
 - Do not hide semantic decisions, approvals, or unbounded external actions in a
   bundled script merely to shorten the skill text.
 - Do not bury reusable filesystem, validation, or subprocess logic in the CLI

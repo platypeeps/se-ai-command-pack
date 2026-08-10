@@ -78,6 +78,21 @@ HELP_CATALOG_PATH = ROOT / HELP_CATALOG_SOURCE
 # CI. Checking membership instead of file presence keeps a fresh checkout that
 # has not generated yet from failing generation.
 GENERATED_REFERENCE_WRITERS = frozenset({HELP_CATALOG_SOURCE})
+# Where this script is allowed to write. DO_NOT_EDIT_MARKER is an HTML comment,
+# so a scan for it can only ever cover Markdown: a generated `.json` or `.toml`
+# written under templates/ would pass that scan and still break the boundary.
+# Guarding the single write choke point instead covers every format, including
+# ones no writer emits yet.
+#
+# Membership is tested on components anchored to ROOT, so no directory above
+# the checkout can decide the verdict. Only a target outside ROOT falls back to
+# the whole path — that is the generator's own tests redirecting every output
+# constant into a temporary tree, where the tail shape is all that survives.
+TEMPLATES_COMPONENT = TEMPLATES_SKILLS_DIR.split("/", 1)[0]
+GENERATED_COMPONENT = GENERATED_SKILLS_DIR.split("/", 1)[0]
+# Whole-repo artifacts with a marked region this script rewrites in place, as
+# opposed to files it owns end to end. Neither can live under generated/.
+IN_PLACE_WRITE_NAMES = frozenset({"manifest.json", "README.md"})
 README_CATALOG_START = "<!-- SE_SKILL_CATALOG:START -->"
 README_CATALOG_END = "<!-- SE_SKILL_CATALOG:END -->"
 
@@ -1214,9 +1229,70 @@ def regenerated_readme_text(
     return f"{current[:start]}\n{catalog}\n{current[end:]}"
 
 
+def _boundary_parts(path: Path) -> tuple[str, ...]:
+    """The path components the write guard is allowed to read.
+
+    Anchored to `ROOT` whenever the target is inside the checkout, so a host
+    directory above it named `templates` or `generated` cannot decide the
+    verdict — a clone under `~/templates/` would otherwise have every write
+    refused, and one under `~/generated/` would have stray writes accepted.
+    Targets outside `ROOT` are the generator's own tests redirecting output
+    into a temporary tree; there is no repo root to anchor to, so the whole
+    path is read and the fixtures mirror the real layout for that reason.
+    """
+    try:
+        return path.relative_to(ROOT).parts
+    except ValueError:
+        return path.parts
+
+
+def assert_generated_write_target(path: Path) -> None:
+    """Reject a write that would put generator output outside generated/.
+
+    `templates/` is the one place skills are hand-edited, so a generated file
+    there invites the edit the next `make generate` discards. This is checked
+    at the writer rather than by scanning for the do-not-edit marker, because
+    the marker is an HTML comment and cannot appear in a generated `.json` or
+    `.toml` at all.
+    """
+    # Before any boundary rule: `..` survives `PurePath` normalization, so
+    # `generated/../docs/stray.md` carries a `generated` component the guard
+    # would accept while the OS resolves the write to `docs/`. Nothing the
+    # generator builds contains one; refusing is cheaper than proving that
+    # stays true. `.` needs no companion check — `PurePath` drops it outright,
+    # leaving `Path(".").parts == ()`, which no boundary rule accepts anyway.
+    if ".." in path.parts:
+        raise GenerationError(
+            f"{_display(path)} contains a relative path component; the write "
+            f"target must be resolved before the {GENERATED_COMPONENT}/ "
+            f"boundary can be decided from it"
+        )
+    parts = _boundary_parts(path)
+    if TEMPLATES_COMPONENT in parts:
+        raise GenerationError(
+            f"{_display(path)} is generator output under "
+            f"{TEMPLATES_COMPONENT}/, the one place skills are hand-edited; "
+            f"write it under {GENERATED_COMPONENT}/ instead"
+        )
+    # The in-place surfaces are two exact paths, not two basenames: matching on
+    # the name alone would accept `docs/README.md` anywhere in the tree. Read
+    # from the module globals so the sandbox tests, which patch both constants
+    # into a temporary tree, still exercise this arm.
+    if GENERATED_COMPONENT in parts or path in {MANIFEST_PATH, README_PATH}:
+        return
+    raise GenerationError(
+        f"{_display(path)} is neither under {GENERATED_COMPONENT}/ nor one of "
+        f"the in-place surfaces ({', '.join(sorted(IN_PLACE_WRITE_NAMES))})"
+    )
+
+
 def write_generated_surfaces(
     updates: list[tuple[Path, str | None, str | None]],
 ) -> None:
+    # Validate every target before mutating any of them: a refusal discovered
+    # midway would leave the tree half-written and rely on rollback to undo it.
+    for path, _regenerated, _committed in updates:
+        assert_generated_write_target(path)
     written: list[tuple[Path, str | None]] = []
     created_directories: list[Path] = []
     try:

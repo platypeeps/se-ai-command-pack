@@ -918,6 +918,9 @@ make generate
 python .github/scripts/generate-skill-surfaces.py --check
 <!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
 generated/references/skill-catalog.md
+assert_generated_write_target(path: Path) -> None
+_boundary_parts(path: Path) -> tuple[str, ...]
+IN_PLACE_WRITE_NAMES = frozenset({"manifest.json", "README.md"})
 python .github/scripts/check-release-payload.py --base <rev|auto>
 check_single_version_step(repo: Path, merge_base: str) -> None
 VERSION_HEADING_PATTERN = re.compile(r"^## (?P<version>\S+)")
@@ -971,6 +974,12 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
 | A registered `SHARED_REFERENCES` source is absent from `templates/skills/` | Raise a generation error naming the path; there is no exemption for generated sources, which are registered in `GENERATED_REFERENCES` instead. |
 | A file under `templates/` carries the generator's do-not-edit marker | `test_no_generated_file_lives_under_templates` fails, naming the offending path. |
+| The generator is asked to write any path with a `templates` component, whatever its format | `write_generated_surfaces` raises `GenerationError` before mutating anything. The marker walk cannot cover this: the marker is an HTML comment, so a generated `.json` or `.toml` under `templates/` carries no marker in any syntax. |
+| The generator is asked to write outside `generated/` and outside `manifest.json`/`README.md` | `GenerationError`; generator output nobody would look for when reconciling drift is refused at the writer. |
+| A degenerate write target reaches the guard — empty, bare name, option-like, or the filesystem root | `GenerationError` in every case. The guard performs no filesystem access at all, deciding purely from components, so the symlink, oversized-file, and TOCTOU arms of the path-filesystem matrix have no surface in it; that exposure lives in `atomic_write_text` and is unchanged. What the guard owes is a verdict on every shape a caller can reach it with. |
+| A stray write is named `README.md` or `manifest.json` outside its configured path | `GenerationError`. The in-place surfaces are the two exact paths `MANIFEST_PATH` and `README_PATH`, not two basenames; matched on the name alone the boundary comes apart on the two commonest filenames in any repository. The comparison reads the module globals so the sandbox tests that patch both constants into a temporary tree still exercise the arm. |
+| A write target reaches outside `generated/` through a `..` component | `GenerationError` before the boundary rules are consulted. A component check reads what was written, not where the OS lands, so `generated/../docs/stray.md` carries a `generated` component and would otherwise be accepted while the file appears in `docs/`. Nothing the generator builds contains a `..`; refusing is cheaper than proving that stays true. |
+| The checkout sits under a host directory named `templates` or `generated` | The verdict is unchanged: `assert_generated_write_target` reads components relative to `ROOT` for any target inside the checkout, and only falls back to the whole path for the temporary trees the generator's own tests redirect output into. Nobody chooses where a clone lands, so no directory above the repository root may decide it. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
 | Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
 | Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
@@ -1005,6 +1014,19 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - One boundary test walks `templates/` from disk and fails on any file carrying
   the generator's do-not-edit marker. It enumerates rather than checking known
   paths, so it also catches a generated surface nobody thought to look for.
+  Because that walk can only see Markdown, a second pair of tests drives
+  `write_generated_surfaces` directly: a `.json` target under `templates/` and
+  a target outside `generated/` must both raise before anything is written, and
+  the accepted set (both in-place surfaces plus any `generated` component,
+  including a redirected temporary tree) must still pass. A third test patches
+  `ROOT` to a checkout nested under a host directory named `templates` and then
+  one named `generated`, pinning that neither inverts the verdict, and a fourth
+  drives a `..` traversal through `generated/`. That one is the only guard test
+  whose write reaches the filesystem when it regresses, so it cleans the target
+  up rather than leaving the next run to trip over it. Sandbox
+  fixtures place generated surfaces at their real relative paths for the same
+  reason — a fixture parking one at the tree root would test a shape the
+  generator never produces.
 - Release-gate tests pin the one-version-step rule from both sides: a branch
   stacking two headings fails, a branch collapsing its bumps into one heading
   passes, a bump that adopts a base-written heading fails, and correcting an

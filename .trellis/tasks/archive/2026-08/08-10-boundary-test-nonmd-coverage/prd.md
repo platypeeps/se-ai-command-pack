@@ -44,7 +44,20 @@ marker convention, which is design work rather than a one-line test change.
 
 ## Acceptance criteria
 
-- [ ] A test proves a non-Markdown generated file placed under `templates/` is
-      detected. It must fail against today's code.
-- [ ] The chosen convention is documented in the directory-structure spec beside
-      the existing "no generator output under `templates/`" rule.
+- [x] A test proves a non-Markdown generated file placed under `templates/` is
+      detected. It must fail against today's code. Resolved by the second design
+      option rather than per-format markers: `assert_generated_write_target`
+      guards `write_generated_surfaces`, the single write choke point, so the
+      check is on the path and the format is irrelevant.
+      `test_non_markdown_generated_file_under_templates_is_refused` drives a
+      `.json` target under `templates/`;
+      `test_write_outside_generated_is_refused` and
+      `test_in_place_surfaces_and_generated_paths_are_accepted` pin the other
+      two arms. Falsifiability proven directly: the pre-change generator loaded
+      from `HEAD` writes the same `.json` into a `templates/` tree
+      (`OLD generator wrote into templates/: True`) and the marker walk cannot
+      see it (`marker present in the .json: False`).
+- [x] The chosen convention is documented in the directory-structure spec beside
+      the existing "no generator output under `templates/`" rule, with the
+      writer-level enforcement, its two validation-matrix rows, and the fixture
+      requirement recorded in the backend quality guidelines.
