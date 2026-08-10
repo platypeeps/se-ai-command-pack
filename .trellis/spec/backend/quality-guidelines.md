@@ -331,9 +331,12 @@ before the real cause was found).
 
 **The two lanes, shipping branch delta:**
 
-- **Shell lane** (`scripts/sd-ai-command-pack-review-local.sh:337-346`) falls
-  back to `.prism/rules.json` when no environment override is set and passes
-  `--rules`, `--fail-on high`, and `--exclude`.
+- **Shell lane** (`scripts/sd-ai-command-pack-review-local.sh:327-346`)
+  passes `--rules`, `--fail-on`, and `--exclude`. The rules path falls back
+  to `.prism/rules.json`, then `prism-rules.json`, when no environment
+  override is set; `--fail-on` defaults to `high` through the same
+  env-override chain (`SD_AI_COMMAND_PACK_REVIEW_LOCAL_PRISM_FAIL_ON`, then
+  `SD_AI_COMMAND_PACK_FULL_CHECK_PRISM_FAIL_ON`).
 - **sd-review lane** — the lane `sd-ship` Stage 2 runs, and so the lane that
   gates shipping. The built-in adapter in
   `scripts/sd-ai-command-pack-review-local.py` (`_expand_argv`, `:1376`)
