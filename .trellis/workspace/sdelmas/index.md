@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 159
+- **Total Sessions**: 160
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~252 | Active |
+| `journal-4.md` | ~286 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 160 | 2026-08-09 | Add scope=session to se-review-skills | `af35c4c`, `184ca6b` | `task/08-06-session-first-skill-review` |
 | 159 | 2026-08-09 | Registry-snapshot layout-assumption assessment: no schema change | `2b03e67`, `8575f5d`, `0c08c59` | `task/08-04-audit-registry-snapshot-layout-assumptions` |
 | 158 | 2026-08-09 | Document base_branch seeding, correction window, and gate version trap | `1ebbf88`, `060d595`, `0f8367a` | `task/08-06-task-create-base-branch-default` |
 | 157 | 2026-08-09 | Iteration 4: prism rules lane divergence guidance (PR #190) | `951e070`, `d498910` | `task/08-06-prism-rules-lane-divergence` |

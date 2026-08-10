@@ -250,3 +250,37 @@ Iteration 6 of work-loop run c441624d: read-only assessment for 08-04-audit-regi
 ### Next Steps
 
 - None - task complete
+
+
+## Session 160: Add scope=session to se-review-skills
+
+**Date**: 2026-08-09
+**Task**: Add scope=session to se-review-skills
+**Branch**: `task/08-06-session-first-skill-review`
+
+### Summary
+
+Session-first reviewed-set derivation for se-review-skills: scope=session post-inventory filter, name-narrows/provenance-decides join, selection digest with canonical encoding and test vector, additive report-schema session-selection block, 6 pin-proven tests, pack 0.68.1. Four Codex adversarial rounds in planning; PR #193.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `af35c4c` | (see git log) |
+| `184ca6b` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

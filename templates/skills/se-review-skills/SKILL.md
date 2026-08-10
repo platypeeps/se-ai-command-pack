@@ -57,8 +57,9 @@ Natural language is accepted. Normalize only these optional keys:
 - `skill=<name-or-path>` — repeatable explicit skill selector;
 - `root=<path>` — bounded discovery root;
 - `family=<declared-family>`;
-- `scope=skill|family|repo|package|all` — `all` means the resolved boundary,
-  never the machine;
+- `scope=skill|family|repo|package|all|session` — `all` means the resolved
+  boundary, never the machine; `session` derives the reviewed set from
+  confirmed invocations in the inspected sessions (post-inventory filter);
 - `snapshot=<id>` — required when acting on an earlier report;
 - `task=<finding-ids|skill:name|family:name|repo:id|all>`;
 - `apply=<finding-ids|skill:name|family:name|repo:id|all>`;
@@ -73,7 +74,11 @@ Natural language is accepted. Normalize only these optional keys:
 - `depth=brief|standard` — default `standard`.
 
 Unknown argument names are an error — stop and identify them before discovery,
-task reconciliation, or editing. Reject an invalid selector instead of
+task reconciliation, or editing. `scope=session` with `sessions=off` is an
+argument error — one demands session-derived discovery, the other forbids
+session inspection. `scope=session` also rejects `skill=` and `family=`,
+naming both arguments in the error: an explicit selector contradicts deriving
+the set from the session. Reject an invalid selector instead of
 broadening it. When no target is supplied, use declared skills in the current
 Git repository plus bounded user installation roots derived from its verified
 manifest. Report missing installation roots as coverage limits. Never replace
@@ -166,17 +171,46 @@ an exact `skill=`, `root=`, or `installed-root=`.
    a current canonical source locator and explain the causal link. Report an
    unavailable session reader, incomplete history, `sessions=off`, or exhausted
    budget as an observed-use coverage limit.
-7. Recommend invocation, context, bounded delegation, portable model profile,
+7. Under `scope=session`, derive the reviewed set from the observed-use pass
+   as a post-inventory filter: invoke the analyzer with `--scope` omitted and
+   no `--skill` selectors, deduplicate the combined inventory as usual, then
+   join each confirmed invocation against the deduplicated entries. Name
+   narrows, provenance decides: a confirmation selects an entry only when the
+   normalized skill name matches exactly one deduplicated entry and the
+   record's `skill-provenance` defensibly maps the invocation to that entry —
+   `current-canonical` or `installed-drift` for it. A confirmation whose name
+   matches multiple distinct-content entries, or whose provenance is
+   `historical-version` or `unknown`, is identity-unresolved: count it in the
+   session-selection report block with its redacted locator and the candidate
+   entries by name and status, select zero entries for it, never assert
+   `changeable`, and route no task from it; the stated escape is an explicit
+   `skill=` run. A confirmed name matching zero inventory entries is
+   absent-from-inventory: record a coverage note naming the confirmed name
+   and the inventory boundary. Zero confirmed invocations is an honest empty
+   result naming the session-selection stage with its coverage limits —
+   never a fallback to repository-plus-installed discovery. An empty
+   *combined* inventory still raises the analyzer's own inventory-stage
+   failure; attribute it to the inventory stage, not the session stage.
+   Record every selected entry under the analyzer's deduplication key
+   (owned: canonical root plus resolved canonical path; unowned: normalized
+   name plus content sha256) together with its confirming records, and seal
+   the block with the selection digest defined in the report schema. The
+   preserved analyzer JSON keeps its own scope stamp: report "resolved
+   review scope: session (post-inventory filter)" alongside "analyzer
+   inventory boundary" naming the preserved payload's scope value, and
+   preserve that JSON unchanged.
+
+8. Recommend invocation, context, bounded delegation, portable model profile,
    reasoning effort, and verified target overrides for every skill. Use
    subagents only for independently testable work with a minimal source set and
    explicit result artifact. Cap fan-out, prohibit recursive delegation,
    preserve the caller's authority, and make the parent verify and deduplicate
    all results. Give independent validators raw artifacts, not conclusions.
-8. When `independent=auto`, use an already available independent review
+9. When `independent=auto`, use an already available independent review
    capability only for a concrete diff or bounded artifact. Never install,
    enable, authenticate, or reconfigure a provider. Verify its findings and
    continue with a native isolated pass when it is absent or unsuitable.
-9. Produce one stable numbered report following the report schema. Include
+10. Produce one stable numbered report following the report schema. Include
    only findings supported by file/line or reproducible-command evidence; use
    exact locators and collect command evidence safely. Roll up safety coverage
    by repository and family and show every per-skill verdict. Place P0 safety,
@@ -187,7 +221,7 @@ an exact `skill=`, `root=`, or `installed-root=`.
    coverage, limits, and selectors. End with suggested next steps grounded in
    the findings, drift state, and valid selectors; suggestions never authorize
    task creation, repository edits, or installation refreshes.
-10. In `mode=task`, recompute the source snapshot, revalidate selected session
+11. In `mode=task`, recompute the source snapshot, revalidate selected session
     evidence, resolve the selector, preview every destination and affected
     template, then reconcile active and archived Trellis tasks. Reuse an
     accurate task, flag a stale task, or create at most one planning task per
@@ -199,18 +233,24 @@ an exact `skill=`, `root=`, or `installed-root=`.
     than after a named heading the target may not have. When the evidence
     **does not qualify** under that gate, create the task without the
     requirement and say so; never widen the gate to manufacture a gotcha.
-11. Route verified SD and SE work to their respective upstream Trellis
+    For a session-scoped report, act only on the recorded selection: require
+    the recomputed selection digest to equal the stamped digest — a missing,
+    corrupt, or non-matching session-selection block fails closed — and
+    never re-derive the reviewed set by fresh session inspection; new
+    session evidence means a new review run with a new report.
+12. Route verified SD and SE work to their respective upstream Trellis
    checkouts. Route other work to the repository owning the canonical source.
    If the checkout, remote, clean write boundary, or Trellis entrypoint cannot
    be verified, return a paste-ready proposal. Never clone or bootstrap Trellis
    as a review side effect.
-12. In `mode=apply`, perform the same task reconciliation first. Recompute the
+13. In `mode=apply`, perform the same task reconciliation first. Recompute the
     source snapshot, revalidate selected session evidence and the template
-    allowlist, preview exact files, preserve unrelated work, and edit one
+    allowlist, apply the same session-scoped recorded-selection and
+    selection-digest rules as `mode=task`, preview exact files, preserve unrelated work, and edit one
     skill-sized batch only when already operating safely in its owner
     repository. Cross-repository selections create handoffs and stop; they do
     not authorize a hidden multi-repository transaction.
-13. After each applied skill batch, run its focused convention, behavior, and
+14. After each applied skill batch, run its focused convention, behavior, and
     generation checks. Stop on a failed check or newly exposed product,
     safety, dependency, or target tradeoff. Report exact partial state rather
     than continuing to another skill.
