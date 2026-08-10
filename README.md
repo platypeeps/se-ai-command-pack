@@ -304,8 +304,8 @@ project. It exports `NPM_CONFIG_IGNORE_SCRIPTS=true` so the unattended
 **Accepted risk — unlocked npm transitives.** The Repomix version itself is
 pinned, but `npx` resolves its transitive tree fresh on every run, so two
 refreshes on different days can install different sub-dependencies. That is
-accepted rather than fixed: locking it would mean vendoring a
-`package-lock.json` and an `npm ci` step for a tool that produces one
+accepted rather than fixed: locking it would mean vendoring an npm lockfile
+and an `npm ci` step for a tool that produces one
 gitignored artifact and is never part of a build, a test, or a release. The
 exposure is bounded by lifecycle scripts being off and by the map being
 regenerated on demand, never committed. Revisit if Repomix output ever gates

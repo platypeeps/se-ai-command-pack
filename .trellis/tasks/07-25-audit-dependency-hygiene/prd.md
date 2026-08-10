@@ -12,7 +12,7 @@ left unexamined.
 promised "no unpinned transitives" without qualification. This task does not
 deliver that for npm: `scripts/update_repomix` is repo-owned, so its unlocked
 transitive tree is squarely in scope, and it is being *accepted*, not solved —
-vendoring a `package-lock.json` + `npm ci` for a docs-only tool that produces a
+vendoring an npm lockfile plus an `npm ci` step for a docs-only tool that produces a
 gitignored artifact is more machinery than the exposure warrants. Two absolutes
 therefore become one pip absolute plus one recorded acceptance, which is what
 the audit's own fix line permits (`.trellis/audit/report-2026-07-25.md:288`).
@@ -115,7 +115,7 @@ the audit's own fix line permits (`.trellis/audit/report-2026-07-25.md:288`).
         `docs/repomix-map.md` regenerated.
       - Residual risk recorded in the `README.md` repomix section ("Accepted
         risk — unlocked npm transitives") and in the spec's repomix scenario
-        contracts. The audit's second branch (committed `package-lock.json` +
+        contracts. The audit's second branch (a committed npm lockfile plus
         `npm ci`) is deliberately not taken.
 
 ## A-032 disposition: local-only record
