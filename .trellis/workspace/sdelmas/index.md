@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 163
-- **Last Active**: 2026-08-09
+- **Total Sessions**: 164
+- **Last Active**: 2026-08-10
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~389 | Active |
+| `journal-4.md` | ~434 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 164 | 2026-08-10 | Dependency hygiene: hash-locked dev requirements and npm lifecycle-script suppression | `107be87`, `a51cde0`, `cfc4ca9`, `7fd2b89`, `7b24dbc`, `8d1f5a8` | `task/07-25-audit-dependency-hygiene` |
 | 163 | 2026-08-09 | Record task.json trailing-newline disposition | `c0047c3`, `597ea59`, `9fbbadb` | `task/08-06-task-json-trailing-newline` |
 | 162 | 2026-08-09 | Watch coordinator settled-blocked classification | `f3986f2`, `43541cd` | `task/08-06-watch-coordinator-infra-classification` |
 | 161 | 2026-08-09 | Installer dead-code trim | `5abc7be`, `46bd081` | `task/08-08-installer-dead-code-trim` |
