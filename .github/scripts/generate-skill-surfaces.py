@@ -1259,8 +1259,9 @@ def assert_generated_write_target(path: Path) -> None:
     # `generated/../docs/stray.md` carries a `generated` component the guard
     # would accept while the OS resolves the write to `docs/`. Nothing the
     # generator builds contains one; refusing is cheaper than proving that
-    # stays true. (`.` is dropped by `PurePath` and can only appear alone.)
-    if ".." in path.parts or "." in path.parts:
+    # stays true. `.` needs no companion check — `PurePath` drops it outright,
+    # leaving `Path(".").parts == ()`, which no boundary rule accepts anyway.
+    if ".." in path.parts:
         raise GenerationError(
             f"{_display(path)} contains a relative path component; the write "
             f"target must be resolved before the {GENERATED_COMPONENT}/ "
