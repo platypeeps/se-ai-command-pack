@@ -26,5 +26,7 @@
     "scripts/sd-ai-command-pack-pr-body-scope.py"
   ],
   "notes": "",
-  "meta": {}
+  "meta": {},
+  "blocked": true,
+  "blockedOn": "explicit approval for a pull request against the separate sd-ai-command-pack repository, which this repository cannot grant itself"
 }
