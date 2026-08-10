@@ -105,16 +105,16 @@ worth a coordinated two-repository schema migration?
 
 ## Acceptance Criteria
 
-- [ ] Each of the three candidates has a recorded verdict — snapshot, stays
+- [x] Each of the three candidates has a recorded verdict — snapshot, stays
       layout-derived, or deferred — with a stated reason and file/line evidence.
-- [ ] The `FIRST_PARTY_REMOTES` self-reference question is answered explicitly,
+- [x] The `FIRST_PARTY_REMOTES` self-reference question is answered explicitly,
       not left implicit in the verdict.
-- [ ] If any verdict is "snapshot", a rollout plan naming both producers and the
+- [x] If any verdict is "snapshot", a rollout plan naming both producers and the
       supported-version transition is recorded, and the implementation is split
       into a separate task rather than done here.
-- [ ] If every verdict is "stays layout-derived", that is recorded as the
+- [x] If every verdict is "stays layout-derived", that is recorded as the
       outcome with its reasoning, and the task completes without a code change.
-- [ ] No file outside `.trellis/` is modified by this task.
+- [x] No file outside `.trellis/` is modified by this task.
 
 ## Assessment (recorded 2026-08-09)
 
@@ -238,6 +238,31 @@ task — the deferral triggers already have their own task
 (`08-04-audit-registry-snapshot-sd-twin`) or are explicitly out of scope
 (third pack). This "no change now" conclusion is the assessment completing
 successfully, per the Goal.
+
+### Completion evidence
+
+- Verdicts recorded in the Assessment section above: candidate 1 stays
+  consumer-owned (evidence `:433-438`, `:703`, `:1400-1404`); candidate 2
+  deferred (assignment `:442-446`, six consumers, triggers recorded);
+  candidate 3 split — `IGNORED_DIRECTORIES` stays (`:481`, `:1222`),
+  per-pack discovery roots deferred (`:498-510`).
+- Self-reference question answered explicitly in candidate 1: a
+  pack-shipped remote map cannot classify its own pack's provenance — the
+  trust anchor stays with the verifier.
+- No verdict is "snapshot", so no rollout plan is owed and no
+  implementation task was split out; the deferral triggers map to the
+  existing `08-04-audit-registry-snapshot-sd-twin` task.
+- Not every verdict is "stays": candidate 2 and half of candidate 3 are
+  deferred with recorded triggers; the Outcome section records the
+  no-change-now conclusion with reasoning.
+- `git status --porcelain` during implementation showed only
+  `.trellis/tasks/08-04-audit-registry-snapshot-layout-assumptions/` paths;
+  no file outside `.trellis/` was modified.
+- Converged through three Codex adversarial rounds (R1: three factual
+  defects fixed; R2: two evidence gaps fixed; R3: pass). `make check`:
+  `Ran 640 tests ... OK (skipped=1)`, `All checks passed!` Shipped as
+  PR #192; Copilot round 1 found one PR-description overclaim (fixed by
+  editing the description), round 2 returned no new comments.
 
 ## Out of scope
 
