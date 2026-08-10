@@ -111,21 +111,46 @@ prior `require_install_root` at `:422`; the Makefile `--user` use is at
 
 ## Acceptance Criteria
 
-- [ ] Each of the five items has a disposition; deletions verified by
+- [x] Each of the five items has a disposition; deletions verified by
       repo-wide grep for the removed names returning only historical or
       task-record references (CHANGELOG, archived tasks, and this task's
       own artifacts) — no executable or generated-surface reader remains.
-- [ ] If item 4 changed shape: a manifest row with an unknown scope is still
+- [x] If item 4 changed shape: a manifest row with an unknown scope is still
       rejected, demonstrated by the existing tests (or an added one), not by
       inspection.
-- [ ] `make check` passes after the trim; coverage does not drop below the
+- [x] `make check` passes after the trim; coverage does not drop below the
       80% floor (deleting dead branches should raise it, not lower it).
-- [ ] `python3 install.py --help` and a `--dry-run` install behave
+- [x] `python3 install.py --help` and a `--dry-run` install behave
       identically to before except for removed/reworded flags; stated
       explicitly in the task record which flags changed.
-- [ ] No file owned by another task's scope was touched: the forwarder,
+- [x] No file owned by another task's scope was touched: the forwarder,
       `.opencode/package.json`, and vendored `scripts/sd-ai-command-pack-*`
       are absent from the diff.
+
+### Completion evidence
+
+- Dispositions: all five recorded above (2 keep with written reasons, 3
+  delete); grep gate for `preflight_checks`, `FORCE_PRESERVED_TARGETS`, and
+  `ENV_PREFIX` returns zero executable or generated-surface readers — only
+  CHANGELOG/task records and one unrelated vendored `DEFAULT_ENV_PREFIXES`
+  substring.
+- Item 4 kept its shape; the existing unknown-scope rejection test remains
+  the demonstration (no change needed).
+- `make check`: `Ran 646 tests ... OK (skipped=1)`, `All checks passed!`,
+  including the `--fail-under=80` coverage gate.
+- `python3 install.py --help` exits 0 with `--user` documented as the
+  default; `--dry-run` install to a temp root behaves identically. Flags
+  changed: none.
+- Diff scope: `install.py`, `installer/{fileops,provenance,registry}.py`,
+  `README.md`, `CHANGELOG.md`, `manifest.json`, regenerated
+  `skill-catalog.md`, and this task's artifacts. The forwarder,
+  `.opencode/package.json`, and vendored `scripts/sd-ai-command-pack-*` are
+  absent from the diff.
+- Shipped as PR #194
+  (https://github.com/platypeeps/se-ai-command-pack/pull/194); Copilot
+  round 1 finding (pre-removal citation clarity) fixed in 46bd081, round 2
+  clean; local providers: zero findings across both coordinator attempts.
+  Pack 0.68.2.
 
 ## Out of scope
 
