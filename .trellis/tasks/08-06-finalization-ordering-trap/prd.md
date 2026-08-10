@@ -153,28 +153,28 @@ executed by this task's implementation:
 
 ## Acceptance Criteria
 
-- [ ] The disposition is recorded with reasoning, including whether upstream
+- [x] The disposition is recorded with reasoning, including whether upstream
       approval was sought.
-- [ ] A run that hits `bundle_scope_invalid` on a planning-mode recomputation
+- [x] A run that hits `bundle_scope_invalid` on a planning-mode recomputation
       after a post-finalization authored-path fix — the eligible shape: one
       stopped chain, fix commits published on the same branch — can reach the
       correct recovery from the written guidance alone, without re-deriving it
       from the validator's `findings` array. The guidance names the expected
       validating result (`evidence.planningSubtype: journal-only-recovery`)
       and what to do when the recovery recomputation itself fails.
-- [ ] The guidance covers the recovery through to the merge: fresh
+- [x] The guidance covers the recovery through to the merge: fresh
       `sd-finish-work`, push and green checks, then a direct `sd-housekeeping`
       invocation with the fresh receipt. It states plainly that the stopped
       chain is never restarted, the in-chain rerun is forbidden and the fresh
       invocation is not, and why the two differ.
-- [ ] The bookkeeping-only fix case is explicitly excluded, stating that the
+- [x] The bookkeeping-only fix case is explicitly excluded, stating that the
       existing captured-base recomputation already passes the path-scope check
       there — and that later validator checks can still fail that recomputation
       for independent reasons.
-- [ ] The upstream relay issue exists on platypeeps/sd-ai-command-pack and its
+- [x] The upstream relay issue exists on platypeeps/sd-ai-command-pack and its
       URL is recorded in both this PRD and the guidance section's four-field
       record.
-- [ ] If the upstream **implementation** route (a stage-behaviour PR, distinct
+- [x] If the upstream **implementation** route (a stage-behaviour PR, distinct
       from the relay issue) were chosen, the local documentation lands first
       and does not depend on the upstream change merging. Not chosen here; the
       relay issue does not trigger this criterion or the complex-task artifact
@@ -212,3 +212,24 @@ executed by this task's implementation:
 - Lightweight enough to stay PRD-only unless the upstream route is chosen,
   which would warrant a `design.md` and an `implement.md` together — the
   contract at `.trellis/workflow.md:164` requires both for a complex task.
+
+## Completion evidence (2026-08-09, PR #189)
+
+- Guidance landed as "Planning-mode finalization stranded by a
+  post-finalization review fix" in `.trellis/spec/backend/quality-guidelines.md`
+  (Review And Retry Conventions), covering the failing shape, the three-step
+  recovery through `sd-housekeeping --finish-work-receipt`, the never-restart
+  rule with its rationale, the bookkeeping-only exclusion with the
+  later-checks qualifier, and the four-field local-only record.
+- Upstream relay filed:
+  <https://github.com/platypeeps/sd-ai-command-pack/issues/408>. URL recorded
+  in the Disposition above and in the guidance record (`grep -c "issues/408"`
+  returns 1 in each file). No upstream pull request was opened.
+- Adversarial planning review: Codex round 1 raised three blocking and three
+  non-blocking concerns (Goal/disposition mismatch, missing relay AC,
+  validator schema and eligibility bounds, bookkeeping-only qualifier,
+  four-field format, Notes overreach); all six remediated; round 2 verified
+  all resolved with no new blocking concerns.
+- Validation: `make check` — `Ran 640 tests ... OK (skipped=1)`,
+  `All checks passed!`. Copilot review round 1 raised one finding (shorthand
+  validator citations), fixed in f66faa4; round 2 returned no new findings.
