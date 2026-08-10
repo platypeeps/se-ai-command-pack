@@ -116,6 +116,129 @@ worth a coordinated two-repository schema migration?
       outcome with its reasoning, and the task completes without a code change.
 - [ ] No file outside `.trellis/` is modified by this task.
 
+## Assessment (recorded 2026-08-09)
+
+Verified against the current tree before assessing: every line citation in
+this PRD still matches
+`templates/skills/se-review-skills/scripts/skill_review.py` —
+`SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS = frozenset({1})` at `:31`,
+`FIRST_PARTY_REMOTES` at `:39-42`, `IGNORED_DIRECTORIES` from `:43`, the
+unsupported-version `ReviewError` at `:329-337`, the snapshot-then-AST
+fallback at `:424-428`, `owner_kind` classification at `:433`, adapter paths
+at `:442-446`, and the dual-source trust membership check at `:703`. The
+shipped `generated/registry-snapshot.json` carries exactly `schemaVersion`,
+`familyOrder`, `skills`, `platforms`, and `sharedReferences` — none of the
+three candidates.
+
+### Candidate 1 — `FIRST_PARTY_REMOTES`: **stays consumer-owned**
+
+- Read today, two distinct uses with different semantics:
+  - `:433-438` — `:433` looks up the expected remote by pack name; `:434-438`
+    compare it to the checkout's normalized `remote.origin.url` and classify
+    `owner_kind` (`se-upstream`/`sd-upstream` on match). That classification
+    is consumed downstream: `owner_verified` at `:1400-1404` requires an
+    upstream or repo-local `owner_kind` before a skill is marked
+    `changeable`.
+  - `:703` — a **name-membership** gate on a supplied source root
+    (`context.name not in FIRST_PARTY_REMOTES`). This gate never consults
+    the remote at all: a fork that keeps the first-party pack *name* already
+    passes it today, remote notwithstanding. Moving the map into the
+    snapshot would not change this gate's behaviour — its exposure and its
+    mitigation live in the remote-comparing path above.
+- What would force an edit: a new first-party pack, or a remote migration
+  (org or repo rename) for an existing one.
+- Can the shipping pack authoritatively state it: **No.** This is the
+  self-reference question, answered explicitly: the map's discriminating
+  power is entirely in the remote comparison at `:434-438`, and that value
+  classifies the provenance of the very pack that would ship it. A fork's
+  snapshot would assert the fork's own remote as expected, the comparison
+  would then succeed, the fork would classify itself
+  `se-upstream`/`sd-upstream`, and `owner_verified` at `:1400-1404` would
+  treat it as trusted — the check would verify that a pack agrees with
+  itself. A provenance trust anchor must be held by the verifier, not
+  supplied by the subject being verified.
+- Verdict: **stays layout-derived/consumer-owned**, unconditionally — not
+  deferred, because the answer does not change with rollout cost or pack
+  count. Adding a third first-party pack correctly requires a consumer
+  edit here: that edit *is* the trust decision.
+
+### Candidate 2 — adapter paths (`:442-446`): **deferred**
+
+- Read today: assigned at `:442-446` (per-pack allowed skill-template root:
+  `templates/skills` for se, `templates` for sd), stored on
+  `PackageContext.allowed_template_root` (`:116`, `:457`), and consumed in
+  six places: canonical-containment filtering (`:591-593`), `local-override`
+  role classification (`:733-735`), the shared-reference allowlist
+  (`:1245-1252`), the `changeable` computation (`:1399-1408`), the
+  per-skill `taskRouting.allowedTemplateRoot` serialization (`:1470`), and
+  the report payload (`:1558-1559`). The **assignment** is the only
+  per-pack branch; every consumer reads the stored value pack-agnostically.
+  A snapshot move would therefore replace the `:442-446` branch and extend
+  the snapshot parser (`_registry_from_snapshot`, `:250+`, plus the
+  generator and schema) to carry the new field — small, but not "one edit".
+- What would force an edit: a third pack, or either pack relocating its
+  skill templates.
+- Can the shipping pack authoritatively state it: **yes** — it is a pure
+  layout fact about the pack's own tree, exactly the kind of data the
+  snapshot exists to carry, and the strongest candidate as the PRD
+  anticipated.
+- Why not now: the cost ledger is decisive at the current pack count. A
+  `schemaVersion` 2 needs both producers, and `sd-ai-command-pack` ships no
+  snapshot at all today — its producer task
+  (`08-04-audit-registry-snapshot-sd-twin`) is blocked on explicit
+  upstream-PR approval. The consumer hard-fails unknown versions
+  (`frozenset({1})` at `:31`, `ReviewError` at `:329-337`), so rollout
+  requires a coordinated two-repository migration plus version bumps and
+  dated CHANGELOG headings in both packs (`quality-guidelines.md`
+  shipped-payload rule) — all to delete one `elif` that changes only when a
+  pack is added or restructured, neither of which is planned.
+- Verdict: **deferred**, with two re-assessment triggers recorded: (1)
+  `sd-ai-command-pack` ships a `schemaVersion` 1 snapshot (the sd-twin task
+  completes), and (2) a third first-party pack or a template relocation
+  actually materializes. If adopted then, the natural shape is an optional
+  per-pack skill-root key in a `schemaVersion` 2 payload with the consumer
+  accepting `{1, 2}` during transition and keeping the `:442-446` branch as
+  the version-1 fallback — recorded as a sketch only; the binding rollout
+  plan belongs to the future implementation task per this PRD's own
+  acceptance criteria.
+
+### Candidate 3 — discovery globs and `IGNORED_DIRECTORIES` (`:43+`): **split — `IGNORED_DIRECTORIES` stays tool-owned; per-pack discovery roots deferred with candidate 2**
+
+The candidate is not homogeneous, and the two halves earn different
+verdicts:
+
+- **`IGNORED_DIRECTORIES` (`:43+`): stays tool-owned.** Read in two
+  places: discovery traversal pruning (`:481`) and related-resource
+  filtering (`:1222`). Universal build/cache/VCS directory names, identical
+  for every pack. Only a change in the tool's own scanning policy edits
+  them; no pack change can force it. A snapshot copy would be N identical
+  copies of tool policy, inverting ownership.
+- **Discovery roots (`_discover`, `:491-510`): per-pack after all —
+  deferred.** Discovery branches on pack name with *different roots*: se
+  scans `templates/skills/*/SKILL.md` (`:498-504`), sd scans
+  `templates/.agents/skills/*/SKILL.md` (`:505-510`). A pack relocating its
+  skill templates therefore *does* force a consumer edit here — the
+  "universal scan policy" framing holds only for the ignore list and the
+  `*/SKILL.md` pattern, not the roots. Note the sd discovery root
+  (`templates/.agents/skills`) is not even the same value as the sd adapter
+  path (`templates`), so a future schema key must carry both facts, not
+  one. Verdict: **deferred**, same triggers and same cost ledger as
+  candidate 2 — these are the same kind of per-pack layout fact, and one
+  future `schemaVersion` 2 change should carry the adapter path and the
+  discovery root together rather than migrating twice.
+
+### Outcome
+
+No candidate moves into the snapshot now, and nothing is implemented by
+this task. Verdicts: candidate 1 **stays** (consumer-owned trust anchor);
+candidate 2 **deferred**; candidate 3 **split** — ignore list stays,
+per-pack discovery roots deferred alongside candidate 2 under one future
+schema change. No schema change, no code change, no new implementation
+task — the deferral triggers already have their own task
+(`08-04-audit-registry-snapshot-sd-twin`) or are explicitly out of scope
+(third pack). This "no change now" conclusion is the assessment completing
+successfully, per the Goal.
+
 ## Out of scope
 
 - Implementing any accepted schema change. That is a follow-up task this one

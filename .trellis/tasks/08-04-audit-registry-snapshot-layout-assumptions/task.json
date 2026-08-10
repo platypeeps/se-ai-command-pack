@@ -3,7 +3,7 @@
   "name": "audit-registry-snapshot-layout-assumptions",
   "title": "Evaluate remaining skill_review layout assumptions for snapshot inclusion",
   "description": "Speculative follow-up. skill_review.py still derives FIRST_PARTY_REMOTES, discovery globs, and adapter paths from code layout rather than the registry snapshot. Decide whether any of these are registry data that belong in the versioned snapshot (extending schemaVersion) or should stay layout-derived. Read-only assessment first; only expand the snapshot schema if it removes a real layout coupling.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
