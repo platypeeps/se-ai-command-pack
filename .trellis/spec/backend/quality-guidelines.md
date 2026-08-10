@@ -540,6 +540,73 @@ Ownership And Upstream Route"):
 - No upstream PR was opened; relay issue:
   <https://github.com/platypeeps/sd-ai-command-pack/issues/408>.
 
+### task.py create seeds base_branch from the checkout: correct it before the source branch dies
+
+**Behaviour (installed Trellis 0.6.7).** `task.py create` records whatever
+branch is checked out as the new task's `base_branch`
+(`.trellis/scripts/common/task_store.py:296-298`, written at `:325`). In this
+repository's dominant flow — follow-up tasks created mid-ship-cycle from a
+feature branch — that records a branch that will be deleted at merge. The
+`or "main"` fallback is legacy: it fires only on empty output (detached HEAD,
+or a discarded `git` failure) and hardcodes a name that may not be the
+default.
+
+**Upstream status.** Fixed in Trellis v0.6.8
+(mindfold-ai/Trellis#399, merged PR #448): `create` resolves the repository
+default branch (`origin/HEAD`) and takes an explicit `--base-branch` for
+deliberate stacking. The fix reaches this repository only through a Trellis
+upgrade and changes seeding for **new** tasks only. Until that upgrade, every
+mid-cycle `create` here still seeds wrongly — a green sweep of stored values
+is not evidence the defect is gone.
+
+**Correction — command and deadline.** Correct with
+`python3 ./.trellis/scripts/task.py set-base-branch <dir> <branch>`, never a
+hand edit of `task.json`, and do it **before the source branch is deleted** —
+in practice, inside the same ship cycle that created the task, where the
+wrong value is still recognizable as the current feature branch.
+
+**Detection today.** `create` and `start` stay silent. At PR time, the
+preflight hard-gates a changed root-task record whose `base_branch` is not
+the repository default (`validateTrellisRootTaskBaseBranch`,
+`scripts/sd-ai-command-pack-review-preflight.mjs:3331-3354`, wired at
+`:3159-3188`); child tasks are checked permissively against their parent
+(`:3294-3328`), and the shape checks (`:3409-3420`) are guarded off while
+`branch` is `null`. Consumption is narrow: `sd-create-pr` resolves the PR
+base independently and never reads the field; `sd-finish-work` uses it only
+as an inequality guard, which a stale value silently degrades to a no-op.
+
+**The gate's version-conditioned trap.** The root gate's diagnostic
+recommends `task.py set-meta <task-dir> base_branch_exemption "<reason>"`
+(`:3353`). `set-meta` shipped in Trellis **v0.6.9** and is absent from the
+installed 0.6.7 (and v0.6.8), so on this install the exemption is
+unreachable through any sanctioned command — a deliberate stacked root base
+cannot pass the gate without a hand edit until a ≥ v0.6.9 upgrade lands.
+
+**Sweep check** (run after `git fetch --prune`, normalizing
+`main`/`origin/main`/`remotes/origin/main` to one form): every active
+`task.json` `base_branch` must name the repository default branch or carry a
+documented stacked-base/exemption reason. Liveness against unpruned
+`git branch -a` is not the check — cached remote-tracking refs vouch for
+deleted branches.
+
+**Local-only record** (per the four-field format in "Vendored-Artifact
+Ownership And Upstream Route"):
+
+- Owning pack: upstream Trellis for the seeding surface
+  (`.trellis/scripts/common/task_store.py`, Registry A) and
+  sd-ai-command-pack for the gate diagnostic
+  (`scripts/sd-ai-command-pack-review-preflight.mjs`, Registry B,
+  `kind: script`, `install: "always"`).
+- Files: as above, each with its registry entry.
+- Behaviour: pre-v0.6.8 `create` seeds `base_branch` from the checkout, and
+  the pack's root-gate diagnostic recommends a Trellis ≥ v0.6.9 command
+  without stating or checking that floor, leaving the exemption unreachable
+  on this install.
+- No upstream PR was opened; the seeding defect was already fixed upstream
+  (Trellis v0.6.8 via #399/#448 — no duplicate filed); relay issue for the
+  version-floor gap:
+  <https://github.com/platypeeps/sd-ai-command-pack/issues/410>.
+
 ---
 
 ## Vendored Pack Lifecycle

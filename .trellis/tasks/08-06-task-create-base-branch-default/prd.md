@@ -2,9 +2,15 @@
 
 ## Goal
 
-Stop a newly created task from recording a short-lived feature branch in
-`base_branch`, so the field still names a live branch by the time the task is
-actually worked.
+Record the current state of the `base_branch` seeding defect accurately and
+close the local gap it leaves: the behavioural fix already shipped upstream
+(Trellis v0.6.8, below) but is not installed here, the installed pack's
+preflight now hard-gates a wrong root value with a diagnostic that names a
+command absent from the installed Trellis version, and no local guidance
+explains any of it. This
+task delivers the guidance, the upstream-status record, and the relay of the
+remaining cross-owner incompatibility — not the seeding change itself, which
+is adopted by a Trellis upgrade, not by this task.
 
 ## Problem
 
@@ -23,8 +29,22 @@ new task at `:325`:
 "base_branch": current_branch,
 ```
 
-The `or "main"` fallback covers only an empty branch name — a detached HEAD. It
-never covers the ordinary case, which is the defective one.
+The `or "main"` fallback fires on any empty output — a detached HEAD, but
+also a failed `git` invocation, since the caller discards the return code —
+and hardcodes a name that is not universally the repository default. It never
+covers the ordinary case, which is the defective one. It is a legacy fallback
+and out of scope here, not "independently correct".
+
+**Upstream status (verified 2026-08-09).** This exact defect was reported as
+[mindfold-ai/Trellis#399](https://github.com/mindfold-ai/Trellis/issues/399)
+(closed), fixed by merged
+[PR #448](https://github.com/mindfold-ai/Trellis/pull/448) (2026-07-20), and
+released in **v0.6.8**: `create` resolves the repository default branch
+(`origin/HEAD`) instead of inheriting the checkout, and an explicit
+`--base-branch` flag preserves the deliberate stacked-base case. This
+checkout runs Trellis `0.6.7` (`.trellis/.version`), so the fix exists but
+is not installed. Adopting it is a Trellis upgrade — an operator-controlled
+vendored refresh, not this task's work.
 
 The comment says this is deliberate, and for the flow it was written for it is
 correct: a task created while stacking on another branch does target that
@@ -34,9 +54,20 @@ usually from a review finding — for work that will be done later, on its own
 branch, targeting the default branch. That source branch is deleted at merge,
 minutes to hours after the task is written.
 
-Nothing detects the result. `base_branch` is not validated at `create`, at
-`start`, or at PR creation, and no command warns that it names a branch that no
-longer exists. The task carries a dead ref until someone reads the JSON.
+At `create` and `start`, nothing detects the result. Since the current pack
+version, however, the review preflight **does** hard-gate the value at PR
+time for changed root-task records:
+`validateTrellisRootTaskBaseBranch`
+(`scripts/sd-ai-command-pack-review-preflight.mjs:3331-3354`, wired at
+`:3159-3188`) requires a root task's `base_branch` to equal the repository
+default branch or carry a `meta.base_branch_exemption` reason — and
+`sd-create-pr` mandates that preflight before publication
+(`.agents/skills/sd-create-pr/SKILL.md:203-220`). Verified by direct
+evaluation: a root record with `base_branch: "task/feature"` fails with
+`root task base_branch "task/feature" must equal ... "main"`. So a wrongly
+seeded root task created mid-cycle is now caught at the next PR that touches
+its record — later than creation, but no longer silent. The gate has its own
+defect, below.
 
 ### What actually consumes the field — and what does not
 
@@ -53,20 +84,36 @@ The impact must be stated accurately, because the obvious assumption is wrong:
   `base_branch` (`.agents/skills/sd-finish-work/SKILL.md:61-66`). A stale value
   naming a deleted branch never equals the live one, so the guard passes — the
   wrong value degrades a safety check into a no-op rather than tripping it.
-- **The review preflight checks the referent for child tasks, not just the
-  shape** — but permissively. Beyond the non-empty-string check at
-  `scripts/sd-ai-command-pack-review-preflight.mjs:3217`,
-  `validateTrellisPlanningBaseInheritance` (`:3223-3242`) requires a child's
-  `base_branch` to equal its parent's `base_branch` *or the parent's active
-  branch*, and `:3299-3309` requires `branch` to differ from `base_branch`.
-  Inheriting the parent's active branch is therefore explicitly allowed, so a
-  child created mid-cycle usually passes. It fails once the parent is no longer
-  active — verified by direct evaluation: the same record passes with an active
-  parent and fails after the parent moves to `completed`.
+- **The review preflight checks the referent, with different rules for root
+  and child tasks.** Root tasks: default-branch-or-exemption, as above
+  (`:3331-3354`). Child tasks: `validateTrellisPlanningBaseInheritance`
+  (`:3294-3328`) requires a child's `base_branch` to equal its parent's
+  `base_branch` *or the parent's active branch* — permissive while the
+  parent is active, failing once the parent completes (verified by direct
+  evaluation both ways). The shape checks — non-empty string at
+  `:3409-3410`, `branch` differing from `base_branch` at `:3412-3420` — are
+  guarded off for a fresh task whose `branch` is `null`.
+- **The root gate's escape hatch is unreachable without a hand edit.** Its
+  diagnostic recommends
+  `python3 ./.trellis/scripts/task.py set-meta <task-dir>
+  base_branch_exemption "<reason>"` (`:3353`), but no `set-meta` command
+  exists in the installed Trellis `0.6.7` `task.py` — nor in upstream
+  `v0.6.8` (both verified by direct search). A deliberate stacked root base
+  therefore cannot pass this repository's PR gate through any sanctioned
+  command: the pack validator (sd-ai-command-pack-owned) and the Trellis CLI
+  (upstream-Trellis-owned) disagree across the ownership boundary **at the
+  installed versions**: Trellis shipped `set-meta` in v0.6.9 (verified
+  present through v0.6.14 and `main`), so the incompatibility is a
+  minimum-version gap — the pack diagnostic assumes a Trellis ≥ v0.6.9
+  command without stating or checking that floor, and the installed 0.6.7
+  (and v0.6.8) cannot execute it. That version-conditioned gap is the proper
+  subject of this task's relay.
 
 So the defect is a stored dead reference plus a silently weakened guard, not a
-mis-targeted pull request. The one place it becomes a hard gate failure is a
-child task whose parent has since completed. That is a smaller blast radius than
+mis-targeted pull request. It becomes a hard gate failure in two places: a
+changed root-task record whose `base_branch` is not the repository default
+(`:3331-3354`), and a child task whose parent has since completed. That is a
+smaller blast radius than
 "wrong PR target" implies but not a cosmetic one, and the disposition below
 should be priced against this, not against an assumed PR-targeting failure.
 
@@ -86,12 +133,14 @@ A fifth occurrence on 2026-08-07 is the one that shows the cost, because it was
 not caught at creation. `08-07-review-py-local-fork` was created from
 `task/08-07-review-py-local-fork`, recorded that branch, and reached PR #166
 still holding it, where a paid Copilot round flagged it; corrected in `9f16829`.
-No deterministic check objected, and the reason is visible in the citations
-above: a freshly created task has `branch: null`, so the inequality at
-`scripts/sd-ai-command-pack-review-preflight.mjs:3299-3309` is guarded off
-before it can compare, and `validateTrellisPlanningBaseInheritance` constrains
-child tasks only. Both facts were confirmed by reading the record as created and
-the guard itself, not inferred.
+No deterministic check objected **at the time**: a freshly created task has
+`branch: null`, so the branch-vs-base inequality (now at
+`scripts/sd-ai-command-pack-review-preflight.mjs:3412-3420`) is guarded off
+before it can compare, and `validateTrellisPlanningBaseInheritance` (now
+`:3294-3328`) constrains child tasks only. Both facts were confirmed by
+reading the record as created and the guard itself, not inferred. The root
+default-branch gate (`:3331-3354`) did not exist then; today it would catch
+this occurrence at PR time.
 
 The same session filed a task in the source pack repository from that
 repository's own feature branch, and it reached that repository's pull request
@@ -108,10 +157,12 @@ pass on a repository that is still creating the value wrongly every time.
 ### Why it is worth fixing rather than remembering
 
 The correction is invisible unless someone already knows to look. A wrong
-`base_branch` produces no error at creation, no error at `start`, and no error
-at PR time — the value is simply carried. The cost lands on whoever works the
-task later: the record asserts a PR target that no tool honours, and the one
-consumer that reads it silently loses the check it was meant to perform.
+`base_branch` produces no error at creation and no error at `start` — the
+value is carried until the next PR whose preflight inspects the changed
+record, where the root gate (`:3331-3354`) now fails it. Between creation
+and that PR the cost still lands on whoever works the task: the record
+asserts a PR target that no tool honours, and the one consumer that reads it
+silently loses the check it was meant to perform.
 
 The failure is also silent in the direction that matters: inheriting a
 *surviving* branch is indistinguishable from a deliberate stacked base, so no
@@ -130,53 +181,146 @@ format defined there.
 
 ## Requirements
 
-- Decide and record a disposition:
-  - **Local-only.** Document in `.trellis/spec/backend/quality-guidelines.md`
-    that `task.py create` inherits the current branch, that a task created from
-    a feature branch must have its `base_branch` corrected before that branch is
-    deleted, and give the exact correction command.
-  - **Upstream.** Propose a change to `task_store.py`. Any proposal must keep
-    the deliberate stacked-base case reachable — an explicit `--base-branch`
-    flag, or a default of the repository default branch with the current
-    behaviour available on request. Silently swapping the default with no opt-in
-    is not acceptable.
-- Whatever the disposition, the corrected value must be reachable without a
-  hand edit of `task.json`. `task.py set-base-branch <dir> <branch>` already
-  exists and is the sanctioned route; name it explicitly.
-- Do not change how `base_branch` is consumed at PR creation, and do not touch
-  the detached-HEAD `or "main"` fallback, which is independently correct.
-- Any upstream proposal must state what happens to existing tasks already
-  holding a dead `base_branch`. A change that only fixes new tasks leaves the
-  existing ones untouched and must say so rather than implying a sweep.
+- Record the disposition and the upstream status accurately. The seeding
+  defect is **already fixed upstream** (v0.6.8); do not file a duplicate
+  seeding issue, and do not propose a `task_store.py` change that upstream
+  has already shipped. The open work is local guidance, the upgrade-adoption
+  record, and the cross-owner exemption incompatibility relay.
+- The corrected value must be reachable without a hand edit of `task.json`.
+  `task.py set-base-branch <dir> <branch>` already exists and is the
+  sanctioned route; name it explicitly.
+- Do not change how `base_branch` is consumed at PR creation, and do not
+  touch the `or "main"` fallback — a legacy fallback, out of scope (not
+  "independently correct": it also fires on discarded `git` failure and
+  hardcodes a name that may not be the default).
+- The guidance must state what happens to existing wrongly seeded records
+  under the v0.6.8 fix: nothing — it changes seeding for new tasks only; the
+  sweep plus `set-base-branch` remains the route for stored values.
+
+## Disposition
+
+**Local-only guidance plus upstream-status record, with one relay issue for
+the remaining cross-owner incompatibility.** Chosen at planning (revised
+after adversarial review established the upstream fix had already shipped),
+executed by this task's implementation:
+
+- Document in `.trellis/spec/backend/quality-guidelines.md`, in one
+  subsection: `task.py create` under the installed Trellis `0.6.7` records
+  the checked-out branch as `base_branch`
+  (`.trellis/scripts/common/task_store.py:296-298`, written at `:325`);
+  upstream fixed this in v0.6.8 (Trellis#399 / PR #448 — default-branch
+  resolution with an explicit `--base-branch` opt-in for stacking) and the
+  fix arrives here only through a Trellis upgrade, which changes seeding for
+  new tasks only; until then the correction is
+  `python3 ./.trellis/scripts/task.py set-base-branch <dir> <branch>` —
+  never a hand edit — applied **before the source branch is deleted**, i.e.
+  within the ship cycle that created the task; detection today is the root
+  preflight gate (`validateTrellisRootTaskBaseBranch`, `:3331-3354`) at the
+  next PR touching the record, with `create`/`start` still silent and the
+  child rules permissive while a parent is active; what the field does and
+  does not affect (`sd-create-pr` resolves the PR base independently;
+  `sd-finish-work` uses it as an inequality guard that a stale value
+  silently degrades to a no-op); and the gate's version-conditioned defect —
+  the `meta.base_branch_exemption` escape hatch whose recommended `set-meta`
+  command shipped in Trellis v0.6.9 and is absent from the installed 0.6.7
+  (and from v0.6.8), making a deliberate stacked root base unpassable
+  without a hand edit until the upgrade lands.
+- State plainly that the guidance route is a **mitigation plus adoption
+  record, not the fix**: the fix is a Trellis upgrade (v0.6.8 for the
+  seeding default; ≥ v0.6.9 for the reachable exemption command), an
+  operator-controlled vendored refresh outside this task; a green sweep of
+  stored values is not evidence the seeding defect is gone from this
+  checkout.
+- Record the complete four-field local-only record — all four fields — in
+  **both** this PRD's Disposition and the guidance section. The fourth field
+  is the explicit statement that **no upstream PR was opened**, with the
+  relay issue URL appended to it.
+- File one relay **issue** on platypeeps/sd-ai-command-pack — the correct
+  tracker, because the diagnostic is owned by the pack's validator, not by
+  Trellis — reframed as a **minimum-version gap**, whose body contains each
+  contract element by name: the `validateTrellisRootTaskBaseBranch`
+  diagnostic recommends `task.py set-meta` (`review-preflight.mjs:3353`);
+  `set-meta` shipped in Trellis v0.6.9 and exists through v0.6.14 and
+  `main`, but not in v0.6.7 or v0.6.8 (all verified by direct search), and
+  the pack neither states nor checks that version floor — so on a
+  pre-v0.6.9 install the `meta.base_branch_exemption` escape hatch is
+  unreachable through any sanctioned command and an intentional stacked
+  root base cannot pass the PR gate without hand-editing `task.json`;
+  proposed fix shapes (declare and check a minimum Trellis version for the
+  recommended command, degrade the diagnostic to name the version
+  requirement on older installs, or have the pack ship an equivalent
+  helper), with upgrading the consumer to Trellis ≥ v0.6.9 named as the
+  adoption-side resolution; and the upstream-fixed status of the original
+  seeding defect (v0.6.8) plus the `set-meta` availability (v0.6.9) so the
+  issue is not misread as a duplicate of Trellis#399. Do **not** file a
+  seeding-defect issue on the Trellis tracker — Trellis#399 already covered
+  it and is closed as fixed. The upstream PR itself is not sought.
+  **Filed:** <https://github.com/platypeeps/sd-ai-command-pack/issues/410>.
+
+Four-field local-only record:
+
+- Owning pack: upstream Trellis for the seeding surface
+  (`.trellis/scripts/common/task_store.py`, Registry A) and
+  sd-ai-command-pack for the gate diagnostic
+  (`scripts/sd-ai-command-pack-review-preflight.mjs`, Registry B,
+  `kind: script`, `install: "always"`).
+- Files: as above, each with its registry entry.
+- Behaviour: pre-v0.6.8 `create` seeds `base_branch` from the checkout, and
+  the pack's root-gate diagnostic recommends a Trellis ≥ v0.6.9 command
+  without stating or checking that floor, leaving the exemption unreachable
+  on this install.
+- No upstream PR was opened; the seeding defect was already fixed upstream
+  (Trellis v0.6.8 via #399/#448 — no duplicate filed); relay issue for the
+  version-floor gap:
+  <https://github.com/platypeeps/sd-ai-command-pack/issues/410>.
 
 ## Acceptance Criteria
 
-- [ ] The disposition (local-only or upstream) is recorded with its reasoning,
-      including whether upstream approval was sought.
-- [ ] The written guidance names the exact source line (`task_store.py:325`)
-      and the exact correction command, so a reader can confirm the behaviour
+- [ ] The disposition is recorded with its reasoning, including the verified
+      upstream status: seeding fixed in Trellis v0.6.8 (#399 / PR #448),
+      installed version 0.6.7, adoption is a Trellis upgrade outside this
+      task, and no duplicate seeding issue was filed on the Trellis tracker.
+- [ ] The written guidance names the exact source line (`task_store.py:325`
+      in the installed 0.6.7) and the exact correction command
+      (`task.py set-base-branch`), so a reader can confirm the behaviour
       without re-deriving it from the script.
 - [ ] The guidance states *when* the correction must happen — before the source
       branch is deleted — not merely that it should happen eventually.
-- [ ] A sweep of active tasks confirms no remaining `base_branch` names a branch
-      absent from `git branch -a`, or lists each exception with its reason.
-- [ ] The record states plainly that the local-only route does not satisfy the
-      Goal, and names which criteria it can satisfy anyway. This matters because
-      every criterion above except the upstream one is satisfiable by
-      documentation alone: the sweep passes on a repository that still records the
-      wrong value on every `create`, so a green sweep is not evidence the seeding
-      defect is fixed. Choosing local-only is legitimate — the file is vendored —
-      but it must be recorded as a mitigation, not as a fix.
-- [ ] If the upstream route is chosen, the proposal preserves an explicit way to
-      request the current stacked-base behaviour, and the local documentation
-      lands first without depending on the upstream change merging.
+- [ ] A sweep of active tasks confirms every `base_branch` names the
+      repository default branch or carries a documented
+      stacked-base/exemption reason, after `git fetch --prune` (so cached
+      remote-tracking refs cannot vouch for deleted branches), normalizing
+      `main` / `origin/main` / `remotes/origin/main` to one form; each
+      exception is listed with its reason. Liveness against unpruned
+      `git branch -a` is explicitly not the check.
+- [ ] The record states plainly that the guidance is a mitigation plus
+      adoption record, not the fix: this checkout still seeds wrongly on
+      every mid-cycle `create` until the v0.6.8 upgrade lands, so a green
+      sweep is not evidence the seeding defect is gone.
+- [ ] The relay issue exists on platypeeps/sd-ai-command-pack, its body
+      contains each contract element named in the Disposition (the
+      minimum-version gap: `set-meta` recommended at
+      `review-preflight.mjs:3353`, shipped in Trellis v0.6.9, absent from
+      the installed 0.6.7 and from v0.6.8, no version floor stated or
+      checked; proposed fix shapes including the ≥ v0.6.9 upgrade as the
+      adoption-side resolution; the tracker-choice rationale — the
+      diagnostic is pack-owned; and the v0.6.8/v0.6.9 status notes
+      distinguishing it from Trellis#399), verified by reading the issue at
+      its URL, and the URL is recorded in the complete four-field record in
+      **both** this PRD's Disposition and the guidance section.
+- [ ] The guidance's degradation and detection claims match the verified
+      code: root-task PR-time gate at `:3331-3354` (wired `:3159-3188`),
+      child inheritance at `:3294-3328`, shape checks at `:3409-3420`
+      guarded off for `branch: null`, and `create`/`start` silent. No claim
+      of "nothing detects" survives anywhere in the shipped guidance.
 
 ## Out of scope
 
 - The trailing-newline defect in the same script family. That is
   `08-06-task-json-trailing-newline`; the two share a file tree and nothing else.
-- Validating `base_branch` at `task.py start` or at PR creation. Detection is a
-  larger change than defaulting and needs its own task.
+- Adding validation of `base_branch` at `task.py start`, or changing the
+  existing PR-time root gate (`validateTrellisRootTaskBaseBranch`) beyond
+  relaying its unreachable-exemption defect. Both surfaces are vendored.
 - Any change to branch naming, the ship chain's branch handling, or Trellis
   archive behaviour.
 
@@ -188,9 +332,10 @@ format defined there.
   (created wrong, corrected immediately), plus `08-07-review-py-local-fork`
   (created wrong, reached PR #166, corrected only after a paid review round).
 - One of the vendored-artifact instances enumerated in the table in
-  `08-07-vendored-artifact-upstream-route/prd.md`, which is the canonical list.
-  Do not restate a running count or a membership list here; both drifted once
-  already. `08-06-work-loop-shipped-sha-after-branch-delete` was previously
+  `.trellis/tasks/archive/2026-08/08-07-vendored-artifact-upstream-route/prd.md`
+  (archived 2026-08-09 after shipping the consolidation guidance as PR #187),
+  which is the canonical list. Do not restate a running count or a membership
+  list here; both drifted once already. `08-06-work-loop-shipped-sha-after-branch-delete` was previously
   listed as a member and is not one — it carries no vendored-ownership
   constraint section, and it is ordinary unblocked planning work. (The recorded
   operator deferral belongs to `08-06-watch-coordinator-infra-classification`,
