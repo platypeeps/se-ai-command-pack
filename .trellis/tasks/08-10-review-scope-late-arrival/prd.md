@@ -1,5 +1,10 @@
 # Close the `pack.review-scope` late-arrival gap for mixed diffs
 
+> **Blocked on** explicit approval for a pull request against the separate
+> `sd-ai-command-pack` repository, which this repository cannot grant itself.
+> Every candidate design below lands in a vendored script, so there is no route
+> that implements this locally. Planning can proceed; implementation cannot.
+
 ## Goal
 
 Stop `pack.review-scope` from failing a PR whose body was correct when it was
