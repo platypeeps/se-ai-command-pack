@@ -215,3 +215,38 @@ Iteration 5 of work-loop run c441624d: local-only disposition for 08-06-task-cre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 159: Registry-snapshot layout-assumption assessment: no schema change
+
+**Date**: 2026-08-09
+**Task**: Registry-snapshot layout-assumption assessment: no schema change
+**Branch**: `task/08-04-audit-registry-snapshot-layout-assumptions`
+
+### Summary
+
+Iteration 6 of work-loop run c441624d: read-only assessment for 08-04-audit-registry-snapshot-layout-assumptions. Verdicts: FIRST_PARTY_REMOTES stays consumer-owned (self-reference trust anchor); adapter paths deferred pending sd snapshot/third pack; discovery split (IGNORED_DIRECTORIES stays, per-pack roots deferred). Converged through three Codex rounds; shipped as PR #192.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `2b03e67` | (see git log) |
+| `8575f5d` | (see git log) |
+| `0c08c59` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
