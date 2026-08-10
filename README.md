@@ -298,7 +298,18 @@ make repomix
 
 The refresh script runs the pinned Repomix version through `npx`; Node.js and
 `npx` are required, but no Node dependencies are installed into this Python
-project.
+project. It exports `NPM_CONFIG_IGNORE_SCRIPTS=true` so the unattended
+`npx --yes` fetch cannot run package lifecycle scripts.
+
+**Accepted risk — unlocked npm transitives.** The Repomix version itself is
+pinned, but `npx` resolves its transitive tree fresh on every run, so two
+refreshes on different days can install different sub-dependencies. That is
+accepted rather than fixed: locking it would mean vendoring an npm lockfile
+and an `npm ci` step for a tool that produces one
+gitignored artifact and is never part of a build, a test, or a release. The
+exposure is bounded by lifecycle scripts being off and by the map being
+regenerated on demand, never committed. Revisit if Repomix output ever gates
+CI or ships in the pack payload.
 
 ## Non-goals in v0.1 (designed-for, not built)
 

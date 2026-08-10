@@ -387,3 +387,52 @@ Local-only disposition for the vendored write_json trailing-newline inconsistenc
 ### Next Steps
 
 - None - task complete
+
+
+## Session 164: Dependency hygiene: hash-locked dev requirements and npm lifecycle-script suppression
+
+**Date**: 2026-08-10
+**Task**: Dependency hygiene: hash-locked dev requirements and npm lifecycle-script suppression
+**Branch**: `task/07-25-audit-dependency-hygiene`
+
+### Summary
+
+Closed audit findings A-032, A-033, and A-034. Dev dependencies now compile into a hash-locked, wheel-only requirements-dev.lock that CI and make setup install with --require-hashes --only-binary :all:, guarded by a new stdlib-only offline consistency checker. The repomix refresh disables npm lifecycle scripts. A-032 is recorded as an upstream-Trellis local-only record rather than fixed locally.
+
+### Main Changes
+
+- requirements-dev.txt becomes an input file; make lock compiles it into requirements-dev.lock via uv pip compile --universal --generate-hashes --only-binary :all:
+- CI (three jobs) and make setup install the lock with --require-hashes --only-binary :all:; make setup gains venv --clear so a dropped package cannot survive in a reused environment
+- New .github/scripts/check-dev-requirements-lock.py reports input-unpinned, unpinned, unhashed, pin-missing, and pin-mismatch; wired into make lock-check, make check, check.json, and the lint job before its install
+- Review fix: indented requirement lines are entries, not continuations — pip strips each line before parsing, so an indented requirement was bypassing the gate
+- Review fix: per-file missing-file hints, since make lock regenerates the lock but not its input
+- scripts/update_repomix exports NPM_CONFIG_IGNORE_SCRIPTS=true before exec npx; residual unlocked-transitive exposure recorded as accepted in README
+- A-032 recorded as a four-field local-only record in the PRD and quality-guidelines.md; CONTRIBUTING.md's removal claim corrected. No upstream PR opened
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `107be87` | fix(deps): hash-lock dev dependencies and disable npm lifecycle scripts |
+| `a51cde0` | docs: reword npm lockfile mentions to satisfy path-reference preflight |
+| `cfc4ca9` | fix(deps): treat indented requirement lines as entries, not continuations |
+| `7fd2b89` | chore: rehash provenance manifest after lock-checker fix |
+| `7b24dbc` | fix(deps): tailor the lock checker's missing-file hint per file |
+| `8d1f5a8` | chore(task): record branch metadata for finalization |
+
+### Testing
+
+- [OK] make check green under a venv rebuilt from the lock: 664 tests, coverage 88.8% (floor 80), ruff/mypy clean, lock-check, release-check, shell-syntax, trellis-provenance ok
+- [OK] tests/test_dev_requirements_lock.py: 17 tests over every finding class, PEP 503 normalization, indented entries, multi-finding runs, and both exit-2 paths
+- [OK] make lock re-run over the committed lock produced a byte-identical file
+- [OK] throwaway-venv install with --require-hashes --only-binary :all: installed the 9 entries whose markers admit CPython 3.13
+- [OK] make repomix ran end to end: 134 files, no suspicious files detected
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

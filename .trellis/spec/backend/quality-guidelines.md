@@ -2111,6 +2111,12 @@ bash scripts/update_repomix
   generate byte-stable file ordering on every regeneration.
 - `scripts/update_repomix` runs the pinned Repomix version through `npx`
   without adding Node dependencies to this Python project.
+- The refresh script exports `NPM_CONFIG_IGNORE_SCRIPTS=true` **before** the
+  `npx` invocation it constrains: `npx --yes` fetches and installs a package
+  tree unattended, so any lifecycle script that tree declares would otherwise
+  run un-reviewed on a maintainer machine. npm reads its configuration from the
+  environment at invocation time, so an export placed after `exec npx` would
+  never apply.
 - The generated map excludes itself, local knowledge copies and receipts,
   Trellis task/session state, and copied agent-platform surfaces.
 - `docs/repomix-map.md` is gitignored and generated on demand; it is never
@@ -2136,6 +2142,10 @@ bash scripts/update_repomix
 
 ### 6. Tests Required
 
+- `tests/test_repomix.py` asserts that the refresh script exports
+  `NPM_CONFIG_IGNORE_SCRIPTS=true` and that the export precedes `exec npx` —
+  ordering is the load-bearing half, and a test that only greps for the string
+  would pass on a script where the setting never takes effect.
 - `tests/test_repomix.py` asserts the required copied/runtime exclusion set and,
   when the on-demand map is present locally, verifies it omits those files while
   retaining representative repo-owned source, tests, templates, and specs. The
@@ -2162,6 +2172,143 @@ make repomix
 ```
 
 The repository-owned command pins the tool and applies the curated exclusions.
+
+## Scenario: Hash-Locked Dev Dependencies
+
+### 1. Scope / Trigger
+
+- Trigger: changing a dev dependency pin, the lock, or anything that installs
+  them (`Makefile` `setup`, the three installing CI jobs, Dependabot scope).
+
+### 2. Signatures
+
+```text
+make lock          # regenerate requirements-dev.lock (needs uv + network)
+make lock-check    # offline consistency gate, also wired into `make check`
+```
+
+### 3. Contracts
+
+- `requirements-dev.txt` is an **input file**; nothing installs from it.
+  `make lock` compiles it into `requirements-dev.lock` with
+  `uv pip compile --universal --python-version 3.10 --generate-hashes
+  --no-header --only-binary :all:`, and the lock is the only install source for
+  CI and `make setup`.
+- Installs use `--require-hashes --only-binary :all:`. Both flags are required:
+  `--require-hashes` alone accepts a *hashed source distribution*, whose build
+  hooks then execute — the hash proves provenance, not that nothing runs.
+- `make setup` builds the venv with `python -m venv --clear`. Without `--clear`
+  a package that dropped out of the lock survives in the reused environment and
+  the gate runs against a superset of the locked set.
+- `.github/scripts/check-dev-requirements-lock.py` is stdlib-only and offline,
+  so it can run *before* the install it protects. It reports `input-unpinned`,
+  `unpinned`, `unhashed`, `pin-missing`, and `pin-mismatch`; exit 0 pass,
+  1 findings, 2 usage/environment error.
+- What the checker provably does **not** catch: it cannot prove the lock is a
+  faithful regeneration of its input. A transitive dependency silently held at
+  an older version, or a lock hand-edited in a way that stays internally
+  consistent, passes. That needs a resolver and a network; only `make lock`
+  followed by an empty diff proves regeneration.
+- A *missing* entry is not part of that gap. `--require-hashes` rejects any
+  dependency pip resolves that the file does not pin, so deleting an entry
+  fails the install with that requirement named rather than passing quietly —
+  verified by installing a lock with `mypy-extensions` removed, which exits 1
+  on `mypy_extensions>=1.0.0 ... These do not:`. The undetectable case is
+  stale-but-consistent, not absent.
+- Entry detection must not require `==`. A rule keyed on the pin operator skips
+  a loosened requirement instead of reporting it — silently passing the exact
+  desync the gate exists to catch.
+- Indentation alone must not mark a line as continuation text either: pip strips
+  each line before parsing, so `    ruff>=0.16` installs exactly like the
+  unindented form. Only the shapes the compiler emits below an entry —
+  `--hash=`/option continuations and `# via` comments — are continuations.
+
+### 4. Validation & Error Matrix
+
+| Condition | Required behavior |
+|---|---|
+| Dependabot bumps `requirements-dev.txt` without a regenerated lock | `lock-check` fails with `pin-mismatch`; the PR is incomplete until `make lock` is committed alongside it. |
+| A lock entry loses its `--hash=` lines | `unhashed` finding, exit 1. |
+| A lock or input entry is loosened from `==` to a range | `unpinned` / `input-unpinned` finding, exit 1 — never a skip. |
+| The lock is missing or declares no requirements | Exit 2 with a `make lock` recovery hint, distinct from a findings failure. |
+| A dependency has no wheel for a supported interpreter | `--only-binary :all:` fails the compile; resolve it deliberately rather than relaxing the flag. |
+
+### 5. Good/Base/Bad Cases
+
+- Good: a pin change lands as `requirements-dev.txt` + `requirements-dev.lock`
+  in one commit, and `make lock-check` passes offline.
+- Base: no dependency change, so `lock-check` is a no-op inside `make check`.
+- Bad: installing from `requirements-dev.txt`, or dropping `--only-binary` and
+  trusting `--require-hashes` to prevent source builds.
+
+### 6. Tests Required
+
+- `tests/test_dev_requirements_lock.py` covers the live repository state, every
+  finding class, PEP 503 name normalization across the input/lock spellings,
+  and the exit-2 paths. Negative cases build disposable fixture directories and
+  pass `--repo` at them; no test mutates the repository's own requirements
+  files.
+- The same module locks the wiring: the `Makefile` install line must keep
+  `--require-hashes --only-binary :all: -r requirements-dev.lock` and `--clear`.
+  A checker nothing calls verifies nothing.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```text
+python -m pip install -r requirements-dev.txt
+```
+
+#### Correct
+
+```text
+python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock
+```
+
+## Scenario: Vendored OpenCode npm Manifest
+
+### 1. Scope / Trigger
+
+- Trigger: any proposal to remove, prune, or Dependabot-manage
+  `.opencode/package.json` or its declared npm dependency.
+
+### 2. Local-only record (four fields)
+
+1. **Owning pack** — upstream Trellis (`mindfold-ai/Trellis`, the upstream
+   already identified at this file's Vendored-Artifact Ownership section).
+2. **File** — `.opencode/package.json`. Registry A member
+   (`.trellis/.template-hashes.json`, the machine-local Trellis hash file);
+   absent from Registry B (`.sd-ai-command-pack/manifest.json`);
+   `templateReceipted` in `.github/trellis-provenance.json`.
+3. **Behaviour** — the manifest declares `@opencode-ai/plugin: ^1.14.39`, but
+   no `.opencode` JavaScript imports it: every import in `.opencode/lib/*.js`
+   and `.opencode/plugins/*.js` resolves to a node builtin or a sibling module.
+   So a caret range is resolved and installed for a package nothing uses, and
+   `.gitignore:70` ignores `.opencode/node_modules/`, meaning those installs
+   land inside the checkout.
+4. **No upstream pull request was opened**, and upstream approval was not
+   sought. An upstream PR requires explicit per-PR approval, which this task's
+   run-level authority excludes.
+
+### 3. Contracts
+
+- Do **not** edit or delete `.opencode/package.json` locally. A local removal
+  is reverted by the next Trellis refresh, silently — the class of failure
+  already recorded under Vendored Pack Lifecycle.
+- Do not add an `npm` Dependabot ecosystem block for it: Dependabot would open
+  PRs against a file this repository cannot own.
+- Guidance that claims the manifest is "unused and slated for removal" is
+  wrong and must be corrected wherever it is living guidance; archived task
+  artifacts keep their original wording as historical record.
+
+### 4. Good/Base/Bad Cases
+
+- Good: the defect is recorded here and in the task disposition, and the
+  removal is routed upstream when per-PR approval is obtained.
+- Base: the manifest stays as vendored, with the unused dependency documented.
+- Bad: deleting the dependency locally and reporting the audit finding fixed —
+  the fix has an expiry date set by the next refresh.
 
 ## Scenario: Repository-Owned PR Full Check
 

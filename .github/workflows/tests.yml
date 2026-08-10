@@ -35,8 +35,8 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           cache: pip
-          cache-dependency-path: requirements-dev.txt
-      - run: python -m pip install -r requirements-dev.txt
+          cache-dependency-path: requirements-dev.lock
+      - run: "python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock"
       - name: Run tests under coverage with floor
         run: |
           python -m coverage erase
@@ -56,8 +56,11 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: requirements-dev.txt
-      - run: python -m pip install -r requirements-dev.txt
+          cache-dependency-path: requirements-dev.lock
+      # Stdlib-only, so it runs before the install: a desynced lock should fail
+      # with its own findings rather than as an opaque pip hash error.
+      - run: python .github/scripts/check-dev-requirements-lock.py
+      - run: "python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock"
       - run: python -m ruff check install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
       - run: python -m mypy installer install.py templates/skills/se-review-skills/scripts/skill_review.py
       - name: Shell syntax check for vendored scripts
@@ -76,8 +79,8 @@ jobs:
         with:
           python-version: "3.13"
           cache: pip
-          cache-dependency-path: requirements-dev.txt
-      - run: python -m pip install -r requirements-dev.txt
+          cache-dependency-path: requirements-dev.lock
+      - run: "python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock"
       - run: python .github/scripts/generate-skill-surfaces.py --check
       - run: python .github/scripts/check-trellis-provenance.py
       - name: Resolve payload gate base
