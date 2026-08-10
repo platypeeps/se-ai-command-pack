@@ -318,3 +318,37 @@ Five delete-or-justify dispositions: preflight_checks seam, FORCE_PRESERVED_TARG
 ### Next Steps
 
 - None - task complete
+
+
+## Session 162: Watch coordinator settled-blocked classification
+
+**Date**: 2026-08-09
+**Task**: Watch coordinator settled-blocked classification
+**Branch**: `task/08-06-watch-coordinator-infra-classification`
+
+### Summary
+
+Local-only disposition: consumer-side three-way classification of settled-blocked (infrastructure vs real failure vs unresolved threads) documented in quality-guidelines.md as post-coordinator diagnosis; upstream vocabulary change relayed as sd-ai-command-pack#412. Three Codex rounds, six blocking concerns fixed. PR #195.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f3986f2` | (see git log) |
+| `43541cd` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
