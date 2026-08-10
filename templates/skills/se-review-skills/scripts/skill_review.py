@@ -1645,14 +1645,6 @@ def build_inventory(
     return payload
 
 
-def _is_within(path: Path, root: Path) -> bool:
-    try:
-        path.relative_to(root)
-    except ValueError:
-        return False
-    return True
-
-
 def _stat_fingerprint(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
     return (
         metadata.st_dev,
@@ -1790,7 +1782,7 @@ def _validate_output_destination(
         raise ReviewError(f"output destination contains a parent escape: {output}")
     candidate = expanded_output if expanded_output.is_absolute() else root / expanded_output
     candidate = Path(os.path.abspath(str(candidate)))
-    if candidate == root or not _is_within(candidate, root):
+    if candidate == root or not _is_relative_to(candidate, root):
         raise ReviewError(f"output destination escapes output root {root}: {candidate}")
 
     relative = candidate.relative_to(root)
@@ -1804,10 +1796,10 @@ def _validate_output_destination(
     if candidate.is_symlink():
         raise ReviewError(f"output destination is a symlink: {candidate}")
     resolved = candidate.resolve(strict=False)
-    if not _is_within(resolved, root):
+    if not _is_relative_to(resolved, root):
         raise ReviewError(f"output destination escapes output root {root}: {resolved}")
     for forbidden in forbidden_roots:
-        if _is_within(resolved, forbidden):
+        if _is_relative_to(resolved, forbidden):
             raise ReviewError(
                 f"output destination is inside a reviewed or installed root: {resolved}"
             )
