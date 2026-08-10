@@ -71,6 +71,13 @@ DO_NOT_EDIT_MARKER = (
 GENERATED_REFERENCES_DIR = "generated/references"
 HELP_CATALOG_SOURCE = f"{GENERATED_REFERENCES_DIR}/skill-catalog.md"
 HELP_CATALOG_PATH = ROOT / HELP_CATALOG_SOURCE
+# Every generated reference this script knows how to write. Registration in
+# GENERATED_REFERENCES only creates manifest rows; a registered source with no
+# writer here ships a row pointing at a file that never exists, and the failure
+# surfaces as `error: missing pack template` in a user's install rather than in
+# CI. Checking membership instead of file presence keeps a fresh checkout that
+# has not generated yet from failing generation.
+GENERATED_REFERENCE_WRITERS = frozenset({HELP_CATALOG_SOURCE})
 README_CATALOG_START = "<!-- SE_SKILL_CATALOG:START -->"
 README_CATALOG_END = "<!-- SE_SKILL_CATALOG:END -->"
 
@@ -380,6 +387,11 @@ def validate_skills() -> dict[str, dict[str, str]]:
                     f"{TEMPLATES_SKILLS_DIR}/{relative} is not registered in "
                     "installer/registry.py SHARED_REFERENCES"
                 )
+    for source in sorted(set(GENERATED_REFERENCES) - GENERATED_REFERENCE_WRITERS):
+        errors.append(
+            f"generated reference {source} is registered but this script writes "
+            "no such surface; add a writer or drop the registration"
+        )
     for source, consumers in SHARED_REFERENCES.items():
         source_path = SKILLS_ROOT / source
         if not source_path.is_file():

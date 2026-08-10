@@ -484,6 +484,18 @@ class RealRepoGeneratorTest(unittest.TestCase):
             # The installed target is unchanged by the move; only the source is.
             self.assertEqual(matches[0]["source"], source)
 
+    def test_generated_reference_without_a_writer_fails_generation(self) -> None:
+        """Registration only creates manifest rows. A generated reference no
+        writer produces would ship a row pointing at a file that never exists,
+        and `installer/manifest.py` would surface it as `missing pack template`
+        in a user's install instead of in CI."""
+        registered = {**gen.GENERATED_REFERENCES, "generated/references/absent.md": ()}
+        with mock.patch.object(gen, "GENERATED_REFERENCES", registered):
+            with self.assertRaises(gen.GenerationError) as raised:
+                gen.validate_skills()
+        self.assertIn("generated/references/absent.md", str(raised.exception))
+        self.assertIn("writes no such surface", str(raised.exception))
+
     def test_no_generated_file_lives_under_templates(self) -> None:
         """templates/ is the one place skills are edited, so nothing generated
         may sit there. The walk enumerates the tree from disk rather than
