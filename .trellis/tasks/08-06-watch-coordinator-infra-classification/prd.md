@@ -111,8 +111,9 @@ delivered `settled-blocked` report, so it does not conflict with the
 coordinator's own ban on supplementary thread queries inside the polling
 loop; step 1 reads the probe's own `checks.items` evidence rather than
 re-querying. An upstream relay issue proposing a classification field on
-`settled-blocked` is filed against sd-ai-command-pack (issue link in the
-completion evidence) so the vocabulary change stays discoverable upstream;
+`settled-blocked` is filed against sd-ai-command-pack as
+[sd-ai-command-pack#412](https://github.com/platypeeps/sd-ai-command-pack/issues/412)
+so the vocabulary change stays discoverable upstream;
 the local guidance does not depend on it merging.
 
 The guidance covers all three conditions the PRD identifies under one

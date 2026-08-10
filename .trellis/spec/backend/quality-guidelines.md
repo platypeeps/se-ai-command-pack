@@ -441,9 +441,12 @@ Classify in this order:
    thread list is never "no threads"). Run
    `gh pr view <N> --json mergeStateStatus,mergeable,reviewDecision` plus
    the unresolved-thread count:
-   `gh api graphql -f query='query{repository(owner:"<owner>",name:"<repo>"){pullRequest(number:<N>){reviewThreads(first:50){nodes{isResolved}}}}}'`
-   — a nonzero `isResolved: false` count with `mergeable: MERGEABLE` is
-   **unresolved threads**: resolve or rebut them; no retry, no code change.
+   `gh api graphql -f query='query{repository(owner:"<owner>",name:"<repo>"){pullRequest(number:<N>){reviewThreads(first:100){pageInfo{hasNextPage endCursor}nodes{isResolved}}}}}'`
+   — paginate with `after: <endCursor>` while `hasNextPage` is true, so the
+   count covers every thread; a nonzero `isResolved: false` count with
+   `mergeable: MERGEABLE` is **unresolved threads**: resolve or rebut them;
+   no retry, no code change. An undercounted page must not be read as "not
+   threads".
 
 If instead some check is red, split infrastructure from a real failure with
 job-step evidence: `gh api repos/<owner>/<repo>/actions/jobs/<id>` returns
