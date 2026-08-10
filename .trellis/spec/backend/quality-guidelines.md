@@ -611,6 +611,31 @@ Ownership And Upstream Route"):
 - No upstream PR was opened; relay issue:
   <https://github.com/platypeeps/sd-ai-command-pack/issues/408>.
 
+### task.json ends without a trailing newline: expected, do not hand-fix
+
+Every `task.json` Trellis writes ends mid-line: `write_json`
+(`.trellis/scripts/common/io.py:37`) writes
+`json.dumps(data, indent=2, ensure_ascii=False)` verbatim, while the same
+script family's `active_task.py:428` appends `"\n"` to an otherwise
+identical call. A `\ No newline at end of file` marker on a `task.json`
+diff is therefore expected machine output, not a defect. Do not hand-add
+the newline: any later mutating `task.py` command that rewrites the file silently
+reverts it (observed — four hand-corrected files on 2026-08-06, all
+reverted by ordinary commands by 2026-08-07), producing a second
+no-op-looking diff. No `.gitattributes` or `.editorconfig` rule papers over
+this; that would mask the writer inconsistency at the diff layer.
+
+Four-field record (task `08-06-task-json-trailing-newline`): owning pack —
+upstream Trellis; file — `.trellis/scripts/common/io.py` (Registry A,
+`.trellis/.template-hashes.json`); behaviour — `write_json` omits the
+trailing newline that `active_task.py:428` appends, so hand edits render
+two-line diffs where the expected no-newline marker becomes review noise,
+and the fix is one character
+(`+ "\n"`) with the `mkstemp`/`os.replace` atomicity, error handling, and
+return contract unchanged; no upstream PR was opened — the proposal is
+relayed as
+[sd-ai-command-pack#413](https://github.com/platypeeps/sd-ai-command-pack/issues/413).
+
 ### task.py create seeds base_branch from the checkout: correct it before the source branch dies
 
 **Behaviour (installed Trellis 0.6.7).** `task.py create` records whatever

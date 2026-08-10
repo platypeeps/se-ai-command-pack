@@ -352,3 +352,38 @@ Local-only disposition: consumer-side three-way classification of settled-blocke
 ### Next Steps
 
 - None - task complete
+
+
+## Session 163: Record task.json trailing-newline disposition
+
+**Date**: 2026-08-09
+**Task**: Record task.json trailing-newline disposition
+**Branch**: `task/08-06-task-json-trailing-newline`
+
+### Summary
+
+Local-only disposition for the vendored write_json trailing-newline inconsistency (io.py:37 vs active_task.py:428): PRD Disposition with migration answer none-deliberately, quality-guidelines reader-guidance subsection with four-field record, upstream proposal relayed as sd-ai-command-pack#413. Three Codex adversarial rounds fixed four concerns (stale counts date-anchored, mutating-command phrasing); Copilot round 1 wording findings fixed, round 2 clean. PR #196.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c0047c3` | (see git log) |
+| `597ea59` | (see git log) |
+| `9fbbadb` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
