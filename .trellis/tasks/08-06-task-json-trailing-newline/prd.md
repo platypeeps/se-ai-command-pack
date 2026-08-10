@@ -161,23 +161,45 @@ relayed as sd-ai-command-pack#413.
 
 ## Acceptance Criteria
 
-- [ ] The disposition is recorded with its reasoning, including whether upstream
+- [x] The disposition is recorded with its reasoning, including whether upstream
       approval was sought.
-- [ ] The record cites both writers by file and line — `io.py:37` and
+- [x] The record cites both writers by file and line — `io.py:37` and
       `active_task.py:428` — so the inconsistency is verifiable without
       re-deriving it.
-- [ ] The migration answer for the existing unmarked files (the cohort measured
+- [x] The migration answer for the existing unmarked files (the cohort measured
       2026-08-07) is stated explicitly, with its reason.
-- [ ] If the upstream route is chosen, the proposal confirms the atomic-write
+- [x] If the upstream route is chosen, the proposal confirms the atomic-write
       behaviour is unchanged — the `mkstemp`/`os.replace` sequence, the error
       handling, and the return contract are each named as unaltered, not left
       implied by the diff's size.
-- [ ] No `.gitattributes` or `.editorconfig` rule was added by this task.
+- [x] No `.gitattributes` or `.editorconfig` rule was added by this task.
       Verified by checking the repository root for both files, not by reviewing
       the diff.
-- [ ] Whichever route is chosen, a reader hitting a `\ No newline at end of
+- [x] Whichever route is chosen, a reader hitting a `\ No newline at end of
       file` marker on a `task.json` can determine from the guidance alone
       whether it is expected.
+
+## Completion evidence (2026-08-09)
+
+- Disposition recorded in this PRD ("Disposition (recorded 2026-08-09)") with
+  reasoning: local-only record, no upstream approval sought; the proposal is
+  relayed as sd-ai-command-pack#413.
+- Both writers cited by file and line in the PRD and the quality-guidelines
+  four-field record: `io.py:37` (verbatim `json.dumps`) and
+  `active_task.py:428` (`_write_json`, appends the newline).
+- Migration answer stated explicitly: none, deliberately — bulk rewrite is
+  cosmetic churn, hand corrections proven non-durable, natural convergence
+  after the upstream fix.
+- Atomic-write behaviour named unchanged: `mkstemp`/`os.replace` sequence,
+  error handling, and return contract each listed as unaltered.
+- Repository root checked directly on 2026-08-09: no `.gitattributes`, no
+  `.editorconfig` (`ls` reports both absent; neither added by this task).
+- Reader guidance landed in `.trellis/spec/backend/quality-guidelines.md`
+  ("task.json ends without a trailing newline: expected, do not hand-fix"):
+  a reader hitting the marker can classify it from the guidance alone.
+- PR #196; review: coordinator attempts 1-2 clean, Copilot round 1 two
+  wording findings fixed (597ea59), round 2 clean; `make check` green
+  (646 tests OK, docs-only, no version bump required).
 
 ## Out of scope
 
