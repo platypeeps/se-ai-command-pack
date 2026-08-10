@@ -808,3 +808,42 @@ Gave repo-own tooling one documented home under .github/scripts/, deleted a dead
 ### Next Steps
 
 - None - task complete
+
+
+## Session 174: Relay the gitignored-file hermeticity incident into the audit task
+
+**Date**: 2026-08-10
+**Task**: Relay the gitignored-file hermeticity incident into the audit task
+**Branch**: `chore/relay-hermeticity-evidence`
+
+### Summary
+
+Recorded the PR #206 CI-only test failure as evidence on 07-25-audit-test-hermeticity, which previously covered only the global-git-config axis of hermeticity.
+
+### Main Changes
+
+- Added the second hermeticity axis as a requirement: a test reading a path a working checkout has and a runner does not, which fails in the more dangerous direction because the local run is the green one
+- Added an acceptance criterion scoped to pre-existing repo-relative paths, with self-created temporary fixtures explicitly out of scope
+- Recorded three design traps from the incident: the local gate cannot catch it, a degrading fallback is worse than the crash it replaces, and quality-guidelines.md:798 already documented the file as machine-local
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b32deba` | chore(task): relay the gitignored-file hermeticity incident into the audit task |
+| `4e1d3ac` | chore(task): scope the hermeticity criterion to pre-existing repo paths |
+
+### Testing
+
+- [OK] Review preflight: 0 failure(s), 0 warning(s)
+- [OK] CI green at 4e1d3ac; planning-only change with 0 authored source lines
+- [OK] Copilot review comment 3752235541 addressed and thread resolved
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

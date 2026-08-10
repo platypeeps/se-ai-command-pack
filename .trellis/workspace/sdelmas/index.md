@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 173
+- **Total Sessions**: 174
 - **Last Active**: 2026-08-10
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~806 | Active |
+| `journal-4.md` | ~847 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 174 | 2026-08-10 | Relay the gitignored-file hermeticity incident into the audit task | `b32deba`, `4e1d3ac` | `chore/relay-hermeticity-evidence` |
 | 173 | 2026-08-10 | Repo-own tooling home, vendored-path documentation, and a CI-only test defect | `564d252`, `7419878`, `bc0c56a`, `2cae53f` | `task/07-25-audit-repo-tooling-ownership` |
 | 172 | 2026-08-10 | Mark the review-scope late-arrival task blocked on upstream approval | `a8234f1` | `chore/mark-review-scope-task-blocked` |
 | 171 | 2026-08-10 | Record the pack.review-scope late-arrival follow-up task | `7e6e31f` | `chore/record-review-scope-late-arrival-task` |
