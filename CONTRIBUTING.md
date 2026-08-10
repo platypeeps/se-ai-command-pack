@@ -64,6 +64,20 @@ file?"). `tests/test_repo_tooling_ownership.py` enforces the parts of this
 section that can be checked mechanically, so extend it rather than only editing
 prose here.
 
+## Git version floor
+
+**The suite requires git 2.32 or newer** (June 2021). Tests scrub the
+machine's git configuration through `GIT_CONFIG_GLOBAL`, which older git
+ignores — so on git < 2.32 the suite would silently run against your real
+`~/.gitconfig` instead of failing. `tests/test_test_hermeticity.py` asserts the
+version so that failure is loud rather than silent.
+
+`make test-hermetic` goes further: it runs the whole suite against a
+tracked-files-only copy of the repository under a deliberately hostile git
+configuration. That lane is what proves the suite depends on neither your
+configuration nor your untracked files; `make check` deliberately does not run
+it, and CI does.
+
 ## Test coverage floor
 
 `make test` and the CI `unittest` lane measure statement coverage of repo-own

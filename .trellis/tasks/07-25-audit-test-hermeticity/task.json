@@ -3,7 +3,7 @@
   "name": "audit-test-hermeticity",
   "title": "Test hermeticity and update e2e coverage",
   "description": "`make test` passes on any contributor machine regardless of global git configuration, and the `install.py update` lifecycle — the one command that mutates the user's checkout — has a real end-to-end test.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,

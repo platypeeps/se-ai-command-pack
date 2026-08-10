@@ -13,12 +13,16 @@ import json
 import subprocess
 import unittest
 
-from install_test_support import PACK_ROOT
+from install_test_support import PACK_ROOT, git_env
 
 SD_MANIFEST = PACK_ROOT / ".sd-ai-command-pack" / "manifest.json"
 SD_PROVENANCE = PACK_ROOT / ".sd-ai-command-pack" / "provenance.json"
 SD_TARGETS = PACK_ROOT / ".sd-ai-command-pack" / "installed-targets.txt"
 TRELLIS_HASHES = PACK_ROOT / ".trellis" / ".template-hashes.json"
+# Gitignored (.gitignore:94): present in a working checkout, never in a clone.
+# Read only behind TRELLIS_HASHES.exists(); tests/test_test_hermeticity.py
+# enforces the declaration.
+HERMETICITY_UNTRACKED_PATHS = (".trellis/.template-hashes.json",)
 TRELLIS_PROVENANCE = PACK_ROOT / ".github" / "trellis-provenance.json"
 
 # The documented home for repo-own tooling. `scripts/` is wholly vendored.
@@ -70,6 +74,7 @@ def tracked_files(*paths: str) -> list[str]:
         capture_output=True,
         text=True,
         check=True,
+        env=git_env(),
     )
     return [line for line in proc.stdout.split("\n") if line]
 

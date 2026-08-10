@@ -7,7 +7,7 @@ RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON
 LINT_PATHS = install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
 MYPY_PATHS = installer install.py templates/skills/se-review-skills/scripts/skill_review.py
 
-.PHONY: setup lock lock-check generate repomix sync test lint release-check check shell-syntax gate-test gate-lint trellis-provenance
+.PHONY: setup lock lock-check generate repomix sync test test-hermetic lint release-check check shell-syntax gate-test gate-lint trellis-provenance
 
 # --clear: `python -m venv` reuses an existing directory, so without it a
 # package that dropped out of the lock survives and the gate runs against a
@@ -43,6 +43,32 @@ test:
 	COVERAGE_PROCESS_START="$(CURDIR)/.coveragerc" PYTHONPATH="$(CURDIR)/tests/_coverage_subprocess$${PYTHONPATH:+:$$PYTHONPATH}" "$(RUN_PYTHON)" -m coverage run -m unittest discover -s tests
 	"$(RUN_PYTHON)" -m coverage combine
 	"$(RUN_PYTHON)" -m coverage report --fail-under=80
+
+# Runs the suite the way a runner sees the repository: tracked files only, in a
+# throwaway git repository, under a git configuration built to break it. Not
+# part of `make check` — the inner loop should not pay for two suite runs — but
+# it is a required CI lane. `abspath` matters: RUN_PYTHON may be the relative
+# .venv path, which would not resolve after cd, and CI has no .venv at all.
+test-hermetic: SHELL := /bin/bash
+test-hermetic:
+	@set -euo pipefail; \
+	python="$(abspath $(RUN_PYTHON))"; \
+	tmp="$$(mktemp -d)"; \
+	trap 'rm -rf "$$tmp"' EXIT; \
+	copy="$$tmp/copy"; mkdir -p "$$copy" "$$tmp/hooks" "$$tmp/home"; \
+	git ls-files -z | while IFS= read -r -d "" f; do \
+	  mkdir -p "$$copy/$$(dirname "$$f")"; cp "$$f" "$$copy/$$f"; \
+	done; \
+	env -u GIT_DIR GIT_AUTHOR_NAME=hermetic GIT_AUTHOR_EMAIL=hermetic@example.com \
+	    GIT_COMMITTER_NAME=hermetic GIT_COMMITTER_EMAIL=hermetic@example.com \
+	  bash -c 'cd "$$0" && git init -q . && git add -A && git commit -qm hermetic' "$$copy"; \
+	printf '#!/bin/sh\nexit 1\n' > "$$tmp/hooks/pre-commit"; \
+	chmod +x "$$tmp/hooks/pre-commit"; \
+	printf '[core]\n\thooksPath = %s\n' "$$tmp/hooks" > "$$tmp/home/.gitconfig"; \
+	cd "$$copy"; \
+	env HOME="$$tmp/home" GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.hooksPath \
+	    GIT_CONFIG_VALUE_0="$$tmp/hooks" \
+	  "$$python" -m unittest discover -s tests
 
 lint:
 	"$(RUN_PYTHON)" -m ruff check $(LINT_PATHS)

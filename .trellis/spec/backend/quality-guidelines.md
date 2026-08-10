@@ -162,6 +162,53 @@ Note that `normalized*()` collapse whitespace, so a pinned phrase survives
 rewrapping. Pin the shortest phrase that carries the contract: long enough that
 deleting the contract breaks it, short enough that rewording does not.
 
+### Test hermeticity: the machine's state is not the fixture
+
+A test that reads the developer's git configuration or an untracked file is
+green here and red — or worse, silently different — everywhere else. PR #206
+merged a suite that read `.trellis/.template-hashes.json`, which is gitignored:
+`make check` was green locally while every CI lane failed. Two rules, both
+enforced by `tests/test_test_hermeticity.py`.
+
+**1. Every `git` subprocess passes `env=git_env()`.** `git_env()`
+(`tests/install_test_support.py`) is built from a `GIT_*`-stripped copy of
+`os.environ`, then sets `GIT_CONFIG_GLOBAL`/`GIT_CONFIG_SYSTEM` to `os.devnull`,
+`GIT_CONFIG_NOSYSTEM=1`, an author/committer identity, and
+`GIT_TERMINAL_PROMPT=0`. The strip is the load-bearing half:
+`GIT_CONFIG_COUNT`/`GIT_CONFIG_KEY_n`/`GIT_CONFIG_VALUE_n` and
+`GIT_CONFIG_PARAMETERS` enter at **command-line scope**, which outranks every
+configuration file — pointing the file scopes at `/dev/null` alone leaves them
+live. Use `hermetic_git_environment()` (the same values via
+`mock.patch.dict(..., clear=True)`) when git is reached through a child script
+or through production code that passes no `env=`. `GIT_CONFIG_GLOBAL` needs
+git ≥ 2.32; a version assertion makes an older git fail loudly instead of
+running unscrubbed.
+
+**2. A read of an untracked repository path must be declared.** A module that
+legitimately reads one declares it in its own module-level
+`HERMETICITY_UNTRACKED_PATHS` tuple and tolerates its absence
+(`tests/test_repo_tooling_ownership.py`, `tests/test_repomix.py`). An entry for
+a *tracked* path fails too, so the tuple cannot become a general bypass.
+
+Both guards are AST walks over `git ls-files -- tests/*.py`, so a newly tracked
+module is covered on landing, and both carry a measured floor
+(`MIN_GIT_CALL_SITES`, `MIN_PACK_ROOT_PATHS`) so a half-broken walk fails
+instead of reporting zero violations over zero inspected sites. Raise a floor
+when you add sites; never lower one to make a walk pass.
+
+Structural guards cannot see a path or argv assembled at runtime. `make
+test-hermetic` closes that gap empirically: it copies `git ls-files` into a
+temporary directory, runs `git init`/`add`/`commit` there (without it, every
+`git ls-files` on `PACK_ROOT` exits 128), and runs the whole suite under a
+hostile `HOME` plus a `GIT_CONFIG_COUNT` command-scope triple. Use
+`$(abspath $(RUN_PYTHON))` for the interpreter — a `$(CURDIR)`-relative path
+resolves against the temporary directory and breaks CI. The lane is deliberately
+**not** in `make check` (~40 s); CI runs it as the `test-hermetic` job. Adding
+or renaming a lane touches four places, not one: `tests.yml` (the job plus
+`ci-result.needs`), `REQUIRED_LANES` in `.github/scripts/aggregate-ci-result.py`,
+and the fixture in `tests/test_aggregate_ci_result.py`. Assertions about how
+many lanes exist must enumerate from the workflow rather than hardcode a count.
+
 ---
 
 ## Review And Retry Conventions

@@ -12,7 +12,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from install_test_support import PACK_ROOT, TempDirTestCase
+from install_test_support import (
+    PACK_ROOT,
+    TempDirTestCase,
+    git_env,
+)
 
 GATE_SCRIPT = PACK_ROOT / ".github" / "scripts" / "check-release-payload.py"
 TAG_SCRIPT = PACK_ROOT / ".github" / "scripts" / "create-release-tag.py"
@@ -36,6 +40,7 @@ def git(repo: Path, *args: str) -> None:
         check=True,
         capture_output=True,
         text=True,
+        env=git_env(),
     )
 
 
@@ -45,6 +50,7 @@ def run_script(script: Path, *args: str) -> subprocess.CompletedProcess:
         text=True,
         capture_output=True,
         check=False,
+        env=git_env(),
     )
 
 
@@ -153,6 +159,7 @@ class ReleaseGateTest(TempDirTestCase):
             check=True,
             capture_output=True,
             text=True,
+            env=git_env(),
         )
         return proc.stdout.strip()
 
@@ -351,6 +358,7 @@ class ReleaseTagTest(TempDirTestCase):
             check=True,
             capture_output=True,
             text=True,
+            env=git_env(),
         )
         return set(result.stdout.split())
 
@@ -361,6 +369,7 @@ class ReleaseTagTest(TempDirTestCase):
             check=True,
             capture_output=True,
             text=True,
+            env=git_env(),
         )
         git(self.repo, "remote", "add", "origin", str(origin))
         return origin
@@ -371,6 +380,7 @@ class ReleaseTagTest(TempDirTestCase):
             check=True,
             capture_output=True,
             text=True,
+            env=git_env(),
         )
         return set(result.stdout.split())
 
@@ -451,8 +461,13 @@ class WorkflowHygieneTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.text = WORKFLOW.read_text(encoding="utf-8")
 
-    def test_pip_cache_on_three_setup_python_steps(self) -> None:
-        self.assertEqual(self.text.count("cache: pip"), 3)
+    def test_pip_cache_on_every_setup_python_step(self) -> None:
+        """Every setup-python step caches pip (A-038). Enumerated rather than
+        counted, so adding a lane cannot silently drop the cache."""
+        self.assertEqual(
+            self.text.count("cache: pip"), self.text.count("uses: actions/setup-python")
+        )
+        self.assertGreaterEqual(self.text.count("cache: pip"), 3)
 
     def test_concurrency_with_pr_only_cancellation(self) -> None:
         self.assertIn("concurrency:", self.text)

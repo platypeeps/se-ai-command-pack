@@ -46,6 +46,25 @@ jobs:
           python -m coverage combine
           python -m coverage report --fail-under=80
 
+  test-hermetic:
+    # The suite against a tracked-files-only copy under a hostile git
+    # configuration. `make check` deliberately omits it; this lane is where the
+    # property is enforced. A fetch depth of 0 is not needed — the lane builds
+    # its own throwaway repository from the checked-out working tree.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: requirements-dev.lock
+      - run: "python -m pip install --require-hashes --only-binary :all: -r requirements-dev.lock"
+      - name: Run the suite hermetically
+        run: make test-hermetic
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -133,7 +152,7 @@ jobs:
             node scripts/sd-ai-command-pack-review-preflight.mjs
 
   ci-result:
-    needs: [unittest, lint, release-payload-gate, auto-tag-release, review-preflight]
+    needs: [unittest, test-hermetic, lint, release-payload-gate, auto-tag-release, review-preflight]
     if: always()
     runs-on: ubuntu-latest
     steps:

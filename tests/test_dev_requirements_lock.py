@@ -218,7 +218,17 @@ class WiringTest(unittest.TestCase):
             for step in job.get("steps", [])
             if isinstance(step.get("run"), str) and "pip install" in step["run"]
         ]
-        self.assertEqual(len(installs), 3, installs)
+        # Enumerated, not counted: a hardcoded number has to be edited every
+        # time a lane is added, and the property is "every job that sets up
+        # Python installs from the lock", not "there are N such jobs".
+        setups = [
+            job_name
+            for job_name, job in workflow["jobs"].items()
+            for step in job.get("steps", [])
+            if str(step.get("uses", "")).startswith("actions/setup-python")
+        ]
+        self.assertEqual(len(installs), len(setups), (installs, setups))
+        self.assertGreaterEqual(len(installs), 3, installs)
         for command in installs:
             self.assertIn("--require-hashes --only-binary :all:", command)
             self.assertIn("-r requirements-dev.lock", command)
