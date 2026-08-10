@@ -46,6 +46,18 @@ INSTALLER_RECEIPTS = frozenset(
 TRELLIS_RUNTIME_PREFIXES = (".trellis/scripts/", ".trellis/agents/")
 TRELLIS_RUNTIME_FILES = frozenset({".trellis/config.yaml", ".trellis/workflow.md"})
 
+# Content this repository authors under the same `.trellis/` root, and the two
+# Trellis metadata files that appear in no registry at all. Everything tracked
+# under `.trellis/` outside these is vendored runtime, which is what lets the
+# coverage guard below run on CI instead of only where the receipt exists.
+REPO_AUTHORED_TRELLIS_PREFIXES = (
+    ".trellis/spec/",
+    ".trellis/tasks/",
+    ".trellis/workspace/",
+    ".trellis/audit/",
+)
+UNRECEIPTED_TRELLIS_METADATA = frozenset({".trellis/.gitignore", ".trellis/.version"})
+
 
 def is_trellis_runtime(path: str) -> bool:
     return path in TRELLIS_RUNTIME_FILES or path.startswith(TRELLIS_RUNTIME_PREFIXES)
@@ -261,6 +273,26 @@ class RegistryAIsReadableWithoutItsReceiptTest(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertFalse(is_trellis_runtime(path))
                 self.assertTrue(self.lookup.is_repo_own(path))
+
+    def test_fallback_covers_tracked_trellis_runtime(self) -> None:
+        # The receipt-based guard below cannot run on CI, so derive the same
+        # question from the tracked tree, which is present everywhere: any
+        # tracked `.trellis/` path that is neither authored here nor
+        # registry-less metadata is vendored runtime and must be covered.
+        uncovered = sorted(
+            path
+            for path in tracked_files(".trellis/")
+            if not path.startswith(REPO_AUTHORED_TRELLIS_PREFIXES)
+            and path not in UNRECEIPTED_TRELLIS_METADATA
+            and not is_trellis_runtime(path)
+        )
+        self.assertEqual(
+            uncovered,
+            [],
+            "a new vendored Trellis runtime path is not covered by "
+            "TRELLIS_RUNTIME_PREFIXES/TRELLIS_RUNTIME_FILES, so it would "
+            "classify as repo-own wherever the receipt is absent",
+        )
 
     def test_fallback_still_covers_the_whole_receipt(self) -> None:
         # Anti-rot, and the only assertion that needs the receipt: a new
