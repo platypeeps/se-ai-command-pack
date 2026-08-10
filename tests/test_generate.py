@@ -545,6 +545,20 @@ class RealRepoGeneratorTest(unittest.TestCase):
         self.assertIn("relative path component", str(raised.exception))
         self.assertFalse((PACK_ROOT / "docs" / "traversal.md").exists())
 
+    def test_in_place_surface_names_are_not_accepted_elsewhere(self) -> None:
+        """The two in-place surfaces are exact paths, not basenames. Matched on
+        the name alone, a stray `docs/README.md` reads as an allowed surface
+        and the whole boundary comes apart on the two commonest filenames in
+        any repository."""
+        for target in (
+            PACK_ROOT / "docs" / "README.md",
+            PACK_ROOT / "docs" / "manifest.json",
+        ):
+            with self.subTest(target=target.relative_to(PACK_ROOT).as_posix()):
+                with self.assertRaises(gen.GenerationError) as raised:
+                    gen.assert_generated_write_target(target)
+                self.assertIn("neither under generated/", str(raised.exception))
+
     def test_in_place_surfaces_and_generated_paths_are_accepted(self) -> None:
         """The guard must not reject what the generator legitimately writes:
         both in-place surfaces by name, and any path under a `generated`

@@ -1274,7 +1274,11 @@ def assert_generated_write_target(path: Path) -> None:
             f"{TEMPLATES_COMPONENT}/, the one place skills are hand-edited; "
             f"write it under {GENERATED_COMPONENT}/ instead"
         )
-    if GENERATED_COMPONENT in parts or path.name in IN_PLACE_WRITE_NAMES:
+    # The in-place surfaces are two exact paths, not two basenames: matching on
+    # the name alone would accept `docs/README.md` anywhere in the tree. Read
+    # from the module globals so the sandbox tests, which patch both constants
+    # into a temporary tree, still exercise this arm.
+    if GENERATED_COMPONENT in parts or path in {MANIFEST_PATH, README_PATH}:
         return
     raise GenerationError(
         f"{_display(path)} is neither under {GENERATED_COMPONENT}/ nor one of "
