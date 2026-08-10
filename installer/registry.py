@@ -691,28 +691,28 @@ def validate_registry() -> None:
         raise RuntimeError(
             "SKILL_RUNTIME_PROFILES must be derived from runtime assignments"
         )
-    for source, consumers in SHARED_REFERENCES.items():
-        if not source.startswith("_shared/"):
-            raise RuntimeError(
-                f"SHARED_REFERENCES source must live under _shared/: {source}"
-            )
-        unknown = set(consumers) - set(SKILL_NAMES)
-        if unknown:
-            raise RuntimeError(
-                f"SHARED_REFERENCES {source} names unknown skills: {sorted(unknown)}"
-            )
-    for source, consumers in GENERATED_REFERENCES.items():
-        if not source.startswith(f"{GENERATED_DIR}/"):
-            raise RuntimeError(
-                f"GENERATED_REFERENCES source must live under {GENERATED_DIR}/: "
-                f"{source}"
-            )
-        unknown = set(consumers) - set(SKILL_NAMES)
-        if unknown:
-            raise RuntimeError(
-                f"GENERATED_REFERENCES {source} names unknown skills: "
-                f"{sorted(unknown)}"
-            )
+    # A prefix rule alone is not a path check: `_shared/../../etc/passwd` starts
+    # with `_shared/` and still escapes the tree the generator joins it onto.
+    # Platform paths above are already validated this way, and skill_review.py
+    # re-validates reference sources for the same reason; doing it here rejects
+    # the escape at its source instead of in each consumer.
+    for registry_name, prefix, registry in (
+        ("SHARED_REFERENCES", "_shared/", SHARED_REFERENCES),
+        ("GENERATED_REFERENCES", f"{GENERATED_DIR}/", GENERATED_REFERENCES),
+    ):
+        for source, consumers in registry.items():
+            if not source.startswith(prefix):
+                raise RuntimeError(
+                    f"{registry_name} source must live under {prefix}: {source}"
+                )
+            source_path = Path(source)
+            if source_path.is_absolute() or ".." in source_path.parts:
+                raise RuntimeError(f"{registry_name} has unsafe source: {source}")
+            unknown = set(consumers) - set(SKILL_NAMES)
+            if unknown:
+                raise RuntimeError(
+                    f"{registry_name} {source} names unknown skills: {sorted(unknown)}"
+                )
 
 
 validate_registry()
