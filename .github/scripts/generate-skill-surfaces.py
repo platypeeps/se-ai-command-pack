@@ -84,10 +84,10 @@ GENERATED_REFERENCE_WRITERS = frozenset({HELP_CATALOG_SOURCE})
 # Guarding the single write choke point instead covers every format, including
 # ones no writer emits yet.
 #
-# Membership is tested on path components rather than against ROOT because the
-# generator's own tests redirect every output constant into a temporary tree.
-# The tail shape — a `generated` component, or one of the in-place surfaces by
-# name — is what survives that redirection.
+# Membership is tested on components anchored to ROOT, so no directory above
+# the checkout can decide the verdict. Only a target outside ROOT falls back to
+# the whole path — that is the generator's own tests redirecting every output
+# constant into a temporary tree, where the tail shape is all that survives.
 TEMPLATES_COMPONENT = TEMPLATES_SKILLS_DIR.split("/", 1)[0]
 GENERATED_COMPONENT = GENERATED_SKILLS_DIR.split("/", 1)[0]
 # Whole-repo artifacts with a marked region this script rewrites in place, as
