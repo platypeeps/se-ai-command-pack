@@ -549,6 +549,9 @@ _YAML_RESOLVED_SCALAR = re.compile(
 )
 
 
+_YAML_BOOLEAN_TEXT = frozenset({"true", "false"})
+
+
 def _frontmatter_error(label: str, line_number: int, construct: str) -> ReviewError:
     return ReviewError(
         f"{label}:{line_number}: unsupported frontmatter construct: {construct}"
@@ -556,17 +559,40 @@ def _frontmatter_error(label: str, line_number: int, construct: str) -> ReviewEr
 
 
 def _resolves_outside_string(token: str) -> bool:
-    """True when YAML would resolve this plain token to a non-string."""
+    """True when YAML would resolve this plain token to a non-string.
 
-    if token in {"true", "false"}:
-        return False
-    return token in _YAML_BOOL_NULL or bool(_YAML_RESOLVED_SCALAR.match(token))
+    `true` and `false` are in the set: YAML resolves them to booleans like every
+    other spelling here. A *value* that resolves to a bool is still inside the
+    subset, because the parser represents it as the same text `scalar_text`
+    would — but a *key* is not, since the mapping key itself would be `True`
+    rather than `"true"`. The two paths therefore consult this predicate
+    differently, and only the value path exempts the pair.
+    """
+
+    return (
+        token in _YAML_BOOLEAN_TEXT
+        or token in _YAML_BOOL_NULL
+        or bool(_YAML_RESOLVED_SCALAR.match(token))
+    )
 
 
 def _unquote_scalar(value: str, label: str, line_number: int) -> str:
     quote = value[0]
     if len(value) < 2 or value[-1] != quote:
-        raise _frontmatter_error(label, line_number, "unterminated quoted scalar")
+        # Both shapes are rejections, but they are different mistakes and the
+        # operator has to fix them differently. A quote surviving inside the
+        # remainder — after single-quote doubling is discounted — means the
+        # scalar closed and text followed it.
+        remainder = value[1:]
+        if quote == "'":
+            remainder = remainder.replace("''", "")
+        raise _frontmatter_error(
+            label,
+            line_number,
+            "content after a closing quote"
+            if quote in remainder
+            else "unterminated quoted scalar",
+        )
     inner = value[1:-1]
     if quote == '"':
         if "\\" in inner:
@@ -647,6 +673,11 @@ def _frontmatter(text: str, label: str) -> tuple[dict[str, str], str, tuple[str,
             raise _frontmatter_error(label, line_number, "colon in a plain scalar")
         if " #" in value:
             raise _frontmatter_error(label, line_number, "comment in a plain scalar")
+        if value in _YAML_BOOLEAN_TEXT:
+            # A boolean value is inside the subset: `scalar_text` renders it as
+            # exactly this text. A boolean *key* is not — see the key guard.
+            values[key] = value
+            continue
         if _resolves_outside_string(value):
             raise _frontmatter_error(
                 label, line_number, "value that YAML resolves to a non-string"
