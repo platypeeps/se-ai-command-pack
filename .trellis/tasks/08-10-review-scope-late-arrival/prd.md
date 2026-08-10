@@ -47,6 +47,32 @@ The spec cites the same shape on PRs #156 and #172 (mixed diff, preparer exits
 `3`) and #163 (two review rounds burned without a proactive section). #203 is
 the fourth.
 
+PR #208 (2026-08-10) is the fifth, and it exposes a second defect layered on the
+first. The sequence was identical — passed at `f4d17ef`, failed at the
+finalization head `ee0eb36` naming
+`.trellis/workspace/sdelmas/index.md` and `journal-4.md` — but the fix did not
+take effect. After `gh pr edit` added the section, the helper passed on its own
+(`bash scripts/sd-ai-command-pack-review-scope.sh`, exit 0) and a direct
+`sd-check` passed 11/0, while `sd-review` kept reporting
+`pack.review-scope failed` with a byte-identical `durationMs: 940` across three
+further attempts.
+
+The cause is the review coordinator's private attempt state. `_artifact_root`
+writes one file per attempt identity under `<cache-namespace>/review-controller`,
+and that identity — `{repository, scope, base, head, prNumber, controls}` — does
+not include the attempt number, so attempts 3 through 6 all resolved to the same
+stored record and replayed its `check` block instead of re-running the gate. The
+resume-idempotency rule in `sd-review`'s SKILL.md is what makes this correct for
+a delayed receipt and wrong here: `pack.review-scope` reads the **PR body**, an
+input that lives off-head, so the only way to re-verify after fixing it is to
+change the head or delete the state file. Deleting
+`review-853b0905b50c47b44655902a.json` (no dispatched remote request, so nothing
+to reconcile) made the next run report `ready` with `check passed 11/0`.
+
+Whichever remedy is chosen for the late arrival itself, an attempt identity that
+ignores off-head deterministic inputs leaves a state where a correctly applied
+fix cannot be proven at the same head.
+
 ## Requirements
 
 - A PR that will acquire journal/index files at finalization must not fail
@@ -55,8 +81,12 @@ the fourth.
 - The remedy must not weaken the gate: a genuinely unexplained tooling/generated
   change must still fail.
 - It must not require the operator to remember a proactive section. The current
-  guidance already says to write one; the recurrence across four PRs is the
+  guidance already says to write one; the recurrence across five PRs is the
   evidence that guidance alone is not closing it.
+- A `pack.review-scope` failure that is fixed off-head — by editing the PR body,
+  the only input the gate reads that is not in the commit — must be re-provable
+  at the same head through a sanctioned invocation, without deleting the
+  coordinator's private attempt state.
 
 ## Design questions for the planning phase
 
@@ -72,6 +102,14 @@ the fourth.
 - **Predict the category.** At PR creation, treat a Trellis task branch as one
   that *will* gain journal/index files and require the section up front. No new
   body edit late in the chain, but it asserts a future diff.
+
+- **Bind the attempt identity to the PR body, or scope the reuse.** Either fold
+  a digest of the resolved PR body into the attempt identity, so an edited body
+  is a new attempt rather than a replay, or narrow what the stored record
+  replays: the durable remote receipt is what resume-idempotency exists to
+  protect, and the deterministic `check` block could re-run every time at a cost
+  of one gate execution. `scripts/sd-ai-command-pack-review.py` is vendored too,
+  so this shares the upstream-approval constraint below.
 
 Note the ownership constraint before choosing: both
 `scripts/sd-ai-command-pack-review-scope.sh` and
@@ -92,3 +130,7 @@ for the routing precedent.
       manual-workaround guidance rather than sitting beside it.
 - [ ] An unexplained copied/generated change with no heading still fails, with
       its own test.
+- [ ] A test covers the replay defect: a stored attempt whose `check` failed,
+      an off-head input change that would now pass, and a same-head rerun that
+      reports the current verdict rather than the stored one — failing against
+      today's code.
