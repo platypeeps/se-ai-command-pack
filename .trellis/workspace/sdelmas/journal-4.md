@@ -847,3 +847,51 @@ Recorded the PR #206 CI-only test failure as evidence on 07-25-audit-test-hermet
 ### Next Steps
 
 - None - task complete
+
+
+## Session 175: skill_review internals: one containment predicate, one authoritative frontmatter grammar
+
+**Date**: 2026-08-10
+**Task**: skill_review internals: one containment predicate, one authoritative frontmatter grammar
+**Branch**: `task/07-25-audit-skill-review-internals`
+
+### Summary
+
+Closed audit findings A-009 and A-010. Deleted the duplicate _is_within containment predicate and routed its three call sites through _is_relative_to. Rewrote the shipped skill_review.py frontmatter parser as a strict rejecting subset of the generator's yaml.safe_load/safe_dump grammar, added the reciprocal control-character guard to validate_skill, and bound the two with a six-group conformance test. Released 0.69.0 with a Breaking changelog marker.
+
+### Main Changes
+
+- A-009: deleted _is_within; its three call sites now use _is_relative_to, whose body was byte-identical
+- A-010: _frontmatter is now a strict rejecting subset of PyYAML — eleven measured divergence classes (flow collections, block scalars, anchors/aliases, YAML indicators, name:value, colon/hash in plain scalars, bool/null/number/date resolutions, the merge key, quoted/empty/duplicate keys, indented lines, unterminated quotes, backslash escapes, Cc characters) each raise a ReviewError naming the construct and the 1-based line
+- Fixed two live bugs: bare strip() ate a leading U+00A0 that YAML preserves, and NUL passed the line parser while PyYAML's reader refuses the document
+- validate_skill now refuses a description containing Cc, U+2028, or U+2029 — the reciprocal obligation that stops the generator emitting an overlay its own review tool cannot read
+- tests/test_frontmatter_conformance.py: corpus regression, agreement table, rejection table, generator reciprocity, installed-root fixture, and a 468-case product fuzz against PyYAML
+- manifest 0.68.3 -> 0.69.0; changelog bullet leads with **Breaking:** per CONTRIBUTING
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `007a22f` | refactor(se-review-skills): collapse duplicate containment predicate |
+| `ac1f2f5` | feat(se-review-skills): make _frontmatter a strict rejecting subset of YAML |
+| `99ace93` | test(frontmatter): bind the shipped parser to the generator's grammar |
+| `95d5b56` | chore(release): 0.69.0 |
+| `6c3fd58` | docs(trellis): planning artifacts and completion evidence for skill_review internals |
+| `957777e` | docs(spec): capture the frontmatter grammar authority contract |
+| `f4d17ef` | fix(se-review-skills): report the line a control character actually sits on |
+
+### Testing
+
+- [OK] make check: Ran 709 tests, OK; coverage 89.1% (floor 80); ruff and mypy clean
+- [OK] tests/test_frontmatter_conformance.py: Ran 14 tests, OK — 180 enumerated SKILL.md documents, fuzz baseline cases=468 accepted=72
+- [OK] six probes each produced their predicted failure and were reverted (A literal_eval, B width=40, C tools:[Read], D guard removal, E widened guard, F strip())
+- [OK] release gate: version 0.68.3 -> 0.69.0; changelog heading matches; trellis-provenance check: ok
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
