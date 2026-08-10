@@ -26,10 +26,18 @@ from pathlib import Path
 INPUT_PATH = "requirements-dev.txt"
 LOCK_PATH = "requirements-dev.lock"
 
-# An entry is any line that is not blank, not a comment, and not indented.
-# Detection must NOT require "==": a loosened requirement has to become a
-# finding, and a rule that only matched pins would skip it silently instead.
-ENTRY_RE = re.compile(r"^(?![ \t#])\S")
+# An entry is any line that is neither blank, nor a comment, nor a continuation
+# of the entry above it. Detection must NOT require "==": a loosened requirement
+# has to become a finding, and a rule that only matched pins would skip it
+# silently instead.
+#
+# Indentation alone does not make a line a continuation. pip strips each line
+# before parsing it, so `    ruff>=0.16` installs ruff exactly as an unindented
+# line would; treating every indented line as continuation text would let that
+# requirement slip past the gate entirely. Only the two shapes uv actually emits
+# below an entry — `--hash=`/option continuations and `# via` comments — count.
+BLANK_OR_COMMENT_RE = re.compile(r"^\s*(?:#.*)?$")
+CONTINUATION_RE = re.compile(r"^[ \t]+(?:--|#)")
 PIN_RE = re.compile(r"^([A-Za-z0-9._-]+)\s*==\s*([^ ;\\]+)")
 NAME_RE = re.compile(r"^([A-Za-z0-9._-]+)")
 NORMALIZE_RE = re.compile(r"[-_.]+")
@@ -37,6 +45,13 @@ NORMALIZE_RE = re.compile(r"[-_.]+")
 
 class CheckError(Exception):
     """Environment, usage, or malformed-input error (exit 2)."""
+
+
+def is_entry(line: str) -> bool:
+    """True when ``line`` starts a requirement rather than continuing one."""
+    if BLANK_OR_COMMENT_RE.match(line):
+        return False
+    return not CONTINUATION_RE.match(line)
 
 
 def normalize(name: str) -> str:
@@ -69,14 +84,14 @@ def parse_entries(
 
     current: list[str] | None = None
     for line in lines:
-        if not ENTRY_RE.match(line):
+        if not is_entry(line):
             if current is not None:
                 current.append(line)
             continue
         if current is not None:
             hash_blocks.append("\n".join(current))
         current = []
-        match = PIN_RE.match(line)
+        match = PIN_RE.match(line.strip())
         if match is None:
             findings.append((len(hash_blocks), line.strip()))
             continue
@@ -130,11 +145,11 @@ def _entry_name(lines: list[str], index: int) -> str:
     """Return the display name of the index-th entry in ``lines``."""
     seen = -1
     for line in lines:
-        if not ENTRY_RE.match(line):
+        if not is_entry(line):
             continue
         seen += 1
         if seen == index:
-            match = NAME_RE.match(line)
+            match = NAME_RE.match(line.strip())
             return match.group(1) if match else line.strip()
     return f"#{index}"
 

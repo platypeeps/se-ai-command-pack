@@ -108,6 +108,32 @@ class LockCheckerTest(unittest.TestCase):
         self.assertIn("unpinned:", output)
         self.assertIn("ruff>=0.16", output)
 
+    def test_indented_entry_is_still_an_entry(self) -> None:
+        # pip strips each line before parsing, so an indented requirement
+        # installs exactly like an unindented one. Treating indentation alone as
+        # continuation text would let this requirement bypass the gate.
+        self.fixture(input_text="  ruff>=0.16\n")
+        status, output = self.run_fixture()
+        self.assertEqual(status, 1, output)
+        self.assertIn("input-unpinned:", output)
+
+    def test_indented_pin_is_read_not_skipped(self) -> None:
+        self.fixture(input_text="   ruff==0.17.0\n")
+        status, output = self.run_fixture()
+        self.assertEqual(status, 1, output)
+        self.assertIn("pin-mismatch: ruff is 0.17.0", output)
+
+    def test_every_finding_is_reported_not_just_the_first(self) -> None:
+        self.fixture(
+            input_text="ruff==0.17.0\nmypy==2.3.0\n",
+            lock_text=hashed("ruff==0.16.1") + "\npyyaml==6.0.3\n",
+        )
+        status, output = self.run_fixture()
+        self.assertEqual(status, 1, output)
+        for expected in ("unhashed:", "pin-missing: mypy", "pin-mismatch: ruff"):
+            self.assertIn(expected, output)
+        self.assertEqual(len(output.strip().splitlines()), 3, output)
+
     def test_loosened_input_entry_is_reported(self) -> None:
         self.fixture(input_text="ruff>=0.16\n")
         status, output = self.run_fixture()

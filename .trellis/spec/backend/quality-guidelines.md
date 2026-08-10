@@ -2212,6 +2212,10 @@ make lock-check    # offline consistency gate, also wired into `make check`
 - Entry detection must not require `==`. A rule keyed on the pin operator skips
   a loosened requirement instead of reporting it — silently passing the exact
   desync the gate exists to catch.
+- Indentation alone must not mark a line as continuation text either: pip strips
+  each line before parsing, so `    ruff>=0.16` installs exactly like the
+  unindented form. Only the shapes the compiler emits below an entry —
+  `--hash=`/option continuations and `# via` comments — are continuations.
 
 ### 4. Validation & Error Matrix
 
