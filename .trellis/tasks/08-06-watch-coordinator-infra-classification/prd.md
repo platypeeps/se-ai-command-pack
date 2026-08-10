@@ -22,13 +22,16 @@ carrying `merge_state_not_clean`. The two demand opposite responses — one is
 cleared by waiting and retrying, the other is never cleared by retrying — and
 the outcome that must drive the decision does not encode which one happened.
 
-Observed on PR #155 (2026-08-06). Four lanes failed at an identical `15m2s`
-while the single lane that obtained a runner passed at `8m51s`; every failure
-was a `Set up job` step erroring with `Service Unavailable` or
-`Failed to resolve action download info`, so zero test code executed. The
-coordinator reported the same `settled-blocked` it would report for a real red
-suite. Diagnosis took several retries plus manual
-`gh api repos/<owner>/<repo>/actions/jobs/<id>` inspection.
+Observed on PR #155 (2026-08-06), in the first two of its workflow attempts. Attempt 1: four
+lanes ended cancelled at an identical `15m2s` with `steps: []` — no step ever
+ran — while the single lane that obtained a runner passed at `8m51s`.
+Attempt 2: a mix of zero-step cancellations and `Set up job` step failures
+whose logs read `Service Unavailable` or
+`Failed to resolve action download info`. In every failing job zero test
+code executed. The coordinator reported the same `settled-blocked` it would
+report for a real red suite. Diagnosis took several retries plus manual
+`gh api repos/<owner>/<repo>/actions/jobs/<id>` (and job-logs)
+inspection.
 
 The cost is asymmetric and falls on the wrong side. Reading a real failure as
 infrastructure wastes retries; reading infrastructure as a real failure invites
@@ -39,7 +42,11 @@ a run to "fix" code that was never executed.
 `merge_state_not_clean` does not separate failed checks from unresolved review
 threads either, so the ambiguity is broader than infrastructure-versus-real.
 
-Observed on PR #157 (2026-08-06). Stage 3 returned `settled-blocked` with
+Observed on PR #157 (2026-08-06; historical — the current eligibility
+script has since gained specific `merge_blocked_conversation` /
+`merge_blocked_review` codes with thread evidence for exactly this case, so
+this signature now marks a legacy or degraded result). Stage 3 returned
+`settled-blocked` with
 `reasonCodes: ['merge_state_not_clean']` while **every** check was green — six
 `SUCCESS`, one `SKIPPED`. The actual blocker was five unresolved Copilot
 threads, discoverable only by querying GitHub separately
@@ -87,6 +94,47 @@ on its own, because the upstream option may not be authorized.
   reporting a blocker, never toward merging. A misclassification must not be
   able to turn a real red suite into a merge.
 - No change to the coordinator's read-only character or its poll cadence.
+
+## Disposition (recorded 2026-08-09)
+
+**Local-only, with an upstream relay issue.** The coordinator's outcome
+vocabulary lives in the vendored sd-ai-command-pack reference, and this
+run's authority excludes upstream pull requests without explicit per-PR
+approval, which was not sought — so the upstream option is not exercisable
+here. The local-only option is viable on its own (the PRD's stated
+requirement for exactly this case): the discrimination procedure now lives
+in `.trellis/spec/backend/quality-guidelines.md` as the subsection
+"One `settled-blocked` spans three conditions: classify before responding",
+extending the existing "Stop retrying on a repeated failure signature"
+subsection. The procedure is scoped as post-coordinator diagnosis on a
+delivered `settled-blocked` report, so it does not conflict with the
+coordinator's own ban on supplementary thread queries inside the polling
+loop; step 1 reads the probe's own `checks.items` evidence rather than
+re-querying. An upstream relay issue proposing a classification field on
+`settled-blocked` is filed against sd-ai-command-pack (issue link in the
+completion evidence) so the vocabulary change stays discoverable upstream;
+the local guidance does not depend on it merging.
+
+The guidance covers all three conditions the PRD identifies under one
+`merge_state_not_clean`:
+
+- **PR #157 signature** (all checks green, `threads: null`) — classified as
+  unresolved threads by the check-conclusions probe plus the exact GraphQL
+  `reviewThreads` query and `gh pr view --json mergeStateStatus,mergeable,reviewDecision`.
+- **PR #155 signature** — classified as infrastructure from the job-step
+  evidence (`gh api repos/<owner>/<repo>/actions/jobs/<id>`: step
+  conclusions, `steps: []`, timestamps for the identical-duration tell)
+  with the quoted error text (`Service Unavailable` / `Failed to resolve
+  action download info`) obtained from the separate logs endpoint
+  (`.../actions/jobs/<id>/logs`); evidence available at the time, no
+  hindsight required.
+- **Real failure** — an executed test/lint step failed; retry is never the
+  response.
+
+Fail-toward-blocking is stated explicitly in the guidance: classification
+selects the response, never the merge; both misclassification directions
+still end blocked, and merge eligibility remains the housekeeping gate's own
+atomic recomputation, which the classification does not feed.
 
 ## Acceptance Criteria
 

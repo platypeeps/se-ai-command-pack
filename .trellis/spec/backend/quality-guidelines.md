@@ -404,6 +404,74 @@ timeout, and no number of retries changes it. Check job steps
 ran anything: a `Set up job` failure means zero test evidence either way, so it
 is neither a passing nor a failing signal about the code.
 
+#### One `settled-blocked` spans three conditions: classify before responding
+
+The Stage 3 watch coordinator's `settled-blocked` outcome — usually carrying
+`merge_state_not_clean` — does not say which of three distinct conditions
+produced it, and each demands a different response. The coordinator is
+vendored (its outcome vocabulary is an upstream change; see the disposition
+in the `08-06-watch-coordinator-infra-classification` task record), so the
+classification is performed by the consumer. Scope: this is **post-coordinator
+diagnosis**, run once on a delivered `settled-blocked` report after the watch
+loop has ended. It adds nothing to the coordinator's own probe procedure —
+the coordinator's ban on supplementary thread queries and second pagination
+paths governs the polling loop, not what an operator reads afterwards. Never
+guess from the check name.
+
+Classify in this order:
+
+1. **Read the reason code and check conclusions from the probe's own
+   evidence.** The current eligibility script already names the thread
+   case: an all-green-but-BLOCKED PR triggers its own thread collection and
+   returns `merge_blocked_conversation` (unresolved threads, with a
+   `reviewThreads` evidence block) or `merge_blocked_review` instead of the
+   generic code (`scripts/sd-ai-command-pack-pr-eligibility.py:706-721`).
+   A specific code is the answer; act on it directly. The result also
+   carries `checks.items` — every CheckRun `conclusion` and StatusContext
+   `state` from the script's bounded fail-closed pager. Non-blocking
+   conclusions are `SUCCESS`, `SKIPPED`, and `NEUTRAL` (`:474-480`); treat
+   only items outside that set as red. (`gh pr checks <N>` is a
+   human-readable cross-check; it renders the same facts as
+   `pass`/`skipping`.)
+2. **Generic `merge_state_not_clean` with all checks non-blocking: fall back
+   to a manual thread query.** This is the legacy/degraded path — an older
+   probe, or one whose thread collection failed (the historical PR #157
+   report predates the specific codes: six green checks, `threads: null`,
+   five unresolved Copilot threads discoverable only by hand; an absent
+   thread list is never "no threads"). Run
+   `gh pr view <N> --json mergeStateStatus,mergeable,reviewDecision` plus
+   the unresolved-thread count:
+   `gh api graphql -f query='query{repository(owner:"<owner>",name:"<repo>"){pullRequest(number:<N>){reviewThreads(first:50){nodes{isResolved}}}}}'`
+   — a nonzero `isResolved: false` count with `mergeable: MERGEABLE` is
+   **unresolved threads**: resolve or rebut them; no retry, no code change.
+
+If instead some check is red, split infrastructure from a real failure with
+job-step evidence: `gh api repos/<owner>/<repo>/actions/jobs/<id>` returns
+each step's name, conclusion, and timestamps; the error *text* lives in the
+separate logs endpoint (`gh api repos/<owner>/<repo>/actions/jobs/<id>/logs`)
+or the run's web UI, not in the jobs payload.
+
+- **Infrastructure**: no test step ever ran — the `Set up job` step failed
+  or the job died with `steps: []`, and several lanes ended at one identical
+  duration while any lane that acquired a runner passed. The PR #155
+  signature was both, across two attempts: four lanes at an identical
+  `15m2s` (cancelled, zero steps) with the runner-acquiring lane passing at
+  `8m51s`, and `Set up job` failures whose logs read `Service Unavailable` /
+  `Failed to resolve action download info`. Either form means zero test
+  evidence about the code. One retry; a second identical signature is the
+  answer.
+- **Real failure**: a test or lint step executed and failed. Retrying is
+  never the fix; fixing without reading the failure is how an
+  infrastructure-red gets "fixed" into new code that was never the problem.
+
+Fail toward blocking, explicitly: classification selects the *response*,
+never the merge. Misread a real failure as infrastructure and the cost is one
+wasted retry that ends red and still blocks. Misread infrastructure as a real
+failure and the cost is time spent reading logs that show no executed step.
+Neither direction can turn a red suite green: merging stays behind the
+housekeeping gate's own atomic eligibility recomputation, which none of this
+classification feeds.
+
 ### A stopped work-loop run is inert, not pending cleanup
 
 `sd-work-backlog`'s status helper reports `recovery.reasonCode: run_stopped`
