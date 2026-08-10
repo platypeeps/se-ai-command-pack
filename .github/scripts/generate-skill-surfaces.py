@@ -1229,6 +1229,23 @@ def regenerated_readme_text(
     return f"{current[:start]}\n{catalog}\n{current[end:]}"
 
 
+def _boundary_parts(path: Path) -> tuple[str, ...]:
+    """The path components the write guard is allowed to read.
+
+    Anchored to `ROOT` whenever the target is inside the checkout, so a host
+    directory above it named `templates` or `generated` cannot decide the
+    verdict — a clone under `~/templates/` would otherwise have every write
+    refused, and one under `~/generated/` would have stray writes accepted.
+    Targets outside `ROOT` are the generator's own tests redirecting output
+    into a temporary tree; there is no repo root to anchor to, so the whole
+    path is read and the fixtures mirror the real layout for that reason.
+    """
+    try:
+        return path.relative_to(ROOT).parts
+    except ValueError:
+        return path.parts
+
+
 def assert_generated_write_target(path: Path) -> None:
     """Reject a write that would put generator output outside generated/.
 
@@ -1238,13 +1255,14 @@ def assert_generated_write_target(path: Path) -> None:
     the marker is an HTML comment and cannot appear in a generated `.json` or
     `.toml` at all.
     """
-    if TEMPLATES_COMPONENT in path.parts:
+    parts = _boundary_parts(path)
+    if TEMPLATES_COMPONENT in parts:
         raise GenerationError(
             f"{_display(path)} is generator output under "
             f"{TEMPLATES_COMPONENT}/, the one place skills are hand-edited; "
             f"write it under {GENERATED_COMPONENT}/ instead"
         )
-    if GENERATED_COMPONENT in path.parts or path.name in IN_PLACE_WRITE_NAMES:
+    if GENERATED_COMPONENT in parts or path.name in IN_PLACE_WRITE_NAMES:
         return
     raise GenerationError(
         f"{_display(path)} is neither under {GENERATED_COMPONENT}/ nor one of "

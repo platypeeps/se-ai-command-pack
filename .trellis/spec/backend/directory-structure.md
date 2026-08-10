@@ -99,7 +99,11 @@ tests/                      # unittest modules mirroring installer concerns
   registered as a `GENERATED_REFERENCES` source rather than a
   `SHARED_REFERENCES` one. `write_generated_surfaces` enforces this at the
   writer: every target must carry a `generated` path component or be one of
-  the two in-place surfaces (`manifest.json`, `README.md`). Enforcing it there
+  the two in-place surfaces (`manifest.json`, `README.md`). Components are read
+  relative to `ROOT` for any target inside the checkout, so a directory above
+  the repository named `templates` or `generated` cannot decide the verdict;
+  only a target outside `ROOT` — the tests redirecting output into a temporary
+  tree — falls back to the whole path. Enforcing it there
   rather than by scanning for the do-not-edit marker is what makes it hold for
   non-Markdown output — the marker is an HTML comment and cannot appear in a
   generated `.json` or `.toml` at all.

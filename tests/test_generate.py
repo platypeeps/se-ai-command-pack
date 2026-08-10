@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import tempfile
 import unittest
 from collections import Counter
 from contextlib import ExitStack
@@ -534,8 +535,8 @@ class RealRepoGeneratorTest(unittest.TestCase):
         """The guard must not reject what the generator legitimately writes:
         both in-place surfaces by name, and any path under a `generated`
         component — including the temporary trees the other tests redirect
-        output into, which is why membership is tested on path components
-        rather than against PACK_ROOT."""
+        output into, which is why a target outside the checkout falls back to
+        reading the whole path."""
         for path in (
             PACK_ROOT / "manifest.json",
             PACK_ROOT / "README.md",
@@ -545,6 +546,30 @@ class RealRepoGeneratorTest(unittest.TestCase):
         ):
             with self.subTest(path=path.as_posix()):
                 gen.assert_generated_write_target(path)
+
+    def test_host_directory_names_do_not_decide_the_verdict(self) -> None:
+        """Nobody chooses where a clone is checked out, so no directory above
+        the repo root may change the answer. Read against the whole path, a
+        checkout under `templates/` refuses every write and one under
+        `generated/` accepts strays anywhere in the tree; both verdicts are
+        inverted from the truth, and both are what anchoring to ROOT fixes."""
+        for host, tail, accepted in (
+            ("templates", ("generated", "references", "skill-catalog.md"), True),
+            ("templates", ("docs", "stray.md"), False),
+            ("generated", ("scripts", "stray.json"), False),
+            ("generated", ("templates", "skills", "_shared", "gen.json"), False),
+        ):
+            root = Path(self.enterContext(tempfile.TemporaryDirectory()))
+            checkout = root / host / "se-ai-command-pack"
+            with self.subTest(host=host, tail="/".join(tail)):
+                with mock.patch.object(gen, "ROOT", checkout):
+                    if accepted:
+                        gen.assert_generated_write_target(checkout.joinpath(*tail))
+                    else:
+                        with self.assertRaises(gen.GenerationError):
+                            gen.assert_generated_write_target(
+                                checkout.joinpath(*tail)
+                            )
 
     def test_registered_shared_sources_match_snapshot(self) -> None:
         """One registry-driven check replacing the per-skill methods: each
