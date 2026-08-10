@@ -436,3 +436,40 @@ Closed audit findings A-032, A-033, and A-034. Dev dependencies now compile into
 ### Next Steps
 
 - None - task complete
+
+
+## Session 165: Park the A-032 upstream relay as its own Trellis task
+
+**Date**: 2026-08-10
+**Task**: Park the A-032 upstream relay as its own Trellis task
+**Branch**: `task/08-10-upstream-relay-opencode-plugin-dep`
+
+### Summary
+
+Follow-up bookkeeping from PR #197. The local A-032 disposition is merged; the upstream proposal to mindfold-ai/Trellis needs explicit per-PR approval, which the autonomous run-level authority excludes, so it is recorded as a blocked P3 task rather than attempted.
+
+### Main Changes
+
+- New Trellis task 08-10-upstream-relay-opencode-plugin-dep carrying the registry-ownership evidence, the import evidence behind A-032, and the proposed upstream fix
+- Marked blocked: true with blockedOn naming the required per-PR approval, plus a PARKED: title prefix, so the work-loop selector sorts it after every actionable task
+- PRD warns against removing the dependency locally: the next Trellis refresh reverts such an edit silently
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `964fdce` | docs(trellis): park A-032 upstream relay as its own task |
+
+### Testing
+
+- [OK] review preflight: 0 failure(s), 0 warning(s)
+- [OK] PR #198 checks: 7 pass, 1 skipping (auto-tag-release)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
