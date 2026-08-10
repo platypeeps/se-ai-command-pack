@@ -918,6 +918,9 @@ make generate
 python .github/scripts/generate-skill-surfaces.py --check
 <!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
 generated/references/skill-catalog.md
+python .github/scripts/check-release-payload.py --base <rev|auto>
+check_single_version_step(repo: Path, merge_base: str) -> None
+VERSION_HEADING_PATTERN = re.compile(r"^## (?P<version>\S+)")
 ```
 
 `FAMILY_LABELS` order is public catalog order. `FAMILY_DESCRIPTIONS` must have
