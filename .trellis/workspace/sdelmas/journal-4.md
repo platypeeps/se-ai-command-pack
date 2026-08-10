@@ -604,3 +604,41 @@ Closed task 08-10-boundary-test-nonmd-coverage: the source/generated boundary wa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 169: Remove the stray uv.lock left by a 3.10 verification run
+
+**Date**: 2026-08-10
+**Task**: Remove the stray uv.lock left by a 3.10 verification run
+**Branch**: `task/08-10-remove-stray-uv-lock`
+
+### Summary
+
+Follow-up cleanup from PR #201. Verifying Copilot's Python 3.10 finding meant running uv venv in the repository root; uv wrote a uv.lock there and git add -A swept it into 564a40c. Removed and ignored, since anyone verifying a non-default interpreter reproduces it.
+
+### Main Changes
+
+- Deleted the stray root uv.lock; nothing reads it, and the directory-structure spec says not to add a package lockfile — the dependency interface is requirements-dev.lock via make setup
+- Added a .gitignore entry naming the command that produces the artifact and where the real dependency interface lives
+- Rehashed .github/trellis-provenance.json, since .gitignore is a provenance-hashed surface and the gate otherwise reports drifted: .gitignore
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `df27313` | chore: remove the stray uv.lock and ignore it |
+
+### Testing
+
+- [OK] make check: Ran 680 tests, OK; ruff and mypy clean; release payload gate: no payload change
+- [OK] trellis-provenance check: ok (55 hashed, 353 tracked platform files covered)
+- [OK] Review preflight: 0 failure(s)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

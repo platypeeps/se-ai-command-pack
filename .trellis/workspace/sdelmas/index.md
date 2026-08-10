@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 168
+- **Total Sessions**: 169
 - **Last Active**: 2026-08-10
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~601 | Active |
+| `journal-4.md` | ~642 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 169 | 2026-08-10 | Remove the stray uv.lock left by a 3.10 verification run | `df27313` | `task/08-10-remove-stray-uv-lock` |
 | 168 | 2026-08-10 | Anchor the generated-write guard to ROOT and close the non-Markdown boundary gap | `0379662`, `d358824`, `64a70db`, `564a40c`, `da7c2c3` | `task/08-10-boundary-test-nonmd-coverage` |
 | 167 | 2026-08-10 | Gate a branch to exactly one changelog version step | `03dcb96`, `10d32e4` | `task/07-25-audit-release-versioning-policy` |
 | 166 | 2026-08-10 | Move the generated skill catalog out of templates/ (A-003) | `5c1badd4ffc29edfe239f7c4574b4efe26d5fcb6`, `09a87ef772d636bb041ad5f09d956f6fd5a9e20e`, `532564a4d6cda762e5181177099eade88a498529` | `task/07-25-audit-generated-catalog-location` |

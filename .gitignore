@@ -18,6 +18,13 @@ dist/
 *.egg-info/
 unittest-output.log
 
+# `uv venv`/`uv run` write this into whatever directory they are invoked from.
+# The repository's dependency interface is requirements-dev.lock via `make
+# setup`; a uv lockfile here is a stray artifact of an ad-hoc interpreter run,
+# not a second source of truth (see "do not add a package lockfile" in
+# .trellis/spec/backend/directory-structure.md).
+uv.lock
+
 # Generated repository map: gitignored, never committed, produced on demand via
 # `make repomix` (policy A-025; see .trellis/spec/backend/quality-guidelines.md).
 docs/repomix-map.md
