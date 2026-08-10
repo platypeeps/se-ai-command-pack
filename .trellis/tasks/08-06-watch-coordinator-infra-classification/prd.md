@@ -139,20 +139,45 @@ atomic recomputation, which the classification does not feed.
 
 ## Acceptance Criteria
 
-- [ ] The disposition (local-only or upstream) is recorded with its reasoning,
+- [x] The disposition (local-only or upstream) is recorded with its reasoning,
       including whether upstream approval was sought.
-- [ ] A run reading the resulting guidance can classify the PR #155 signature as
+- [x] A run reading the resulting guidance can classify the PR #155 signature as
       infrastructure using only evidence available at the time, without the
       benefit of hindsight.
-- [ ] The same guidance separates the PR #157 signature — all checks green,
+- [x] The same guidance separates the PR #157 signature — all checks green,
       `merge_state_not_clean`, `threads: null` — as unresolved threads rather
       than a check failure, and names the query that confirms it.
-- [ ] The guidance names the concrete evidence to check and the exact command to
+- [x] The guidance names the concrete evidence to check and the exact command to
       obtain it.
-- [ ] The fail-toward-blocking property is stated explicitly and holds under
+- [x] The fail-toward-blocking property is stated explicitly and holds under
       misclassification in both directions.
-- [ ] If the upstream route is chosen, the interim local documentation lands
+- [x] If the upstream route is chosen, the interim local documentation lands
       first and does not depend on the upstream change merging.
+
+### Completion evidence
+
+- Disposition local-only, recorded above with reasoning; upstream approval
+  not sought (excluded by the run's authority), relay filed as
+  [sd-ai-command-pack#412](https://github.com/platypeeps/sd-ai-command-pack/issues/412).
+- PR #155 classification uses only at-the-time evidence: job-step
+  conclusions/`steps: []`/timestamps from the jobs API plus error text from
+  the logs endpoint; verified against the live Actions run during
+  adversarial review (three Codex rounds, six blocking concerns fixed).
+- PR #157 separation: step 1 covers the current script's specific
+  `merge_blocked_conversation`/`merge_blocked_review` codes
+  (`sd-ai-command-pack-pr-eligibility.py:706-721`); step 2 names the exact
+  fallback commands (`gh pr view --json mergeStateStatus,mergeable,reviewDecision`
+  and the paginated GraphQL `reviewThreads` query).
+- Fail-toward-blocking stated explicitly in the guidance; both
+  misclassification directions end blocked; classification feeds no merge
+  decision.
+- Not applicable: the upstream-route interim-ordering criterion (local-only
+  chosen); the local guidance stands regardless of #412.
+- `make check`: `Ran 646 tests ... OK (skipped=1)`, `All checks passed!`
+- Shipped as PR #195
+  (https://github.com/platypeeps/se-ai-command-pack/pull/195); Copilot
+  round 1: two findings (fallback-query pagination, embedded issue link)
+  both fixed in 43541cd; round 2 clean; local providers: zero findings.
 
 ## Out of scope
 
