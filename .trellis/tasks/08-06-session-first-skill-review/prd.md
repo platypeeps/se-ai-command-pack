@@ -12,7 +12,7 @@ this conversation actually used."
 
 The four open blockers below each have a recorded decision in this task's
 `design.md` (Decisions 1–4, with source evidence and current line numbers —
-the SKILL.md citations below drifted; `design.md` carries the verified 
+the SKILL.md citations below drifted; `design.md` carries the verified
 current map). The file scope is stated there: SKILL.md and
 `references/report-schema.md` (additive) change; the bundled
 `skill_review.py` and `references/session-evidence.md` do not. `implement.md`
@@ -130,18 +130,38 @@ Each verified against source; none has an accepted resolution.
 
 ## Acceptance Criteria
 
-- [ ] Each of the four open blockers has a recorded decision with the source
+- [x] Each of the four open blockers has a recorded decision with the source
       evidence it rests on.
-- [ ] The design states which files change, including whether
+- [x] The design states which files change, including whether
       `references/report-schema.md` and the bundled `skill_review.py` are in
       scope.
-- [ ] The planning adversarial review completes with no unresolved blocking
+- [x] The planning adversarial review completes with no unresolved blocking
       concern.
-- [ ] `make check` passes, with focused coverage for each observable behavior
+- [x] `make check` passes, with focused coverage for each observable behavior
       change, and every pinned token verified absent from the unedited file so
       each assertion can fail.
-- [ ] The release payload gate passes with the appropriate patch bump and a
+- [x] The release payload gate passes with the appropriate patch bump and a
       dated CHANGELOG heading.
+
+### Completion evidence
+
+- Blockers 1-4: recorded decisions in `design.md` (Decisions 1-4), each with
+  verified source citations; planning adversarial review converged after four
+  Codex CLI rounds (10 blocking concerns found and fixed, round 4 pass).
+- File scope recorded in `design.md`: SKILL.md and
+  `references/report-schema.md` (additive) changed; `skill_review.py` and
+  `references/session-evidence.md` unchanged.
+- `make check`: `Ran 646 tests ... OK (skipped=1)`, `All checks passed!`
+  (640 + 6 new `ReviewSkillsSessionScopeTest` tests).
+- Pin proof per quality-guidelines: both sources restored from HEAD ->
+  `FAILED (failures=6)`; edits restored -> `OK`. Pre-edit pin absence
+  recorded for both target files.
+- Release gate: `manifest.json` 0.68.0 -> 0.68.1, dated CHANGELOG heading
+  `## 0.68.1 - 2026-08-09`, regenerated surfaces committed (af35c4c).
+- Shipped as PR #193 (https://github.com/platypeeps/se-ai-command-pack/pull/193);
+  Copilot review round 1: no comments; local providers: one prism finding
+  verified false (test class present at `tests/test_skills.py:4141`) and
+  rebutted.
 
 ## Out of scope
 
