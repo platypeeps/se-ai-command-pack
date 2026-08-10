@@ -4,10 +4,18 @@ Two shapes are checked, and they are exactly the two that produced real
 failures: a `git` subprocess with no scrubbed environment, and a read of a
 repository path a fresh clone does not have.
 
-Both are structural checks over the tracked test modules. Their limit — a path
-or an argv assembled at runtime is out of reach — is covered by the
-`make test-hermetic` lane, which runs the suite against a tracked-files-only
-tree under a hostile git configuration.
+Both are structural checks over the tracked test modules, and their scope is
+deliberately narrow in two ways. A path or an argv assembled at runtime is out
+of reach. So is a subprocess that is not literally `git` but reaches git
+underneath — a Python script under test, say — because the guard cannot tell
+those from the many child processes with no business holding a git environment
+(`run_installer`, `install_ok`), and a rule that demanded `env=` from all of
+them would be noise rather than a gate.
+
+Neither limit is unguarded. The `make test-hermetic` lane runs the whole suite
+against a tracked-files-only tree under a hostile git configuration, so a child
+process that inherits that configuration fails there empirically. These two are
+the cheap structural half; that lane is the half with no blind spot.
 """
 
 from __future__ import annotations
