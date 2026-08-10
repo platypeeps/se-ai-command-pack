@@ -403,6 +403,75 @@ from rejected `reconcile` calls must satisfy reconcile's
 complete-recovery-evidence requirement instead — partial `evidence` updates
 do not clear a recovery checkpoint.
 
+### Planning-mode finalization stranded by a post-finalization review fix
+
+**Failing shape.** An `sd-ship until=merge` chain under **planning-mode**
+finalization stops at Stage 4 with `bundle_scope_invalid` ("finalization delta
+contains a non-bookkeeping path") when a remote review — typically the Copilot
+auto-reviewer, since this repository's review router is absent — lands after
+Stage 2b's journal commit and its fix touches an authored path:
+
+```
+81fc2cb fix(docs): ...          <- review fix, authored spec path
+a63a871 chore: record journal   <- Stage 2b planning finalization
+392954f docs: ...               <- captured finalization base
+```
+
+Stage 4 must recompute the planning receipt from the **captured base**
+(`.agents/skills/sd-ship/SKILL.md:179-186`), the fix commit put an authored
+path inside that range, and Stage 4 is forbidden from invoking any finish-work
+flow — so no receipt the chain may compute is valid, and the chain stops with
+the validator's report. The trigger is review *timing*, not content; the trap
+recurs whenever a review lands post-finalization. It is planning-mode-specific:
+completion mode recomputes with base equal to the current head, whose empty
+delta activates the post-archive-review-successor recovery for an eligible
+successor.
+
+**Sanctioned recovery — never restart the chain.** The in-chain rerun is
+forbidden (`sd-ship` runs finish-work exactly once per chain, and a rerun
+under planning finalization could archive a deliberately open task); a
+**fresh** `sd-finish-work` invocation outside the stopped chain is not — the
+do-not-rerun rule binds the chain, not the operator. In order:
+
+1. Confirm the fix commits are pushed and checks are green on the PR branch.
+2. Run a fresh `sd-finish-work`. It re-captures the base at the current tip
+   and writes a second journal session. When its delta is exactly the one new
+   journal session plus its sibling `index.md`, the receipt validates as
+   `evidence.planningSubtype: journal-only-recovery` (that key lives under
+   `evidence` in the validator JSON, not top-level). The recovery has
+   eligibility bounds — exactly one newly completed session, bounded
+   published single-parent cited commits — so a failed recovery recomputation
+   is a real blocker to report, not a retry candidate.
+3. Push the fresh journal commits, wait for green, then invoke
+   `sd-housekeeping` directly with the fresh receipt via
+   `--finish-work-receipt`. Housekeeping remains the sole merge authority; the
+   stopped `sd-ship` chain is never resumed.
+
+**Explicitly excluded.** A post-finalization fix that touches only bookkeeping
+paths does not need this recovery: the existing captured-base recomputation
+already passes the path-scope check there (later validator checks — file
+modes, whitespace, journal structure — can still fail it for independent
+reasons). Observed end-to-end on PR #157 (2026-08-06), where the merge
+succeeded only after the fresh invocation.
+
+**Local-only record** (per the four-field format in "Vendored-Artifact
+Ownership And Upstream Route"):
+
+- Owning pack: sd-ai-command-pack.
+- Files: `.agents/skills/sd-ship/SKILL.md` and
+  `.agents/skills/sd-finish-work/SKILL.md` (Registry B, `kind: skill`,
+  `install: "always"`); `.claude/skills/sd-ship/SKILL.md` and
+  `.claude/skills/sd-finish-work/SKILL.md` (Registry B, `kind: skill`,
+  `anchor: ".claude"`, if-anchor-exists); and
+  `scripts/sd-ai-command-pack-review-preflight.mjs` (Registry B,
+  `kind: script`, `install: "always"`).
+- Behaviour: Stage 4's planning-mode moved-head recomputation reuses the
+  captured base and forbids in-chain finish-work, so a post-finalization
+  authored-path fix leaves the chain no valid receipt and the stopping report
+  names only the validator failure, not the recovery route.
+- No upstream PR was opened; relay issue:
+  <https://github.com/platypeeps/sd-ai-command-pack/issues/408>.
+
 ---
 
 ## Vendored Pack Lifecycle
