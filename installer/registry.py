@@ -456,7 +456,6 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-weekly-review",
         "se-brand-voice",
     ),
-    "_shared/references/skill-catalog.md": ("se-help",),
     "_shared/references/personal-profile-contract.md": (
         "se-profile",
         "se-ask-me",
@@ -470,6 +469,19 @@ SHARED_REFERENCES: dict[str, tuple[str, ...]] = {
         "se-watchlist",
         "se-weekly-review",
     ),
+}
+
+# Generated reference source (repo-relative) -> consuming skills. Fan-out works
+# exactly like SHARED_REFERENCES; the split is about ownership, not behavior.
+# SHARED_REFERENCES sources are hand-edited and therefore live under
+# templates/skills/_shared/, the one place skills are authored. These are
+# `make generate` output, so they live under generated/ beside the other
+# generated surfaces and are keyed repo-relative rather than relative to
+# templates/skills/. Keeping them out of SHARED_REFERENCES is what lets the
+# generator require every registered _shared/ source to exist on disk instead
+# of exempting the generated one from that check.
+GENERATED_REFERENCES: dict[str, tuple[str, ...]] = {
+    "generated/references/skill-catalog.md": ("se-help",),
 }
 
 # Canonical `key=value` argument vocabulary shared across skills. These two
@@ -606,6 +618,10 @@ PROVENANCE_FILE = RECEIPT_DIR / "provenance.json"
 PACK_MANIFEST_FILE = RECEIPT_DIR / "manifest.json"
 
 TEMPLATES_SKILLS_DIR = "templates/skills"
+# Root of every `make generate` output that ships. Generated skill overlays,
+# agent overlays, the registry snapshot, and GENERATED_REFERENCES all live
+# below it, which is what keeps TEMPLATES_SKILLS_DIR hand-edited sources only.
+GENERATED_DIR = "generated"
 SKILL_PREFIX = "se-"
 
 
@@ -685,6 +701,18 @@ def validate_registry() -> None:
             raise RuntimeError(
                 f"SHARED_REFERENCES {source} names unknown skills: {sorted(unknown)}"
             )
+    for source, consumers in GENERATED_REFERENCES.items():
+        if not source.startswith(f"{GENERATED_DIR}/"):
+            raise RuntimeError(
+                f"GENERATED_REFERENCES source must live under {GENERATED_DIR}/: "
+                f"{source}"
+            )
+        unknown = set(consumers) - set(SKILL_NAMES)
+        if unknown:
+            raise RuntimeError(
+                f"GENERATED_REFERENCES {source} names unknown skills: "
+                f"{sorted(unknown)}"
+            )
 
 
 validate_registry()
@@ -694,6 +722,8 @@ __all__ = [
     "ALWAYS_INSTALL",
     "FAMILY_DESCRIPTIONS",
     "FAMILY_LABELS",
+    "GENERATED_DIR",
+    "GENERATED_REFERENCES",
     "IF_ANCHOR_EXISTS",
     "IF_NOT_EXISTS",
     "INSTALLED_TARGETS_FILE",

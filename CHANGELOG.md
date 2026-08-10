@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.68.3 - 2026-08-10
+
+- Moved the generated `skill-catalog.md` out of `templates/skills/_shared/`
+  and into `generated/references/`, so `templates/skills/` holds only
+  hand-edited sources. `installer/registry.py` gained `GENERATED_REFERENCES`
+  (repo-relative source to consuming skills) alongside `SHARED_REFERENCES`,
+  and the generator's exemption that let a registered shared source be absent
+  from disk is gone — every `_shared/` source must now exist. Installed
+  targets are unchanged: `se-help` still receives `references/skill-catalog.md`
+  on every platform; only the manifest `source` field moved.
+
 ## 0.68.2 - 2026-08-09
 
 - Installer dead-code trim: removed the empty `preflight_checks()` seam (its

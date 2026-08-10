@@ -98,10 +98,7 @@ EXPECTED_SHARED_SOURCES: dict[str, tuple[str, ...]] = {
         "_shared/references/source-standards.md",
         "_shared/references/verification-protocol.md",
     ),
-    "se-help": (
-        "_shared/references/argument-vocabulary.md",
-        "_shared/references/skill-catalog.md",
-    ),
+    "se-help": ("_shared/references/argument-vocabulary.md",),
     "se-profile": (
         "_shared/references/argument-vocabulary.md",
         "_shared/references/personal-profile-contract.md",
@@ -473,18 +470,32 @@ class RealRepoGeneratorTest(unittest.TestCase):
                 self.assertEqual(len(matches), 1, (platform, target))
 
     def test_help_catalog_reference_fans_into_help_only(self) -> None:
-        source = "_shared/references/skill-catalog.md"
-        self.assertEqual(gen.SHARED_REFERENCES[source], ("se-help",))
+        source = "generated/references/skill-catalog.md"
+        # The catalog is generator output, so it is registered as a generated
+        # reference and must not reappear under the hand-edited shared sources.
+        self.assertEqual(gen.GENERATED_REFERENCES[source], ("se-help",))
+        self.assertNotIn("_shared/references/skill-catalog.md", gen.SHARED_REFERENCES)
         manifest = json.loads((PACK_ROOT / "manifest.json").read_text("utf-8"))
         rows = manifest["files"]
         for platform, info in gen.PLATFORM_REGISTRY.items():
             target = f"{info.skills_dir}/se-help/references/skill-catalog.md"
             matches = [row for row in rows if row["target"] == target]
             self.assertEqual(len(matches), 1, (platform, target))
-            self.assertEqual(
-                matches[0]["source"],
-                "templates/skills/_shared/references/skill-catalog.md",
-            )
+            # The installed target is unchanged by the move; only the source is.
+            self.assertEqual(matches[0]["source"], source)
+
+    def test_no_generated_file_lives_under_templates(self) -> None:
+        """templates/ is the one place skills are edited, so nothing generated
+        may sit there. The walk enumerates the tree from disk rather than
+        checking the paths this change happened to touch: a future generator
+        that starts writing under templates/ has to fail here."""
+        offenders = [
+            path.relative_to(PACK_ROOT).as_posix()
+            for path in sorted((PACK_ROOT / "templates").rglob("*.md"))
+            if path.is_file()
+            and gen.DO_NOT_EDIT_MARKER in path.read_text(encoding="utf-8")
+        ]
+        self.assertEqual(offenders, [])
 
     def test_registered_shared_sources_match_snapshot(self) -> None:
         """One registry-driven check replacing the per-skill methods: each
