@@ -686,3 +686,42 @@ The review controller cached terminal-failure verdicts under an attempt identity
 ### Next Steps
 
 - None - task complete
+
+
+## Session 171: Record the pack.review-scope late-arrival follow-up task
+
+**Date**: 2026-08-10
+**Task**: Record the pack.review-scope late-arrival follow-up task
+**Branch**: `chore/record-review-scope-late-arrival-task`
+
+### Summary
+
+Follow-up from the 08-10-review-check-cache-pr-body iteration. pack.review-scope requires a scope heading only once the branch diff contains a scoped file, and sd-ship Stage 2b's finalization is what adds the journal/index files that trigger it — after the PR body is authored. --prepare-tooling-body declines on a mixed diff. Four PRs show guidance alone is not closing it, so the mechanizable half is recorded as planned work; both candidate targets are vendored, so any fix is an upstream PR under its own approval.
+
+### Main Changes
+
+- Created Trellis task 08-10-review-scope-late-arrival (planning, P2) with a PRD naming the mechanism, the four observed occurrences (#156, #163, #172, #203), three candidate designs, and the vendored-ownership constraint that routes any fix upstream.
+- Filled check.jsonl and implement.jsonl with the quality-guidelines.md section that owns the gate rather than leaving the generated _example scaffold rows.
+- Wrote the Tooling/generated scope section into the PR body at creation time, before the finalization diff that requires it exists — the practice this task aims to make unnecessary.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7e6e31f` | chore(task): record the pack.review-scope late-arrival follow-up |
+
+### Testing
+
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs -> 0 failures, 0 warnings
+- [OK] sd-check -> passed, 12 passed / 0 failed / 0 skipped
+- [OK] PR #204 CI -> all 8 checks pass, ci-result pass
+- [OK] Copilot review -> COMMENTED, 0 inline comments, 0 unresolved threads
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
