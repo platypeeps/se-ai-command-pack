@@ -295,6 +295,16 @@ class RejectionTableTests(unittest.TestCase):
                     review._frontmatter(text, "fixture")
                 self.assertIn("control character", str(caught.exception))
 
+    def test_control_character_names_its_own_line(self) -> None:
+        """The character is invisible; the line number is the whole diagnostic."""
+
+        text = document("name: se-fixture", "description: a\tb")
+        with self.assertRaises(review.ReviewError) as caught:
+            review._frontmatter(text, "fixture")
+        self.assertTrue(
+            str(caught.exception).startswith("fixture:2:"), str(caught.exception)
+        )
+
     def test_missing_delimiters_are_rejected(self) -> None:
         with self.assertRaises(review.ReviewError):
             review._frontmatter("name: a\n---\nBody.\n", "fixture")

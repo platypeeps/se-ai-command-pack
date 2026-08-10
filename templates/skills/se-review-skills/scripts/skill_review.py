@@ -620,10 +620,15 @@ def _frontmatter(text: str, label: str) -> tuple[dict[str, str], str, tuple[str,
         raise ReviewError(f"{label}: missing frontmatter closing")
     raw = text[4 : end + 1]
     body = text[end + 5 :]
-    for character in raw:
+    for offset, character in enumerate(raw):
         if character != "\n" and unicodedata.category(character) == "Cc":
+            # The character is invisible, so the line number is the only thing
+            # that tells an operator where to look. Count to it rather than
+            # reporting the head of the block.
             raise _frontmatter_error(
-                label, 1, f"control character {hex(ord(character))} in the block"
+                label,
+                raw.count("\n", 0, offset) + 1,
+                f"control character {hex(ord(character))} in the block",
             )
 
     values: dict[str, str] = {}
