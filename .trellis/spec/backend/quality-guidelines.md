@@ -918,6 +918,8 @@ make generate
 python .github/scripts/generate-skill-surfaces.py --check
 <!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
 generated/references/skill-catalog.md
+assert_generated_write_target(path: Path) -> None
+IN_PLACE_WRITE_NAMES = frozenset({"manifest.json", "README.md"})
 python .github/scripts/check-release-payload.py --base <rev|auto>
 check_single_version_step(repo: Path, merge_base: str) -> None
 VERSION_HEADING_PATTERN = re.compile(r"^## (?P<version>\S+)")
@@ -971,6 +973,8 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | Missing, duplicate, or reversed README markers | Fail generation before either surface is written. |
 | A registered `SHARED_REFERENCES` source is absent from `templates/skills/` | Raise a generation error naming the path; there is no exemption for generated sources, which are registered in `GENERATED_REFERENCES` instead. |
 | A file under `templates/` carries the generator's do-not-edit marker | `test_no_generated_file_lives_under_templates` fails, naming the offending path. |
+| The generator is asked to write any path with a `templates` component, whatever its format | `write_generated_surfaces` raises `GenerationError` before mutating anything. The marker walk cannot cover this: the marker is an HTML comment, so a generated `.json` or `.toml` under `templates/` carries no marker in any syntax. |
+| The generator is asked to write outside `generated/` and outside `manifest.json`/`README.md` | `GenerationError`; generator output nobody would look for when reconciling drift is refused at the writer. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
 | Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
 | Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
@@ -1005,6 +1009,14 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - One boundary test walks `templates/` from disk and fails on any file carrying
   the generator's do-not-edit marker. It enumerates rather than checking known
   paths, so it also catches a generated surface nobody thought to look for.
+  Because that walk can only see Markdown, a second pair of tests drives
+  `write_generated_surfaces` directly: a `.json` target under `templates/` and
+  a target outside `generated/` must both raise before anything is written, and
+  the accepted set (both in-place surfaces plus any `generated` component,
+  including a redirected temporary tree) must still pass. Sandbox fixtures
+  place generated surfaces at their real relative paths for the same reason —
+  a fixture parking one at the tree root would test a shape the generator never
+  produces.
 - Release-gate tests pin the one-version-step rule from both sides: a branch
   stacking two headings fails, a branch collapsing its bumps into one heading
   passes, a bump that adopts a base-written heading fails, and correcting an
