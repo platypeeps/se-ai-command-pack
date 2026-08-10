@@ -14,7 +14,7 @@
 
 - [ ] Suite passes with a hostile global config (e.g. commit.gpgsign=true, core.hooksPath set) simulated in CI or a dedicated test.
 - [ ] The update e2e runs in CI and fails when the pull/refresh handshake breaks.
-- [ ] No test depends on a path that `git ls-files` does not report, unless it explicitly tolerates that path's absence; a check that enumerates from the tracked tree is preferred over one that reads a machine-local artifact.
+- [ ] No test reads a repository path that may exist in a working checkout but not in a fresh clone or on CI, unless it explicitly tolerates that path's absence. The criterion covers repo-relative paths the test treats as pre-existing content, judged tracked-vs-ignored as of test start; fixtures the test creates itself — temporary directories, files it writes and then reads — are out of scope, since a fresh checkout reproduces them. Where the choice exists, prefer a check that enumerates from the tracked tree over one that reads a machine-local artifact.
 
 ## Evidence: the 2026-08-10 incident (task 07-25-audit-repo-tooling-ownership, PR #206)
 
