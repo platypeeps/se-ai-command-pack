@@ -9,6 +9,7 @@ from install_test_support import PACK_ROOT
 
 CONFIG_PATH = PACK_ROOT / "repomix.config.json"
 MAP_PATH = PACK_ROOT / "docs" / "repomix-map.md"
+REFRESH_SCRIPT_PATH = PACK_ROOT / "scripts" / "update_repomix"
 
 REQUIRED_EXCLUSIONS = {
     "docs/repomix-map.md",
@@ -85,6 +86,18 @@ class RepomixContractTest(unittest.TestCase):
         self.assertFalse(config["output"]["git"]["sortByChanges"])
         exclusions = set(config["ignore"]["customPatterns"])
         self.assertEqual(REQUIRED_EXCLUSIONS - exclusions, set())
+
+    def test_refresh_script_disables_npm_lifecycle_scripts(self) -> None:
+        script = REFRESH_SCRIPT_PATH.read_text(encoding="utf-8")
+
+        self.assertIn("export NPM_CONFIG_IGNORE_SCRIPTS=true", script)
+        # The export has to precede the fetch it constrains: npm reads its
+        # configuration from the environment at invocation time, so an export
+        # placed after `exec npx` would never apply.
+        self.assertLess(
+            script.index("export NPM_CONFIG_IGNORE_SCRIPTS=true"),
+            script.index("exec npx"),
+        )
 
     @unittest.skipUnless(
         MAP_PATH.exists(),

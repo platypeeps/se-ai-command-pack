@@ -21,4 +21,7 @@ fi
 cd "$repo_root"
 mkdir -p "$npm_cache"
 export NPM_CONFIG_CACHE="$npm_cache"
+# `npx --yes` fetches and installs Repomix unattended, so any lifecycle script
+# the fetched tree declares would run un-reviewed on a maintainer machine.
+export NPM_CONFIG_IGNORE_SCRIPTS=true
 exec npx --yes "repomix@${repomix_version}" --config repomix.config.json

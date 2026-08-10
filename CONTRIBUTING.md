@@ -60,7 +60,16 @@ the version changes.
 
 `.github/dependabot.yml` configures Dependabot to open weekly `pip` pull
 requests for the pins in `requirements-dev.txt` (PyYAML, ruff, mypy, coverage),
-one PR per package, with a `chore(deps)` commit prefix. Triage each with the
+one PR per package, with a `chore(deps)` commit prefix.
+
+**Lock regeneration.** Nothing installs from `requirements-dev.txt` directly.
+`make lock` compiles it into `requirements-dev.lock` — fully pinned, hashed, and
+wheel-only — and that lock is what CI and `make setup` install with
+`--require-hashes --only-binary :all:`. Dependabot bumps the input file only, so
+a dependency PR is incomplete until the maintainer runs `make lock` and commits
+the regenerated lock in the same PR. `make lock-check` is what fails when they
+drift apart; without it the merge would be a silent no-op that reinstalls the
+version the PR claimed to replace. Triage each with the
 `sd-update-deps` workflow: it classifies the bump, merges the safe class through
 the housekeeping gate, and parks the rest for review. Dependabot is the only
 sanctioned source that hands a classified dependency PR to housekeeping.
@@ -75,8 +84,12 @@ suppressed by disabling Dependabot at the repository or organization level
 Deliberately out of scope for now:
 
 - **npm.** The root `package.json` declares no dependencies, and the only npm
-  manifest with any (`.opencode/package.json`) is unused and slated for removal.
-  Add an `npm` ecosystem block only if a real npm dependency is introduced.
+  manifest with any (`.opencode/package.json`) is an upstream-Trellis vendored
+  file: its unused `@opencode-ai/plugin` dependency cannot be removed here,
+  because the next Trellis refresh would restore it. See the local-only record
+  in `.trellis/spec/backend/quality-guidelines.md` ("Scenario: Vendored OpenCode
+  npm Manifest"). Add an `npm` ecosystem block only if a real npm dependency is
+  introduced into a repository-owned manifest.
 - **A scheduled CVE / `pip-audit` lane.** The four dev-only pins have a small
   blast radius and Dependabot already surfaces version bumps. Revisit if the
   pack ever ships runtime (non-dev) Python dependencies.

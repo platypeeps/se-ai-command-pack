@@ -1,3 +1,10 @@
+# INPUT FILE — nothing installs from this directly.
+#
+# `make lock` compiles it into requirements-dev.lock (fully pinned, hashed,
+# wheel-only), and that lock is what CI and `make setup` install. Change a pin
+# here, then run `make lock` and commit both files; `make lock-check` fails if
+# they drift apart. Dependabot updates this file, not the lock.
+#
 # The test suite uses stdlib unittest plus PyYAML for skill frontmatter parsing.
 # Ruff and mypy provide the CI lint lane.
 # coverage powers the repo-own coverage floor enforced by `make test` and CI.
