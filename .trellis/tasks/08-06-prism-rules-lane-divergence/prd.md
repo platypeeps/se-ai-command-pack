@@ -208,25 +208,25 @@ requires):
 
 ## Acceptance Criteria
 
-- [ ] The disposition (local-only or upstream) is recorded with its reasoning,
+- [x] The disposition (local-only or upstream) is recorded with its reasoning,
       including whether upstream approval was sought.
-- [ ] The written guidance names both lanes, the exact prism command each
+- [x] The written guidance names both lanes, the exact prism command each
       builds for the shipping path's branch delta, which of `--rules`,
       `--exclude`, and `--fail-on` each passes, and notes that further scope
       templates (worktree/codebase/paths variants) exist in both lanes.
-- [ ] A run that sees a prism finding contradicting a rule in
+- [x] A run that sees a prism finding contradicting a rule in
       `.prism/rules.json` can determine from the guidance alone whether the rule
       applies to the lane that produced the finding.
-- [ ] The `install: "if-not-exists"` ownership of `.prism/rules.json` is stated,
+- [x] The `install: "if-not-exists"` ownership of `.prism/rules.json` is stated,
       so a future run does not assume a pack refresh will discard its edits.
-- [ ] The rules file's degradation behaviour is stated accurately per case
+- [x] The rules file's degradation behaviour is stated accurately per case
       and per lane, matching the Requirements bullet: shell lane — fail-open
       omission for a missing or non-regular file, pass-through with a
       prism-side runtime error for an unreadable-but-regular or malformed
       file; sd-review lane — the file is never read. The guidance asserts no
       fail-closed property the code does not have, and states that no
       degradation converts a findings outcome into a clean one.
-- [ ] The upstream relay issue exists on platypeeps/sd-ai-command-pack, its
+- [x] The upstream relay issue exists on platypeeps/sd-ai-command-pack, its
       body contains each contract element named in the Disposition (non-symlink
       repository-relative regular file with resolved containment, injection-safe
       deterministic argv, configured-vs-not-configured distinction, no
@@ -234,7 +234,7 @@ requires):
       left to upstream), verified by reading the issue at its URL, and the URL
       is recorded in the complete four-field record in **both** this PRD's
       Disposition and the guidance section.
-- [ ] If the upstream **implementation** route (an adapter-behaviour PR,
+- [x] If the upstream **implementation** route (an adapter-behaviour PR,
       distinct from the relay issue) were chosen, the local documentation lands
       first and does not depend on the upstream change merging. Not chosen
       here; the relay issue does not trigger this criterion or the complex-task
@@ -268,3 +268,31 @@ requires):
   constraint section.
 - Lightweight enough to stay PRD-only unless the upstream route is chosen,
   which would warrant a `design.md` and an `implement.md` for the argv-validation contract.
+
+## Completion evidence (2026-08-09, PR #190)
+
+- Guidance landed as "Repository prism rules govern the shell review lane
+  only" in `.trellis/spec/backend/quality-guidelines.md` (Review And Retry
+  Conventions): both lanes' shipping branch-delta commands and flag
+  asymmetry, gate mechanics with exit-code mapping, per-case per-lane
+  degradation behaviour, `install: "if-not-exists"` ownership, and the
+  four-field record.
+- Upstream relay filed and verified at its URL to contain each named
+  contract element:
+  <https://github.com/platypeeps/sd-ai-command-pack/issues/409>. URL
+  recorded in the complete four-field record in both this PRD's Disposition
+  and the guidance section (`grep -c "issues/409"`: 2 in PRD, 1 in
+  guidance). No upstream pull request was opened.
+- Adversarial planning review: three Codex rounds. Round 1: six blocking,
+  two non-blocking (false fail-closed invariant, --fail-on misattribution,
+  disposition taxonomy, malformed-case coverage, hollow relay AC,
+  incomplete four-field requirement, command-scope ambiguity, symlink
+  wording). Round 2 verified six resolved, kept two open and added two
+  (unreadable-vs-non-regular grouping, stale check.jsonl). Round 3 verified
+  all resolved except one residual phrase, fixed and grep-verified
+  ("regardless of exit code": no occurrences).
+- Validation: `make check` — `Ran 640 tests ... OK (skipped=1)`,
+  `All checks passed!`. Copilot round 1 raised one finding (env-overridable
+  shell-lane defaults and second rules fallback), verified against
+  `review-local.sh:327-346` and fixed in d498910; round 2 returned no new
+  findings.
