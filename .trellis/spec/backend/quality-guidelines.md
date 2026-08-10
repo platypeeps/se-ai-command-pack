@@ -321,6 +321,71 @@ Rules of use:
   a finding is correct, fix the code; when it is verified wrong, rebut it with
   grounds; when neither is established, stop with a report.
 
+### Repository prism rules govern the shell review lane only
+
+`.prism/rules.json` is delivered to exactly one of the two prism code paths.
+A prism finding that contradicts a rule in that file is therefore **expected**
+when it comes from the sd-review lane — it is not evidence the rule is broken,
+malformed, or unwired (both hypotheses were chased and refuted on PR #158
+before the real cause was found).
+
+**The two lanes, shipping branch delta:**
+
+- **Shell lane** (`scripts/sd-ai-command-pack-review-local.sh:337-346`) falls
+  back to `.prism/rules.json` when no environment override is set and passes
+  `--rules`, `--fail-on high`, and `--exclude`.
+- **sd-review lane** — the lane `sd-ship` Stage 2 runs, and so the lane that
+  gates shipping. The built-in adapter in
+  `scripts/sd-ai-command-pack-review-local.py` (`_expand_argv`, `:1376`)
+  builds `prism review range <base>..<head> --format json` with **none** of
+  `--rules`, `--exclude`, `--fail-on`, and never reads `.prism/`. Prism does
+  not auto-discover the file (`prism config show` reports no rules entry).
+
+Both lanes also build other scope templates (worktree/codebase/`--paths`
+variants); the flag asymmetry is the same in each.
+
+**Gate mechanics, so the divergence is priced correctly:** `--fail-on`
+governs prism's *exit status*, not the coordinator's gate. The adapter maps
+any non-empty findings list to a `findings` outcome for the non-terminal exit
+codes 0/1 (`scripts/sd-ai-command-pack-review-local.py:254-260`,
+`:1752-1756`; exits 3/4 stay `unavailable`, unmapped codes `failed`). Low
+findings alone block shipping (`remoteGate: blocked
+(actionable-local-findings)`), so an inert rule converts directly into a
+blocked round; since pack v0.64.26 the round is recoverable with a
+per-finding verify-and-rebut via `--local-disposition` (previous section),
+which softens the consequence without delivering the rule.
+
+**Degradation behaviour of the rules file — per case, per lane.** Shell lane:
+a missing or non-regular file fails the `[ -f "$rules" ]` check and the flag
+is silently omitted — fail-open by omission, prism runs on its defaults,
+which can report findings a rule would have suppressed but never silently
+suppresses findings the defaults would report. An unreadable-but-regular or
+malformed file passes `-f` (it does not test readability, and content is
+never validated) and is handed to prism, surfacing as prism's own runtime
+error. sd-review lane: the file is never read, so every degradation case is
+indistinguishable from the healthy one. No case in either lane converts a
+findings outcome into a clean one. Do not assert a fail-closed property this
+code does not have.
+
+**Ownership.** `.prism/rules.json` is Registry B `install: "if-not-exists"` —
+repository-owned after first install; a pack refresh will not discard its
+edits, and rules added to it are durable, only undelivered to the sd-review
+lane. Both review-local scripts are Registry B `install: "always"` (vendored).
+
+**Local-only record** (per the four-field format in "Vendored-Artifact
+Ownership And Upstream Route"):
+
+- Owning pack: sd-ai-command-pack.
+- Files: `scripts/sd-ai-command-pack-review-local.py` and
+  `scripts/sd-ai-command-pack-review-local.sh` (Registry B, `kind: script`,
+  `install: "always"`).
+- Behaviour: the built-in prism adapter builds its argv with no `--rules`,
+  `--exclude`, or `--fail-on` and never reads `.prism/rules.json`, so
+  repository-owned prism rules are inert in the review lane that gates
+  shipping, with silence as the only symptom.
+- No upstream PR was opened; relay issue:
+  <https://github.com/platypeeps/sd-ai-command-pack/issues/409>.
+
 ### Stop retrying on a repeated failure signature
 
 A CI lane that fails without running a step — GitHub's `Set up job` erroring
