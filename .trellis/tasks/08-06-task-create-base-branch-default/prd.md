@@ -276,28 +276,28 @@ Four-field local-only record:
 
 ## Acceptance Criteria
 
-- [ ] The disposition is recorded with its reasoning, including the verified
+- [x] The disposition is recorded with its reasoning, including the verified
       upstream status: seeding fixed in Trellis v0.6.8 (#399 / PR #448),
       installed version 0.6.7, adoption is a Trellis upgrade outside this
       task, and no duplicate seeding issue was filed on the Trellis tracker.
-- [ ] The written guidance names the exact source line (`task_store.py:325`
+- [x] The written guidance names the exact source line (`task_store.py:325`
       in the installed 0.6.7) and the exact correction command
       (`task.py set-base-branch`), so a reader can confirm the behaviour
       without re-deriving it from the script.
-- [ ] The guidance states *when* the correction must happen — before the source
+- [x] The guidance states *when* the correction must happen — before the source
       branch is deleted — not merely that it should happen eventually.
-- [ ] A sweep of active tasks confirms every `base_branch` names the
+- [x] A sweep of active tasks confirms every `base_branch` names the
       repository default branch or carries a documented
       stacked-base/exemption reason, after `git fetch --prune` (so cached
       remote-tracking refs cannot vouch for deleted branches), normalizing
       `main` / `origin/main` / `remotes/origin/main` to one form; each
       exception is listed with its reason. Liveness against unpruned
       `git branch -a` is explicitly not the check.
-- [ ] The record states plainly that the guidance is a mitigation plus
+- [x] The record states plainly that the guidance is a mitigation plus
       adoption record, not the fix: this checkout still seeds wrongly on
       every mid-cycle `create` until the v0.6.8 upgrade lands, so a green
       sweep is not evidence the seeding defect is gone.
-- [ ] The relay issue exists on platypeeps/sd-ai-command-pack, its body
+- [x] The relay issue exists on platypeeps/sd-ai-command-pack, its body
       contains each contract element named in the Disposition (the
       minimum-version gap: `set-meta` recommended at
       `review-preflight.mjs:3353`, shipped in Trellis v0.6.9, absent from
@@ -308,11 +308,40 @@ Four-field local-only record:
       distinguishing it from Trellis#399), verified by reading the issue at
       its URL, and the URL is recorded in the complete four-field record in
       **both** this PRD's Disposition and the guidance section.
-- [ ] The guidance's degradation and detection claims match the verified
+- [x] The guidance's degradation and detection claims match the verified
       code: root-task PR-time gate at `:3331-3354` (wired `:3159-3188`),
       child inheritance at `:3294-3328`, shape checks at `:3409-3420`
       guarded off for `branch: null`, and `create`/`start` silent. No claim
       of "nothing detects" survives anywhere in the shipped guidance.
+
+### Completion evidence
+
+- Guidance subsection "task.py create seeds base_branch from the checkout:
+  correct it before the source branch dies" added to
+  `.trellis/spec/backend/quality-guidelines.md` with the installed-0.6.7
+  behaviour (`task_store.py:296-298`/`:325`), the v0.6.8 upstream fix and
+  upgrade-only adoption, the `set-base-branch` correction command and its
+  before-branch-deletion deadline, detection facts (root gate `:3331-3354`
+  wired `:3159-3188`, children `:3294-3328`, shape checks `:3409-3420`
+  guarded for `branch: null`, `create`/`start` silent), field consumption,
+  the version-conditioned `set-meta` trap (Trellis >= v0.6.9), the sweep
+  check, and the four-field record naming relay #410.
+- Relay issue filed and verified at
+  <https://github.com/platypeeps/sd-ai-command-pack/issues/410>: body
+  contains the diagnostic citation (`:3353`), the v0.6.9 floor absent from
+  0.6.7/0.6.8, the unstated/unchecked floor, three fix shapes with the
+  >= v0.6.9 upgrade as adoption-side resolution, the pack-owned tracker
+  rationale, and status notes distinguishing it from Trellis#399. URL
+  recorded in the four-field record in both this Disposition and the
+  guidance section (`grep -c "issues/410"`: PRD 2, guidance 1).
+- Sweep: after `git fetch --prune` (default resolved from
+  `refs/remotes/origin/HEAD` = `main`), all 15 active `task.json`
+  `base_branch` values normalize to `main`; zero undocumented exceptions.
+- `make check`: `Ran 640 tests ... OK (skipped=1)`, `All checks passed!`
+- Shipped as PR #191; Copilot round 1 finding (stale task.json
+  description) fixed in 060d595, round 2 returned no new comments; one
+  false prism trailing-newline finding rebutted with byte-level evidence
+  (`tail -c 1` = `0a` at HEAD).
 
 ## Out of scope
 
