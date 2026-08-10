@@ -200,7 +200,12 @@ Structural guards cannot see a path or argv assembled at runtime. `make
 test-hermetic` closes that gap empirically: it copies `git ls-files` into a
 temporary directory, runs `git init`/`add`/`commit` there (without it, every
 `git ls-files` on `PACK_ROOT` exits 128), and runs the whole suite under a
-hostile `HOME` plus a `GIT_CONFIG_COUNT` command-scope triple. Use
+hostile `HOME` plus a `GIT_CONFIG_COUNT` command-scope triple. **The lane's own
+setup must carry the same scrub as the code it tests** — an ambient
+`core.hooksPath` failed the setup commit and the lane exited before running a
+test — but scope it to a shell function, never an exported block: a
+`GIT_CONFIG_GLOBAL` still in scope during the hostile run outranks the hostile
+`HOME` and silently defangs the lane. Use
 `$(abspath $(RUN_PYTHON))` for the interpreter — a `$(CURDIR)`-relative path
 resolves against the temporary directory and breaks CI. The lane is deliberately
 **not** in `make check` (~40 s); CI runs it as the `test-hermetic` job. Adding

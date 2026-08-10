@@ -367,6 +367,17 @@ Add `make test-hermetic`, which:
 4. injects the same hostile ambient git configuration D4 uses — hostile `HOME`
    plus the command-scope triple — for the whole run.
 
+**Steps 1 and 2 run through a `scrub` shell function** — the same `GIT_*` strip
+plus `/dev/null` file scopes the Python `git_env` applies, with a committer
+identity. Review caught the omission empirically: with an ambient
+`GIT_CONFIG_COUNT` triple pointing `core.hooksPath` at a failing hook, the
+lane's *own setup commit* failed and `make test-hermetic` exited 1 before
+running a single test — the fixture was broken by the condition it exists to
+test. It has to be a function, not an exported block: a `GIT_CONFIG_GLOBAL`
+in scope during step 4 would outrank the hostile `HOME` and silently defang the
+lane. Measured after the fix, with the same ambient triple set: exit 0,
+`Ran 722 tests`, `OK (skipped=2)`.
+
 **Step 2 is not optional, and the earlier draft omitted it.** "Tracked files
 only, exactly like a fresh clone" was wrong in one respect: a fresh clone also
 has `.git`. Several tests enumerate or diff the repository they live in —

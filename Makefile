@@ -49,19 +49,30 @@ test:
 # part of `make check` — the inner loop should not pay for two suite runs — but
 # it is a required CI lane. `abspath` matters: RUN_PYTHON may be the relative
 # .venv path, which would not resolve after cd, and CI has no .venv at all.
+#
+# The lane's own setup runs through `scrub`, for the same reason the suite does:
+# an ambient hostile configuration otherwise breaks the fixture instead of being
+# tested by it (a `core.hooksPath` in the caller's environment failed the setup
+# commit, so the lane errored before running a single test). The scrub is a
+# function rather than an exported block because the hostile run below must not
+# inherit it — a `GIT_CONFIG_GLOBAL=/dev/null` in scope there would outrank the
+# hostile `HOME` and silently defang the one thing this lane exists to prove.
 test-hermetic: SHELL := /bin/bash
 test-hermetic:
 	@set -euo pipefail; \
+	scrub() { env -u GIT_DIR -u GIT_WORK_TREE -u GIT_INDEX_FILE \
+	    -u GIT_CONFIG_COUNT -u GIT_CONFIG_PARAMETERS \
+	    GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null GIT_CONFIG_NOSYSTEM=1 \
+	    GIT_AUTHOR_NAME=hermetic GIT_AUTHOR_EMAIL=hermetic@example.com \
+	    GIT_COMMITTER_NAME=hermetic GIT_COMMITTER_EMAIL=hermetic@example.com "$$@"; }; \
 	python="$(abspath $(RUN_PYTHON))"; \
 	tmp="$$(mktemp -d)"; \
 	trap 'rm -rf "$$tmp"' EXIT; \
 	copy="$$tmp/copy"; mkdir -p "$$copy" "$$tmp/hooks" "$$tmp/home"; \
-	git ls-files -z | while IFS= read -r -d "" f; do \
+	scrub git ls-files -z | while IFS= read -r -d "" f; do \
 	  mkdir -p "$$copy/$$(dirname "$$f")"; cp "$$f" "$$copy/$$f"; \
 	done; \
-	env -u GIT_DIR GIT_AUTHOR_NAME=hermetic GIT_AUTHOR_EMAIL=hermetic@example.com \
-	    GIT_COMMITTER_NAME=hermetic GIT_COMMITTER_EMAIL=hermetic@example.com \
-	  bash -c 'cd "$$0" && git init -q . && git add -A && git commit -qm hermetic' "$$copy"; \
+	scrub bash -c 'cd "$$0" && git init -q . && git add -A && git commit -qm hermetic' "$$copy"; \
 	printf '#!/bin/sh\nexit 1\n' > "$$tmp/hooks/pre-commit"; \
 	chmod +x "$$tmp/hooks/pre-commit"; \
 	printf '[core]\n\thooksPath = %s\n' "$$tmp/hooks" > "$$tmp/home/.gitconfig"; \
