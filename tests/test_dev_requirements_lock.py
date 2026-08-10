@@ -15,6 +15,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import yaml
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / ".github" / "scripts" / "check-dev-requirements-lock.py"
 
@@ -201,6 +203,25 @@ class WiringTest(unittest.TestCase):
         # --clear: a reused venv keeps packages the lock has since dropped.
         self.assertIn("venv --clear", makefile)
         self.assertIn("check-dev-requirements-lock.py", makefile)
+
+    def test_ci_workflow_parses_and_installs_from_the_lock(self) -> None:
+        # `--only-binary :all: ` ends in a colon followed by a space, which is
+        # YAML's mapping indicator: unquoted, it makes the whole workflow file
+        # unparseable and GitHub silently runs no jobs at all — a green-looking
+        # PR with zero checks. Parsing here is what catches that.
+        workflow = yaml.safe_load(
+            (REPO_ROOT / ".github" / "workflows" / "tests.yml").read_text(encoding="utf-8")
+        )
+        installs = [
+            step["run"]
+            for job in workflow["jobs"].values()
+            for step in job.get("steps", [])
+            if isinstance(step.get("run"), str) and "pip install" in step["run"]
+        ]
+        self.assertEqual(len(installs), 3, installs)
+        for command in installs:
+            self.assertIn("--require-hashes --only-binary :all:", command)
+            self.assertIn("-r requirements-dev.lock", command)
 
 
 if __name__ == "__main__":
