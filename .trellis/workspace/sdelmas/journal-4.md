@@ -556,3 +556,51 @@ Closed audit findings A-041 and A-042: the release payload gate now rejects a br
 ### Next Steps
 
 - None - task complete
+
+
+## Session 168: Anchor the generated-write guard to ROOT and close the non-Markdown boundary gap
+
+**Date**: 2026-08-10
+**Task**: Anchor the generated-write guard to ROOT and close the non-Markdown boundary gap
+**Branch**: `task/08-10-boundary-test-nonmd-coverage`
+
+### Summary
+
+Closed task 08-10-boundary-test-nonmd-coverage: the source/generated boundary was enforced only by a do-not-edit marker that is an HTML comment, so no non-Markdown generated file under templates/ could ever be detected. Enforcement moved to the writer choke point, then two Copilot findings hardened it.
+
+### Main Changes
+
+- assert_generated_write_target guards write_generated_surfaces, the single write choke point; the check is on the path, so the output format is irrelevant and a future writer emitting an unforeseen format is covered without a per-format marker
+- All targets are validated before any is mutated, so a refusal cannot leave the tree half-written and dependent on rollback
+- _boundary_parts anchors components to ROOT for targets inside the checkout (Copilot #201): reading the whole absolute path let a directory above the clone decide the verdict, refusing every write under ~/templates/ and accepting strays under ~/generated/
+- Dropped TestCase.enterContext from the new test (Copilot #201): it is 3.11+ and tests.yml runs a 3.10 lane; the guard is a pure path predicate, so the temporary directory was ceremony and a synthetic root exercises it identically
+- SandboxGeneratorTest fixture now mirrors generated/references/skill-catalog.md rather than parking a generated surface at the temp tree root
+- Enforcement model, the ROOT-anchoring rule, and the fixture requirement recorded in directory-structure.md and quality-guidelines.md
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0379662` | fix(generate): refuse generator output outside generated/ at the writer |
+| `d358824` | fix(generate): anchor the write guard to ROOT, not the host path |
+| `64a70db` | docs(generate): correct the write-guard comment left stale by the preceding commit |
+| `564a40c` | fix(tests): drop enterContext so the write-guard test runs on 3.10 |
+| `da7c2c3` | chore(task): archive 08-10-boundary-test-nonmd-coverage |
+
+### Testing
+
+- [OK] make check: Ran 677 tests, OK; coverage 89.1%; ruff and mypy clean; generated surfaces match; release payload gate: no payload change; trellis-provenance check: ok
+- [OK] Python 3.10 lane with the locked dev requirements: Ran 93 tests, OK (skipped=3)
+- [OK] Falsifiability, write guard: pre-change generator wrote into templates/ (True) with no marker in the .json (False)
+- [OK] Falsifiability, ROOT anchoring: against the pre-change guard the new test fails both ways at once — AssertionError: GenerationError not raised, plus an error where the legitimate write was refused
+- [OK] Confirmed on the interpreters: 3.10 TestCase.enterContext exists: False; 3.13: True
+- [OK] pre-archive gate: status valid, pre_archive_valid
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
