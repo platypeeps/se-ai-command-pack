@@ -9,7 +9,7 @@ from install_test_support import PACK_ROOT
 
 CONFIG_PATH = PACK_ROOT / "repomix.config.json"
 MAP_PATH = PACK_ROOT / "docs" / "repomix-map.md"
-# Generated locally by `make repomix-map`, not tracked. Every read is behind
+# Generated locally by `make repomix`, not tracked. Every read is behind
 # skipUnless(MAP_PATH.exists()); tests/test_test_hermeticity.py enforces the
 # declaration.
 HERMETICITY_UNTRACKED_PATHS = ("docs/repomix-map.md",)

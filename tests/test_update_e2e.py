@@ -88,8 +88,15 @@ class UpdateEndToEndTest(TempDirTestCase):
         The installs here run from a throwaway copy of the repository. Left
         enabled, the hook writes coverage data whose source paths disappear
         with the temp directory, and `coverage combine` then fails with
-        "No source for code". Those paths are not the repository's sources, so
-        there is nothing to lose by not measuring them.
+        "No source for code".
+
+        The cost is real but small, and it is the deliberate half of the
+        trade: this test's `install.py` is a copy of the repository's own, so
+        its lines go unmeasured here. They are measured by every other test
+        that runs the installer in place, and the alternative — loosening the
+        coverage gate or teaching `[paths]` to alias a temp directory that no
+        longer exists — buys a duplicate measurement at the price of a weaker
+        gate.
         """
         env = git_env()
         env.pop("COVERAGE_PROCESS_START", None)
