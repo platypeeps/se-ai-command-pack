@@ -59,7 +59,11 @@ All verified 2026-08-08 in repo-own installer code:
 
 ## Dispositions (recorded 2026-08-09)
 
-Citations below re-verified 2026-08-09; drift from the 2026-08-08 filing:
+All line citations in this file are pre-removal locations: they identify
+where each item lived in the tree this task started from, and stay valid as
+the record of what was deleted rather than as pointers into the post-change
+tree. Citations below re-verified 2026-08-09; drift from the 2026-08-08
+filing:
 `preflight_checks` now at `install.py:175-183` with its call at `:441` and the
 prior `require_install_root` at `:422`; the Makefile `--user` use is at
 `Makefile:24`.
