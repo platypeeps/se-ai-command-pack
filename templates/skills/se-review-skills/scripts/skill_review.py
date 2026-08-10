@@ -17,6 +17,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from dataclasses import dataclass, replace
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -512,6 +513,105 @@ def _discover(
     return _walk_skill_files(context.root)
 
 
+# Frontmatter grammar. The authority is the generator:
+# `.github/scripts/generate-skill-surfaces.py` parses with `yaml.safe_load` and
+# emits with `yaml.safe_dump(..., width=10000)`. This parser cannot use PyYAML —
+# bundled scripts are stdlib-first — so it is a strict *rejecting* subset of that
+# grammar: for every document it accepts it returns what `yaml.safe_load` returns,
+# and anything it cannot represent faithfully raises instead of being
+# reinterpreted. `tests/test_frontmatter_conformance.py` binds the two.
+_YAML_INDICATORS = frozenset("-?:,[]{}#&*!|>%@`\"'")
+# YAML 1.1 boolean and null spellings. `true`/`false` are accepted and yield
+# their own source text; every other spelling would resolve to a value this
+# parser cannot represent, so it is refused rather than returned as a string.
+_YAML_BOOL_NULL = frozenset(
+    {
+        "yes", "Yes", "YES", "no", "No", "NO",
+        "True", "TRUE", "False", "FALSE",
+        "on", "On", "ON", "off", "Off", "OFF",
+        "~", "null", "Null", "NULL",
+    }
+)
+# Conservative cover of PyYAML's implicit int/float/timestamp/value resolvers.
+# Over-rejection is correct here: a strict subset may refuse more than YAML, but
+# it must never disagree with it.
+_YAML_RESOLVED_SCALAR = re.compile(
+    r"""^(?:
+          [-+]?(?:0b[01_]+|0[0-7_]*|0x[0-9a-fA-F_]+|[0-9][0-9_]*(?::[0-5]?[0-9])*)
+        | [-+]?(?:[0-9][0-9_]*)?\.[0-9_]*(?:[eE][-+]?[0-9]+)?
+        | [-+]?\.(?:inf|Inf|INF)
+        | \.(?:nan|NaN|NAN)
+        | [0-9]{4}-[0-9]{1,2}-[0-9]{1,2}(?:[Tt ].*)?
+        | =
+        | <<
+        )$""",
+    re.VERBOSE,
+)
+
+
+_YAML_BOOLEAN_TEXT = frozenset({"true", "false"})
+
+
+def _frontmatter_error(label: str, line_number: int, construct: str) -> ReviewError:
+    return ReviewError(
+        f"{label}:{line_number}: unsupported frontmatter construct: {construct}"
+    )
+
+
+def _resolves_outside_string(token: str) -> bool:
+    """True when YAML would resolve this plain token to a non-string.
+
+    `true` and `false` are in the set: YAML resolves them to booleans like every
+    other spelling here. A *value* that resolves to a bool is still inside the
+    subset, because the parser represents it as the same text `scalar_text`
+    would — but a *key* is not, since the mapping key itself would be `True`
+    rather than `"true"`. The two paths therefore consult this predicate
+    differently, and only the value path exempts the pair.
+    """
+
+    return (
+        token in _YAML_BOOLEAN_TEXT
+        or token in _YAML_BOOL_NULL
+        or bool(_YAML_RESOLVED_SCALAR.match(token))
+    )
+
+
+def _unquote_scalar(value: str, label: str, line_number: int) -> str:
+    quote = value[0]
+    if len(value) < 2 or value[-1] != quote:
+        # Both shapes are rejections, but they are different mistakes and the
+        # operator has to fix them differently. A quote surviving inside the
+        # remainder — after single-quote doubling is discounted — means the
+        # scalar closed and text followed it.
+        remainder = value[1:]
+        if quote == "'":
+            remainder = remainder.replace("''", "")
+        raise _frontmatter_error(
+            label,
+            line_number,
+            "content after a closing quote"
+            if quote in remainder
+            else "unterminated quoted scalar",
+        )
+    inner = value[1:-1]
+    if quote == '"':
+        if "\\" in inner:
+            raise _frontmatter_error(
+                label, line_number, "escape sequence in a double-quoted scalar"
+            )
+        if '"' in inner:
+            raise _frontmatter_error(
+                label, line_number, "content after a closing quote"
+            )
+        return inner
+    # Doubling is the whole of YAML's single-quote escaping; a lone quote would
+    # have closed the scalar, so anything left after splitting is trailing text.
+    parts = inner.split("''")
+    if any("'" in part for part in parts):
+        raise _frontmatter_error(label, line_number, "content after a closing quote")
+    return "'".join(parts)
+
+
 def _frontmatter(text: str, label: str) -> tuple[dict[str, str], str, tuple[str, ...]]:
     if not text.startswith("---\n"):
         raise ReviewError(f"{label}: missing frontmatter opening")
@@ -520,36 +620,74 @@ def _frontmatter(text: str, label: str) -> tuple[dict[str, str], str, tuple[str,
         raise ReviewError(f"{label}: missing frontmatter closing")
     raw = text[4 : end + 1]
     body = text[end + 5 :]
+    for offset, character in enumerate(raw):
+        if character != "\n" and unicodedata.category(character) == "Cc":
+            # The character is invisible, so the line number is the only thing
+            # that tells an operator where to look. Count to it rather than
+            # reporting the head of the block.
+            raise _frontmatter_error(
+                label,
+                raw.count("\n", 0, offset) + 1,
+                f"control character {hex(ord(character))} in the block",
+            )
+
     values: dict[str, str] = {}
     keys: list[str] = []
-    lines = raw.splitlines()
-    index = 0
-    while index < len(lines):
-        line = lines[index]
-        index += 1
-        if not line or line[0].isspace() or ":" not in line:
+    for line_number, line in enumerate(raw.splitlines(), 1):
+        if not line:
             continue
-        key, value = line.split(":", 1)
-        key = key.strip()
-        value = value.strip()
+        if line[0].isspace():
+            raise _frontmatter_error(label, line_number, "indented line")
+        colon = line.find(":")
+        if colon == -1:
+            raise _frontmatter_error(label, line_number, "line without a mapping colon")
+        remainder = line[colon + 1 :]
+        if remainder and not remainder.startswith(" "):
+            raise _frontmatter_error(
+                label, line_number, "mapping colon without a following space"
+            )
+        # ASCII space only: Python treats U+00A0 as whitespace and YAML does not,
+        # so `strip()` would drop a character the authority keeps.
+        key = line[:colon].strip(" ")
+        if not key:
+            raise _frontmatter_error(label, line_number, "empty key")
+        if key[0] in _YAML_INDICATORS:
+            raise _frontmatter_error(
+                label, line_number, "key opening with a YAML indicator"
+            )
+        if _resolves_outside_string(key) or key == "<<":
+            raise _frontmatter_error(
+                label, line_number, "key that YAML resolves to a non-string"
+            )
+        if key in values:
+            raise _frontmatter_error(label, line_number, "duplicate key")
+
+        value = remainder.strip(" ")
         keys.append(key)
-        if value in {"|", ">", "|-", ">-"}:
-            continuation: list[str] = []
-            while index < len(lines) and (
-                not lines[index] or lines[index][0].isspace()
-            ):
-                continuation.append(lines[index].strip())
-                index += 1
-            values[key] = " ".join(part for part in continuation if part)
+        if not value:
+            values[key] = ""
             continue
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
-            try:
-                parsed = ast.literal_eval(value)
-            except (SyntaxError, ValueError):
-                parsed = value[1:-1]
-            values[key] = str(parsed)
-        else:
+        if value[0] in {"'", '"'}:
+            values[key] = _unquote_scalar(value, label, line_number)
+            continue
+        if value[0] in _YAML_INDICATORS:
+            raise _frontmatter_error(
+                label, line_number, "value opening with a YAML indicator"
+            )
+        if ":" in value:
+            raise _frontmatter_error(label, line_number, "colon in a plain scalar")
+        if " #" in value:
+            raise _frontmatter_error(label, line_number, "comment in a plain scalar")
+        if value in _YAML_BOOLEAN_TEXT:
+            # A boolean value is inside the subset: `scalar_text` renders it as
+            # exactly this text. A boolean *key* is not — see the key guard.
             values[key] = value
+            continue
+        if _resolves_outside_string(value):
+            raise _frontmatter_error(
+                label, line_number, "value that YAML resolves to a non-string"
+            )
+        values[key] = value
     return values, body, tuple(keys)
 
 
@@ -1632,7 +1770,9 @@ def build_inventory(
             "readOnly": True,
             "semanticFindingsProduced": False,
             "limits": [
-                "Metadata parsing is intentionally limited to top-level scalar fields.",
+                "Metadata parsing accepts a documented subset of top-level scalar "
+                "frontmatter and rejects anything outside it rather than "
+                "reinterpreting it.",
                 "Host capabilities marked unknown require current host verification.",
                 "Similarity and repetition are candidate signals, not defects.",
                 "Test-text references are substring locators, not verified behavioral pins.",
@@ -1643,14 +1783,6 @@ def build_inventory(
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     payload["snapshotId"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     return payload
-
-
-def _is_within(path: Path, root: Path) -> bool:
-    try:
-        path.relative_to(root)
-    except ValueError:
-        return False
-    return True
 
 
 def _stat_fingerprint(metadata: os.stat_result) -> tuple[int, int, int, int, int]:
@@ -1790,7 +1922,7 @@ def _validate_output_destination(
         raise ReviewError(f"output destination contains a parent escape: {output}")
     candidate = expanded_output if expanded_output.is_absolute() else root / expanded_output
     candidate = Path(os.path.abspath(str(candidate)))
-    if candidate == root or not _is_within(candidate, root):
+    if candidate == root or not _is_relative_to(candidate, root):
         raise ReviewError(f"output destination escapes output root {root}: {candidate}")
 
     relative = candidate.relative_to(root)
@@ -1804,10 +1936,10 @@ def _validate_output_destination(
     if candidate.is_symlink():
         raise ReviewError(f"output destination is a symlink: {candidate}")
     resolved = candidate.resolve(strict=False)
-    if not _is_within(resolved, root):
+    if not _is_relative_to(resolved, root):
         raise ReviewError(f"output destination escapes output root {root}: {resolved}")
     for forbidden in forbidden_roots:
-        if _is_within(resolved, forbidden):
+        if _is_relative_to(resolved, forbidden):
             raise ReviewError(
                 f"output destination is inside a reviewed or installed root: {resolved}"
             )

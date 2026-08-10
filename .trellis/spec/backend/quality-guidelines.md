@@ -2630,3 +2630,142 @@ installer/registry.py
 generated/skills/claude/se-research/SKILL.md
   -> context: fork, model: opus, effort: high plus the canonical body
 ```
+---
+
+## Scenario: Frontmatter Grammar Authority And Shipped Subset
+
+### 1. Scope / Trigger
+
+- Trigger: changing how skill frontmatter is parsed, emitted, or validated on
+  either side - `_frontmatter` in the shipped `skill_review.py`, or
+  `parse_frontmatter` / `validate_skill` / the `yaml.safe_dump` emitter in
+  `.github/scripts/generate-skill-surfaces.py`.
+- Why: two parsers read the same bytes and only one of them may depend on
+  PyYAML, so their agreement is a contract rather than a coincidence.
+
+### 2. Signatures
+
+```text
+.github/scripts/generate-skill-surfaces.py   # the authority
+  parse_frontmatter(text, label) -> tuple[dict, str]          # yaml.safe_load
+  validate_skill(name) -> tuple[list[str], dict[str, str] | None]
+  _unrenderable_character(value) -> str | None
+  render_claude_skill(...) -> yaml.safe_dump(..., width=10000)
+
+templates/skills/se-review-skills/scripts/skill_review.py     # the subset
+  _frontmatter(text, label) -> tuple[dict[str, str], str, tuple[str, ...]]
+  raises ReviewError("<label>:<line>: unsupported frontmatter construct: <name>")
+```
+
+### 3. Contracts
+
+- The generator is authoritative. The shipped parser is a strict **rejecting**
+  subset: for every document it accepts it returns what `yaml.safe_load`
+  returns, and every construct outside the subset raises instead of being
+  reinterpreted or silently skipped. Over-rejection is correct; disagreement
+  never is.
+- The subset's value domain is exactly `str`, `bool`, and `None`, represented
+  as the text itself, `"true"` / `"false"`, and `""`. Nothing else may be
+  accepted, because nothing else has a faithful text representation.
+- Keys and values consult the same resolution predicate but not identically. A
+  value YAML resolves to a boolean stays inside the subset - its text is what
+  the mapping would carry anyway. A **key** does not: `true: v` gives PyYAML
+  the mapping key `True`, not `"true"`, so the mapping itself diverges. Only
+  the value path exempts `true` / `false`.
+- YAML 1.1 resolution is wider than intuition. `yes` / `no` / `on` / `off` /
+  `True` are booleans, `~` / `null` is None, `010` is 8, `0x1f` is 31, `1.0` is
+  a float, and `2026-08-10` is a `datetime.date`. Confirm the resolver
+  empirically before widening or narrowing the guard; never from memory.
+- `<<` needs its own rule. PyYAML tags it as a merge key and raises
+  `ConstructorError`, which no resolver-free parser can infer from the token.
+- Indicator tests are on the **first character**, never a substring. A
+  substring test rejects `disable-model-invocation`, which 14 generated files
+  carry, and `a#b`, which PyYAML accepts.
+- Trim with `strip(" ")`, never bare `strip()`. Python counts U+00A0 as
+  whitespace and YAML does not, so `strip()` silently drops a character the
+  authority keeps.
+- Any Unicode category `Cc` character other than the line break is refused
+  anywhere in the block. NUL makes PyYAML's reader raise `special characters
+  are not allowed` while a naive line parser accepts it.
+- The authority owes a reciprocal obligation: `validate_skill` refuses a
+  description containing a `Cc` character, U+2028, or U+2029, because
+  `yaml.safe_dump` escapes or folds those into output the subset must reject.
+  Without it the generator can emit an overlay its own review tool cannot read.
+  `validate_agent` deliberately does not carry the guard - `_safe_pack_skill_source`
+  refuses any basename but `SKILL.md`, so agent overlays are unreachable by
+  this parser and their list-valued `tools` is legitimate.
+- The emitter's `width=10000` is load-bearing. A narrower width folds a long
+  description onto a continuation line, which the subset rejects as an indented
+  line.
+
+### 4. Validation & Error Matrix
+
+- indented line -> `indented line`
+- no colon / `name:value` -> `line without a mapping colon` /
+  `mapping colon without a following space`
+- `tools: [Read]`, `{a: b}`, `|`, `>`, `&a`, `*a`, bare `-` or `?`, `@ % , #`
+  or a backtick opening a value -> `value opening with a YAML indicator`
+- `k: a: b`, `k: v:` -> `colon in a plain scalar`
+- `k: v # c` -> `comment in a plain scalar`
+- `yes`, `~`, `010`, `1.0`, `2026-08-10` as a value ->
+  `value that YAML resolves to a non-string`
+- `true:`, `010:`, `2026-08-10:`, `<<:` -> `key that YAML resolves to a non-string`
+- quoted, anchored, or sequence-opened key -> `key opening with a YAML indicator`
+- empty key, repeated key -> `empty key`, `duplicate key`
+- `'a`, `"a` -> `unterminated quoted scalar`; `'a' junk` ->
+  `content after a closing quote`
+- `"a\tb"` -> `escape sequence in a double-quoted scalar`
+- any `Cc` character -> `control character 0x.. in the block`
+
+### 5. Good/Base/Bad Cases
+
+- Good: `description: Use when it's time` - plain scalar, apostrophe intact.
+- Base: `description: 'Use when alpha: omega'` - quoted because the value
+  carries a colon; both parsers return the same text.
+- Bad: `tools: [Read]` in a `SKILL.md` - a flow sequence the subset refuses by
+  construct name and line, rather than dropping the line as it once did.
+
+### 6. Tests Required
+
+`tests/test_frontmatter_conformance.py`, six groups:
+
+1. Corpus regression over `**/SKILL.md` enumerated from `git ls-files -z`, with
+   vacuity guards (>=150 documents, >=1 boolean, >=1 double-quoted). It passes
+   before and after any correct change - a regression guard, never a bite proof.
+2. Agreement table for documents inside the subset where a naive parser
+   diverges.
+3. Rejection table, one case per bullet above, asserting construct and line.
+4. Generator reciprocity in three halves: render every overlay and agree (a);
+   must-reject for `Cc` / U+2028 / U+2029 (b); must-accept and round-trip for an
+   apostrophe, a colon-space, and a `#` (c). Half (c) is what keeps a validator
+   that refuses everything from passing half (b).
+5. Installed-root fixture through `_discover_installed` / `build_inventory` -
+   no tracked enumeration can reach an operator's installed skills.
+6. Product fuzz against PyYAML: 13 key shapes x 36 value shapes plus a
+   control-character sweep. Baseline `cases=468 accepted=72`. A run accepting
+   materially more or fewer means the parser drifted from this contract;
+   reconcile against the contract before editing the baseline.
+
+Each group must be shown to bite by a probe that is reverted afterwards.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```python
+# Silently reinterprets, and silently skips what it cannot model.
+if value.startswith(("'", '"')):
+    values[key] = ast.literal_eval(value)   # Python escapes, not YAML's
+else:
+    continue                                # the line just disappears
+```
+
+#### Correct
+
+```python
+# Refuses what it cannot represent, naming the construct and the line.
+if value[0] in {"'", '"'}:
+    values[key] = _unquote_scalar(value, label, line_number)
+elif value[0] in _YAML_INDICATORS:
+    raise _frontmatter_error(label, line_number, "value opening with a YAML indicator")
+```

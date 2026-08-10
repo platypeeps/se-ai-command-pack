@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.69.0 - 2026-08-10
+
+- **Breaking:** `skill_review.py`'s frontmatter parser is now a strict
+  rejecting subset of the grammar `.github/scripts/generate-skill-surfaces.py`
+  authorizes, instead of a line parser that silently reinterpreted what it did
+  not model. Frontmatter a consumer's `SKILL.md` could previously carry is now
+  refused with the construct and line named: a flow sequence or mapping
+  (`tools: [Read]`), a block scalar (`|`, `>`), an anchor or alias, any other
+  YAML indicator opening a value, `name:value` with no space after the colon, a
+  colon or ` #` inside a plain scalar, a value or key YAML resolves to a
+  boolean, null, number, or date (`yes`, `~`, `010`, `2026-08-10`), the merge
+  key `<<`, a quoted or empty key, a duplicate key, an indented line, an
+  unterminated quote or text after a closing one, a backslash escape inside a
+  double-quoted scalar, and any Unicode category `Cc` character in the block.
+  Every canonical and generated `SKILL.md` in this pack is unaffected — the
+  measured cost across all 180 is zero.
+- Fixed two live parser bugs the rewrite subsumes: trimming used bare `strip()`,
+  which ate a leading U+00A0 that YAML preserves, and NUL passed the line parser
+  while PyYAML's reader refuses the document outright.
+- The generator now refuses a skill description containing a Unicode category
+  `Cc` character, U+2028, or U+2029. `yaml.safe_dump` escapes or folds those
+  into output the shipped parser must reject, so without the guard the
+  generator could emit an overlay its own review tool cannot read.
+- Collapsed `skill_review.py`'s duplicate path-containment predicate: `_is_within`
+  and `_is_relative_to` had byte-identical bodies, and only `_is_relative_to`
+  remains.
+- New `tests/test_frontmatter_conformance.py` binds the two grammars in six
+  groups, including a 468-document fuzz sweep against PyYAML.
+
 ## 0.68.3 - 2026-08-10
 
 - Moved the generated `skill-catalog.md` out of `templates/skills/_shared/`

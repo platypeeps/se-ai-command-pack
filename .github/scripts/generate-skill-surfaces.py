@@ -17,6 +17,7 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 import yaml
@@ -250,6 +251,28 @@ def parse_frontmatter(text: str, label: str) -> tuple[dict, str]:
     return data, body
 
 
+_LINE_SEPARATORS = frozenset({"\u2028", "\u2029"})
+
+
+def _unrenderable_character(value: str) -> str | None:
+    """Name the first character this pack's frontmatter round trip cannot carry.
+
+    `yaml.safe_dump` escapes a control character into a double-quoted scalar and
+    folds U+2028/U+2029 onto a continuation line. Either output is outside the
+    subset the shipped `skill_review.py` parser accepts, so a description
+    carrying one generates cleanly and then breaks the review tool. Refusing it
+    here keeps the authoritative grammar inside its own subset; the reciprocity
+    group in `tests/test_frontmatter_conformance.py` pins the pairing.
+    """
+
+    for character in value:
+        if character in _LINE_SEPARATORS:
+            return f"the line separator U+{ord(character):04X}"
+        if unicodedata.category(character) == "Cc":
+            return f"the control character U+{ord(character):04X}"
+    return None
+
+
 def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
     errors: list[str] = []
     skill_dir = SKILLS_ROOT / name
@@ -286,6 +309,13 @@ def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
             errors.append(f"{label}: description must not contain double quotes")
         if "\n" in description.strip():
             errors.append(f"{label}: description must be a single line")
+        unrenderable = _unrenderable_character(description)
+        if unrenderable is not None:
+            errors.append(
+                f"{label}: description must not contain {unrenderable}; "
+                "yaml.safe_dump escapes or folds it and the shipped "
+                "skill_review.py frontmatter parser refuses the result"
+            )
         if len(description) > DESCRIPTION_MAX_LENGTH:
             errors.append(
                 f"{label}: description exceeds {DESCRIPTION_MAX_LENGTH} characters"
