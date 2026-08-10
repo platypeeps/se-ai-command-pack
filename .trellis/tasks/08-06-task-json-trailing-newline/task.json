@@ -2,7 +2,7 @@
   "id": "task-json-trailing-newline",
   "name": "task-json-trailing-newline",
   "title": "write_json omits the trailing newline on every task.json",
-  "description": "common/io.py:37 builds its payload with json.dumps and writes it with no trailing newline, so every task.json written through write_json ends mid-line. Every active task.json is affected (22 of 22 at the 2026-08-07 measurement; the active set churns as tasks archive). Any later hand-edit that restores the newline doubles the resulting diff and shows a spurious 'No newline at end of file' marker.",
+  "description": "common/io.py:37 builds its payload with json.dumps and writes it with no trailing newline, so every task.json written through write_json ends mid-line. Every active task.json is affected (22 of 22 at the 2026-08-07 measurement; the active set churns as tasks archive). Any later hand-edit that restores the newline doubles the resulting diff and surfaces the expected 'No newline at end of file' marker as review noise.",
   "status": "in_progress",
   "dev_type": null,
   "scope": null,

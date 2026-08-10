@@ -629,7 +629,8 @@ Four-field record (task `08-06-task-json-trailing-newline`): owning pack —
 upstream Trellis; file — `.trellis/scripts/common/io.py` (Registry A,
 `.trellis/.template-hashes.json`); behaviour — `write_json` omits the
 trailing newline that `active_task.py:428` appends, so hand edits render
-two-line diffs with a spurious marker, and the fix is one character
+two-line diffs where the expected no-newline marker becomes review noise,
+and the fix is one character
 (`+ "\n"`) with the `mkstemp`/`os.replace` atomicity, error handling, and
 return contract unchanged; no upstream PR was opened — the proposal is
 relayed as

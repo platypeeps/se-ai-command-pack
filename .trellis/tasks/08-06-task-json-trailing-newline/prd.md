@@ -3,7 +3,8 @@
 ## Goal
 
 Make every `task.json` Trellis writes end with a newline, so hand edits produce
-a one-line diff instead of a two-line diff plus a spurious no-newline marker.
+a one-line diff instead of a two-line diff plus a no-newline marker that is
+expected machine output but reads as review noise.
 
 ## Problem
 
