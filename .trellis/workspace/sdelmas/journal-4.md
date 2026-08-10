@@ -895,3 +895,41 @@ Closed audit findings A-009 and A-010. Deleted the duplicate _is_within containm
 ### Next Steps
 
 - None - task complete
+
+
+## Session 176: Record the sd-review attempt-replay defect against the review-scope task
+
+**Date**: 2026-08-10
+**Task**: Record the sd-review attempt-replay defect against the review-scope task
+**Branch**: `chore/record-review-scope-replay-defect`
+
+### Summary
+
+PR #208's finalization head hit the known pack.review-scope late-arrival failure. Editing the PR body fixed the gate — the helper and a direct sd-check both passed — but sd-review kept replaying the stored failed verdict, because its attempt identity does not include the attempt number and the gate's input lives off-head. Recorded the mechanism, a requirement, a design question, and an acceptance criterion on the existing blocked task.
+
+### Main Changes
+
+- Added the PR #208 observation to 08-10-review-scope-late-arrival/prd.md: identical late-arrival failure at ee0eb36, plus the attempt-identity replay that kept it failing after the fix
+- New requirement: an off-head fix must be re-provable at the same head without deleting the coordinator's private attempt state
+- New design question: fold a PR-body digest into the attempt identity, or stop replaying the deterministic check block
+- New acceptance criterion covering the replay defect
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d94342a` | chore(task): record the review-scope attempt-replay defect |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-review-scope.sh: exit 0 after the body edit
+- [OK] sd-check at ee0eb36: passed, 11 passed / 0 failed
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
