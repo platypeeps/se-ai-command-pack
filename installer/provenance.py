@@ -21,7 +21,6 @@ from installer.manifest import (
     target_destination,
 )
 from installer.registry import (
-    FORCE_PRESERVED_TARGETS,
     INSTALLED_TARGETS_FILE,
     PACK_MANIFEST_FILE,
     PROVENANCE_FILE,
@@ -83,12 +82,11 @@ def read_existing_provenance_files_for_remove(root: Path) -> dict[str, str]:
 def never_vouched_targets() -> set[str]:
     """Targets provenance must never vouch, whatever a prior file claims.
 
-    Force-preserved targets are user-tunable and generated files describe
-    the install itself; a hand-edited provenance entry for any of them would
-    turn legitimate local content into a false drift failure.
+    These generated files describe the install itself; a hand-edited
+    provenance entry for any of them would turn legitimate local content
+    into a false drift failure.
     """
     return {
-        *(path.as_posix() for path in FORCE_PRESERVED_TARGETS),
         INSTALLED_TARGETS_FILE.as_posix(),
         PACK_MANIFEST_FILE.as_posix(),
         PROVENANCE_FILE.as_posix(),

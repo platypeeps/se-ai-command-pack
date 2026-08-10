@@ -311,8 +311,6 @@ project.
 - **Command surfaces** (per-platform command/prompt adapters) — the
   generator keeps the sd-pack fan-out pattern available if skills alone
   stop being enough.
-- **A workflow backbone** — `preflight_checks()` in `install.py` is the
-  single seam where a future backend prerequisite would land.
 
 ## License
 

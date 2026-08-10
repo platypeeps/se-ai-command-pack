@@ -284,3 +284,37 @@ Session-first reviewed-set derivation for se-review-skills: scope=session post-i
 ### Next Steps
 
 - None - task complete
+
+
+## Session 161: Installer dead-code trim
+
+**Date**: 2026-08-09
+**Task**: Installer dead-code trim
+**Branch**: `task/08-08-installer-dead-code-trim`
+
+### Summary
+
+Five delete-or-justify dispositions: preflight_checks seam, FORCE_PRESERVED_TARGETS machinery, and ENV_PREFIX deleted; --user and KNOWN_SCOPES kept with written reasons. Two Codex planning rounds; pack 0.68.2; PR #194.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5abc7be` | (see git log) |
+| `46bd081` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
