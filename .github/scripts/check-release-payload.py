@@ -7,7 +7,12 @@ Enforces the pack's release discipline against a base revision:
    install.py or manifest.json requires the manifest version to differ from
    the base revision's, and
 2. whenever the version changed, CHANGELOG.md's first heading must be
-   `## <version> - YYYY-MM-DD` with a real date.
+   `## <version> - YYYY-MM-DD` with a real date, and
+3. a version change adds exactly one new CHANGELOG.md version heading. Two
+   bumps in one branch ship an intermediate version that never becomes a
+   merge-base state, so it never gets tagged: `0.53.0` was written and then
+   re-bumped to `0.53.1` inside PR #89, and `v0.53.0` does not exist. Collapse
+   intra-branch bumps into the single heading you intend to release.
 
 Changes are measured from the merge-base of --base and HEAD to the working
 tree (uncommitted and untracked files included), so the gate works both
@@ -43,6 +48,11 @@ MANIFEST_NAME = "manifest.json"
 PAYLOAD_EXACT = frozenset((MANIFEST_NAME, "install.py"))
 CHANGELOG_NAME = "CHANGELOG.md"
 HEADING_PATTERN = re.compile(r"^## (?P<version>\S+) - (?P<date>\d{4}-\d{2}-\d{2})$")
+# Deliberately looser than HEADING_PATTERN: the one-step check counts entries,
+# and an entry whose date is malformed is still an entry. Matching on the
+# version token rather than the whole line also means correcting a typo in an
+# old entry's date does not read as a newly added version.
+VERSION_HEADING_PATTERN = re.compile(r"^## (?P<version>\S+)")
 GIT_TIMEOUT_SECONDS = 60
 
 
@@ -135,6 +145,56 @@ def check_changelog_heading(repo: Path, version: str) -> None:
     raise GateError(f"{CHANGELOG_NAME} has no '## ' heading")
 
 
+def changelog_versions(text: str) -> list[str]:
+    return [
+        match.group("version")
+        for match in (
+            VERSION_HEADING_PATTERN.match(line) for line in text.splitlines()
+        )
+        if match is not None
+    ]
+
+
+def check_single_version_step(repo: Path, merge_base: str) -> None:
+    """Require the branch to add exactly one CHANGELOG.md version heading.
+
+    An intermediate version bumped and re-bumped inside one branch is never a
+    merge-base state, so the auto-tag workflow never sees it and no `v<version>`
+    tag is ever created for it. Comparing heading sets against the merge-base is
+    what distinguishes "added two versions" from "wrote one version, then fixed
+    its date": the latter leaves the version token untouched.
+    """
+    base_show = run_git(repo, "show", f"{merge_base}:{CHANGELOG_NAME}")
+    if base_show.returncode != 0:
+        # The base has no changelog at all — a repository adding one for the
+        # first time imports its whole history in a single commit, and every
+        # heading in it is legitimately new. There is nothing to step from.
+        return
+    changelog = repo / CHANGELOG_NAME
+    if not changelog.is_file():
+        raise GateError(f"{CHANGELOG_NAME} not found in {repo}")
+    base_versions = set(changelog_versions(base_show.stdout))
+    added = [
+        version
+        for version in changelog_versions(changelog.read_text(encoding="utf-8"))
+        if version not in base_versions
+    ]
+    if len(added) == 1:
+        return
+    if not added:
+        raise GateError(
+            f"the version changed but {CHANGELOG_NAME} adds no new heading; "
+            "the entry for this release must be written on this branch, not "
+            "carried over from the base"
+        )
+    raise GateError(
+        f"{CHANGELOG_NAME} adds {len(added)} version headings "
+        f"({', '.join(added)}), but a branch may release exactly one; "
+        "collapse the intermediate bumps into the version you intend to ship, "
+        "or split them across separate pull requests"
+    )
+
+
 def resolve_base(repo: Path, base: str) -> str:
     """Resolve the ``auto`` base sentinel to a concrete revision.
 
@@ -187,9 +247,10 @@ def run_gate(repo: Path, base: str) -> str:
         )
     if version_changed:
         check_changelog_heading(repo, current_version)
+        check_single_version_step(repo, merge_base_sha)
         return (
             f"version {base_version or '(new)'} -> {current_version}; "
-            "changelog heading matches"
+            "changelog heading matches; one version step"
         )
     return "no payload change; no version bump required"
 

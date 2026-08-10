@@ -515,3 +515,44 @@ Relocated the generated bundled catalog to generated/references/skill-catalog.md
 ### Next Steps
 
 - None - task complete
+
+
+## Session 167: Gate a branch to exactly one changelog version step
+
+**Date**: 2026-08-10
+**Task**: Gate a branch to exactly one changelog version step
+**Branch**: `task/07-25-audit-release-versioning-policy`
+
+### Summary
+
+Closed audit findings A-041 and A-042: the release payload gate now rejects a branch that adds more than one CHANGELOG version heading, and CONTRIBUTING documents the bump and breaking-change policy. Recorded 0.53.0 as never released after proving main went 0.52.1 -> 0.53.1 in one step.
+
+### Main Changes
+
+- Added check_single_version_step to the release payload gate: it compares the branch's '## <version>' tokens against the merge-base and requires exactly one addition, failing both a two-heading stack and a bump that adopts a base-written heading.
+- Compared version tokens rather than whole heading lines so correcting an old entry's date is not counted as a release; exempted a base with no CHANGELOG.md, where a first-time history import has nothing to step from.
+- Documented the 0.53.0 disposition in CHANGELOG.md as never released with no tag to backfill, proven from git: main went 0.52.1 -> 0.53.1 at merge b93e680 and 0.53.0 existed only on PR #89's branch.
+- Added the one-version-per-PR rule, the patch-versus-minor policy grounded in observed practice, and the **Removed:**/**Breaking:** bullet convention to CONTRIBUTING.md, with the gate contract pinned in the backend quality guidelines.
+- Recorded two follow-ups found while shipping #199: the review controller's sd-check cache keyed on an identity that omits the PR body, and the source/generated boundary test covering only Markdown.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `03dcb96` | feat(release): gate a branch to exactly one changelog version step |
+| `10d32e4` | docs(spec): pin the one-version-step contract; describe the follow-up tasks |
+
+### Testing
+
+- [OK] make check: Ran 673 tests, OK; coverage 89.0% (floor 80); ruff and mypy clean; release payload gate: no payload change; trellis-provenance check: ok
+- [OK] Falsifiability probe: the same two-bump repository exits 0 against the pre-change gate and 1 against the new gate ('adds 2 version headings (1.2.0, 1.1.0)')
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs: 0 failure(s)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

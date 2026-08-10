@@ -187,6 +187,85 @@ class ReleaseGateTest(TempDirTestCase):
         result = self.gate()
         self.assertEqual(result.returncode, 0, result.stderr)
 
+    def write_changelog_entries(self, *entries: tuple[str, str]) -> None:
+        body = "".join(
+            f"## {version} - {date}\n\n- Notes.\n\n" for version, date in entries
+        )
+        (self.repo / "CHANGELOG.md").write_text(
+            f"# Changelog\n\n{body}", encoding="utf-8"
+        )
+
+    def test_two_version_headings_in_one_branch_fails(self) -> None:
+        # A-041: the 0.53.0 shape. Bumping twice on one branch means the
+        # intermediate version is never a merge-base state, so the auto-tag
+        # workflow never sees it and no v<version> tag is ever created.
+        git(self.repo, "checkout", "-b", "feature")
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        self.write_manifest("1.1.0")
+        self.write_changelog_entries(("1.1.0", "2026-07-17"), ("1.0.0", "2026-07-16"))
+        git(self.repo, "commit", "-am", "first bump")
+        (self.repo / "templates" / "skill.md").write_text("v3\n", encoding="utf-8")
+        self.write_manifest("1.2.0")
+        self.write_changelog_entries(
+            ("1.2.0", "2026-07-18"),
+            ("1.1.0", "2026-07-17"),
+            ("1.0.0", "2026-07-16"),
+        )
+        git(self.repo, "commit", "-am", "second bump")
+        result = self.gate(base="main")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("adds 2 version headings", result.stderr)
+        self.assertIn("1.2.0, 1.1.0", result.stderr)
+
+    def test_collapsed_intra_branch_bump_passes(self) -> None:
+        # The documented escape from the failure above: rewrite the branch's
+        # single heading rather than stacking a second one.
+        git(self.repo, "checkout", "-b", "feature")
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        self.write_manifest("1.1.0")
+        self.write_changelog_entries(("1.1.0", "2026-07-17"), ("1.0.0", "2026-07-16"))
+        git(self.repo, "commit", "-am", "first bump")
+        self.write_manifest("1.2.0")
+        self.write_changelog_entries(("1.2.0", "2026-07-18"), ("1.0.0", "2026-07-16"))
+        git(self.repo, "commit", "-am", "collapse into one release")
+        result = self.gate(base="main")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("one version step", result.stdout)
+
+    def test_bump_reusing_a_base_heading_fails(self) -> None:
+        # The entry must be written on the branch that releases it. A heading
+        # pre-written on the base and merely adopted by a later bump would slip
+        # a release past the one-step rule with no new heading at all.
+        self.write_changelog_entries(("1.1.0", "2026-07-17"), ("1.0.0", "2026-07-16"))
+        git(self.repo, "commit", "-am", "pre-write the next entry")
+        self.write_manifest("1.1.0")
+        result = self.gate()
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("adds no new heading", result.stderr)
+
+    def test_correcting_an_old_entry_date_is_not_a_new_version(self) -> None:
+        # The one-step check compares version tokens, not whole heading lines,
+        # so editing a shipped entry's date is not mistaken for a release.
+        self.write_changelog_entries(("1.0.0", "2026-07-16"))
+        git(self.repo, "commit", "-am", "baseline changelog")
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        self.write_manifest("1.1.0")
+        self.write_changelog_entries(("1.1.0", "2026-07-18"), ("1.0.0", "2026-07-15"))
+        result = self.gate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("one version step", result.stdout)
+
+    def test_first_changelog_import_is_not_a_multi_step(self) -> None:
+        # A repository adding CHANGELOG.md for the first time imports its whole
+        # history at once; with no base changelog there is nothing to step from.
+        (self.repo / "CHANGELOG.md").unlink()
+        git(self.repo, "commit", "-am", "remove changelog")
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        self.write_manifest("1.1.0")
+        self.write_changelog_entries(("1.1.0", "2026-07-18"), ("1.0.0", "2026-07-16"))
+        result = self.gate()
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_nested_install_py_is_not_gated(self) -> None:
         # `install.py` is an exact top-level match, not a prefix: a nested
         # `sub/install.py` is not shipped payload and needs no bump.

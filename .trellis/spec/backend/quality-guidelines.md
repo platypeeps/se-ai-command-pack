@@ -918,6 +918,9 @@ make generate
 python .github/scripts/generate-skill-surfaces.py --check
 <!-- SE_SKILL_CATALOG:START --> ... <!-- SE_SKILL_CATALOG:END -->
 generated/references/skill-catalog.md
+python .github/scripts/check-release-payload.py --base <rev|auto>
+check_single_version_step(repo: Path, merge_base: str) -> None
+VERSION_HEADING_PATTERN = re.compile(r"^## (?P<version>\S+)")
 ```
 
 `FAMILY_LABELS` order is public catalog order. `FAMILY_DESCRIPTIONS` must have
@@ -973,6 +976,9 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
 | Family metadata edited at its source in `installer/registry.py` (`FAMILY_DESCRIPTIONS`, `FAMILY_LABELS`), or a change that alters `generated/registry-snapshot.json`, `manifest.json`, or any `templates/**`/`generated/**`/`installer/**`/`install.py` byte | The source and snapshot are shipped payload; the release gate requires a version bump and dated CHANGELOG heading. |
 | A change that touches no shipped payload byte at all (no diff under `templates/**`, `generated/**`, `installer/**`, `install.py`, or `manifest.json`) | Manifest and changelog stay unchanged; release gate passes without a bump. |
+| A branch bumps the version twice and stacks two `## <version> - <date>` headings | Release gate exits nonzero: the intermediate version never becomes a merge-base state, so the auto-tag workflow never tags it (this is how `0.53.0` was left untagged). Collapse into the one heading being released, or split into separate PRs. |
+| A branch bumps the version but adds no new heading, adopting one pre-written on the base | Release gate exits nonzero; the entry must be written on the branch that releases it. |
+| An already-shipped changelog entry's date is corrected | Not a release: the one-step check compares version tokens, not whole heading lines. |
 
 ### 5. Good/Base/Bad Cases
 
@@ -999,6 +1005,12 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - One boundary test walks `templates/` from disk and fails on any file carrying
   the generator's do-not-edit marker. It enumerates rather than checking known
   paths, so it also catches a generated surface nobody thought to look for.
+- Release-gate tests pin the one-version-step rule from both sides: a branch
+  stacking two headings fails, a branch collapsing its bumps into one heading
+  passes, a bump that adopts a base-written heading fails, and correcting an
+  old entry's date is not counted as a release. A repository adding
+  `CHANGELOG.md` for the first time is exempt — with no base changelog there is
+  nothing to step from.
 - `make generate` twice, `make check`, `git diff --check`, and explicit empty
   diffs for `manifest.json` and `CHANGELOG.md` complete the change gate.
 
