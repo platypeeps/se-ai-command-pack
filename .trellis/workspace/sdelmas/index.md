@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 157
+- **Total Sessions**: 158
 - **Last Active**: 2026-08-09
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~182 | Active |
+| `journal-4.md` | ~217 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 158 | 2026-08-09 | Document base_branch seeding, correction window, and gate version trap | `1ebbf88`, `060d595`, `0f8367a` | `task/08-06-task-create-base-branch-default` |
 | 157 | 2026-08-09 | Iteration 4: prism rules lane divergence guidance (PR #190) | `951e070`, `d498910` | `task/08-06-prism-rules-lane-divergence` |
 | 156 | 2026-08-09 | Iteration 3: planning-mode finalization ordering-trap recovery guidance (PR #189) | `9037c53`, `f66faa4` | `task/08-06-finalization-ordering-trap` |
 | 155 | 2026-08-09 | sd-work-backlog run c441624d iteration 2: work-loop merge-boundary disposition + relay batch (08-06) | `19fbaf2`, `97d81a4`, `3ba2a3c` | `task/08-06-work-loop-shipped-sha-after-branch-delete` |
