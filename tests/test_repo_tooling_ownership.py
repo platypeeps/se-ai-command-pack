@@ -300,9 +300,8 @@ class RegistryAIsReadableWithoutItsReceiptTest(unittest.TestCase):
         # fallback incomplete, and CI alone could not notice.
         if not self.lookup.registry_a_receipt_present:
             self.skipTest("Registry A receipt is gitignored and absent in this checkout")
-        tracked_registry_a = set(load_json(TRELLIS_PROVENANCE)["files"]) | set(
-            load_json(TRELLIS_PROVENANCE)["templateReceipted"]
-        )
+        trellis = load_json(TRELLIS_PROVENANCE)
+        tracked_registry_a = set(trellis["files"]) | set(trellis["templateReceipted"])
         uncovered = sorted(
             path
             for path in load_json(TRELLIS_HASHES)["hashes"]
