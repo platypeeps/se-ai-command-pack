@@ -933,3 +933,48 @@ PR #208's finalization head hit the known pack.review-scope late-arrival failure
 ### Next Steps
 
 - None - task complete
+
+
+## Session 177: Test hermeticity and update e2e coverage
+
+**Date**: 2026-08-10
+**Task**: Test hermeticity and update e2e coverage
+**Branch**: `task/07-25-audit-test-hermeticity`
+
+### Summary
+
+Made the test suite independent of the developer's git configuration and of untracked files, added the first end-to-end install.py update test, and added a make test-hermetic lane plus its CI job that proves both properties empirically. Under a hostile git configuration the suite went from 61 failures to 0.
+
+### Main Changes
+
+- git_env()/hermetic_git_environment() in tests/install_test_support.py, built from a GIT_*-stripped os.environ; all 13 direct git call sites migrated to env=git_env(). The strip is load-bearing: GIT_CONFIG_COUNT/_KEY_n/_VALUE_n enter at command-line scope and outrank every configuration file.
+- tests/test_test_hermeticity.py (11 tests): two AST guards over git ls-files -- tests/*.py with measured anti-vacuity floors, a matched hostile-configuration pair, and a git >= 2.32 assertion.
+- tests/test_update_e2e.py: the first end-to-end install.py update, asserting both the fast-forward and that the payload reached the installed tree.
+- make test-hermetic plus the CI test-hermetic lane, wired in all four places (tests.yml job, ci-result.needs, REQUIRED_LANES, the aggregate fixture). Review found the lane's own bootstrap commit inherited ambient git config; it now runs through a scoped scrub function.
+- The two hardcoded lane-count assertions now enumerate from the workflow; CONTRIBUTING.md gained a Git version floor section and quality-guidelines.md a Test hermeticity convention.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `249f884` | test: make the suite hermetic against git config and untracked files |
+| `73537e4` | fix(test-hermetic): scrub the lane's own setup, not just the suite |
+| `aa47eb0` | docs(tests): name the hermeticity guards' second blind spot |
+| `9dacfa1` | fix(tests): correct a nonexistent Makefile target, soften a coverage overclaim |
+| `65e3c4d` | chore(task): record the task branch before finalization |
+
+### Testing
+
+- [OK] make check: exit=0, Ran 722 tests, OK, TOTAL 2573 280 89.1%, ruff/mypy clean, release payload gate: no payload change
+- [OK] make test-hermetic: exit=0, Ran 722 tests in 46.966s, OK (skipped=2)
+- [OK] Hostile-ambient probe: make test-hermetic exited 1 before the fix and 0 after, with the same GIT_CONFIG_COUNT triple set
+- [OK] Migration measurement: 61 hostile-condition failures (test_release_gate 33, test_trellis_provenance 26, test_management 2) reduced to 0
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
