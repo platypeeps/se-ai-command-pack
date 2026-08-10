@@ -180,3 +180,38 @@ Documented that repository prism rules in .prism/rules.json reach only the shell
 ### Next Steps
 
 - None - task complete
+
+
+## Session 158: Document base_branch seeding, correction window, and gate version trap
+
+**Date**: 2026-08-09
+**Task**: Document base_branch seeding, correction window, and gate version trap
+**Branch**: `task/08-06-task-create-base-branch-default`
+
+### Summary
+
+Iteration 5 of work-loop run c441624d: local-only disposition for 08-06-task-create-base-branch-default. Added quality-guidelines subsection on task.py create base_branch seeding (installed 0.6.7), the v0.6.8 upstream fix and upgrade adoption, the set-base-branch correction deadline, detection facts, and the set-meta version-floor trap; filed relay sd-ai-command-pack#410; swept all active tasks (15/15 base_branch=main); shipped as PR #191.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1ebbf88` | (see git log) |
+| `060d595` | (see git log) |
+| `0f8367a` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
