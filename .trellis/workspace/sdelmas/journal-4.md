@@ -642,3 +642,47 @@ Follow-up cleanup from PR #201. Verifying Copilot's Python 3.10 finding meant ru
 ### Next Steps
 
 - None - task complete
+
+
+## Session 170: Route the review-controller terminal-failure cache fix upstream
+
+**Date**: 2026-08-10
+**Task**: Route the review-controller terminal-failure cache fix upstream
+**Branch**: `task/08-10-review-check-cache-pr-body`
+
+### Summary
+
+The review controller cached terminal-failure verdicts under an attempt identity that does not cover the inputs those verdicts read. Because scripts/sd-ai-command-pack-review.py is vendored, the fix shipped upstream as platypeeps/sd-ai-command-pack#417 (v0.66.1) rather than as a local patch; this repository records the routing decision and corrects stale operational guidance.
+
+### Main Changes
+
+- Added disposition.md as the authoritative routing record: why the task cannot be implemented here (vendored, Registry B, install: always), the route taken, the mechanism, the evidence, and the two-round adversarial-review ledger (C-1..C-11, ten addressed, one rebutted).
+- Ticked the PRD's four acceptance criteria against #417 with quoted evidence, rewording two: the first promised evidence at a layer the fix does not live in, and the fourth asserted a recompute unconditionally when the guarantee has two arms.
+- Corrected quality-guidelines.md rebuttal guidance, stale in both directions: a fresh --attempt-id was never required to apply a rebuttal (7beccf32, v0.64.33, the installed version), and it costs only coordinator state, not the local provider receipt keyed by _receipt_identity(target, plan).
+- Recorded that an upstream relay may carry the fix rather than only report the defect, with #417 as the first instance.
+- Replaced placeholder scaffold rows in check.jsonl and implement.jsonl with the real spec reference.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b8c6f98` | docs(trellis): route the review-cache fix upstream and correct rebuttal guidance |
+| `1aedb61` | fix(spec): cite the local review script by its repo path |
+
+### Testing
+
+- [OK] bash scripts/sd-ai-command-pack-full-check.sh -> exit 0
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs -> 0 failures, 0 warnings
+- [OK] sd-review scope=pr -> ready, exit 0; 11 checks passed, 0 failed, prism clean, 0 findings
+- [SKIP] knowledge.obsidian-kb -> advisory skip: .obsidian-kb is an external symlink to a shared vault, drift is non-deterministic and never shipped; direct check mode reports copies 567 / conflicts none / exit 0
+- [OK] PR #203 CI at b8c6f98 -> ci-result pass across all 8 checks
+- [OK] Upstream #417 at 7892ea79 -> Ran 40 tests OK; all 4 regression tests fail against base d7913054; make release-prep exit 0
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Vendored-artifact ownership and upstream route: the registry lookup that classifies scripts/sd-ai-command-pack-review.py as vendored, and the disposition rule that sends a code change upstream rather than editing it locally."}

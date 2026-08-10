@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 169
+- **Total Sessions**: 170
 - **Last Active**: 2026-08-10
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~642 | Active |
+| `journal-4.md` | ~683 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 170 | 2026-08-10 | Route the review-controller terminal-failure cache fix upstream | `b8c6f98`, `1aedb61` | `task/08-10-review-check-cache-pr-body` |
 | 169 | 2026-08-10 | Remove the stray uv.lock left by a 3.10 verification run | `df27313` | `task/08-10-remove-stray-uv-lock` |
 | 168 | 2026-08-10 | Anchor the generated-write guard to ROOT and close the non-Markdown boundary gap | `0379662`, `d358824`, `64a70db`, `564a40c`, `da7c2c3` | `task/08-10-boundary-test-nonmd-coverage` |
 | 167 | 2026-08-10 | Gate a branch to exactly one changelog version step | `03dcb96`, `10d32e4` | `task/07-25-audit-release-versioning-policy` |
