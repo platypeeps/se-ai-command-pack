@@ -112,3 +112,37 @@ Executed 08-06-work-loop-shipped-sha-after-branch-delete via the vendored-artifa
 ### Next Steps
 
 - None - task complete
+
+
+## Session 156: Iteration 3: planning-mode finalization ordering-trap recovery guidance (PR #189)
+
+**Date**: 2026-08-09
+**Task**: Iteration 3: planning-mode finalization ordering-trap recovery guidance (PR #189)
+**Branch**: `task/08-06-finalization-ordering-trap`
+
+### Summary
+
+Documented the sanctioned out-of-chain recovery for an sd-ship planning-mode chain stranded by a post-finalization review fix (bundle_scope_invalid): fresh sd-finish-work to a journal-only-recovery receipt, then direct sd-housekeeping --finish-work-receipt. Filed upstream relay sd-ai-command-pack#408; converged and archived task 08-06-finalization-ordering-trap.
+
+### Main Changes
+
+- Detailed change bullets were not supplied; see the summary above.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `9037c53` | (see git log) |
+| `f66faa4` | (see git log) |
+
+### Testing
+
+- Validation was not recorded for this session.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
