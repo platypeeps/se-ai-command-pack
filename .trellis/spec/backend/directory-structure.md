@@ -100,8 +100,8 @@ tests/                      # unittest modules mirroring installer concerns
   `SHARED_REFERENCES` one. `write_generated_surfaces` enforces this at the
   writer: every target must carry a `generated` path component or be one of
   the two in-place surfaces at their configured paths — `MANIFEST_PATH` and
-  `README_PATH`, matched whole rather than by basename, so a stray
-  `docs/README.md` is refused. Components are read
+  `README_PATH`, matched whole rather than by basename, so a stray `README.md`
+  written anywhere else in the tree is refused. Components are read
   relative to `ROOT` for any target inside the checkout, so a directory above
   the repository named `templates` or `generated` cannot decide the verdict;
   only a target outside `ROOT` — the tests redirecting output into a temporary

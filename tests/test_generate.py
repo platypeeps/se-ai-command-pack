@@ -545,6 +545,23 @@ class RealRepoGeneratorTest(unittest.TestCase):
         self.assertIn("relative path component", str(raised.exception))
         self.assertFalse((PACK_ROOT / "docs" / "traversal.md").exists())
 
+    def test_degenerate_path_shapes_are_refused(self) -> None:
+        """The base arm of the path-filesystem matrix. The guard performs no
+        filesystem access at all — it decides from components — so a symlink,
+        an oversized file, and a TOCTOU replacement have no surface here; that
+        exposure lives in `atomic_write_text`, which this change does not
+        touch. What the guard does owe is a verdict on every degenerate shape
+        reachable from a caller, and the answer is the same refusal."""
+        for label, target in (
+            ("empty", Path(".")),
+            ("bare name", Path("stray.md")),
+            ("option-like", Path("--generated")),
+            ("absolute root", Path("/")),
+        ):
+            with self.subTest(shape=label):
+                with self.assertRaises(gen.GenerationError):
+                    gen.assert_generated_write_target(target)
+
     def test_in_place_surface_names_are_not_accepted_elsewhere(self) -> None:
         """The two in-place surfaces are exact paths, not basenames. Matched on
         the name alone, a stray `docs/README.md` reads as an allowed surface
