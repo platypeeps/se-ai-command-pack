@@ -299,6 +299,30 @@ at ship time.
   zero installed targets left uncovered by a listed family.
 - `make check` (test, lint, lock-check, release-check, shell-syntax,
   trellis-provenance) passes.
+- The ownership test must answer identically with and without Registry A's
+  receipt. The first implementation read `.trellis/.template-hashes.json`
+  unconditionally and passed locally while erroring on every runner
+  (`FAILED (errors=8, skipped=1)` at `564d252`) — the file is gitignored at
+  `.gitignore:94`, so a checkout has one and CI never does. `make check` was
+  green for the wrong reason: it ran against a file the gate cannot see. The
+  spec already treats this as a known property — its lookup branches on
+  `if [ -f .trellis/.template-hashes.json ]` at `quality-guidelines.md:798`
+  and calls it "the machine-local Trellis hash file" at `:2366` — so the test
+  violated a documented contract rather than finding a new one.
+
+  Crashing was the lesser half. Made merely optional, the lookup would have
+  inverted its verdict on the 32 paths the receipt alone covers, silently
+  reclassifying vendored `.trellis/scripts/**` as repo-own on CI only. Those 32
+  are bounded and contain no repo-authored path — exactly
+  `.trellis/scripts/`, `.trellis/agents/`, `.trellis/config.yaml`, and
+  `.trellis/workflow.md` — so they are named as a tracked substitute and the
+  answer is identical in both environments. Verified in three conditions:
+  receipt present `OK`, receipt hidden `OK (skipped=1)`, and the deleted
+  wrapper restored under the hidden receipt still `FAILED (failures=3)`, so the
+  substitute did not buy CI-stability by making the test vacuous. One assertion
+  genuinely needs the receipt — that the named substitute still covers all of
+  it, which is what catches a future vendored runtime file — and it skips when
+  the receipt is absent rather than pretending to have run.
 
 ## Notes
 

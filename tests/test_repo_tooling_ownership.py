@@ -37,6 +37,19 @@ INSTALLER_RECEIPTS = frozenset(
     }
 )
 
+# Registry A's receipt (`.trellis/.template-hashes.json`) is gitignored, so it
+# exists in a working checkout and never on CI. Everything it contributes that
+# `.github/trellis-provenance.json` does not already cover falls under these
+# four Trellis-runtime paths, which are vendored whether or not the receipt is
+# readable. Naming them keeps the lookup's answer identical in both
+# environments instead of silently degrading to "repo-own" on CI.
+TRELLIS_RUNTIME_PREFIXES = (".trellis/scripts/", ".trellis/agents/")
+TRELLIS_RUNTIME_FILES = frozenset({".trellis/config.yaml", ".trellis/workflow.md"})
+
+
+def is_trellis_runtime(path: str) -> bool:
+    return path in TRELLIS_RUNTIME_FILES or path.startswith(TRELLIS_RUNTIME_PREFIXES)
+
 
 def tracked_files(*paths: str) -> list[str]:
     proc = subprocess.run(
@@ -59,14 +72,16 @@ class OwnershipLookup:
     def __init__(self) -> None:
         self.registry_b = {entry["target"]: entry for entry in load_json(SD_MANIFEST)["files"]}
         trellis = load_json(TRELLIS_PROVENANCE)
-        self.registry_a = (
-            set(load_json(TRELLIS_HASHES)["hashes"])
-            | set(trellis["files"])
-            | set(trellis["templateReceipted"])
-        )
+        self.registry_a = set(trellis["files"]) | set(trellis["templateReceipted"])
+        # The receipt is gitignored; merge it when the checkout has one so a
+        # local run exercises the real data, and fall back to the named
+        # runtime paths otherwise.
+        self.registry_a_receipt_present = TRELLIS_HASHES.exists()
+        if self.registry_a_receipt_present:
+            self.registry_a |= set(load_json(TRELLIS_HASHES)["hashes"])
 
     def classify(self, path: str) -> str:
-        in_a = path in self.registry_a
+        in_a = path in self.registry_a or is_trellis_runtime(path)
         entry = self.registry_b.get(path)
         if entry is None:
             return "vendored-trellis" if in_a else "repo-own"
@@ -207,6 +222,68 @@ class DocumentedOwnershipExceptionsTest(unittest.TestCase):
         ):
             with self.subTest(path=path):
                 self.assertTrue(self.lookup.is_repo_own(path))
+
+
+class RegistryAIsReadableWithoutItsReceiptTest(unittest.TestCase):
+    """The lookup must answer the same way on CI, where the receipt is absent.
+
+    `.trellis/.template-hashes.json` is gitignored, so a checkout has one and a
+    runner never does. Without a substitute the vendored Trellis runtime would
+    classify as `repo-own` on CI only — the lookup would not crash, it would
+    quietly invert its answer for 32 paths.
+    """
+
+    def setUp(self) -> None:
+        self.lookup = OwnershipLookup()
+
+    def test_receipt_is_not_tracked(self) -> None:
+        # If this ever starts failing, the fallback below is dead weight and
+        # the receipt can be read directly.
+        self.assertEqual(tracked_files(".trellis/.template-hashes.json"), [])
+
+    def test_trellis_runtime_classifies_vendored_without_the_receipt(self) -> None:
+        for path in (
+            ".trellis/scripts/task.py",
+            ".trellis/agents/check.md",
+            ".trellis/config.yaml",
+            ".trellis/workflow.md",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(self.lookup.classify(path), "vendored-trellis")
+
+    def test_repo_authored_trellis_paths_are_not_swept_into_the_fallback(self) -> None:
+        # The fallback names runtime paths only. Specs and tasks live under the
+        # same `.trellis/` root and are authored here.
+        for path in (
+            ".trellis/spec/backend/quality-guidelines.md",
+            ".trellis/tasks/07-25-audit-repo-tooling-ownership/prd.md",
+        ):
+            with self.subTest(path=path):
+                self.assertFalse(is_trellis_runtime(path))
+                self.assertTrue(self.lookup.is_repo_own(path))
+
+    def test_fallback_still_covers_the_whole_receipt(self) -> None:
+        # Anti-rot, and the only assertion that needs the receipt: a new
+        # vendored Trellis runtime file outside the named paths would make the
+        # fallback incomplete, and CI alone could not notice.
+        if not self.lookup.registry_a_receipt_present:
+            self.skipTest("Registry A receipt is gitignored and absent in this checkout")
+        tracked_registry_a = set(load_json(TRELLIS_PROVENANCE)["files"]) | set(
+            load_json(TRELLIS_PROVENANCE)["templateReceipted"]
+        )
+        uncovered = sorted(
+            path
+            for path in load_json(TRELLIS_HASHES)["hashes"]
+            if path not in tracked_registry_a
+            and path not in self.lookup.registry_b
+            and not is_trellis_runtime(path)
+        )
+        self.assertEqual(
+            uncovered,
+            [],
+            "extend TRELLIS_RUNTIME_PREFIXES/TRELLIS_RUNTIME_FILES: these "
+            "vendored paths would classify as repo-own on CI",
+        )
 
 
 if __name__ == "__main__":
