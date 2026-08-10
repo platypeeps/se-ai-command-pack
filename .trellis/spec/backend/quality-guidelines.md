@@ -325,7 +325,8 @@ Rules of use:
   receipt, observation, recorded dispositions — while the local stage's durable
   provider receipt survives and is reused, because its identity is
   `_receipt_identity(target, plan)` and carries no attempt id
-  (`sd-ai-command-pack-review-local.py`, `execute`). From v0.66.1 neither is
+  (`scripts/sd-ai-command-pack-review-local.py`, `execute`). From v0.66.1
+  neither is
   needed: the rejection is not persisted, so the next invocation reuses a prior
   stored report or recomputes when none exists — never replays the rejection
   (platypeeps/sd-ai-command-pack#417 — routing and evidence in the
