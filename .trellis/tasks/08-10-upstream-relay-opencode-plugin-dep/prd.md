@@ -17,8 +17,8 @@ repository cannot make: `.opencode/package.json` declares
 
 The local disposition is already complete and merged (PR #197, task
 `.trellis/tasks/archive/2026-08/07-25-audit-dependency-hygiene`). This task
-owns only the upstream relay — the half that needs approval this repository's
-autonomous runs do not have.
+owns only the upstream relay — the half that needs an approval that this
+repository's autonomous runs do not have.
 
 ## Evidence carried forward
 
@@ -48,7 +48,7 @@ Manifest") and in the archived task's `prd.md`.
       before any upstream repository is touched.
 - [ ] An upstream pull request against `mindfold-ai/Trellis` proposes the fix,
       citing the import evidence above.
-- [ ] The relay is logged the way the precedented relays are
+- [ ] The relay is logged the way that the precedented relays are
       (`quality-guidelines.md` cites platypeeps/sd-ai-command-pack#397, #398,
       #399 as the pattern), and the local-only record is updated to point at
       the filed PR instead of saying none was opened.
