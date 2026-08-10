@@ -45,11 +45,11 @@ changedPaths: ['.trellis/workspace/.../index.md', '.trellis/workspace/.../journa
 ```
 
 (The subtype is reported as `evidence.planningSubtype` in the validator's JSON
-— `review-preflight.mjs:697-703`, `:2551-2560` — not as a top-level `subtype`
+— `scripts/sd-ai-command-pack-review-preflight.mjs:697-703`, `:2551-2560` — not as a top-level `subtype`
 key. The recovery is also conditional, not unconditional: it requires exactly
 one newly completed journal session whose bundle contains only that journal
 and its sibling index, with bounded, published, single-parent cited commits —
-`review-preflight.mjs:2536-2573`, `:2593-2623`, `:2668-2725`.)
+`scripts/sd-ai-command-pack-review-preflight.mjs:2536-2573`, `:2593-2623`, `:2668-2725`.)
 
 That is outside the chain, so the do-not-rerun rule does not apply — but nothing
 in `sd-ship`'s report says so. The stopping report names the validator failure,
@@ -199,7 +199,7 @@ executed by this task's implementation:
   delta activates the post-archive-review-successor recovery — so a
   post-finalization fix does not strand an **eligible** completion-mode
   successor. That recovery is itself bounded (anchor, history-size, linearity,
-  and path constraints — `review-preflight.mjs:1245-1351`, `:1875-1969`) and
+  and path constraints — `scripts/sd-ai-command-pack-review-preflight.mjs:1245-1351`, `:1875-1969`) and
   can fail on an ineligible one. Operator-observed on run c441624d (PRs #187
   and #188, 2026-08-09): both completion-mode recomputations validated after
   post-finalization movement; the validator output was not retained in the
