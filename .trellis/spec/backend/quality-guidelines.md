@@ -976,6 +976,7 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | A file under `templates/` carries the generator's do-not-edit marker | `test_no_generated_file_lives_under_templates` fails, naming the offending path. |
 | The generator is asked to write any path with a `templates` component, whatever its format | `write_generated_surfaces` raises `GenerationError` before mutating anything. The marker walk cannot cover this: the marker is an HTML comment, so a generated `.json` or `.toml` under `templates/` carries no marker in any syntax. |
 | The generator is asked to write outside `generated/` and outside `manifest.json`/`README.md` | `GenerationError`; generator output nobody would look for when reconciling drift is refused at the writer. |
+| A write target reaches outside `generated/` through a `..` component | `GenerationError` before the boundary rules are consulted. A component check reads what was written, not where the OS lands, so `generated/../docs/stray.md` carries a `generated` component and would otherwise be accepted while the file appears in `docs/`. Nothing the generator builds contains a `..`; refusing is cheaper than proving that stays true. |
 | The checkout sits under a host directory named `templates` or `generated` | The verdict is unchanged: `assert_generated_write_target` reads components relative to `ROOT` for any target inside the checkout, and only falls back to the whole path for the temporary trees the generator's own tests redirect output into. Nobody chooses where a clone lands, so no directory above the repository root may decide it. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
 | Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
@@ -1017,7 +1018,10 @@ manifest/install order, and grouping must not reorder generated manifest rows.
   the accepted set (both in-place surfaces plus any `generated` component,
   including a redirected temporary tree) must still pass. A third test patches
   `ROOT` to a checkout nested under a host directory named `templates` and then
-  one named `generated`, pinning that neither inverts the verdict. Sandbox
+  one named `generated`, pinning that neither inverts the verdict, and a fourth
+  drives a `..` traversal through `generated/`. That one is the only guard test
+  whose write reaches the filesystem when it regresses, so it cleans the target
+  up rather than leaving the next run to trip over it. Sandbox
   fixtures place generated surfaces at their real relative paths for the same
   reason — a fixture parking one at the tree root would test a shape the
   generator never produces.

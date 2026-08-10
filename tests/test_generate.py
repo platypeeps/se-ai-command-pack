@@ -530,6 +530,21 @@ class RealRepoGeneratorTest(unittest.TestCase):
         self.assertIn("neither under generated/", str(raised.exception))
         self.assertFalse(target.exists())
 
+    def test_traversal_through_generated_is_refused(self) -> None:
+        """A component check reads what is written, not where the OS lands.
+        `generated/../docs/stray.md` carries a `generated` component and would
+        pass the boundary rules, and the write would still leave the file in
+        `docs/`."""
+        target = PACK_ROOT / "generated" / ".." / "docs" / "traversal.md"
+        # The one guard test whose write reaches the filesystem when it fails:
+        # a regression lands the file in the repo, where the next run's
+        # assertion would trip over the previous run's leftover.
+        self.addCleanup((PACK_ROOT / "docs" / "traversal.md").unlink, True)
+        with self.assertRaises(gen.GenerationError) as raised:
+            gen.write_generated_surfaces([(target, "body\n", None)])
+        self.assertIn("relative path component", str(raised.exception))
+        self.assertFalse((PACK_ROOT / "docs" / "traversal.md").exists())
+
     def test_in_place_surfaces_and_generated_paths_are_accepted(self) -> None:
         """The guard must not reject what the generator legitimately writes:
         both in-place surfaces by name, and any path under a `generated`

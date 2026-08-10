@@ -103,7 +103,9 @@ tests/                      # unittest modules mirroring installer concerns
   relative to `ROOT` for any target inside the checkout, so a directory above
   the repository named `templates` or `generated` cannot decide the verdict;
   only a target outside `ROOT` — the tests redirecting output into a temporary
-  tree — falls back to the whole path. Enforcing it there
+  tree — falls back to the whole path. A `..` component is refused outright
+  before those rules apply, since a component check reads what was written
+  rather than where the OS lands. Enforcing it there
   rather than by scanning for the do-not-edit marker is what makes it hold for
   non-Markdown output — the marker is an HTML comment and cannot appear in a
   generated `.json` or `.toml` at all.
