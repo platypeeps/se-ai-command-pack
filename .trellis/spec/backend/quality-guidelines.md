@@ -300,15 +300,37 @@ Rules of use:
   are **not inherited**: a rebuttal applies to the head it was recorded
   against. Re-supplying a still-matching id on a new head is permitted but
   obliges the run to re-verify the finding is still wrong at that head.
-- **Unchanged-head rebuttal needs a fresh `--attempt-id`.** The coordinator
-  memoizes the local result in its per-attempt state and skips the local stage
-  when that state exists, so re-invoking at the same head with the same
-  (default) attempt id returns the cached findings and never forwards the
-  disposition. Pass a new explicit `--attempt-id`: the fresh coordinator state
-  re-enters the local stage, which reuses the stored receipt after exact-match
-  validation and applies the rebuttal without re-running any provider. (A
-  moved head gets a fresh state anyway.) This is an upstream ergonomics gap in
-  the vendored coordinator, not something to patch locally.
+- **Unchanged-head rebuttal reaches the stage; a *rejected* one used to poison
+  the attempt.** The coordinator memoizes the local result in its per-attempt
+  state, but supplying `--local-disposition` re-enters the local stage anyway
+  (`state.get("local") is None or args.local_disposition`, verified in the
+  installed v0.64.33 coordinator), and the stage reuses the stored receipt
+  after exact-match validation and applies the rebuttal without re-running any
+  provider. A fresh `--attempt-id` is **not** required for this. Earlier
+  guidance here said the opposite; it predated the fix, which landed upstream on
+  2026-08-09 as `7beccf32` ("apply local-disposition reruns and gate on
+  outstanding findings") and first shipped in **v0.64.33** — the version this
+  repository has installed. Issue platypeeps/sd-ai-command-pack#397 closed the
+  same day.
+  What survived is the failure one step over: a disposition set whose ids match
+  no finding at the current head returns `invalid`, and below pack v0.66.1 the
+  coordinator persisted that verdict *over* the good report, so the next
+  invocation replayed the rejection even with no dispositions at all. Two ways
+  out, in preference order. **Re-invoke with a disposition set that does match**
+  — `or args.local_disposition` re-enters the stage regardless of what is
+  cached, so a corrected set replaces the rejection in the same attempt. That
+  works only when a valid id exists to supply; when the receipt has no finding
+  to rebut, it does not. **Then** a fresh `--attempt-id`, which costs less than
+  it sounds: it discards the *coordinator's* attempt state — remote request,
+  receipt, observation, recorded dispositions — while the local stage's durable
+  provider receipt survives and is reused, because its identity is
+  `_receipt_identity(target, plan)` and carries no attempt id
+  (`sd-ai-command-pack-review-local.py`, `execute`). From v0.66.1 neither is
+  needed: the rejection is not persisted, so the next invocation reuses a prior
+  stored report or recomputes when none exists — never replays the rejection
+  (platypeeps/sd-ai-command-pack#417 — routing and evidence in the
+  `08-10-review-check-cache-pr-body` task's `disposition.md`).
+  Neither behaviour is something to patch locally: the coordinator is vendored.
 - **Auditable, not silent.** The finding stays in the receipt with
   `disposition: rebutted` under `disposition.localDispositions`; the
   `outstanding` count that drives `_remote_gate` is recomputed from remaining
@@ -880,7 +902,16 @@ Worked example, each field filled in (the full record is this file's
 
 Filed upstream relays (approved per-PR, the other side of the route) are
 precedented in the 08-07 task's relay log: platypeeps/sd-ai-command-pack#397,
-#398, #399.
+#398, #399 — each an issue reporting a defect for upstream to fix.
+
+A relay may also carry the fix. platypeeps/sd-ai-command-pack#417 is the first:
+it implements the change in the upstream repository, with its regression tests
+and the release-payload bookkeeping upstream requires, rather than describing
+the defect and waiting. Use it when the defect is understood well enough to fix
+and the upstream repository is available to work in; use the issue form when it
+is not. Either way the per-PR approval in part 4 above is required first, and
+the originating task records the route in its own `disposition.md`
+(`08-10-review-check-cache-pr-body` for #417).
 
 ---
 
