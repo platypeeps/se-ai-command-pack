@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from unittest import mock
 
-from install_test_support import PACK_ROOT, TempDirTestCase
+from install_test_support import PACK_ROOT, TempDirTestCase, git_env
 
 from installer.registry import SKILL_NAMES
 
@@ -1056,7 +1056,7 @@ class SkillReviewInventoryTest(TempDirTestCase):
         trellis = root / ".trellis" / "scripts" / "task.py"
         trellis.parent.mkdir(parents=True)
         trellis.write_text("# fixture task entrypoint\n", encoding="utf-8")
-        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        subprocess.run(["git", "init", "-q", str(root)], check=True, env=git_env())
         subprocess.run(
             [
                 "git",
@@ -1068,6 +1068,7 @@ class SkillReviewInventoryTest(TempDirTestCase):
                 "git@github.com:platypeeps/se-ai-command-pack.git",
             ],
             check=True,
+            env=git_env(),
         )
 
     def test_installed_discovery_prefers_repo_and_deduplicates_platforms(self) -> None:
@@ -1390,7 +1391,7 @@ class SkillReviewInventoryTest(TempDirTestCase):
         if shutil.which("git") is None:
             self.skipTest("git executable is not available")
         root, _ = self.write_se_pack()
-        subprocess.run(["git", "init", "-q", str(root)], check=True)
+        subprocess.run(["git", "init", "-q", str(root)], check=True, env=git_env())
         subprocess.run(
             [
                 "git",
@@ -1402,6 +1403,7 @@ class SkillReviewInventoryTest(TempDirTestCase):
                 "git@github.com:example/not-the-pack.git",
             ],
             check=True,
+            env=git_env(),
         )
         payload = self.inventory(root, "se-test")
         self.assertEqual(payload["repositories"][0]["ownerKind"], "unresolved")

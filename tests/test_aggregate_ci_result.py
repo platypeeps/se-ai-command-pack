@@ -40,6 +40,7 @@ def payload(**overrides: str) -> dict[str, dict[str, str]]:
     """An all-acceptable needs payload; keyword overrides replace results."""
     lanes = {
         "unittest": "success",
+        "test-hermetic": "success",
         "lint": "success",
         "release-payload-gate": "success",
         "review-preflight": "success",

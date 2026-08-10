@@ -29,7 +29,7 @@ from typing import Any
 from unittest import mock
 
 import yaml
-from install_test_support import PACK_ROOT, TempDirTestCase
+from install_test_support import PACK_ROOT, TempDirTestCase, git_env
 
 from installer.registry import SKILL_NAMES, SKILL_RUNTIME_PROFILES
 
@@ -150,6 +150,7 @@ def tracked_skill_documents() -> list[Path]:
         capture_output=True,
         text=True,
         check=True,
+        env=git_env(),
     )
     return [
         PACK_ROOT / name

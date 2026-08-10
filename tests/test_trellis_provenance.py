@@ -18,6 +18,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from install_test_support import git_env, hermetic_git_environment
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_PATH = REPO_ROOT / ".github" / "scripts" / "check-trellis-provenance.py"
 
@@ -46,6 +48,7 @@ class FixtureRepo:
             capture_output=True,
             text=True,
             check=True,
+            env=git_env(),
         )
 
     def write(self, rel: str, content: str) -> None:
@@ -82,8 +85,14 @@ class FixtureRepo:
         self.write(self.manifest_path, json.dumps(manifest, indent=2) + "\n")
 
     def run_checker(self, *args: str) -> tuple[int, str]:
+        """The checker runs git in-process with no ``env=`` to pass, so the
+        hermetic environment has to be ambient for the duration of the call."""
         stdout = io.StringIO()
-        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stdout):
+        with (
+            hermetic_git_environment(),
+            contextlib.redirect_stdout(stdout),
+            contextlib.redirect_stderr(stdout),
+        ):
             status = checker.main(["--repo", str(self.root), *args])
         return status, stdout.getvalue()
 

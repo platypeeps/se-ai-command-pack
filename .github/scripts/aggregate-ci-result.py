@@ -17,7 +17,13 @@ import json
 import os
 import sys
 
-REQUIRED_LANES = {"unittest", "lint", "release-payload-gate", "review-preflight"}
+REQUIRED_LANES = {
+    "unittest",
+    "test-hermetic",
+    "lint",
+    "release-payload-gate",
+    "review-preflight",
+}
 CONDITIONAL_LANES = {"auto-tag-release"}
 
 

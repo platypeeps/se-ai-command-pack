@@ -15,6 +15,7 @@ from unittest import mock
 from install_test_support import (
     PACK_ROOT,
     TempDirTestCase,
+    git_env,
     install_ok,
     make_home,
     run_installer,
@@ -29,16 +30,6 @@ from installer.management import (
     update_pack,
 )
 from installer.registry import PACK_NAME, PROVENANCE_FILE
-
-GIT_ENV = {
-    **os.environ,
-    "GIT_AUTHOR_NAME": "test",
-    "GIT_AUTHOR_EMAIL": "test@example.com",
-    "GIT_COMMITTER_NAME": "test",
-    "GIT_COMMITTER_EMAIL": "test@example.com",
-    "GIT_CONFIG_GLOBAL": os.devnull,
-    "GIT_CONFIG_SYSTEM": os.devnull,
-}
 
 
 class UpdateFixtureMixin:
@@ -866,11 +857,19 @@ class SourcePinningTest(UpdateFixtureMixin, TempDirTestCase):
     checks pass; a run that re-resolved sourceRoot by name would reach it.
     """
 
+    def setUp(self) -> None:
+        super().setUp()
+        # Two tests here call the real `_run_git`, and production code passes
+        # no `env=` (installer/management.py), so the scrub has to be ambient.
+        patcher = mock.patch.dict(os.environ, git_env(), clear=True)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def _git(self, *args: str, cwd) -> str:
         result = subprocess.run(
             ["git", *args],
             cwd=str(cwd),
-            env=GIT_ENV,
+            env=git_env(),
             text=True,
             capture_output=True,
             check=False,

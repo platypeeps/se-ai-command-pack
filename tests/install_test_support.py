@@ -2,12 +2,16 @@
 
 from __future__ import annotations
 
+import contextlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
 import unittest
+from collections.abc import Iterator
 from pathlib import Path
+from unittest import mock
 
 PACK_ROOT = Path(__file__).resolve().parent.parent
 if str(PACK_ROOT) not in sys.path:
@@ -22,6 +26,47 @@ from installer.registry import (  # noqa: E402
 )
 
 ALL_PLATFORMS = tuple(sorted(PLATFORM_REGISTRY))
+
+
+def git_env(**overrides: str) -> dict[str, str]:
+    """Environment for a git that must not see this machine's state.
+
+    Built from a ``GIT_*``-stripped copy of ``os.environ``: pointing only the
+    file scopes at ``os.devnull`` would leave ``GIT_CONFIG_COUNT``/``_KEY_n``/
+    ``_VALUE_n`` and ``GIT_CONFIG_PARAMETERS`` live at command-line scope,
+    which outranks every configuration file. Dropping the whole namespace also
+    closes ``GIT_DIR``, ``GIT_WORK_TREE``, ``GIT_INDEX_FILE``, and any future
+    sibling; a test has no legitimate use for an inherited ``GIT_*``.
+
+    ``GIT_CONFIG_GLOBAL`` needs git 2.32 (see CONTRIBUTING.md).
+    """
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(
+        {
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_CONFIG_SYSTEM": os.devnull,
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_AUTHOR_NAME": "test",
+            "GIT_AUTHOR_EMAIL": "test@example.com",
+            "GIT_COMMITTER_NAME": "test",
+            "GIT_COMMITTER_EMAIL": "test@example.com",
+            "GIT_TERMINAL_PROMPT": "0",
+        }
+    )
+    env.update(overrides)
+    return env
+
+
+@contextlib.contextmanager
+def hermetic_git_environment(**overrides: str) -> Iterator[None]:
+    """Apply :func:`git_env` to ``os.environ`` for the duration of the block.
+
+    For the callers that reach git through a child script or through
+    production code that passes no ``env=``, where there is no keyword
+    argument to add.
+    """
+    with mock.patch.dict(os.environ, git_env(**overrides), clear=True):
+        yield
 
 
 def make_home(base: Path, anchors: tuple[str, ...] = ALL_PLATFORMS) -> Path:
