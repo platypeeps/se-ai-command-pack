@@ -39,12 +39,15 @@ Trellis, not a convention either way.
 
 ### Blast radius
 
-`write_json` has fourteen call sites — twelve in `task_store.py`, two in
+`write_json` has fourteen call sites (measured 2026-08-07, re-verified
+2026-08-09) — twelve in `task_store.py`, two in
 `task.py` — covering create, start, set-base-branch, set-scope, and every
 parent/child link mutation. Every one produces a newline-less file.
 
-Measured across the active task tree: **22 of 22** `task.json` files have no
-trailing newline. Not one exception remains.
+Measured across the active task tree on 2026-08-07: **22 of 22** `task.json`
+files have no trailing newline. Not one exception remains. (The active set
+churns as tasks archive; the ratio has stayed total-of-total on every
+re-measurement.)
 `.trellis/.template-hashes.json` is also affected.
 
 An earlier measurement on 2026-08-06 found 15 of 19, with four files that had
@@ -97,9 +100,9 @@ terminal record with the four-field record format defined there.
     `.trellis/spec/backend/quality-guidelines.md` that `task.json` is written
     without a trailing newline, that a hand edit should not add one, and that a
     no-newline marker in a `task.json` diff is expected rather than a defect.
-- State what happens to the 22 existing files. A code change fixes only files
-  written after it lands; a bulk rewrite would touch 22 tasks in one commit for
-  cosmetic reasons. Pick one and say why — do not leave it implied. Note that
+- State what happens to the existing unmarked files (22 at the 2026-08-07
+  measurement). A code change fixes only files written after it lands; a bulk
+  rewrite would touch every active task in one commit for cosmetic reasons. Pick one and say why — do not leave it implied. Note that
   files rewritten by any later `task.py` command converge on the fixed behaviour
   on their own, so the bulk rewrite buys only the files nothing touches again.
 - Do not change `write_json`'s atomicity, its `mkstemp`/`os.replace` sequence,
@@ -108,6 +111,53 @@ terminal record with the four-field record format defined there.
   as a workaround. That would mask the inconsistency at the diff layer while
   leaving the two writers disagreeing.
 
+## Disposition (recorded 2026-08-09)
+
+**Local-only record, with the upstream proposal relayed as an issue.** The
+PRD's preferred route is upstream, and an upstream pull request requires
+explicit per-PR approval that this run's authority excludes and did not
+seek — so the proposal travels as a relay issue instead
+([sd-ai-command-pack#413](https://github.com/platypeeps/sd-ai-command-pack/issues/413),
+the established relay channel for vendored-artifact defects), and the
+terminal local outcome is a record, not a fork: `common/io.py` is Registry A
+upstream-Trellis vendored, and a local edit would be silently reverted by
+the next refresh (disposition rule 2).
+
+**The two writers, cited:** `write_json` builds
+`json.dumps(data, indent=2, ensure_ascii=False)` and writes it verbatim
+(`.trellis/scripts/common/io.py:37`), while
+`.trellis/scripts/common/active_task.py:428` writes the identical
+`json.dumps` call with `+ "\n"` appended. The proposal is one character:
+append `"\n"` in `write_json`, matching `active_task.py`. The atomic-write
+behaviour is unchanged by the proposal — the `mkstemp`/`os.replace`
+sequence, the error handling, and the return contract are each named as
+unaltered.
+
+**Migration answer for the existing unmarked files: none — deliberately.**
+(The Problem section's count — 22 of 22 — is the 2026-08-07 measurement; the
+active set churns as tasks archive, and re-measurement on 2026-08-09 found
+10 of 10, still with no exception.) A bulk rewrite would touch every active
+task directory in one commit for a cosmetic byte,
+and hand corrections are already proven non-durable (all four 2026-08-06
+corrections were reverted by ordinary `task.py` commands). Once the upstream
+fix lands, every file rewritten by any later `task.py` command converges on
+its own; files nothing touches again keep the missing newline harmlessly.
+
+**Reader guidance** (also recorded with the four-field record in
+`.trellis/spec/backend/quality-guidelines.md`): until the upstream change
+lands, a `\ No newline at end of file` marker on a `task.json` diff is
+expected machine output, not a defect; do not hand-add the newline — the
+next mutating `task.py` command that rewrites the file reverts it and
+produces a second no-op-looking diff.
+
+**Four-field record:** owning pack: upstream Trellis (vendored via
+sd-ai-command-pack's Trellis install); file:
+`.trellis/scripts/common/io.py` (Registry A, `.trellis/.template-hashes.json`);
+behaviour: `write_json` omits the trailing newline `active_task.py:428`
+appends, so every `task.json` ends mid-line and hand edits produce two-line
+diffs with a no-newline marker; no upstream PR was opened — the proposal is
+relayed as sd-ai-command-pack#413.
+
 ## Acceptance Criteria
 
 - [ ] The disposition is recorded with its reasoning, including whether upstream
@@ -115,8 +165,8 @@ terminal record with the four-field record format defined there.
 - [ ] The record cites both writers by file and line — `io.py:37` and
       `active_task.py:428` — so the inconsistency is verifiable without
       re-deriving it.
-- [ ] The migration answer for the existing 22 files is stated explicitly, with
-      its reason.
+- [ ] The migration answer for the existing unmarked files (the cohort measured
+      2026-08-07) is stated explicitly, with its reason.
 - [ ] If the upstream route is chosen, the proposal confirms the atomic-write
       behaviour is unchanged — the `mkstemp`/`os.replace` sequence, the error
       handling, and the return contract are each named as unaltered, not left
