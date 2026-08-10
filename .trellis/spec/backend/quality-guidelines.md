@@ -2209,6 +2209,12 @@ make lock-check    # offline consistency gate, also wired into `make check`
   an older version, or a lock hand-edited in a way that stays internally
   consistent, passes. That needs a resolver and a network; only `make lock`
   followed by an empty diff proves regeneration.
+- A *missing* entry is not part of that gap. `--require-hashes` rejects any
+  dependency pip resolves that the file does not pin, so deleting an entry
+  fails the install with that requirement named rather than passing quietly —
+  verified by installing a lock with `mypy-extensions` removed, which exits 1
+  on `mypy_extensions>=1.0.0 ... These do not:`. The undetectable case is
+  stale-but-consistent, not absent.
 - Entry detection must not require `==`. A rule keyed on the pin operator skips
   a loosened requirement instead of reporting it — silently passing the exact
   desync the gate exists to catch.

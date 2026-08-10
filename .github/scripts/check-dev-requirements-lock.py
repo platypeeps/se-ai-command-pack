@@ -12,6 +12,13 @@ install step it protects. It verifies direct-pin synchronization plus lock
 pin/hash completeness; it cannot prove the lock is a faithful regeneration of
 its input, which is not decidable without a resolver and a network.
 
+That gap is narrower than it sounds. A lock *missing* an entry cannot pass
+silently: pip's ``--require-hashes`` mode rejects any dependency it resolves
+that the file does not pin, so the install fails with the offending
+requirement named. What stays undetectable here is a stale-but-consistent
+lock — every entry present and hashed, one of them simply older than a fresh
+resolve would produce.
+
 Findings are reported as ``<class>: <detail>`` lines. Exit status: 0 pass,
 1 findings, 2 usage/environment/malformed-input error.
 """

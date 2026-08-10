@@ -60,7 +60,10 @@ the version changes.
 
 `.github/dependabot.yml` configures Dependabot to open weekly `pip` pull
 requests for the pins in `requirements-dev.txt` (PyYAML, ruff, mypy, coverage),
-one PR per package, with a `chore(deps)` commit prefix.
+one PR per package, with a `chore(deps)` commit prefix. Triage each with the
+`sd-update-deps` workflow: it classifies the bump, merges the safe class through
+the housekeeping gate, and parks the rest for review. Dependabot is the only
+sanctioned source that hands a classified dependency PR to housekeeping.
 
 **Lock regeneration.** Nothing installs from `requirements-dev.txt` directly.
 `make lock` compiles it into `requirements-dev.lock` — fully pinned, hashed, and
@@ -69,10 +72,7 @@ wheel-only — and that lock is what CI and `make setup` install with
 a dependency PR is incomplete until the maintainer runs `make lock` and commits
 the regenerated lock in the same PR. `make lock-check` is what fails when they
 drift apart; without it the merge would be a silent no-op that reinstalls the
-version the PR claimed to replace. Triage each with the
-`sd-update-deps` workflow: it classifies the bump, merges the safe class through
-the housekeeping gate, and parks the rest for review. Dependabot is the only
-sanctioned source that hands a classified dependency PR to housekeeping.
+version the PR claimed to replace.
 
 Enablement: this repository is not a fork, so committing `dependabot.yml` to the
 default branch is itself the enablement — version updates start automatically,
