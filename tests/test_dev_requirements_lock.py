@@ -175,6 +175,10 @@ class LockCheckerTest(unittest.TestCase):
         status, output = self.run_fixture()
         self.assertEqual(status, 2, output)
         self.assertIn(checker.INPUT_PATH, output)
+        # `make lock` regenerates the lock, not its input, so offering it here
+        # would point the reader at a command that cannot fix the problem.
+        self.assertNotIn("make lock", output)
+        self.assertIn("--repo", output)
 
     def test_empty_lock_is_an_error(self) -> None:
         self.fixture(lock_text="# only a comment\n")

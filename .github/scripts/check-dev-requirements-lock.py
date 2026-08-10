@@ -59,11 +59,18 @@ def normalize(name: str) -> str:
     return NORMALIZE_RE.sub("-", name).lower()
 
 
-def read_lines(path: Path) -> list[str]:
+def read_lines(path: Path, missing_hint: str) -> list[str]:
+    """Read ``path``, converting an unreadable file into a CheckError (exit 2).
+
+    ``missing_hint`` is per-file on purpose: `make lock` recreates the lock but
+    not its input, so offering it for a missing ``requirements-dev.txt`` sends
+    the reader somewhere that cannot help — the likely cause there is a wrong
+    ``--repo``.
+    """
     try:
         return path.read_text(encoding="utf-8").splitlines()
     except FileNotFoundError as exc:
-        raise CheckError(f"{path} not found; run `make lock` to create it") from exc
+        raise CheckError(f"{path} not found; {missing_hint}") from exc
     except OSError as exc:
         raise CheckError(f"{path} is unreadable: {exc}") from exc
 
@@ -103,8 +110,13 @@ def parse_entries(
 
 
 def run_check(repo: Path) -> list[str]:
-    input_lines = read_lines(repo / INPUT_PATH)
-    lock_lines = read_lines(repo / LOCK_PATH)
+    input_lines = read_lines(
+        repo / INPUT_PATH,
+        f"check that --repo points at a repository root containing {INPUT_PATH}",
+    )
+    lock_lines = read_lines(
+        repo / LOCK_PATH, "run `make lock` to create it"
+    )
 
     findings: list[str] = []
 
