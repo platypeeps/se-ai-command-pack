@@ -71,8 +71,18 @@ def wrapped_workflows() -> set[str]:
 
 
 def routing_section() -> str:
-    """The marker-bounded routing section, or an assertion naming what broke."""
-    document = AGENTS_DOC.read_text(encoding="utf-8")
+    """The marker-bounded routing section of the checked-in `AGENTS.md`."""
+    return section_of(AGENTS_DOC.read_text(encoding="utf-8"))
+
+
+def section_of(document: str) -> str:
+    """The marker-bounded routing section, or an assertion naming what broke.
+
+    Split from the reader so the failure paths below can be exercised against
+    synthetic documents. Asserting them against `AGENTS.md` itself would need a
+    test that edits a tracked file, and a guard whose failure path never runs is
+    indistinguishable from one that cannot fail.
+    """
     for marker in (TRELLIS_END, SECTION_START, SECTION_END):
         if document.count(marker) != 1:
             raise AssertionError(f"AGENTS.md must contain exactly one {marker}")
@@ -84,6 +94,20 @@ def routing_section() -> str:
             "close after it opens"
         )
     return document[start + len(SECTION_START) : end]
+
+
+def section_bullets() -> list[str]:
+    """Every bullet inside the section, matching the grammar or not.
+
+    `route_lines` keeps only what parses, so a bullet the grammar misses is
+    invisible to it. Reading the unfiltered bullets is what lets a test notice
+    a route written in some other shape.
+    """
+    return [
+        stripped
+        for line in routing_section().split("\n")
+        if (stripped := line.strip()).startswith("- `")
+    ]
 
 
 def route_lines() -> list[re.Match[str]]:
@@ -108,6 +132,49 @@ class RoutingSectionPlacementTest(unittest.TestCase):
                 "the SD routing content belongs outside the Trellis block, "
                 "which a trellis update overwrites",
             )
+
+
+class SectionParserTest(unittest.TestCase):
+    """The extractor's failure paths, on synthetic documents.
+
+    `test_section_sits_below_the_trellis_managed_block` above passes because
+    the real document is well formed; these say what happens when it is not.
+    """
+
+    BODY = (
+        "\n- `start` — canonical `/sd:start`; bypassed by resolving "
+        "`trellis-start` directly\n"
+    )
+
+    def document(self, *, order: str = "normal", drop: str = "") -> str:
+        section = f"{SECTION_START}{self.BODY}{SECTION_END}\n"
+        document = (
+            f"# Doc\n{TRELLIS_END}\n{section}"
+            if order == "normal"
+            else f"# Doc\n{section}{TRELLIS_END}\n"
+        )
+        return document.replace(drop, "", 1) if drop else document
+
+    def test_a_well_formed_document_parses(self) -> None:
+        self.assertIn("`/sd:start`", section_of(self.document()))
+
+    def test_a_missing_marker_is_named(self) -> None:
+        for marker in (TRELLIS_END, SECTION_START, SECTION_END):
+            with self.subTest(missing=marker):
+                with self.assertRaises(AssertionError) as raised:
+                    section_of(self.document(drop=marker))
+                self.assertIn(marker, str(raised.exception))
+
+    def test_a_duplicated_marker_is_named(self) -> None:
+        with self.assertRaises(AssertionError):
+            section_of(self.document() + SECTION_START)
+
+    def test_a_section_inside_the_managed_block_is_rejected(self) -> None:
+        # The whole point of the placement rule: a trellis update overwrites
+        # anything above TRELLIS:END, so a section there is silently lost.
+        with self.assertRaises(AssertionError) as raised:
+            section_of(self.document(order="above"))
+        self.assertIn("after the Trellis block closes", str(raised.exception))
 
 
 class WrappedWorkflowDerivationTest(unittest.TestCase):
@@ -139,6 +206,19 @@ class RoutingSectionContentTest(unittest.TestCase):
             with self.subTest(line=match.group(0)):
                 self.assertEqual(match.group("workflow"), match.group("canonical"))
                 self.assertEqual(match.group("workflow"), match.group("wrapped"))
+
+    def test_no_bullet_escapes_the_route_grammar(self) -> None:
+        # Set equality only sees bullets the grammar parsed. A second bullet
+        # routing an already-listed workflow some other way — "- `start` — use
+        # `/trellis:start` directly" — leaves the derived set intact and would
+        # otherwise pass while contradicting the canonical route.
+        escaped = [line for line in section_bullets() if not ROUTE_LINE.match(line)]
+        self.assertEqual(
+            escaped,
+            [],
+            "every bullet in the routing section must be a route line in the "
+            "documented shape",
+        )
 
     def test_each_workflow_has_exactly_one_route_line(self) -> None:
         listed = [match.group("workflow") for match in route_lines()]
