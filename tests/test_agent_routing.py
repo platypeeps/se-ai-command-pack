@@ -122,7 +122,7 @@ class RoutingSectionPlacementTest(unittest.TestCase):
     def test_section_sits_below_the_trellis_managed_block(self) -> None:
         routing_section()  # raises with the specific placement failure
 
-    def test_the_trellis_managed_block_was_not_edited(self) -> None:
+    def test_no_sd_routing_content_sits_inside_the_managed_block(self) -> None:
         document = AGENTS_DOC.read_text(encoding="utf-8")
         managed = document[: document.index(TRELLIS_END)]
         for token in (SECTION_START, SECTION_END, "/sd:"):
