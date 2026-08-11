@@ -1023,3 +1023,38 @@ AGENTS.md routed agents to /trellis:finish-work and /trellis:continue by name an
 ### Next Steps
 
 - None - task complete
+
+
+## Session 179: Record two upstream pack workflow defects as a parked task
+
+**Date**: 2026-08-10
+**Task**: Record two upstream pack workflow defects as a parked task
+**Branch**: `task/08-10-upstream-pack-workflow-drift`
+
+### Summary
+
+Shipping 07-25-audit-workflow-entrypoint-routing surfaced two defects in vendored pack files: sd-finish-work's fallback guidance names add_session.py placeholders that no longer exist, and sd-ship Stage 2b's mandated successor-head re-entry spends the same sd-review round budget, so an ordinary chain needs an over-limit round for bookkeeping rebuttals. Neither is fixable from this repository, so both are recorded as the parked task 08-10-upstream-pack-workflow-drift, blocked on upstream PR approval in platypeeps/sd-ai-command-pack.
+
+### Main Changes
+
+- .trellis/tasks/08-10-upstream-pack-workflow-drift: parked PRD carrying both findings, the measured evidence for each, and three options for the round-budget fix
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1559463` | docs(trellis): record two upstream pack workflow defects |
+
+### Testing
+
+- [OK] node scripts/sd-ai-command-pack-review-preflight.mjs — 0 failure(s), 0 warning(s)
+- [OK] every path:line citation in the PRD re-read against the working tree before commit
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
