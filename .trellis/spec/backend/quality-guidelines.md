@@ -912,6 +912,20 @@ jq --arg p "$P" '[.files[] | select(.target==$p)] | first // "absent"
 5. **Neither registry matches: repo-owned.** Edit freely under normal review.
    This file (`.trellis/spec/backend/quality-guidelines.md`) is the standing
    example.
+6. **Repo-owned does not mean nobody upstream wrote it.** `AGENTS.md` is the
+   sharp case: its entire body is a Trellis-generated
+   `<!-- TRELLIS:START -->`…`<!-- TRELLIS:END -->` block, yet it classifies
+   repo-owned because Trellis writes no receipt for it and
+   `.github/trellis-provenance.json` covers only the platform directories plus
+   `.gitignore`. The registries say "edit freely"; the file's own closing line
+   says "Edits outside this block are preserved; edits inside may be
+   overwritten by a future `trellis update`." Both are true, and the second is
+   the operative one — a repo-owned file can still carry an upstream-managed
+   region. Put repo content **below the closing marker**, never inside it, and
+   guard it, because no receipt will notice when a refresh eats an in-block
+   edit. `AGENTS.md`'s routing section and `tests/test_agent_routing.py` are
+   the worked example; the pack's own `.github/copilot-instructions.md`
+   managed block is the same shape with a receipt behind it.
 
 Verified against six real files with known, differing classifications — each
 lookup above yields exactly this row:
