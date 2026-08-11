@@ -60,7 +60,12 @@ def wrapped_workflows() -> set[str]:
         twin = f"trellis-{workflow}"
         if not (SKILLS_DIR / twin / "SKILL.md").is_file():
             continue
-        if twin in skill.read_text(encoding="utf-8"):
+        # Not a plain substring test: `trellis-update` occurs inside
+        # `trellis-update-spec`, so a hypothetical `sd-update` would match on
+        # its neighbour's name. The lookahead demands the reference end where
+        # the twin's name ends.
+        reference = re.compile(re.escape(twin) + r"(?![a-z0-9-])")
+        if reference.search(skill.read_text(encoding="utf-8")):
             found.add(workflow)
     return found
 
