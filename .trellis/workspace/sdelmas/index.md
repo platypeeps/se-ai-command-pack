@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 177
+- **Total Sessions**: 178
 - **Last Active**: 2026-08-10
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~977 | Active |
+| `journal-4.md` | ~1021 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 178 | 2026-08-10 | Name one canonical entry point per wrapped workflow | `1b895c4`, `27e59cf`, `8aa3e73`, `c6a566b` | `task/07-25-audit-workflow-entrypoint-routing` |
 | 177 | 2026-08-10 | Test hermeticity and update e2e coverage | `249f884`, `73537e4`, `aa47eb0`, `9dacfa1`, `65e3c4d` | `task/07-25-audit-test-hermeticity` |
 | 176 | 2026-08-10 | Record the sd-review attempt-replay defect against the review-scope task | `d94342a` | `chore/record-review-scope-replay-defect` |
 | 175 | 2026-08-10 | skill_review internals: one containment predicate, one authoritative frontmatter grammar | `007a22f`, `ac1f2f5`, `99ace93`, `95d5b56`, `6c3fd58`, `957777e`, `f4d17ef` | `task/07-25-audit-skill-review-internals` |

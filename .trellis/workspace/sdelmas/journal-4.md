@@ -978,3 +978,48 @@ Made the test suite independent of the developer's git configuration and of untr
 ### Next Steps
 
 - None - task complete
+
+
+## Session 178: Name one canonical entry point per wrapped workflow
+
+**Date**: 2026-08-10
+**Task**: Name one canonical entry point per wrapped workflow
+**Branch**: `task/07-25-audit-workflow-entrypoint-routing`
+
+### Summary
+
+AGENTS.md routed agents to /trellis:finish-work and /trellis:continue by name and never mentioned the sd:* wrappers, pointing at the bypassing path (audit A-005). Added a repo-own routing section below the Trellis managed block naming one canonical entry point per wrapped workflow, plus tests/test_agent_routing.py, which derives the wrapped set from .agents/skills/ at run time and fails when the section drifts. The upstream half of A-005 — a pack-installed managed block and a declared-entry-point seam in Trellis — is recorded as the parked task 08-10-upstream-entrypoint-routing-mechanisms.
+
+### Main Changes
+
+- AGENTS.md: SD-ROUTING section below <!-- TRELLIS:END -->, naming the canonical /sd: entry point for continue, finish-work, start, and update-spec, and stating the residual bypass Trellis emits from vendored files
+- tests/test_agent_routing.py: derives the wrapped set from two signals that must agree (same-name sd-/trellis- skill pair, plus the sd- skill naming its twin at a name boundary), pins one route line per workflow, and asserts every bullet parses as a route line
+- tests/test_agent_routing.py: section_of(document) split from the file reader so the placement, missing-marker, and duplicate-marker failure paths run against synthetic documents
+- .trellis/spec/backend/quality-guidelines.md: ownership lookup rule 6 — repo-owned by the registries does not mean nobody upstream wrote it; put repo content below the closing marker and guard it
+- .trellis/tasks/08-10-upstream-entrypoint-routing-mechanisms: parked follow-up for the two upstream mechanisms, blocked on PR approval in platypeeps/sd-ai-command-pack and mindfold-ai/Trellis
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `1b895c4` | feat(routing): name one canonical entry point per wrapped workflow |
+| `27e59cf` | fix(test): match the wrapped twin at its name boundary |
+| `8aa3e73` | fix(test): prove the routing guard's failure paths |
+| `c6a566b` | fix(test): name the managed-block test for what it asserts |
+
+### Testing
+
+- [OK] make check exit 0 — Ran 735 tests, OK, coverage 89.1%
+- [OK] make test-hermetic — Ran 730 tests, OK (skipped=2)
+- [OK] make trellis-provenance — ok (54 hashed, 354 tracked platform files covered)
+- [OK] make gate-lint — All checks passed; mypy: no issues in 10 source files
+- [OK] 8 bite probes, each reverted: synthetic fifth wrapper, deleted route line, duplicated route line, trellis-check reference, floor drop, non-grammar route bullet, neutered placement check, dropped marker-count check — baseline OK
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
