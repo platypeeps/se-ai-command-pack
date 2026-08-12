@@ -227,3 +227,29 @@ Do **not** re-assert a wholesale `.claude/` or `.claude/*` ignore. Git cannot
 descend into a wholesale-ignored directory, so every tracked adapter would
 vanish from a fresh clone and no re-include below could bring it back. If you
 re-run `trellis init`, verify it did not put such a rule back.
+
+### Adding a tracked platform file
+
+`.github/scripts/check-trellis-provenance.py` hashes every tracked file under
+`.agents`, `.claude`, `.codex`, `.gemini`, `.github`, and `.opencode`, and the
+CI `release-payload-gate` job fails on any tracked path missing from
+`.github/trellis-provenance.json` (`uncovered:`) or whose content no longer
+matches its recorded hash (`drifted:`). Adding a file to one of those
+directories therefore has a second step:
+
+```bash
+make trellis-provenance                                                  # see findings
+python3 .github/scripts/check-trellis-provenance.py --write --accept PATH # absorb one
+```
+
+`make check` runs `trellis-provenance`, so the documented pre-review command
+catches this. `make release-check` does **not** — it covers only the payload
+comparison, and the CI job named `release-payload-gate` runs both, so a branch
+verified with `release-check` alone can still fail that job on provenance.
+
+`--accept` is repeatable and required per new path — `--write` alone rehashes
+what is already covered and will not silently adopt an unlisted file. Editing a
+vendored file shows up as `drifted:` instead; that is the gate working, and the
+fix is to revert the edit rather than rehash it. Until this repository dropped
+its wholesale `.claude/*` ignore, no `.claude` file was tracked, so this
+obligation is new for that directory and long-standing for the other five.
