@@ -12,8 +12,8 @@ idempotency, durable receipts, GitHub observation, and typed results. Do not
 reimplement those mechanisms in prose.
 
 This successor is self-contained. Never call, alias, or fall back to
-`sd-review-local`, `sd-review-pr`, a direct Copilot request, or a backend command
-found in configuration or a receipt.
+`sd-review-pr`, a direct Copilot request, or a backend command found in
+configuration or a receipt.
 
 ## Standing GitHub authority
 
@@ -93,6 +93,15 @@ Add `--pr-number <number>` only for a validated `pr=` control. Preserve the
 same controls and attempt while resuming an unchanged head. The controller's
 private state and durable receipt make a resume idempotent; do not delete state
 or increment the attempt merely because a receipt is delayed.
+
+A resume replays completed work, not verdicts. A deterministic-check failure, a
+rejected `--local-disposition` set, and a local provider failure each turn on an
+input the attempt key does not cover, so the controller reports them without
+storing them and the next invocation of the same attempt recomputes that stage.
+Remedy the input the stage actually read — the pull-request body a scope check
+parses, the disposition ids, the unreachable provider — then rerun the unchanged
+attempt. A fresh `--attempt-id` is not the remedy: it discards the attempt's
+local and remote review evidence along with the stale verdict.
 
 Three coordinator-only evidence flags are not public invocation controls. After
 replying with a verified rebuttal to a receipt-declared conversation finding or
