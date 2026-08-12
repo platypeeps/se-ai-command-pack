@@ -1058,3 +1058,89 @@ Shipping 07-25-audit-workflow-entrypoint-routing surfaced two defects in vendore
 ### Next Steps
 
 - None - task complete
+
+
+## Session 180: Track the Claude adapter surface like the rest of the fleet
+
+**Date**: 2026-08-12
+**Task**: Track the Claude adapter surface like the rest of the fleet
+**Branch**: `chore/align-claude-gitignore-with-fleet`
+
+### Summary
+
+Removed the wholesale .claude/* ignore that shadowed the installer-owned narrow local-state rules, so 52 Trellis runtime surfaces become tracked, and refreshed the SD AI command pack to 0.71.1 on the same branch. Shipped as PR #214.
+
+### Main Changes
+
+- Deleted the top-of-file wholesale .claude/* deny plus re-include allowlist from .gitignore; the managed sd-ai-command-pack block already carried the same narrow .claude/** local-state rules the other seven fleet consumers use, and the deny silently shadowed them because git cannot descend into a wholesale-ignored directory.
+- 52 Trellis surfaces became tracked: .claude/agents/, .claude/hooks/, .claude/commands/trellis/, .claude/skills/trellis-*/, and settings.json, which wires up hook files a fresh clone never received.
+- Recorded provenance for the newly tracked Claude adapter files in .github/trellis-provenance.json.
+- Updated CONTRIBUTING.md: replaced the stale .claude/ tracking policy with what the repo now does, and added the newly vendored paths to the do-not-edit ownership table beside their .gemini twins.
+- Refreshed the SD AI command pack from 0.64.33 to 0.71.1 across 57 installed targets, retiring the sd-full-check and sd-review-local lanes on every adapter.
+- Recorded the retired shell review lane in the prism-rules spec (.trellis/spec/backend/quality-guidelines.md).
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b26f61a` | chore: refresh SD AI command pack to 0.71.1 |
+| `c38c4cd` | docs: record the retired shell review lane in the prism-rules spec |
+| `d78b279` | chore: track the Claude adapter surface like the rest of the fleet |
+| `97b93b4` | chore: record provenance for the newly tracked Claude adapter files |
+| `f777462` | docs(contributing): document the tracked-platform-file provenance step |
+
+### Testing
+
+- [OK] make test-hermetic: 735 tests OK (the lane that builds from tracked files only, so it is what the 52 additions actually move)
+- [OK] ownership suite: 15 passed / 21 subtests
+- [OK] release payload gate: no payload change, no version bump required
+- [OK] sd-check via sd-review: 11 passed, 1 skipped (advisory obsidian-kb), 0 failed at f777462
+- [OK] sd-review local providers: Gito v4.4.2 clean; Prism 7 findings, all verified untrue at their cited lines and rebutted (vendored pack/Trellis surfaces that name only commands still present)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 181: Unblock the PR #214 merge gate: KB gitignore banner and its provenance
+
+**Date**: 2026-08-12
+**Task**: Unblock the PR #214 merge gate: KB gitignore banner and its provenance
+**Branch**: `chore/align-claude-gitignore-with-fleet`
+
+### Summary
+
+The housekeeping merge gate refused PR #214 because its own pre-merge Obsidian KB refresh rewrote a banner line inside the pack-owned obsidian-kb block in .gitignore, dirtying the working tree. Committed the generated line, then rehashed the whole-file .gitignore provenance entry it drifted.
+
+### Main Changes
+
+- Committed the 0.71.1 KB writer's shorter obsidian-kb provenance banner in .gitignore, so housekeeping's pre-merge refresh no longer leaves the tree dirty and skips the merge with a working_tree_dirty anomaly.
+- Rehashed the .gitignore entry in .github/trellis-provenance.json. .gitignore is hashed whole-file under files as an explicit durability policy, so a change inside the pack-owned block reads as drift even though no Trellis rule moved.
+- Departed deliberately from CONTRIBUTING's revert-rather-than-rehash guidance for drifted vendored files: that guidance addresses hand-edits, and reverting here only lets the next pre-merge KB refresh re-dirty the tree, deadlocking the gate.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `bb8db9c` | chore: adopt the 0.71.1 obsidian-kb gitignore banner |
+| `dba1fe9` | chore: rehash .gitignore provenance after the KB banner change |
+
+### Testing
+
+- [OK] make trellis-provenance: ok (106 hashed, 394 tracked platform files covered)
+- [OK] sd-check via sd-review at dba1fe9: 12 passed, 0 skipped, 0 failed
+- [OK] sd-review local providers at dba1fe9: 0 findings outstanding, exact head ready
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
