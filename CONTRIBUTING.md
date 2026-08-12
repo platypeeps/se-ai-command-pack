@@ -253,3 +253,11 @@ vendored file shows up as `drifted:` instead; that is the gate working, and the
 fix is to revert the edit rather than rehash it. Until this repository dropped
 its wholesale `.claude/*` ignore, no `.claude` file was tracked, so this
 obligation is new for that directory and long-standing for the other five.
+
+`.gitignore` is covered too, as an explicit local durability policy, but it has
+two owners: this repository authors most of its rules and sd-ai-command-pack
+regenerates the blocks delimited by `# sd-ai-command-pack <name> start`/`end`
+markers. Only the repo-authored remainder is hashed, so an ordinary pack
+refresh never reports `drifted:` and the revert-don't-rehash rule above applies
+to `.gitignore` exactly when the edit lies outside those markers. Unbalanced
+markers are a malformed-input error (exit 2), not a silent pass.

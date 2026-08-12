@@ -106,7 +106,7 @@
     ".codex/hooks.json": "522ba3c488c100027783e52ecff84c0bd799852dd77ad3f1936e86db105f01d6",
     ".codex/hooks/inject-workflow-state.py": "0946e5b5c4c154538c1848c25c7f92a76c8ecc863b9a1c0f4b2e03bee071fcd0",
     ".codex/hooks/session-start.py": "bcfc4e00c686fb711f817c2b2105b5186377f6702fc0bc827da7240296237f89",
-    ".gitignore": "caf695b9cbef0b310b187efbc9693b6604b66eeeaba2ec40b50cb4d33ee3294e"
+    ".gitignore": "b3cc097a39c07e030fb6b464109378862ad897c676768074f8d845c09f769259"
   },
   "repoOwn": [
     ".github/PULL_REQUEST_TEMPLATE.md",
