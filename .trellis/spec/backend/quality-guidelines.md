@@ -428,12 +428,12 @@ before the real cause was found).
 
 **The two lanes, shipping branch delta:**
 
-- **Shell lane** (`scripts/sd-ai-command-pack-review-local.sh:327-346`)
-  passes `--rules`, `--fail-on`, and `--exclude`. The rules path falls back
-  to `.prism/rules.json`, then `prism-rules.json`, when no environment
-  override is set; `--fail-on` defaults to `high` through the same
-  env-override chain (`SD_AI_COMMAND_PACK_REVIEW_LOCAL_PRISM_FAIL_ON`, then
-  `SD_AI_COMMAND_PACK_FULL_CHECK_PRISM_FAIL_ON`).
+- **Shell lane** — *retired*. Pack 0.65.0 removed the vendored `sd-review-local`
+  shell runner along with the `SD_AI_COMMAND_PACK_REVIEW_LOCAL_*` environment
+  keys, and the 0.71.1 refresh deleted the copy here. It was the only lane that passed
+  `--rules`, `--fail-on`, and `--exclude`, so its removal makes the
+  divergence below total rather than partial: no shipped lane delivers
+  `.prism/rules.json` to prism any more.
 - **sd-review lane** — the lane `sd-ship` Stage 2 runs, and so the lane that
   gates shipping. The built-in adapter in
   `scripts/sd-ai-command-pack-review-local.py` (`_expand_argv`, `:1376`)
@@ -455,30 +455,26 @@ blocked round; since pack v0.64.26 the round is recoverable with a
 per-finding verify-and-rebut via `--local-disposition` (previous section),
 which softens the consequence without delivering the rule.
 
-**Degradation behaviour of the rules file — per case, per lane.** Shell lane:
-a missing or non-regular file fails the `[ -f "$rules" ]` check and the flag
-is silently omitted — fail-open by omission, prism runs on its defaults,
-which can report findings a rule would have suppressed but never silently
-suppresses findings the defaults would report. An unreadable-but-regular or
-malformed file passes `-f` (it does not test readability, and content is
-never validated) and is handed to prism, surfacing as prism's own runtime
-error. sd-review lane: the file is never read, so every degradation case is
-indistinguishable from the healthy one. No case in either lane converts a
+**Degradation behaviour of the rules file.** In the surviving sd-review lane
+the file is never read, so every degradation case — missing, unreadable,
+malformed — is indistinguishable from the healthy one. No case converts a
 findings outcome into a clean one. Do not assert a fail-closed property this
-code does not have.
+code does not have. (The retired shell lane fell back to prism's defaults
+when `[ -f "$rules" ]` failed, and handed an unreadable-but-regular or
+malformed file straight to prism; both behaviours left with the script.)
 
 **Ownership.** `.prism/rules.json` is Registry B `install: "if-not-exists"` —
 repository-owned after first install; a pack refresh will not discard its
 edits, and rules added to it are durable, only undelivered to the sd-review
-lane. Both review-local scripts are Registry B `install: "always"` (vendored).
+lane. `scripts/sd-ai-command-pack-review-local.py` is Registry B
+`install: "always"` (vendored); its shell sibling was retired in 0.65.0.
 
 **Local-only record** (per the four-field format in "Vendored-Artifact
 Ownership And Upstream Route"):
 
 - Owning pack: sd-ai-command-pack.
-- Files: `scripts/sd-ai-command-pack-review-local.py` and
-  `scripts/sd-ai-command-pack-review-local.sh` (Registry B, `kind: script`,
-  `install: "always"`).
+- Files: `scripts/sd-ai-command-pack-review-local.py` (Registry B,
+  `kind: script`, `install: "always"`).
 - Behaviour: the built-in prism adapter builds its argv with no `--rules`,
   `--exclude`, or `--fail-on` and never reads `.prism/rules.json`, so
   repository-owned prism rules are inert in the review lane that gates
