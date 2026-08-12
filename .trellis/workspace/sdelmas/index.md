@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 180
+- **Total Sessions**: 181
 - **Last Active**: 2026-08-12
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1103 | Active |
+| `journal-4.md` | ~1144 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 181 | 2026-08-12 | Unblock the PR #214 merge gate: KB gitignore banner and its provenance | `bb8db9c`, `dba1fe9` | `chore/align-claude-gitignore-with-fleet` |
 | 180 | 2026-08-12 | Track the Claude adapter surface like the rest of the fleet | `b26f61a`, `c38c4cd`, `d78b279`, `97b93b4`, `f777462` | `chore/align-claude-gitignore-with-fleet` |
 | 179 | 2026-08-10 | Record two upstream pack workflow defects as a parked task | `1559463` | `task/08-10-upstream-pack-workflow-drift` |
 | 178 | 2026-08-10 | Name one canonical entry point per wrapped workflow | `1b895c4`, `27e59cf`, `8aa3e73`, `c6a566b` | `task/07-25-audit-workflow-entrypoint-routing` |
