@@ -1144,3 +1144,38 @@ The housekeeping merge gate refused PR #214 because its own pre-merge Obsidian K
 ### Next Steps
 
 - None - task complete
+
+
+## Session 182: Refresh SD AI command pack to 0.71.2
+
+**Date**: 2026-08-12
+**Task**: Refresh SD AI command pack to 0.71.2
+**Branch**: `chore/sd-ai-command-pack-0.71.2`
+
+### Summary
+
+Installed the immutable v0.71.2 release for claude, gemini, github, and opencode; install audit passed 199 targets, the housekeeping self-test and local gate were clean.
+
+### Main Changes
+
+- Installed sd-ai-command-pack 0.71.2 for four platforms
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0f6c5cc9d17bd8fe33f6970f918e173e4402744f` | chore: refresh SD AI command pack to 0.71.2 |
+
+### Testing
+
+- [OK] scripts/sd-ai-command-pack-check.py --json: passed (11 passed, 0 failed, state guard clean)
+- [OK] housekeeping --self-test: all scenarios passed
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
