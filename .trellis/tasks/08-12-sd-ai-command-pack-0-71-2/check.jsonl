@@ -1,0 +1,1 @@
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Verify no hand-written substitute for installer-managed content was introduced. Every changed file must be output of install.py or the spec-KB helper, not an edit duplicating what a generator owns."}
