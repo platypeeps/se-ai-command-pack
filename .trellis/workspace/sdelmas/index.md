@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 182
-- **Last Active**: 2026-08-12
+- **Total Sessions**: 183
+- **Last Active**: 2026-08-13
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1180 | Active |
+| `journal-4.md` | ~1216 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 183 | 2026-08-13 | sd-ai-command-pack 0.71.4 refresh | `b54ea10d52523de2d7f154722e873409110de095` | `chore/sd-ai-command-pack-0.71.4` |
 | 182 | 2026-08-12 | Refresh SD AI command pack to 0.71.2 | `0f6c5cc9d17bd8fe33f6970f918e173e4402744f` | `chore/sd-ai-command-pack-0.71.2` |
 | 181 | 2026-08-12 | Unblock the PR #214 merge gate: KB gitignore banner and its provenance | `bb8db9c`, `dba1fe9` | `chore/align-claude-gitignore-with-fleet` |
 | 180 | 2026-08-12 | Track the Claude adapter surface like the rest of the fleet | `b26f61a`, `c38c4cd`, `d78b279`, `97b93b4`, `f777462` | `chore/align-claude-gitignore-with-fleet` |

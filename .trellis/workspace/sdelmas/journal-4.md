@@ -1179,3 +1179,40 @@ Installed the immutable v0.71.2 release for claude, gemini, github, and opencode
 ### Next Steps
 
 - None - task complete
+
+
+## Session 183: sd-ai-command-pack 0.71.4 refresh
+
+**Date**: 2026-08-13
+**Task**: sd-ai-command-pack 0.71.4 refresh
+**Branch**: `chore/sd-ai-command-pack-0.71.4`
+
+### Summary
+
+Refreshed the vendored sd-ai-command-pack from 0.71.2 to the 0.71.4 corrective release and carried forward four installer targets that had drifted from the recorded 0.71.2 payload.
+
+### Main Changes
+
+- Installed sd-ai-command-pack 0.71.4; provenance and manifest records updated.
+- Force-carried four installer targets after confirming their history holds only pack-refresh commits.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b54ea10d52523de2d7f154722e873409110de095` | chore(sd-ai-command-pack): refresh vendored pack 0.71.2 -> 0.71.4 |
+
+### Testing
+
+- [OK] install audit: 199 targets checked, provenance 0.71.4, vouched file hashes match
+- [OK] bash scripts/sd-ai-command-pack-housekeeping.sh --self-test: all scenarios passed
+- [OK] sd-check: 11 passed, 1 skipped (obsidian-kb advisory), 0 failed
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
