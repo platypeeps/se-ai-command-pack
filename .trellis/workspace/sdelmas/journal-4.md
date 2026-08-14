@@ -1216,3 +1216,41 @@ Refreshed the vendored sd-ai-command-pack from 0.71.2 to the 0.71.4 corrective r
 ### Next Steps
 
 - None - task complete
+
+
+## Session 184: sd-ai-command-pack 0.71.5 refresh
+
+**Date**: 2026-08-14
+**Task**: sd-ai-command-pack 0.71.5 refresh
+**Branch**: `chore/sd-ai-command-pack-0.71.5`
+
+### Summary
+
+Installed sd-ai-command-pack v0.71.5 over 0.71.4 in the second post-canary wave of fleet campaign refresh-0.71.5-20260814T113545Z. The changed always-files installed as updates with no conflict and no --force, against the corrected installer.
+
+### Main Changes
+
+- Installed the immutable v0.71.5 payload (source commit e115c70f, digest sha256:365af6fe); audit reports preserved=1, unchanged=198.
+- Left .prism/rules.json preserved as locally owned.
+- Recorded the refresh as an archived Trellis task rather than an unattributed installer diff.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5ac97cbd6ac136dfd34ff91d6f5263db519c8503` | chore: refresh sd-ai-command-pack to 0.71.5 |
+
+### Testing
+
+- [OK] install.py --check --audit: installed version 0.71.5, planned changes 0, audit passed
+- [OK] bash scripts/sd-ai-command-pack-housekeeping.sh --self-test: all scenarios passed
+- [OK] sd-check: 11 passed, 0 failed, 1 skipped (external-symlinked .obsidian-kb advisory)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
