@@ -1254,3 +1254,39 @@ Installed sd-ai-command-pack v0.71.5 over 0.71.4 in the second post-canary wave 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 185: chore: refresh sd-ai-command-pack to 0.71.6
+
+**Date**: 2026-08-14
+**Task**: chore: refresh sd-ai-command-pack to 0.71.6
+**Branch**: `chore/sd-ai-command-pack-0-71-6`
+
+### Summary
+
+Fleet campaign refresh-0.71.6-20260814T170234Z, post-canary wave 2 (se-ai-command-pack): install 0.71.6 over 0.71.5 and archive the dedicated task inside the published head.
+
+### Main Changes
+
+- Installed sd-ai-command-pack 0.71.6 over 0.71.5 through the vouched-upgrade path
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `901cb9346cce6e3c70e66a189aee97d78bdee625` | chore: refresh sd-ai-command-pack to 0.71.6 |
+
+### Testing
+
+- [OK] install audit: 199 targets, provenance 0.71.6, vouched hashes match
+- [OK] sd-check --json: passed (11 passed, 1 skipped, 0 failed)
+- [OK] housekeeping --self-test: all scenarios passed
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
