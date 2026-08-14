@@ -182,6 +182,20 @@ the regenerated lock in the same PR. `make lock-check` is what fails when they
 drift apart; without it the merge would be a silent no-op that reinstalls the
 version the PR claimed to replace.
 
+`make relock-pr PR=<number>` is that step in one command: it checks out the bot
+branch, regenerates the lock, and pushes it back, doing nothing if the lock
+already matches. It refuses a PR that Dependabot did not author and refuses to
+run against a dirty tree.
+
+This stays a local helper on purpose. Doing it in CI means holding a writable
+credential in a job triggered by a bot branch, and `GITHUB_TOKEN` cannot even
+be that credential — GitHub suppresses workflow runs for events it generates,
+so a lock pushed with it would never re-trigger `tests` and the PR would sit
+permanently unmergeable. Grouped updates cap this at roughly one PR a week, and
+that did not justify a standing write credential. The full comparison, including
+the isolated `pull_request_target` design that was rejected, is archived at
+`.trellis/tasks/archive/2026-08/08-14-dependabot-lock-automation/design.md`.
+
 Enablement: this repository is not a fork, so committing `dependabot.yml` to the
 default branch is itself the enablement — version updates start automatically,
 with no separate repo-level toggle needed to turn them on. They can still be

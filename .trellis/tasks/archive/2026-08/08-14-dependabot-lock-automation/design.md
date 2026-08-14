@@ -162,3 +162,39 @@ removes the human step; it never removes the check.
   `--universal --generate-hashes --only-binary :all:` byte-for-byte across two
   compilers is not a stable contract.
 - **Committing to relax `--require-hashes`.** Ruled out by the PRD constraints.
+
+---
+
+## DECISION (2026-08-14): not building this
+
+Resolved as **won't-do**. The design below is kept as the record of what was
+evaluated, not as a plan awaiting execution.
+
+What changed between writing this and deciding: the `GITHUB_TOKEN` finding.
+`pull_request_target` was chosen partly because it needed no new secrets, and
+that property does not survive — the push requires a GitHub App token, because
+GitHub suppresses workflow runs for events `GITHUB_TOKEN` generates, so a lock
+pushed with it would never re-trigger `tests` and the PR would sit permanently
+unmergeable.
+
+The arithmetic with that cost included:
+
+- **Saved:** four pins, grouped into roughly one PR a week, a couple of minutes
+  each — order of 2–3 hours a year.
+- **Paid:** a GitHub App to create, install, own, and rotate; two repository
+  secrets; a workflow whose correctness rests on git plumbing few reviewers will
+  follow; and a standing `contents: write` credential reachable from
+  `pull_request_target`, whose isolation holds only while nobody ever
+  "simplifies" it into checking out the head.
+
+The toil is bounded and visible; the risk is unbounded and quiet. Not worth it
+at this scale.
+
+**Shipped instead:** `make relock-pr PR=<number>` — the same manual step in one
+command, with no new credential and no new attack surface. Guards refuse a
+non-Dependabot PR and a dirty tree.
+
+**Known consequence, accepted:** the `sd-update-deps` pip auto-merge class stays
+structurally empty, so that skill still cannot auto-merge a bot PR for this
+repository's only configured ecosystem. Revisit if ecosystems or pin count grow
+enough to change the arithmetic; this design is still correct if so.
