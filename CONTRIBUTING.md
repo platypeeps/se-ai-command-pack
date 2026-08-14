@@ -165,10 +165,13 @@ pin a version rather than track `main`.
 
 `.github/dependabot.yml` configures Dependabot to open weekly `pip` pull
 requests for the pins in `requirements-dev.txt` (PyYAML, ruff, mypy, coverage),
-one PR per package, with a `chore(deps)` commit prefix. Triage each with the
-`sd-update-deps` workflow: it classifies the bump, merges the safe class through
-the housekeeping gate, and parks the rest for review. Dependabot is the only
-sanctioned source that hands a classified dependency PR to housekeeping.
+with a `chore(deps)` commit prefix. Patch and minor bumps arrive batched as a
+single grouped PR; majors arrive one per package, because `sd-update-deps`
+always routes a major to manual review and grouping one in would block the safe
+bumps behind it. Triage each with the `sd-update-deps` workflow: it classifies
+the bump, merges the safe class through the housekeeping gate, and parks the
+rest for review. Dependabot is the only sanctioned source that hands a
+classified dependency PR to housekeeping.
 
 **Lock regeneration.** Nothing installs from `requirements-dev.txt` directly.
 `make lock` compiles it into `requirements-dev.lock` — fully pinned, hashed, and
