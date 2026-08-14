@@ -93,7 +93,11 @@ commit is assembled with plumbing against a scratch index:
 
 ```
 BLOB=$(git hash-object -w requirements-dev.lock)
-export GIT_INDEX_FILE="$(mktemp -u)"
+# mktemp, not `mktemp -u`: the -u form returns a name without creating it, so
+# anything could occupy that path before git does. git reads a zero-length file
+# as an empty index, so creating it up front costs nothing.
+GIT_INDEX_FILE="$(mktemp)"; export GIT_INDEX_FILE
+trap 'rm -f "$GIT_INDEX_FILE"' EXIT
 git read-tree "$HEAD_SHA"
 git update-index --add --cacheinfo "100644,$BLOB,requirements-dev.lock"
 TREE=$(git write-tree)
