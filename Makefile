@@ -51,6 +51,11 @@ lock-check:
 #     ground — head-controlled content must not run — and the same rule applies
 #     to running it on a laptop.
 #
+# `make -n relock-pr` is NOT a dry run. GNU make executes recipe lines that
+# contain `$(MAKE)` even under -n, and this whole recipe is one shell line that
+# does — so -n runs the guards, and on a bot PR that passes them it would go on
+# to fetch, checkout, lock, commit, and push. To preview, read the recipe.
+#
 # The stray list prints each path in double quotes. `grep -vxE` anchors the
 # whole line, so `requirements-dev.lock ` (trailing space) is correctly refused
 # — but unquoted it renders identically to the legitimate path, and the refusal
