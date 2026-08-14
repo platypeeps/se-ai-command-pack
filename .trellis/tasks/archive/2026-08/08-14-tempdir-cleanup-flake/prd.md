@@ -83,3 +83,58 @@ this is irrelevant (ephemeral), but on a developer machine it accumulates under
 - Rewriting how the install tests set up their fixtures.
 - Changing what any test asserts.
 - Chasing git's auto-gc behaviour itself.
+
+---
+
+## COMPLETION (2026-08-14)
+
+Shipped in PR #225, fix commit `7bbba64`, merged as `026a06b`.
+
+`tests/install_test_support.py` now builds the temp directory with
+`ignore_cleanup_errors=True`, and `tests/test_install_test_support.py` guards
+it. Suite on `main`: `Ran 745 tests ... OK`, up from 739, coverage 89.2%.
+
+Criteria against what was actually done:
+
+- **[met]** `TempDirTestCase` no longer errors when its temp tree cannot be
+  fully removed.
+- **[NOT met as written — substituted]** "hold a file open (or leave a stray
+  entry) under the temp tree and show the test passes after the change and
+  errors before it."
+
+  This is not achievable, and the criterion was written without knowing that.
+  Two attempts failed for reasons worth keeping:
+
+  1. Clearing a directory's write bit does not reproduce the failure, because
+     `tempfile`'s cleanup installs an error handler that chmods and retries
+     exactly that case. Written and run; observed `AssertionError: OSError not
+     raised`.
+  2. Raising straight out of a patched `shutil.rmtree` does not either, because
+     `ignore_cleanup_errors` acts *through* that handler — a direct raise
+     escapes regardless of the flag, so both settings look identical and the
+     test cannot discriminate.
+
+  Holding a file open does not work at all on POSIX: an open file does not
+  block `unlink`. The production failure is a race against a separate process
+  (git auto-gc) and cannot be staged deterministically in-process.
+
+  Substituted: the tests drive `tempfile`'s real error path — the handler it
+  passes to `rmtree`, invoked with the exact `ENOTEMPTY`, through `onexc` on
+  3.12+ and `onerror` on 3.10/3.11 — and pin that the flag decides whether the
+  error escapes. Discrimination is proven by mutation rather than by staging:
+  reverting the one-line fix fails
+  `test_temp_dir_is_built_to_ignore_cleanup_errors` with `AssertionError: None
+  is not True`.
+
+  **What remains unproven:** that the real git-auto-gc race is fixed. The
+  mechanism is understood and the flag demonstrably suppresses removal errors,
+  but no test reproduces the original race. Confidence rests on the mechanism,
+  not on a reproduction.
+
+- **[met]** Full suite green on 3.10/3.13 × ubuntu/macOS — all four matrix legs
+  passed on #225.
+- **[met]** A failing assertion still fails, and an exception from a
+  non-temp-dir `addCleanup` still surfaces. Both pinned by tests.
+
+Residual: leaked temp trees when removal genuinely fails. Accepted and
+documented at the call site.
