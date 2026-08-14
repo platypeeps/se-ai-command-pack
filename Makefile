@@ -7,7 +7,7 @@ RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON
 LINT_PATHS = install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
 MYPY_PATHS = installer install.py templates/skills/se-review-skills/scripts/skill_review.py
 
-.PHONY: setup lock lock-check generate repomix sync test test-hermetic lint release-check check shell-syntax gate-test gate-lint trellis-provenance
+.PHONY: setup lock lock-check relock-pr generate repomix sync test test-hermetic lint release-check check shell-syntax gate-test gate-lint trellis-provenance
 
 # --clear: `python -m venv` reuses an existing directory, so without it a
 # package that dropped out of the lock survives and the gate runs against a
@@ -27,6 +27,38 @@ lock:
 # Guard-safe (read-only): the lock still matches its input's direct pins.
 lock-check:
 	"$(RUN_PYTHON)" .github/scripts/check-dev-requirements-lock.py
+
+# Finish a Dependabot pip PR: `make relock-pr PR=221`.
+#
+# Dependabot bumps requirements-dev.txt only, and nothing installs from that
+# file, so every bot pip PR lands red on lock-check until the lock is
+# regenerated. This is that step in one command instead of five. It is
+# deliberately a local helper and not CI automation: pushing a lock from a
+# workflow needs a writable credential in a job triggered by a bot branch, and
+# that standing risk buys back only a few minutes a week. See
+# .trellis/archive/*-dependabot-lock-automation/ for the full comparison.
+#
+# Refuses anything but a Dependabot branch, so it cannot be pointed at a human
+# PR by a mistyped number, and refuses a dirty tree so nothing local is swept
+# into the bot branch.
+relock-pr:
+	@test -n "$(PR)" || { echo "usage: make relock-pr PR=<number>" >&2; exit 2; }
+	@test -z "$$(git status --porcelain)" || { echo "working tree is dirty; commit or stash first" >&2; exit 1; }
+	@branch="$$(gh pr view "$(PR)" --json headRefName --jq .headRefName)"; \
+	author="$$(gh pr view "$(PR)" --json author --jq .author.login)"; \
+	case "$$author" in dependabot|app/dependabot|dependabot\[bot\]) ;; \
+	  *) echo "PR #$(PR) is authored by $$author, not Dependabot; relock it by hand" >&2; exit 1;; \
+	esac; \
+	echo "relocking #$(PR) ($$branch)"; \
+	git fetch --quiet origin "$$branch" && git checkout --quiet "$$branch" && \
+	$(MAKE) --no-print-directory lock && \
+	if git diff --quiet -- requirements-dev.lock; then \
+	  echo "lock already matches requirements-dev.txt; nothing to push"; \
+	else \
+	  git commit --quiet -m "chore(deps): regenerate requirements-dev.lock" -- requirements-dev.lock && \
+	  git push --quiet origin "$$branch" && \
+	  echo "pushed regenerated lock to $$branch"; \
+	fi
 
 generate:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py
