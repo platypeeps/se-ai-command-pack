@@ -3,7 +3,7 @@
   "name": "dependabot-lock-automation",
   "title": "Automate requirements-dev.lock regeneration for Dependabot PRs",
   "description": "Make a Dependabot pip PR reach green without a maintainer running `make lock`, so the sd-update-deps auto-merge class stops being structurally empty for this repository. Dependabot bumps requirements-dev.txt only, but nothing installs from that file, so check-dev-requirements-lock.py fails every bot PR on pin-mismatch. The gating design question is the credential model: Dependabot-triggered workflows get a read-only GITHUB_TOKEN, so pushing a regenerated lock back to a bot branch needs an elevated credential in a job that runs `make lock` over bot-branch content. design.md must settle trigger, write scope, checkout ref, and escalation containment before implementation starts.",
-  "status": "planning",
+  "status": "completed",
   "dev_type": null,
   "scope": null,
   "package": null,
@@ -11,7 +11,7 @@
   "creator": "sdelmas",
   "assignee": "sdelmas",
   "createdAt": "2026-08-14",
-  "completedAt": null,
+  "completedAt": "2026-08-14",
   "branch": null,
   "base_branch": "main",
   "worktree_path": null,
@@ -21,6 +21,6 @@
   "children": [],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "WON'T-DO, not implemented. Resolved by deciding against CI automation: the push cannot use GITHUB_TOKEN (GitHub suppresses workflow runs for events it generates, so the relocked head would never re-run tests), which forces a GitHub App token and a standing contents:write credential reachable from pull_request_target to save ~2-3 hours a year. Shipped `make relock-pr PR=<n>` instead. Trellis has no cancelled status; 'completed' here means the task reached a decision, NOT that the automation was built. Accepted consequence: the sd-update-deps pip auto-merge class stays empty. See design.md DECISION section.",
   "meta": {}
 }
