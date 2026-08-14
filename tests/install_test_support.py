@@ -126,6 +126,14 @@ def tree_paths(home: Path) -> set[str]:
 class TempDirTestCase(unittest.TestCase):
     def setUp(self) -> None:
         super().setUp()
-        tmp = tempfile.TemporaryDirectory()
+        # ignore_cleanup_errors: several subclasses run git inside this tree,
+        # and git's background auto-gc can still be writing under it while
+        # rmtree walks it — the directory goes non-empty between the scan and
+        # the rmdir, and teardown dies with `OSError: [Errno 39] Directory not
+        # empty`. That failure is reported against a test whose assertions all
+        # passed. A leaked temp tree is the better trade: CI runners are
+        # ephemeral, and a stale /tmp entry locally is cheaper than a red suite
+        # that means nothing.
+        tmp = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
         self.addCleanup(tmp.cleanup)
         self.base = Path(tmp.name).resolve()
