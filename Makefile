@@ -39,9 +39,17 @@ lock-check:
 # .trellis/tasks/archive/2026-08/08-14-dependabot-lock-automation/design.md for
 # the full comparison.
 #
-# Refuses anything but a Dependabot branch, so it cannot be pointed at a human
-# PR by a mistyped number, and refuses a dirty tree so nothing local is swept
-# into the bot branch.
+# Three refusals, all before any checkout:
+#
+#   - a PR whose author is not Dependabot, so a mistyped number cannot move the
+#     branch (this gates on the PR author, not on the branch name);
+#   - a dirty tree, so nothing local is swept onto the bot branch;
+#   - a PR touching anything but the dev requirements files. That last one is
+#     the load-bearing check: this target runs `make lock` from the PR's own
+#     checkout, so a PR that modified the Makefile would have its Makefile
+#     executed here. The archived design rejects CI automation on exactly this
+#     ground — head-controlled content must not run — and the same rule applies
+#     to running it on a laptop.
 relock-pr:
 	@test -n "$(PR)" || { echo "usage: make relock-pr PR=<number>" >&2; exit 2; }
 	@test -z "$$(git status --porcelain)" || { echo "working tree is dirty; commit or stash first" >&2; exit 1; }
@@ -50,8 +58,15 @@ relock-pr:
 	case "$$author" in dependabot|app/dependabot|dependabot\[bot\]) ;; \
 	  *) echo "PR #$(PR) is authored by $$author, not Dependabot; relock it by hand" >&2; exit 1;; \
 	esac; \
+	stray="$$(gh pr view "$(PR)" --json files --jq '.files[].path' | grep -vxE 'requirements-dev\.(txt|lock)' || true)"; \
+	if [ -n "$$stray" ]; then \
+	  echo "PR #$(PR) touches files beyond the dev requirements:" >&2; \
+	  echo "$$stray" | sed 's/^/  /' >&2; \
+	  echo "refusing: this target runs make lock from that branch's checkout" >&2; \
+	  exit 1; \
+	fi; \
 	echo "relocking #$(PR) ($$branch)"; \
-	git fetch --quiet origin "$$branch" && git checkout --quiet "$$branch" && \
+	git fetch --quiet origin "$$branch" && git checkout --quiet -B "$$branch" FETCH_HEAD && \
 	$(MAKE) --no-print-directory lock && \
 	if git diff --quiet -- requirements-dev.lock; then \
 	  echo "lock already matches requirements-dev.txt; nothing to push"; \
