@@ -50,6 +50,11 @@ lock-check:
 #     executed here. The archived design rejects CI automation on exactly this
 #     ground — head-controlled content must not run — and the same rule applies
 #     to running it on a laptop.
+#
+# The stray list prints each path in double quotes. `grep -vxE` anchors the
+# whole line, so `requirements-dev.lock ` (trailing space) is correctly refused
+# — but unquoted it renders identically to the legitimate path, and the refusal
+# reads as a bug in the guard rather than as the odd filename it is.
 relock-pr:
 	@test -n "$(PR)" || { echo "usage: make relock-pr PR=<number>" >&2; exit 2; }
 	@test -z "$$(git status --porcelain)" || { echo "working tree is dirty; commit or stash first" >&2; exit 1; }
@@ -61,7 +66,7 @@ relock-pr:
 	stray="$$(gh pr view "$(PR)" --json files --jq '.files[].path' | grep -vxE 'requirements-dev\.(txt|lock)' || true)"; \
 	if [ -n "$$stray" ]; then \
 	  echo "PR #$(PR) touches files beyond the dev requirements:" >&2; \
-	  echo "$$stray" | sed 's/^/  /' >&2; \
+	  echo "$$stray" | sed 's/^/  "/; s/$$/"/' >&2; \
 	  echo "refusing: this target runs make lock from that branch's checkout" >&2; \
 	  exit 1; \
 	fi; \
