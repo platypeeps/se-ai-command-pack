@@ -1386,3 +1386,56 @@ the next person does not redo the analysis.
 - The next Dependabot pip pass opens one grouped `dev-dependencies` PR. It will
   still land red on `lock-check`; run `make relock-pr PR=<n>` first, then
   `sd-update-deps` can class it auto-merge
+
+
+## Session 187: Reconcile the stale sd-audit-repo ledger against HEAD
+
+**Date**: 2026-08-15
+**Task**: Reconcile the stale sd-audit-repo ledger against HEAD
+**Branch**: `task/audit-ledger-reconcile`
+
+### Summary
+
+All 44 audit findings read 'status: open' while 35 had been fixed and merged; nothing in the merge path writes the status back. Re-checked every finding against the evidence it records, wrote back 35 fixed / 9 open / 0 regressed, and committed a re-check script that makes the claim falsifiable. Recorded the reconciliation contract in quality-guidelines.md, including the 'proving a file moved, not that the defect is gone' mistake caught during the sweep.
+
+### Main Changes
+
+- Reconciled .trellis/audit/ledger.md: only 'status:' and 'notes:' lines changed, 'evidence:'/'last-seen:'/'why:'/'fix:'/'severity:' left byte-identical, 13 pre-existing notes preserved (13 -> 57)
+- Added recheck.py: reads the ledger to discover which findings claim 'fixed', so a status set without a matching assertion is itself a failure rather than a skip
+- Added apply_reconciliation.py as the reproducible one-shot transform, reviewable as code instead of 44 hand edits
+- Documented the reconciliation contract in .trellis/spec/backend/quality-guidelines.md: closed open|fixed|regressed vocabulary, append-don't-overwrite notes, frozen evidence, separate-commit rule, and the file-moved-is-not-fixed mistake
+- Split the ledger and task-artifact commits: sd-audit-repo/SKILL.md:253-259 says a commit mixing .trellis/audit/** with .trellis/tasks/** cannot be journaled or finalized and cannot be undone once published
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `89d295f` | chore(audit): reconcile ledger statuses against HEAD |
+| `e7e4314` | chore(trellis): record audit ledger reconciliation |
+| `64b3e28` | docs(spec): record the audit ledger reconciliation contract |
+| `9220aff` | fix(trellis): harden the ledger re-check script |
+| `d5120ab` | fix(trellis): stamp the re-check revision and memoize tracked() |
+| `cc1673c` | chore(trellis): drop the unused jsonl scaffold placeholders |
+| `3a1624e` | docs(trellis): record why the two ledger scripts parse independently |
+| `21c98c7` | chore(task): record the branch for audit-ledger-reconcile |
+| `70adcf4` | chore(task): check the audit-ledger-reconcile acceptance criteria |
+| `fa55264` | chore(task): archive 08-15-audit-ledger-reconcile |
+
+### Testing
+
+- [OK] recheck.py: 35/35 fixed findings verified, exit 0, stamped at the evaluated revision
+- [OK] vacuous-pass gate: run against the pre-edit ledger prints '0 findings marked fixed; nothing to verify', wording distinct from a real pass
+- [OK] negative test: injecting a malformed status line yields 'FAIL A-020: status line is missing or malformed', exit 1, where it previously dropped the entry silently
+- [OK] diff scope: the only lines deleted from the ledger are 35 '- status: open'; all 13 pre-existing notes byte-identical
+- [OK] make check: coverage 89.2% against the 80% floor, ruff and mypy clean, lock/payload/provenance gates pass
+- [OK] review preflight: 0 failures across every push
+- [OK] sd-review scope=pr attempt 5: ready, exit 0 at 3a1624e
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
