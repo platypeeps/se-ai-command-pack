@@ -39,8 +39,13 @@ def exists(relative: str) -> bool:
     return (REPO / relative).exists()
 
 
+@lru_cache(maxsize=None)
 def tracked(relative: str) -> int:
-    """Count of paths git tracks under `relative`."""
+    """Count of paths git tracks under `relative`.
+
+    Cached for the same reason `read` is: an assertion that both tests a count
+    and reports it names the same path twice, which would otherwise spawn git
+    twice for one answer."""
     result = subprocess.run(
         ["git", "-C", str(REPO), "ls-files", "--", relative],
         capture_output=True,
@@ -49,6 +54,22 @@ def tracked(relative: str) -> int:
         timeout=30,
     )
     return len([line for line in result.stdout.splitlines() if line.strip()])
+
+
+def revision() -> str:
+    """The HEAD this run's assertions were actually evaluated against.
+
+    Printed before the results because the assertions pin a specific tree. A
+    bare pass read months later says nothing without the revision it passed
+    at, and this script is expected to rot."""
+    result = subprocess.run(
+        ["git", "-C", str(REPO), "rev-parse", "--short", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=30,
+    )
+    return result.stdout.strip() or "unknown"
 
 
 SKILL_REVIEW = "templates/skills/se-review-skills/scripts/skill_review.py"
@@ -249,6 +270,8 @@ def main() -> int:
     if not LEDGER.is_file():
         print(f"error: ledger not found at {LEDGER}", file=sys.stderr)
         return 2
+
+    print(f"assertions evaluated against {REPO.name} at {revision()}\n")
 
     claimed, problems = fixed_findings(LEDGER.read_text(encoding="utf-8"))
     if problems:
