@@ -2564,6 +2564,86 @@ bash scripts/sd-ai-command-pack-toolchain.sh doctor
 The correct wrapper preserves the repository's canonical check and the shared
 pack gate without creating a recursive review path.
 
+## Scenario: Audit Ledger Status Reconciliation
+
+### 1. Scope / Trigger
+
+- Trigger: rewriting `status:` on findings in `.trellis/audit/ledger.md`,
+  whether during an `sd-audit-repo` run or a standalone reconciliation.
+- Why: nothing in the merge path writes a finding's status back when the PR
+  that fixes it lands. On 2026-08-15 all 44 findings still read `open` while
+  35 were demonstrably fixed, which makes the ledger's open set useless as a
+  backlog — a consumer cannot tell a live defect from one fixed six merges ago.
+
+### 2. Contracts
+
+- Status vocabulary is closed: `open`, `fixed`, `regressed`, per
+  `.claude/skills/sd-audit-repo/SKILL.md:246`. There is no status for "real,
+  but the remaining fix is upstream" — that belongs in `notes:` naming the
+  blocked Trellis task that owns it.
+- `notes:` is the human-editable field and may already hold text. Append;
+  never overwrite. Preserve unknown lines within an entry.
+- `evidence:` keeps its original `file:line` references even after the code
+  moves. It records what was first observed; the current location goes in
+  `notes:`. Rewriting it destroys the record the re-check is falsified against.
+- `last-seen:` means "last seen present". Do not advance it on a `fixed`
+  finding — that asserts the defect was observed at this HEAD.
+
+### 3. Validation & Error Matrix
+
+- status outside the closed vocabulary -> reject
+- `fixed` with no re-check assertion -> reject; an unasserted `fixed` is
+  indistinguishable from a guess
+- ledger committed together with `.trellis/tasks/**` -> the bookkeeping
+  validator admits neither commit; per `SKILL.md:253-259` the mix cannot be
+  journaled or finalized and cannot be undone once published. Commit the
+  ledger alone, task artifacts alone.
+
+### 4. Common Mistake: proving a file moved, not that the defect is gone
+
+**Symptom**: a finding is marked `fixed` because the path in its evidence no
+longer exists.
+
+**Cause**: `not exists(<path>)` is cheap and looks decisive. It is only valid
+when *deletion is the fix* — A-026's unreferenced dead wrapper qualifies.
+
+**Fix**: assert the inverted evidence at the construct's current home.
+
+#### Wrong
+
+```python
+# A-034: "npx --yes with unlocked transitives and install scripts enabled"
+"A-034": lambda: (not exists("scripts/update_repomix"), "the script is gone"),
+# Passes. The script moved to .github/scripts/update-repomix and still
+# runs `npx --yes` against unlocked transitives.
+```
+
+#### Correct
+
+```python
+# A-018 relocated too, but the assertion tests the property the finding named.
+"A-018": lambda: (
+    "os.getuid()" in read("scripts/sd_ai_command_pack_lib.py"),
+    "cache root is UID-qualified",
+),
+```
+
+**Prevention**: when evidence points at a path that no longer exists, find
+where the construct went before choosing a status. Relocation alone is
+`open`.
+
+### 5. Tests Required
+
+A reconciliation ships a re-check script that reads the ledger to discover
+which findings claim `fixed`, rather than accepting that list as input.
+Assertion points:
+
+- every `fixed` finding has a registered assertion — an unregistered one fails
+- each assertion re-runs that finding's inverted evidence and reports what it
+  observed
+- an empty `fixed` set prints a distinct vacuous-pass line, so a run before the
+  ledger is written cannot read as a real pass
+
 ## Shared State Sentinel Contracts
 
 ### 1. Scope / Trigger
