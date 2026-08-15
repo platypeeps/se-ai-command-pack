@@ -58,21 +58,21 @@ merges ago from one nobody has touched. Full detail in
 
 ## Acceptance criteria
 
-- [ ] Every one of the 44 findings has a status in `{open, fixed, regressed}`
+- [x] Every one of the 44 findings has a status in `{open, fixed, regressed}`
       and a dated `notes:` verification line; no finding retains an unexamined
       `open`.
-- [ ] A re-check script, committed under this task, re-runs the inverted-evidence
+- [x] A re-check script, committed under this task, re-runs the inverted-evidence
       assertion for every finding marked `fixed` and exits non-zero on any
       contradiction. It reports zero contradictions.
-- [ ] Every finding left `open` names either the construct still present at a
+- [x] Every finding left `open` names either the construct still present at a
       current `file:line`, the blocked task that owns it, or the reason it
       needs a human read.
-- [ ] Findings whose remaining work is upstream cross-reference the blocked
+- [x] Findings whose remaining work is upstream cross-reference the blocked
       task that owns them, and those tasks' `blockedOn` text is unchanged.
-- [ ] No entry loses a pre-existing line the reconciliation did not
+- [x] No entry loses a pre-existing line the reconciliation did not
       deliberately rewrite.
-- [ ] `make check` passes.
-- [ ] The ledger commit's `git show --stat` lists `.trellis/audit/ledger.md`
+- [x] `make check` passes.
+- [x] The ledger commit's `git show --stat` lists `.trellis/audit/ledger.md`
       and nothing else; the task-artifact commit lists no `.trellis/audit/`
       path.
 
