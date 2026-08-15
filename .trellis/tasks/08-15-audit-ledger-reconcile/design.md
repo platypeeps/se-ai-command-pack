@@ -107,6 +107,21 @@ Findings left `open` get no assertion. Asserting a defect is still present is
 a weaker and more brittle claim, and an `open` status is the conservative
 default that needs no defence.
 
+### Why the two scripts do not share a parser
+
+`apply_reconciliation.py` and `recheck.py` each split the ledger on `## A-`
+with their own expression. That reads as duplication and a reviewer flagged it
+as such, so it is worth stating that it is deliberate.
+
+`recheck.py` exists to verify what `apply_reconciliation.py` wrote. A verifier
+that imports the writer's parser cannot catch a bug in that parser: a split
+that silently dropped an entry would drop it from both the rewrite and the
+check, and the check would report a clean pass over the entries that survived.
+Independent re-derivation is the whole value of the second script.
+
+The duplication is roughly one line each, both are one-shot task artifacts,
+and neither is on an import path. The coupling would cost more than it saves.
+
 ## Tradeoffs
 
 **Mechanical checks over reading each finding in full.** A grep can confirm a
