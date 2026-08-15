@@ -33,7 +33,10 @@ RECONCILIATION = {
         "blocked task 08-04-audit-registry-snapshot-ast-removal, which waits on "
         "the SD pack shipping a snapshot producer.",
     ),
-    "A-003": ("fixed", "HELP_CATALOG_SOURCE now resolves under the generated references dir."),
+    "A-003": (
+        "fixed",
+        "HELP_CATALOG_SOURCE now resolves under the generated references dir.",
+    ),
     "A-004": (
         "fixed",
         "CONTRIBUTING.md:17 documents the repo-own vs vendored split; its "
@@ -50,21 +53,36 @@ RECONCILIATION = {
         "`sources=` is now `min_sources=`; tests/test_skills.py:190 enforces "
         "argument-vocabulary conformance.",
     ),
-    "A-007": ("fixed", "generate-skill-surfaces.py:454-456 validates reverse citation closure."),
+    "A-007": (
+        "fixed",
+        "generate-skill-surfaces.py:454-456 validates reverse citation closure.",
+    ),
     "A-008": (
         "open",
         "installer/fileops.py:145 still selects ALWAYS_INSTALL/IF_NOT_EXISTS rows "
         "and continues before the platform check at :152. Unchanged.",
     ),
-    "A-009": ("fixed", "the duplicate _is_within is gone; only _is_relative_to remains."),
+    "A-009": (
+        "fixed",
+        "the duplicate _is_within is gone; only _is_relative_to remains.",
+    ),
     "A-010": (
         "fixed",
         "two parsers remain by design, but tests/test_frontmatter_conformance.py "
         "now binds them (skill_review.py:522).",
     ),
-    "A-011": ("fixed", "installer/fileops.py:67-77 captures _PROCESS_UMASK once at import."),
-    "A-012": ("fixed", "work-loop.py:1071 verifies identity before unlinking a stale lock."),
-    "A-013": ("fixed", "installer/management.py:397 passes timeout=GIT_TIMEOUT_SECONDS."),
+    "A-011": (
+        "fixed",
+        "installer/fileops.py:67-77 captures _PROCESS_UMASK once at import.",
+    ),
+    "A-012": (
+        "fixed",
+        "work-loop.py:1071 verifies identity before unlinking a stale lock.",
+    ),
+    "A-013": (
+        "fixed",
+        "installer/management.py:397 passes timeout=GIT_TIMEOUT_SECONDS.",
+    ),
     "A-014": (
         "fixed",
         "create-release-tag.py:34,36 catch FileNotFoundError and TimeoutExpired.",
@@ -97,9 +115,18 @@ RECONCILIATION = {
         "copyfileobj instead of shutil.copyfile.",
     ),
     "A-020": ("fixed", "Makefile:106 runs `coverage report --fail-under=80`."),
-    "A-021": ("fixed", "tests/test_release_gate.py passes env=git_env() at every git call site."),
-    "A-022": ("fixed", "tests/test_update_e2e.py provides the missing end-to-end coverage."),
-    "A-023": ("fixed", "CONTRIBUTING.md and README.md both document the generated/ surface."),
+    "A-021": (
+        "fixed",
+        "tests/test_release_gate.py passes env=git_env() at every git call site.",
+    ),
+    "A-022": (
+        "fixed",
+        "tests/test_update_e2e.py provides the missing end-to-end coverage.",
+    ),
+    "A-023": (
+        "fixed",
+        "CONTRIBUTING.md and README.md both document the generated/ surface.",
+    ),
     "A-024": ("fixed", "`make setup` is documented in README.md and CONTRIBUTING.md."),
     "A-025": (
         "fixed",
@@ -107,7 +134,10 @@ RECONCILIATION = {
         "and the map is produced on demand.",
     ),
     "A-026": ("fixed", "scripts/se-ai-command-pack-skill-review.py is deleted."),
-    "A-027": ("fixed", "status.py:3284 collects the fleet through a ThreadPoolExecutor."),
+    "A-027": (
+        "fixed",
+        "status.py:3284 collects the fleet through a ThreadPoolExecutor.",
+    ),
     "A-028": (
         "fixed",
         "review-learnings.py:1951 uses an aliased-batch query, batching 20 PRs "
@@ -145,7 +175,10 @@ RECONCILIATION = {
         "resolves transitives fresh with no lockfile, so the unlocked-transitive "
         "half stands.",
     ),
-    "A-035": ("fixed", "Makefile:163 passes `--base auto`, so the local gate is no longer vacuous."),
+    "A-035": (
+        "fixed",
+        "Makefile:163 passes `--base auto`, so the local gate is no longer vacuous.",
+    ),
     "A-036": (
         "fixed",
         "Makefile:7-8 list skill_review.py in both LINT_PATHS and MYPY_PATHS.",
@@ -155,7 +188,10 @@ RECONCILIATION = {
         "tests.yml:89 runs the gate on pull_request and on push to refs/heads/main.",
     ),
     "A-038": ("fixed", "tests.yml:37,62,77 set `cache: pip`."),
-    "A-039": ("fixed", "tests.yml:13 declares a concurrency group cancelling superseded PR runs."),
+    "A-039": (
+        "fixed",
+        "tests.yml:13 declares a concurrency group cancelling superseded PR runs.",
+    ),
     "A-040": (
         "fixed",
         "check-release-payload.py:42,48 include installer/ and install.py as payload.",

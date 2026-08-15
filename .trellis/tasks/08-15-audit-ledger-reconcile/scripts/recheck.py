@@ -19,13 +19,18 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
 LEDGER = REPO / ".trellis" / "audit" / "ledger.md"
 
 
+@lru_cache(maxsize=None)
 def read(relative: str) -> str:
+    """Read a repo-relative file once. Several findings cite the same file --
+    Makefile, tests.yml, and CONTRIBUTING.md are each read by three
+    assertions -- so the cache keeps one pass over the tree per file."""
     path = REPO / relative
     return path.read_text(encoding="utf-8") if path.is_file() else ""
 
@@ -55,7 +60,10 @@ WORKFLOW = ".github/workflows/tests.yml"
 # moved: A-018 is the cautionary case, where the variables relocated but the
 # finding was about UID qualification.
 CHECKS = {
-    "A-001": lambda: (tracked(".claude") > 0, f"{tracked('.claude')} tracked .claude files"),
+    "A-001": lambda: (
+        tracked(".claude") > 0,
+        f"{tracked('.claude')} tracked .claude files",
+    ),
     "A-003": lambda: (
         "GENERATED_REFERENCES_DIR}/skill-catalog.md" in read(GENERATOR),
         "HELP_CATALOG_SOURCE resolves under the generated references dir",
@@ -199,16 +207,42 @@ CHECKS = {
 }
 
 
-def fixed_findings(ledger_text: str) -> list[str]:
-    found = []
+def fixed_findings(ledger_text: str) -> tuple[list[str], list[str]]:
+    """Return (ids claiming `fixed`, structural problems).
+
+    An entry whose status line does not parse would otherwise drop out of the
+    `fixed` set silently and be reported as nothing at all, which reads as a
+    pass. Duplicate ids would run one assertion twice and hide the fact that
+    the ledger violates the monotonic-unique-id rule. Both are surfaced as
+    failures rather than skipped.
+    """
+    found: list[str] = []
+    problems: list[str] = []
+    seen: set[str] = set()
+
     for block in re.split(r"\n(?=## A-)", ledger_text):
         heading = re.match(r"## (A-\d+)", block)
         if not heading:
             continue
+        finding = heading.group(1)
+        if finding in seen:
+            problems.append(f"{finding}: duplicate entry in the ledger")
+            continue
+        seen.add(finding)
+
         status = re.search(r"^- status: (\S+)$", block, re.M)
-        if status and status.group(1) == "fixed":
-            found.append(heading.group(1))
-    return found
+        if status is None:
+            problems.append(f"{finding}: status line is missing or malformed")
+            continue
+        if status.group(1) not in {"open", "fixed", "regressed"}:
+            problems.append(
+                f"{finding}: status {status.group(1)!r} is outside the vocabulary"
+            )
+            continue
+        if status.group(1) == "fixed":
+            found.append(finding)
+
+    return found, problems
 
 
 def main() -> int:
@@ -216,7 +250,11 @@ def main() -> int:
         print(f"error: ledger not found at {LEDGER}", file=sys.stderr)
         return 2
 
-    claimed = fixed_findings(LEDGER.read_text(encoding="utf-8"))
+    claimed, problems = fixed_findings(LEDGER.read_text(encoding="utf-8"))
+    if problems:
+        for problem in problems:
+            print(f"FAIL {problem}", file=sys.stderr)
+        return 1
     if not claimed:
         # Distinct wording on purpose: a vacuous pass must not read like a real
         # one, or a run before the ledger is written would certify nothing.
