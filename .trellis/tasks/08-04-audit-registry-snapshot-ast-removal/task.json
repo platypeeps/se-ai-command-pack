@@ -2,7 +2,7 @@
   "id": "audit-registry-snapshot-ast-removal",
   "name": "audit-registry-snapshot-ast-removal",
   "title": "Remove skill_review AST registry fallback once both packs ship snapshots",
-  "description": "BLOCKED ON 08-04-audit-registry-snapshot-sd-twin. Once both SE and SD packs ship the generated registry snapshot producer, a bounded PR removes _parse_registry and its AST helpers (_assignment, _string_value, _call_value) plus the fallback branch and symlink-fallback path in skill_review.py, and makes _load_registry_snapshot the sole registry source. This meets the strict acceptance criterion 'skill_review.py no longer opens installer/registry.py' fleet-wide. Update the code-spec quality-guidelines.md snapshot-preferred section and drop the AST-fallback tests. Do not start until the SD twin producer has shipped.",
+  "description": "UNBLOCKED 2026-08-16: the SD twin producer shipped in platypeeps/sd-ai-command-pack#483, squash-merged as 232138a8, and generated/registry-snapshot.json is present on that pack's main. Both SE and SD now ship the generated registry snapshot, so a bounded PR removes _parse_registry and its AST helpers (_assignment, _string_value, _call_value) plus the fallback branch and symlink-fallback path in skill_review.py, and makes _load_registry_snapshot the sole registry source. This meets the strict acceptance criterion 'skill_review.py no longer opens installer/registry.py' fleet-wide. Update the code-spec quality-guidelines.md snapshot-preferred section and drop the AST-fallback tests.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -25,10 +25,10 @@
     "tests/test_skill_review.py",
     ".trellis/spec/backend/quality-guidelines.md"
   ],
-  "notes": "Blocked on 08-04-audit-registry-snapshot-sd-twin. Until 2026-08-06 that blocker existed only as 'BLOCKED ON ...' prose in prd.md's Goal, which candidate_block_status (scripts/sd-ai-command-pack-work-loop.py:850-870) cannot read -- an autonomous run could have selected it. Now carries blocked/blockedOn/blockedReason, the explicit-flag surface of that helper's three-surface convention. Removal surface: _parse_registry (:340), _assignment (:224), _string_value (:235), _call_value (:241), fallback branch (:427-428), and the None return at :317-318. Two things must not regress: the _crosses_symlink refusal is a security property and must become fail-closed rather than disappear, and non-first-party repo-local checkouts ship no snapshot, so pack parity is not fleet coverage. Sequencing: this task writes .trellis/spec/backend/quality-guidelines.md at order 40 in the P3 band; write-set membership and the band-aware landing sequence are documented in .trellis/tasks/08-08-trellis-backlog-hygiene/record.md.",
+  "notes": "Was blocked on 08-04-audit-registry-snapshot-sd-twin; unblocked 2026-08-16 when that task's upstream PR merged (232138a8). Until 2026-08-06 that blocker existed only as 'BLOCKED ON ...' prose in prd.md's Goal, which candidate_block_status (scripts/sd-ai-command-pack-work-loop.py:850-870) cannot read -- an autonomous run could have selected it. From 2026-08-06 to 2026-08-16 it carried blocked/blockedOn/blockedReason, the explicit-flag surface of that helper's three-surface convention; those are now cleared. Removal surface: _parse_registry (:340), _assignment (:224), _string_value (:235), _call_value (:241), fallback branch (:427-428), and the None return at :317-318. Two things must not regress: the _crosses_symlink refusal is a security property and must become fail-closed rather than disappear, and non-first-party repo-local checkouts ship no snapshot, so pack parity is not fleet coverage. Sequencing: this task writes .trellis/spec/backend/quality-guidelines.md at order 40 in the P3 band; write-set membership and the band-aware landing sequence are documented in .trellis/tasks/08-08-trellis-backlog-hygiene/record.md.",
   "meta": {},
-  "blocked": true,
-  "blockedOn": "08-04-audit-registry-snapshot-sd-twin",
-  "blockedReason": "SD pack must ship generated/registry-snapshot.json before the AST fallback can be removed fleet-wide",
+  "blocked": false,
+  "blockedOn": null,
+  "blockedReason": null,
   "order": 40
 }
