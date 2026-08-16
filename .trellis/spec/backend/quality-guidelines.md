@@ -265,7 +265,7 @@ three runs, while the helper invoked by hand against the corrected body exited
 anything about the branch:
 
 ```bash
-bash scripts/sd-ai-command-pack-review-scope.sh   # exit 0 once the body is fixed
+bash ~/.agents/bin/sd-ai-command-pack-review-scope.sh   # exit 0 once the body is fixed
 ```
 
 The only sanctioned exit is a new head — the body lives off-head, so there is
@@ -306,7 +306,7 @@ Remediation is one idempotent command that touches only gitignored paths and
 needs no commit:
 
 ```bash
-python3 scripts/sd-ai-command-pack-update-spec-kb.py --if-present
+python3 ~/.agents/bin/sd-ai-command-pack-update-spec-kb.py --if-present
 ```
 
 The ordering rule: refresh after the **last** documentation-affecting mutation
@@ -618,12 +618,12 @@ steps are `evidence` subcommand calls, in this exact order:
 
 ```bash
 # 1. same-phase descendant update: head only, nothing else
-bash scripts/sd-ai-command-pack-toolchain.sh run-python -- \
-  scripts/sd-ai-command-pack-work-loop.py evidence --repo . \
+bash ~/.agents/bin/sd-ai-command-pack-toolchain.sh run-python -- \
+  ~/.agents/bin/sd-ai-command-pack-work-loop.py evidence --repo . \
   --run-id <id> --head <final feature commit>
 # 2. verified merge-boundary flip: all five evidence flags in one call
-bash scripts/sd-ai-command-pack-toolchain.sh run-python -- \
-  scripts/sd-ai-command-pack-work-loop.py evidence --repo . \
+bash ~/.agents/bin/sd-ai-command-pack-toolchain.sh run-python -- \
+  ~/.agents/bin/sd-ai-command-pack-work-loop.py evidence --repo . \
   --run-id <id> --branch main --head <merge commit> --base-branch main \
   --pr-number <N> --last-shipped-sha <final feature commit>
 ```
@@ -2491,9 +2491,9 @@ python -m pip install --require-hashes --only-binary :all: -r requirements-dev.l
 ```text
 package.json scripts.check = "make check"
 package.json scripts.check:full =
-  "npm run check && bash scripts/sd-ai-command-pack-full-check.sh"
-bash scripts/sd-ai-command-pack-review-full-check.sh
-bash scripts/sd-ai-command-pack-toolchain.sh doctor
+  "npm run check && bash ~/.agents/bin/sd-ai-command-pack-full-check.sh"
+bash ~/.agents/bin/sd-ai-command-pack-review-full-check.sh
+bash ~/.agents/bin/sd-ai-command-pack-toolchain.sh doctor
 ```
 
 ### 3. Contracts
@@ -2544,7 +2544,7 @@ bash scripts/sd-ai-command-pack-toolchain.sh doctor
 ```json
 {
   "scripts": {
-    "check:full": "bash scripts/sd-ai-command-pack-review-full-check.sh"
+    "check:full": "bash ~/.agents/bin/sd-ai-command-pack-review-full-check.sh"
   }
 }
 ```
@@ -2556,7 +2556,7 @@ bash scripts/sd-ai-command-pack-toolchain.sh doctor
   "private": true,
   "scripts": {
     "check": "make check",
-    "check:full": "npm run check && bash scripts/sd-ai-command-pack-full-check.sh"
+    "check:full": "npm run check && bash ~/.agents/bin/sd-ai-command-pack-full-check.sh"
   }
 }
 ```
@@ -2623,7 +2623,7 @@ when *deletion is the fix* — A-026's unreferenced dead wrapper qualifies.
 ```python
 # A-018 relocated too, but the assertion tests the property the finding named.
 "A-018": lambda: (
-    "os.getuid()" in read("scripts/sd_ai_command_pack_lib.py"),
+    "os.getuid()" in read("~/.agents/bin/sd_ai_command_pack_lib.py"),
     "cache root is UID-qualified",
 ),
 ```

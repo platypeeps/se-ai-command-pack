@@ -156,7 +156,10 @@ gate-lint:
 	"$(RUN_PYTHON)" -m mypy $(MYPY_PATHS)
 
 shell-syntax:
-	for f in scripts/*.sh .github/scripts/update-repomix; do bash -n "$$f" || exit 1; done
+	# The repository owns exactly one shell script since the thin
+	# conversion; everything that lived under scripts/ was pack payload and
+	# is syntax-checked where the pack builds it, not here.
+	bash -n .github/scripts/update-repomix
 
 release-check:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check

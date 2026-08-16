@@ -375,8 +375,8 @@ def validate_skill(name: str) -> tuple[list[str], dict[str, str] | None]:
         if expected_suffix is None or path.suffix != expected_suffix:
             errors.append(
                 f"{label}: unexpected file {relative} (only SKILL.md, "
-                "references/*.md, and scripts/*.py are shipped in this pack "
-                "version)"
+                "Markdown under references/, and Python under scripts/ are "
+                "shipped in this pack version)"
             )
     metadata = None
     if not errors and isinstance(description, str):

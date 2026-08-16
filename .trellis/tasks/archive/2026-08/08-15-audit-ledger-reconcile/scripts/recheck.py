@@ -114,7 +114,7 @@ CHECKS = {
         "umask captured once at import, not per installed file",
     ),
     "A-012": lambda: (
-        "verifying identity" in read("scripts/sd-ai-command-pack-work-loop.py"),
+        "verifying identity" in read("~/.agents/bin/sd-ai-command-pack-work-loop.py"),
         "stale-lock unlink re-checks identity",
     ),
     "A-013": lambda: (
@@ -128,8 +128,8 @@ CHECKS = {
     # Absence alone would be the "it moved" fallacy, so this also asserts the
     # replacement is bounded.
     "A-015": lambda: (
-        "hasNextPage" not in read("scripts/sd-ai-command-pack-housekeeping.sh")
-        and "exceeds 1000 rows" in read("scripts/sd-ai-command-pack-review.py"),
+        "hasNextPage" not in read("~/.agents/bin/sd-ai-command-pack-housekeeping.sh")
+        and "exceeds 1000 rows" in read("~/.agents/bin/sd-ai-command-pack-review.py"),
         "the shell loop is gone and the replacement caps accumulation",
     ),
     "A-017": lambda: (
@@ -137,7 +137,7 @@ CHECKS = {
         "update gates the recorded source path before git or exec",
     ),
     "A-018": lambda: (
-        "os.getuid()" in read("scripts/sd_ai_command_pack_lib.py"),
+        "os.getuid()" in read("~/.agents/bin/sd_ai_command_pack_lib.py"),
         "cache root is UID-qualified",
     ),
     "A-019": lambda: (
@@ -173,11 +173,11 @@ CHECKS = {
         "the dead wrapper is deleted",
     ),
     "A-027": lambda: (
-        "ThreadPoolExecutor" in read("scripts/sd-ai-command-pack-status.py"),
+        "ThreadPoolExecutor" in read("~/.agents/bin/sd-ai-command-pack-status.py"),
         "fleet collection is concurrent",
     ),
     "A-028": lambda: (
-        "aliased-batch" in read("scripts/sd-ai-command-pack-review-learnings.py"),
+        "aliased-batch" in read("~/.agents/bin/sd-ai-command-pack-review-learnings.py"),
         "Copilot comments are fetched in aliased batches",
     ),
     "A-031": lambda: (

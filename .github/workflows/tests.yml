@@ -149,7 +149,7 @@ jobs:
             exit 1
           fi
           SD_AI_COMMAND_PACK_REVIEW_PREFLIGHT_BASE_REF="$EVENT_BASE_SHA" \
-            node scripts/sd-ai-command-pack-review-preflight.mjs
+            node ~/.agents/bin/sd-ai-command-pack-review-preflight.mjs
 
   ci-result:
     needs: [unittest, test-hermetic, lint, release-payload-gate, auto-tag-release, review-preflight]

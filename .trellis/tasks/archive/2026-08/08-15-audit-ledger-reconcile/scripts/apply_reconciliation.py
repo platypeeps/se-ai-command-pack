@@ -106,8 +106,8 @@ RECONCILIATION = {
     ),
     "A-018": (
         "fixed",
-        "the variables moved to sd_ai_command_pack_lib.py:118-124 and the cache "
-        "root is UID-qualified at :333.",
+        "the variables moved to ~/.agents/bin/sd_ai_command_pack_lib.py:118-124 "
+        "and the cache root is UID-qualified at :333.",
     ),
     "A-019": (
         "fixed",
