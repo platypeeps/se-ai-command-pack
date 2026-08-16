@@ -201,6 +201,27 @@ In `tests/test_skill_review.py`:
 - The four existing fail-closed tests (`:290`, `:300`, `:311`, `:317`) must pass
   **unchanged**. If one needs editing, the change reached further than intended.
 
+**Scope correction, measured during Step 6.** This list names three tests to
+rework; the real surface is **eleven**, and the difference was found by running
+the suite rather than by reading the list:
+
+- `write_se_pack()` writes `installer/registry.py` and declares the pack name,
+  so after the change every one of the **38 tests** built on it hits the
+  first-party absent-snapshot error. The fixture itself had to move to writing a
+  snapshot — one edit, but it is the reason the count above was wrong.
+  `write_sd_pack()` needed the same treatment and a new `SD_SNAPSHOT` constant.
+- `test_symlinked_parent_directory_is_not_followed` also asserted the fallback
+  (`assertIsNone`) and had to be converted. The PRD's list missed it because it
+  enumerated tests naming "fallback", and this one names the parent directory.
+- Three tests (`test_inventory_uses_declared_registry_order`, the two
+  `sharedReferences` tests) drove behaviour by **rewriting `installer/registry.py`
+  after the fixture ran**. That file is now inert, so they were passing for a
+  reason that no longer exists; they now write snapshots.
+
+The lesson is the one this task family keeps re-learning: a test list assembled
+from names misses the tests that exercise the surface without naming it. The
+enumerating form is `grep -c write_se_pack` plus a run of the suite.
+
 **G6 — the suite passes with no net loss of fail-closed coverage.**
 
 ```bash
@@ -208,11 +229,23 @@ In `tests/test_skill_review.py`:
 ```
 
 Pass: green, and the count of tests asserting `ReviewError` on registry
-resolution goes from **4 before** (`:290`, `:300`, `:311`, `:317`) to **6 after**
-(those four, plus the converted absent- and symlinked-snapshot tests). State both
-numbers from a count of the actual tests rather than asserting "no loss"; the
-deleted test (`:241`) and the new repo-local test are not fail-closed tests and
-do not enter either figure.
+resolution does not fall. State both numbers from a count of the actual tests
+rather than asserting "no loss"; the deleted test (`:241`) and the new repo-local
+test are not fail-closed tests and do not enter either figure.
+
+Predicted **4 → 6**. **Measured 4 → 8**, and the prediction is left visible above
+rather than restated, because the gap is the finding. Counted from the tests, not
+from the plan:
+
+| | Tests asserting `ReviewError` on registry resolution |
+| --- | --- |
+| Before (4) | `test_snapshot_version_not_in_supported_set_fails_closed`, `test_snapshot_version_wrong_type_fails_closed`, `test_malformed_snapshot_fails_closed`, `test_snapshot_missing_or_mistyped_field_fails_closed` |
+| After (8) | those four, unchanged, plus `test_absent_snapshot_fails_closed_for_a_first_party_pack`, `test_symlinked_snapshot_is_not_followed_and_fails_closed`, `test_symlinked_parent_directory_is_not_followed`, `test_symlinked_snapshot_content_is_never_consumed` |
+
+Two of the four additions were not in the prediction: the parent-directory test
+(it existed, asserting `assertIsNone` — a *fallback* assertion, so it was never in
+the before-count) and the paired-arms content test, which the adversarial review
+added after rejecting the `st_atime` probe. Result: `53 tests ... OK`.
 
 ## Step 7 — spec
 
