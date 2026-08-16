@@ -287,9 +287,11 @@ on it (`python3 -c 'import json;print(json.load(open(".sd-ai-command-pack/manife
 and hand-author the section on a mixed diff while the installed version is
 below 0.71.23.
 
-Exit `3` now means *nothing to declare*: an empty diff, or one with no
-generated path at all. It is still a non-error and its `info:` line is still
-descriptive, not directive.
+In 0.71.23 and later, exit `3` means *nothing to declare*: an empty diff, or one
+with no generated path at all. Below 0.71.23 — including the version installed
+here — exit `3` still carries its older, wider meaning and a mixed diff lands in
+it. Either way it is a non-error and its `info:` line is descriptive, not
+directive.
 
 **Two cases still need the section hand-authored**, and both keep the manual
 workaround alive:

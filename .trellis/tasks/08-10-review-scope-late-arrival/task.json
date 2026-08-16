@@ -26,8 +26,5 @@
     "scripts/sd-ai-command-pack-pr-body-scope.py"
   ],
   "notes": "",
-  "meta": {},
-  "blocked": false,
-  "blockedOn": null,
-  "unblockedOn": "2026-08-16: explicit per-PR approval granted for one pull request against platypeeps/sd-ai-command-pack. Per-PR only; creates no standing authority."
+  "meta": {}
 }

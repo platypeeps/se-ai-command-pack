@@ -14,7 +14,9 @@ request against `platypeeps/sd-ai-command-pack`. It does not extend to a second.
 ```bash
 cd ~/repos/platypeeps/sd-ai-command-pack   # the shared clone; do not work in it
 git fetch origin
-git worktree add /tmp/.../sd-pack-late-arrival -b fix/pr-body-scope-mixed-diff origin/main
+WT="$(mktemp -d)/sd-pack-late-arrival"
+git worktree add "$WT" -b fix/pr-body-scope-mixed-diff origin/main
+cd "$WT"
 ```
 
 Work only inside the worktree. The shared clone is in use by other sessions and
