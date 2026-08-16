@@ -29,5 +29,5 @@
   "notes": "Created 2026-08-10 as the upstream follow-up of 07-25-audit-workflow-entrypoint-routing. Both deliverables edit vendored files; a local edit is reverted by the next refresh. Not selectable by the autonomous work loop.",
   "meta": {},
   "blocked": true,
-  "blockedOn": "upstream PR approval in platypeeps/sd-ai-command-pack and mindfold-ai/Trellis"
+  "blockedOn": "upstream triage of platypeeps/sd-ai-command-pack#486 for deliverable 1; approach decision and per-PR approval for mindfold-ai/Trellis for deliverable 2"
 }
