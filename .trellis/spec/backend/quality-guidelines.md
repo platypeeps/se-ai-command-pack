@@ -281,17 +281,41 @@ into `gh pr edit --body-file`, so nothing above the script changed
 (platypeeps/sd-ai-command-pack#480 — routing and evidence in the
 `08-10-review-scope-late-arrival` task's `disposition.md`).
 
-Until this repository's pack refresh lands 0.71.23 or later, the old refusal is
-still what runs here — the fix is upstream, not installed. Check before relying
-on it (`python3 -c 'import json;print(json.load(open(".sd-ai-command-pack/manifest.json"))["version"])'`),
-and hand-author the section on a mixed diff while the installed version is
-below 0.71.23.
+Check the **behaviour**, not a version string. This repository is a `thin`
+consumer (`"mode": "thin"` in `.sd-ai-command-pack/manifest.json`), so that
+manifest holds the *pin* while the script that actually runs is the
+machine-scope copy in `~/.agents/bin/`. The two diverge in practice, not merely
+in principle — a machine-scope refresh moves the runtime without touching the
+pin, and this section was itself written with the pin one release behind the
+script that was executing. `sd-status` reports "pin versus machine install" as
+its own skew row for exactly this reason. Reading the pin can therefore report a
+version that is not what executes, in either direction, so no version number is
+recorded here: the probe below is the authority.
+
+Probe the script that runs:
+
+```bash
+d="$(mktemp -d)"; trap 'rm -rf "$d"' EXIT
+printf 'body\n' > "$d/body.md"
+printf '.trellis/tasks/archive/2026-08/08-10-review-scope-late-arrival/prd.md\0.trellis/spec/backend/quality-guidelines.md\0' \
+  > "$d/paths.nul"
+python3 ~/.agents/bin/sd-ai-command-pack-pr-body-scope.py --prepare-tooling-body \
+  --body-file "$d/body.md" --changed-files "$d/paths.nul"; echo "exit=$?"
+cat "$d/body.md"
+```
+
+Both paths are real files in this repository, one bookkeeping and one authored,
+so the probe stays valid if the script ever starts checking that paths exist.
+
+`exit=0` with a `Tooling/generated scope:` heading appended to `$d/body.md` is
+0.71.23 or later — the preparer handles mixed diffs and no hand-authoring is
+needed. `exit=3` with `info: ... not tooling/generated-only` is the **old**
+behaviour: hand-author the section.
 
 In 0.71.23 and later, exit `3` means *nothing to declare*: an empty diff, or one
-with no generated path at all. Below 0.71.23 — including the version installed
-here — exit `3` still carries its older, wider meaning and a mixed diff lands in
-it. Either way it is a non-error and its `info:` line is descriptive, not
-directive.
+with no generated path at all. Below 0.71.23 it carried a wider meaning and a
+mixed diff landed in it. Either way it is a non-error and its `info:` line is
+descriptive, not directive.
 
 **Two cases still need the section hand-authored**, and both keep the manual
 workaround alive:
