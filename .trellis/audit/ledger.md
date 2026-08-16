@@ -17,7 +17,7 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   the re-includes work.
 
 ## A-002 — Shipped skill payload AST-parses installer/registry.py, making an internal module an unversioned cross-repo contract
-- status: open
+- status: fixed
 - severity: P2 · effort: M · confidence: Plausible
 - dimension: architecture
 - first-seen: 2026-07-25 @ 4067caa
@@ -31,6 +31,13 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   skill_review.py. Removal is owned by blocked task
   08-04-audit-registry-snapshot-ast-removal, which waits on the SD pack
   shipping a snapshot producer.
+- notes: 2026-08-16 reconciled at 74ad2f6 — FIXED. `_parse_registry` and every `ast.parse`
+  call are gone from skill_review.py (grep returns 0); the consumer resolves the
+  registry from `generated/registry-snapshot.json` alone. Landed as
+  platypeeps/se-ai-command-pack#239 (`36e3450`, release 0.70.0) once the SD pack
+  began shipping a snapshot producer. The prescribed fix -- "export a versioned
+  machine-readable registry snapshot; have skill_review.py consume it" -- is
+  what shipped.
 
 ## A-003 — Generated catalog lives inside the declared source-of-truth tree
 - status: fixed
@@ -76,6 +83,11 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   AGENTS.md:30-36 adds a canonical /sd:* block, but :13 still names only
   /trellis:*. The two upstream halves are owned by blocked task
   08-10-upstream-entrypoint-routing-mechanisms.
+- notes: 2026-08-16 reconciled at 74ad2f6 — still open, unchanged since the last
+  pass: AGENTS.md:13 still names only `/trellis:*`, while :34-37 carries the
+  canonical `/sd:*` block. Deliverable 1 of the owning task was relayed upstream
+  as platypeeps/sd-ai-command-pack#486 on 2026-08-16, so its blocker is now upstream triage rather than
+  per-PR approval. Deliverable 2 (mindfold-ai/Trellis) is unrelayed.
 
 ## A-006 — Same skill-argument names carry conflicting meanings and vocabularies across 53 skills
 - status: fixed
@@ -114,13 +126,16 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - first-seen: 2026-07-25 @ 4067caa
 - last-seen: 2026-07-25 @ 4067caa
 - evidence:
-  - install.py:100 — help promises platform-only install.
-  - installer/fileops.py:137 — ALWAYS_INSTALL/IF_NOT_EXISTS rows selected before platform_filter (latent: all 378 rows are if-anchor-exists).
+  - install.py — `--platform` help promises platform-only install.
+  - installer/fileops.py:145 — ALWAYS_INSTALL/IF_NOT_EXISTS rows are selected before the platform_filter check at :152 (latent: all rows are if-anchor-exists).
 - why: First static row added through the preserved generator seam ignores --platform unnoticed.
 - fix: Apply platform filter before the install-mode shortcut, or amend the help text.
 - notes: 2026-08-15 reconciled at 564d4a2 — installer/fileops.py:145 still
   selects ALWAYS_INSTALL/IF_NOT_EXISTS rows and continues before the platform
   check at :152. Unchanged.
+- notes: 2026-08-16 reconciled at 74ad2f6 — still open. Line drift only:
+  fileops.py:137 -> :145, with the platform filter at :152. The ordering that
+  makes the finding true is unchanged.
 
 ## A-009 — skill_review.py defines the same path-containment predicate twice under two names
 - status: fixed
@@ -238,6 +253,17 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - notes: 2026-08-15 reconciled at 564d4a2 — work-loop.py:717 still closes a
   descriptor os.fdopen owned at :705. The wrapping `except OSError` hides EBADF
   but does not prevent closing a reused descriptor; masking is not fixing.
+- notes: 2026-08-16 reconciled at 74ad2f6 — NOT VERIFIABLE HERE, relayed as
+  platypeeps/sd-ai-command-pack#487. The cited files were vendored pack content and left this
+  repository at `b7dd320` (thin conversion); `scripts/` is now enforced-empty by
+  `ScriptsDirectoryStaysEmptyTest` and no repo-own successor exists under
+  `.github/scripts/`. This is not evidence that the descriptor double-close was fixed -- only that
+  this repository can no longer see it. The upstream issue states plainly that
+  its evidence is from 2026-08-15 and unverified against that repository's
+  current main. Status stays `open` rather than a relayed-* value because the
+  managing skill's vocabulary is `open|fixed|regressed`
+  (sd-audit-repo/SKILL.md:228); an invented status would put this file out of
+  contract with the tool that rewrites it.
 
 ## A-017 — install.py update runs git and executes install.py from an unverified receipt-recorded path
 - status: fixed
@@ -433,6 +459,17 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   base-ref discovery in review-preflight.mjs; readTextCache at :21 is a
   different cache. The file was restructured, so the original line numbers no
   longer resolve.
+- notes: 2026-08-16 reconciled at 74ad2f6 — NOT VERIFIABLE HERE, relayed as
+  platypeeps/sd-ai-command-pack#488. The cited files were vendored pack content and left this
+  repository at `b7dd320` (thin conversion); `scripts/` is now enforced-empty by
+  `ScriptsDirectoryStaysEmptyTest` and no repo-own successor exists under
+  `.github/scripts/`. This is not evidence that the unmemoized discovery was fixed -- only that
+  this repository can no longer see it. The upstream issue states plainly that
+  its evidence is from 2026-08-15 and unverified against that repository's
+  current main. Status stays `open` rather than a relayed-* value because the
+  managing skill's vocabulary is `open|fixed|regressed`
+  (sd-audit-repo/SKILL.md:228); an invented status would put this file out of
+  contract with the tool that rewrites it.
 
 ## A-030 — review-scope classifier forks a grep plus subshells per changed file
 - status: open
@@ -448,6 +485,17 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - notes: tracked upstream in sd-ai-command-pack task 07-25-reduce-review-tooling-spawns (2026-07-25); SE-side task retired.
 - notes: 2026-08-15 reconciled at 564d4a2 — review-scope.sh:127 still runs
   `grep -Fxq` per path, called per changed file from :373.
+- notes: 2026-08-16 reconciled at 74ad2f6 — NOT VERIFIABLE HERE, relayed as
+  platypeeps/sd-ai-command-pack#489. The cited files were vendored pack content and left this
+  repository at `b7dd320` (thin conversion); `scripts/` is now enforced-empty by
+  `ScriptsDirectoryStaysEmptyTest` and no repo-own successor exists under
+  `.github/scripts/`. This is not evidence that the per-file grep fork was fixed -- only that
+  this repository can no longer see it. The upstream issue states plainly that
+  its evidence is from 2026-08-15 and unverified against that repository's
+  current main. Status stays `open` rather than a relayed-* value because the
+  managing skill's vocabulary is `open|fixed|regressed`
+  (sd-audit-repo/SKILL.md:228); an invented status would put this file out of
+  contract with the tool that rewrites it.
 
 ## A-031 — No dependency-update or CVE-audit path; dogfooded sd-update-deps workflow is inert
 - status: fixed
@@ -479,6 +527,10 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   original add. The local disposition recorded in task
   08-10-upstream-relay-opencode-plugin-dep was the decision to relay upstream,
   not an edit to the package file.
+- notes: 2026-08-16 reconciled at 74ad2f6 — still open, unchanged:
+  .opencode/package.json still declares `@opencode-ai/plugin: ^1.14.39` with no
+  lockfile. Owned by the parked task 08-10-upstream-relay-opencode-plugin-dep,
+  which targets mindfold-ai/Trellis and was deliberately not relayed.
 
 ## A-033 — requirements-dev.txt pins only top-level packages; transitives float unpinned and unhashed
 - status: fixed
@@ -501,8 +553,8 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - first-seen: 2026-07-25 @ 4067caa
 - last-seen: 2026-07-25 @ 4067caa
 - evidence:
-  - scripts/update_repomix:24 — npx --yes repomix@1.16.1; transitives fresh, lifecycle scripts on.
-  - README.md:463 — pattern documented as intentional; transitive/scripts exposure unaddressed.
+  - .github/scripts/update-repomix:27 — `exec npx --yes "repomix@${repomix_version}"`; transitives fresh, lifecycle scripts on.
+  - .github/scripts/update-repomix:24 — a comment now acknowledges the unattended lifecycle-script exposure; it documents the risk rather than removing it.
 - why: Maintainer machines run a freshly resolved unlocked npm tree with scripts enabled.
 - fix: --ignore-scripts, or committed package-lock + npm ci, or record risk as accepted.
 - notes: 2026-08-15 reconciled at 564d4a2 — half addressed. The script moved to
@@ -510,6 +562,11 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   :26, closing the lifecycle-script half. `npx --yes repomix@1.16.1` at :27
   still resolves transitives fresh with no lockfile, so the unlocked-transitive
   half stands.
+- notes: 2026-08-16 reconciled at 74ad2f6 — still open, and the path
+  MOVED: `scripts/update_repomix:24` -> `.github/scripts/update-repomix:27`,
+  the repo-own tooling home. Checking only whether the old path exists would
+  have retired a live finding -- `scripts/` is empty since `b7dd320`, so a
+  path-existence test reports "gone" for a file that simply relocated.
 
 ## A-035 — Local release-payload gate goes vacuous once changes are committed
 - status: fixed
@@ -602,12 +659,17 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - first-seen: 2026-07-25 @ 4067caa
 - last-seen: 2026-07-25 @ 4067caa
 - evidence:
-  - CHANGELOG.md:91 — 0.53.0 heading; 65 tags vs 66 changelog versions (only 0.53.0 missing).
+  - CHANGELOG.md — 0.53.0 heading has no corresponding git tag; 90 tags vs 91 changelog versions, and 0.53.0 is the only one missing.
   - manifest.json history — PR #89 bumped twice in one branch; auto-tag tags only merged HEAD.
 - why: Tags-match-changelog broken; gate checks only the top heading so recurrence is unguarded.
 - fix: Gate base→head to exactly one version step, or collapse intra-PR bumps; document the policy.
 - notes: 2026-08-15 reconciled at 564d4a2 — 89 tags against 90 changelog
   headings; 0.53.0 is still untagged.
+- notes: 2026-08-16 reconciled at 74ad2f6 — still open. The gap is
+  still exactly one and still 0.53.0; the counts moved 65/66 -> 90/91 as
+  releases accumulated, including v0.70.0 which tagged correctly. So the
+  multi-bump-in-one-branch shape has not recurred since, but the historical
+  hole is unrepaired.
 
 ## A-042 — No documented bump policy: perpetual 0.x with no minor-vs-patch rule or breaking-change signal
 - status: fixed
