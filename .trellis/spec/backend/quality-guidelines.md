@@ -259,48 +259,66 @@ trailing colon are tolerated): `Tooling/generated scope`,
 The third category arrives late by construction: finalization commits the
 session journal and workspace index, so a body that correctly needed no
 section at PR-creation time fails `pack.review-scope` on the successor-head
-re-entry — after the body was authored and judged complete. Write the section
-before that re-entry, or proactively at creation; the diff that decides the
-requirement does not exist yet when the PR is opened (PR #162 passed with a
-proactive section, PR #163 burned two rounds without one).
+re-entry — after the body was authored and judged complete. The diff that
+decides the requirement does not exist yet when the PR is opened (PR #162
+passed with a proactive section, PR #163 burned two rounds without one).
 
-**Writing the section after the failure does not clear it at that head.** The
-coordinator stores the check verdict per head, so once `pack.review-scope` has
-failed for a head, editing the PR body and rerunning replays the stored
-failure — a new attempt number does not help, and neither does a
-`--round-extension-authorized` attempt. The tell is exact: the replayed row
-carries a `durationMs` byte-identical to the original (PR #210: `1121` across
-three runs, while the helper invoked by hand against the corrected body exited
-`0`). Confirming the gate by hand is worth the ten seconds before concluding
-anything about the branch:
+**From pack 0.71.23 the preparer closes this for the ordinary case.**
+`--prepare-tooling-body` (`scripts/sd-ai-command-pack-pr-body-scope.py`) used
+to append the section only when *every* changed path matched a tooling
+pattern; a diff mixing tooling with authored prose (e.g. `.trellis/spec/**`,
+which matches no tooling pattern) exited `3` and wrote nothing. That refusal
+was a truthfulness guard rather than an oversight — the canned sentence claims
+the change is *limited to* generated surfaces, false once authored files are
+present.
 
-```bash
-bash ~/.agents/bin/sd-ai-command-pack-review-scope.sh   # exit 0 once the body is fixed
-```
+A mixed diff now gets a section naming only the paths proven to be generated,
+worded as a non-exhaustive `include:` list so it stays true after finalization
+adds more. Because the gate tests for heading *presence* and never checks that
+declared paths match the triggering ones, a heading written at PR creation
+satisfies it at the finalization head. `sd-create-pr` already routes exit `0`
+into `gh pr edit --body-file`, so nothing above the script changed
+(platypeeps/sd-ai-command-pack#480 — routing and evidence in the
+`08-10-review-scope-late-arrival` task's `disposition.md`).
 
-The only sanctioned exit is a new head — the body lives off-head, so there is
-no way to prove an off-head fix at the head that already failed. Land a commit
-that carries real content and is legal in the finalization successor range
-(code, tests, specs, generated payload — never task, workspace, or
-finalization evidence), then rerun. Proactively authoring the section at
-PR-creation time remains strictly cheaper: it costs one paragraph and saves a
-round plus a commit. Tracked as `08-10-review-scope-late-arrival`.
+Until this repository's pack refresh lands 0.71.23 or later, the old refusal is
+still what runs here — the fix is upstream, not installed. Check before relying
+on it (`python3 -c 'import json;print(json.load(open(".sd-ai-command-pack/manifest.json"))["version"])'`),
+and hand-author the section on a mixed diff while the installed version is
+below 0.71.23.
 
-`--prepare-tooling-body` (`scripts/sd-ai-command-pack-pr-body-scope.py`) does
-not close this gap, for two different reasons that share one symptom:
+Exit `3` now means *nothing to declare*: an empty diff, or one with no
+generated path at all. It is still a non-error and its `info:` line is still
+descriptive, not directive.
 
-- **Mixed diff**: the preparer appends the section only when *every* changed
-  path matches a tooling pattern. A diff mixing tooling with authored prose
-  (e.g. `.trellis/spec/**`, which matches no tooling pattern) exits `3` and
-  writes nothing. Exit `3` is a non-error and its `info:` line is descriptive,
-  not directive — the operator must then hand-author the section (observed on
-  PR #156 and again on PR #172).
+**Two cases still need the section hand-authored**, and both keep the manual
+workaround alive:
+
+- **No generated path at PR-creation time.** The preparer will not declare what
+  it cannot prove, so a branch that carries no generated path when the PR is
+  opened but acquires journal/index files at finalization still fails at the
+  successor head. Closing that would require asserting a future diff. Write the
+  section proactively on such a branch.
 - **Custom-bodied PR**: `sd-create-pr` forbids running automatic preparation
   against a user-provided body (byte-for-byte preservation), so for such PRs
   the preparer is deliberately never consulted — even when the diff is
   all-tooling and the preparer would have matched every path. Blaming the
   diff shape here points at the wrong remedy: hand-authoring the section is
   the standing requirement for custom-bodied PRs.
+
+**Fixing the body off-head is provable at the same head.** From v0.66.1 the
+coordinator recomputes the deterministic check on every invocation instead of
+serving a stored verdict, precisely because `pack.review-scope` reads the PR
+body — an input the attempt key does not cover. Editing the body and rerunning
+reports the current verdict; no new head, no fresh `--attempt-id`, no deleted
+state file (platypeeps/sd-ai-command-pack#417). Earlier guidance here described
+the replay trap and the `durationMs`-identical tell from PR #210; that behavior
+predates v0.66.1 and no longer applies. Confirming the gate by hand is still
+worth the ten seconds before concluding anything about the branch:
+
+```bash
+bash ~/.agents/bin/sd-ai-command-pack-review-scope.sh   # exit 0 once the body is fixed
+```
 
 ### The Obsidian KB refresh point: after the last documentation-shaped mutation
 
