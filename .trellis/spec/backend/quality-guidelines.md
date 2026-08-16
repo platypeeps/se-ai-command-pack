@@ -284,12 +284,13 @@ into `gh pr edit --body-file`, so nothing above the script changed
 Check the **behaviour**, not a version string. This repository is a `thin`
 consumer (`"mode": "thin"` in `.sd-ai-command-pack/manifest.json`), so that
 manifest holds the *pin* while the script that actually runs is the
-machine-scope copy in `~/.agents/bin/`. The two diverge, and not just in
-principle: at the time of writing the pin reads `0.71.22` while the
-machine-scope install runs `0.71.23` and declares mixed diffs. `sd-status`
-reports "pin versus machine install" as its own skew row for exactly this
-reason. Reading the pin can therefore report a version that is not what
-executes, in either direction.
+machine-scope copy in `~/.agents/bin/`. The two diverge in practice, not merely
+in principle — a machine-scope refresh moves the runtime without touching the
+pin, and this section was itself written with the pin one release behind the
+script that was executing. `sd-status` reports "pin versus machine install" as
+its own skew row for exactly this reason. Reading the pin can therefore report a
+version that is not what executes, in either direction, so no version number is
+recorded here: the probe below is the authority.
 
 Probe the script that runs:
 
