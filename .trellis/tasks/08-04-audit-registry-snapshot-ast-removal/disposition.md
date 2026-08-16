@@ -95,6 +95,40 @@ repo-local test that failed there would have meant the change altered that path;
 one that passed only after the change would have meant it was testing the
 implementation rather than the invariant.
 
+## Review round: three findings, all valid, and one caught a premise error
+
+Copilot reviewed PR #239 and raised three test-strength findings. All three were
+verified against the code before acting, and all three held.
+
+**The repo-local test asserted only the skill family**, while the criterion it
+exists for names `ownerKind`, `familyOrder` and `declaredPlatforms` too. Adding
+those assertions failed immediately: `'unresolved' != 'repo-local'`. The fixture
+was a plain directory, but the G0 baseline was measured on a throwaway **git**
+repository, so the test had been pinning a different branch than the one it
+claimed. Both reach the same empty-registry code, which is why the weak assertion
+passed. Fixed by `git init`-ing the fixture. A criterion cited by name in a test
+docstring is not the same as a criterion asserted by the test.
+
+**The paired arms proved non-influence, not non-opening.** The control arm makes
+the marker's absence real evidence -- identical bytes as a regular file do surface
+it -- but a loader that read the file and then refused would still keep the marker
+out of the error. Added a guard on `_read_regular_text`, the single funnel the
+loader reads a snapshot through, that fails if it is called with the symlinked
+path. Exact, unlike the `st_atime` probe the planning review rejected.
+
+Falsified deliberately: with the symlink check moved *after* the read in
+`_load_registry_snapshot`, the guard fires --
+`AssertionError: snapshot was read before refusal: .../generated/registry-snapshot.json`
+-- while the marker assertion alone still passes. The finding covers a regression
+class the paired arms cannot see.
+
+**The parent-directory symlink test stopped at the unit call** while the leaf test
+asserted end to end. Real asymmetry, since only the end-to-end path proves
+`_package_context` does not treat a symlinked `generated/` more leniently than a
+symlinked leaf. Added the `inventory()` assertion.
+
+Round result: `Ran 53 tests ... OK`, `make check` exit 0.
+
 ## Not done here
 
 `FIRST_PARTY_REMOTES`, discovery globs and adapter paths remain outside the

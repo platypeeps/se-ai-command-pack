@@ -257,9 +257,23 @@ class SkillReviewInventoryTest(TempDirTestCase):
         skill = root / "skills" / "demo" / "SKILL.md"
         skill.parent.mkdir(parents=True)
         skill.write_text(SKILL_TEXT.format(name="demo"), encoding="utf-8")
+        # A real git checkout with no recognised remote, because that is what
+        # the pre-change baseline was measured on. A plain directory resolves
+        # `unresolved` instead, which exercises the same empty-registry branch
+        # but is not the ownerKind the criterion names.
+        subprocess.run(["git", "init", "-q", str(root)], check=True, env=git_env())
         self.assertFalse((root / "manifest.json").exists())
         self.assertFalse((root / "generated" / "registry-snapshot.json").exists())
         payload = self.inventory(root, "demo")
+        # Pin the whole repository record, not just the skill family. The
+        # criterion this test exists for is byte-identity with a baseline
+        # captured before the AST fallback was removed, and three of its four
+        # fields live here; asserting only `family` would let ownerKind or an
+        # empty registry field regress silently.
+        repository = payload["repositories"][0]
+        self.assertEqual(repository["ownerKind"], "repo-local")
+        self.assertEqual(repository["familyOrder"], [])
+        self.assertEqual(repository["declaredPlatforms"], [])
         self.assertEqual(payload["skills"][0]["family"], "Uncategorized")
 
     def test_symlinked_snapshot_is_not_followed_and_fails_closed(self) -> None:
@@ -296,6 +310,11 @@ class SkillReviewInventoryTest(TempDirTestCase):
         with self.assertRaises(review.ReviewError) as rejected:
             review._load_registry_snapshot(snapshot)
         self.assertIn("refusing to follow symlinked", str(rejected.exception))
+        # End to end as well, so a symlinked parent cannot be treated more
+        # leniently than a symlinked leaf somewhere in _package_context.
+        with self.assertRaises(review.ReviewError) as end_to_end:
+            self.inventory(root, "se-test")
+        self.assertIn("refusing to follow symlinked", str(end_to_end.exception))
 
     def test_symlinked_snapshot_content_is_never_consumed(self) -> None:
         # The message alone is not evidence about which files were read. Paired
@@ -317,8 +336,25 @@ class SkillReviewInventoryTest(TempDirTestCase):
         link = root / "generated" / "registry-snapshot.json"
         link.unlink()
         link.symlink_to(external)
-        with self.assertRaises(review.ReviewError) as rejected:
-            self.inventory(root, "se-test")
+        # Two independent proofs, because they answer different questions.
+        # The guard answers "was it opened": _read_regular_text is the single
+        # funnel through which the loader reads a snapshot, so tripping it means
+        # the refusal happened after a read. Unlike an st_atime probe this is
+        # exact -- no dependence on relatime, noatime, or the filesystem.
+        real_read = review._read_regular_text
+
+        def guarded(path: Path) -> str:
+            if Path(path) == link:
+                raise AssertionError(f"snapshot was read before refusal: {path}")
+            return real_read(path)
+
+        with mock.patch.object(review, "_read_regular_text", guarded):
+            with self.assertRaises(review.ReviewError) as rejected:
+                self.inventory(root, "se-test")
+        # And the marker answers "did the content reach the result", which the
+        # control arm below makes non-vacuous: the same bytes as a regular file
+        # do surface the marker, so its absence here is evidence rather than an
+        # artifact of the run having failed.
         self.assertNotIn(marker, str(rejected.exception))
 
         link.unlink()
