@@ -1,8 +1,10 @@
 # Remove skill_review AST registry fallback once both packs ship snapshots
 
-> **Blocked on `08-04-audit-registry-snapshot-sd-twin`.** Do not start until the
-> SD twin producer has shipped. The machine-readable markers are `blocked: true`
-> and `blockedOn` in `task.json`; this line is for human readers.
+> **Unblocked 2026-08-16.** The SD twin producer shipped:
+> `platypeeps/sd-ai-command-pack#483`, squash-merged as `232138a8`, and
+> `generated/registry-snapshot.json` is present on that pack's `main`.
+> `task.json` now carries `blocked: false` and a null `blockedOn`; this line is
+> for human readers.
 
 ## Goal
 
@@ -115,8 +117,11 @@ legitimate outcome of this task.
 
 ## Acceptance Criteria
 
-- [ ] `08-04-audit-registry-snapshot-sd-twin` is verifiably complete — an SD
-      checkout resolves a snapshot — before this task starts.
+- [x] `08-04-audit-registry-snapshot-sd-twin` is verifiably complete — an SD
+      checkout resolves a snapshot — before this task starts. Satisfied
+      2026-08-16: PR #483 merged as `232138a8`, and on that branch the real
+      consumer was shown to take the snapshot path with `_parse_registry`
+      monkeypatched to raise. See that task's `disposition.md`.
 - [ ] `grep -n 'installer/registry.py\|installer" / "registry'` over
       `skill_review.py` returns no matches, and none of the four removed
       symbols remains.
@@ -145,10 +150,11 @@ legitimate outcome of this task.
 
 ## Notes
 
-- Blocked on `08-04-audit-registry-snapshot-sd-twin`; markers are `blocked: true`
-  and `blockedOn` in `task.json`. Before this task, the blocker existed only as
-  prose in this file's Goal, which no ranking helper can read — an autonomous
-  run could have selected it.
+- Was blocked on `08-04-audit-registry-snapshot-sd-twin`; cleared 2026-08-16 when
+  that task's upstream PR merged. Between 2026-08-06 and then, the markers were
+  `blocked: true` and `blockedOn` in `task.json`; they are now `false` and null.
+  Before 2026-08-06 the blocker existed only as prose in this file's Goal, which
+  no ranking helper can read — an autonomous run could have selected it.
 - Line references verified against `se-ai-command-pack` 0.67.1.
 - Complex enough to warrant `design.md` and `implement.md` if the
   non-first-party-checkout question turns out to have a non-trivial answer;
