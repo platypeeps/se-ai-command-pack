@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.70.0 - 2026-08-16
+
+- **Breaking:** `skill_review.py` resolves the registry from
+  `generated/registry-snapshot.json` alone. The AST fallback that parsed the
+  checkout's `installer/registry.py` is gone, along with `_parse_registry` and
+  its three helpers, so the reviewer no longer parses reviewed repository source
+  to establish snapshot identity. A first-party pack checkout (`name` in
+  `FIRST_PARTY_REMOTES`) that ships no snapshot now fails closed with a
+  `ReviewError` naming the expected path; previously it silently AST-parsed. A
+  snapshot path crossing a symlink boundary — at the leaf or any parent — now
+  raises instead of falling back, in every checkout, and is still never opened.
+  Non-pack checkouts are unaffected: they ship no registry either way and
+  continue to resolve an empty one and exit 0.
+
 ## 0.69.0 - 2026-08-10
 
 - **Breaking:** `skill_review.py`'s frontmatter parser is now a strict

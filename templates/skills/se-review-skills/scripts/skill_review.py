@@ -8,7 +8,6 @@ tasks, or edits. Semantic judgment remains with the calling skill.
 from __future__ import annotations
 
 import argparse
-import ast
 import hashlib
 import json
 import os
@@ -102,6 +101,18 @@ class RegistryData:
     skill_order: tuple[str, ...]
     platforms: tuple[str, ...]
     shared_references: dict[str, tuple[str, ...]]
+
+
+def _empty_registry() -> RegistryData:
+    """A fresh empty registry, for a checkout that ships no snapshot.
+
+    A factory rather than a module-level singleton: RegistryData is frozen but
+    `families` and `shared_references` are plain dicts, so one shared instance
+    would be reachable from every checkout resolved in a single run. Nothing
+    mutates them today -- every consumer site reads via .get() or .items() --
+    but a singleton would turn the first future mutation into a cross-checkout
+    contamination bug rather than a local one."""
+    return RegistryData({}, (), (), (), {})
 
 
 @dataclass(frozen=True)
@@ -222,35 +233,9 @@ def _is_relative_to(path: Path, parent: Path) -> bool:
     return True
 
 
-def _assignment(tree: ast.Module, name: str) -> ast.AST | None:
-    for node in tree.body:
-        if isinstance(node, ast.Assign):
-            if any(isinstance(target, ast.Name) and target.id == name for target in node.targets):
-                return node.value
-        elif isinstance(node, ast.AnnAssign):
-            if isinstance(node.target, ast.Name) and node.target.id == name:
-                return node.value
-    return None
-
-
-def _string_value(node: ast.AST | None) -> str | None:
-    if isinstance(node, ast.Constant) and isinstance(node.value, str):
-        return node.value
-    return None
-
-
-def _call_value(call: ast.Call, name: str, position: int) -> str | None:
-    for keyword in call.keywords:
-        if keyword.arg == name:
-            return _string_value(keyword.value)
-    if len(call.args) > position:
-        return _string_value(call.args[position])
-    return None
-
-
 def _registry_from_snapshot(payload: dict, path: Path) -> RegistryData:
-    """Build RegistryData from a validated snapshot object, mirroring
-    _parse_registry's field semantics. Any structural defect fails closed."""
+    """Build RegistryData from a validated snapshot object. The snapshot is the
+    sole registry source; any structural defect fails closed."""
 
     def _fail(message: str) -> NoReturn:
         raise ReviewError(f"invalid registry snapshot {path}: {message}")
@@ -299,9 +284,9 @@ def _registry_from_snapshot(payload: dict, path: Path) -> RegistryData:
         families,
         tuple(family_order),
         tuple(skill_order),
-        # Sort to mirror _parse_registry's tuple(sorted(platforms)) exactly, so
-        # snapshot-derived and AST-derived RegistryData stay identical (and
-        # snapshot identity stable) even if a producer emits unsorted platforms.
+        # Sort defensively so snapshot identity stays stable even if a producer
+        # emits unsorted platforms. Producer-drift defence, not a consumer
+        # correctness requirement.
         tuple(sorted(platforms)),
         shared_references,
     )
@@ -310,12 +295,20 @@ def _registry_from_snapshot(payload: dict, path: Path) -> RegistryData:
 def _load_registry_snapshot(path: Path) -> RegistryData | None:
     """Load the versioned generated registry snapshot.
 
-    Returns RegistryData for a valid snapshot, or None when there is no usable
-    snapshot to consume (absent, or crossing a symlink boundary we refuse to
-    follow) so the caller falls back to _parse_registry. A
-    present-but-incompatible or malformed snapshot raises ReviewError: it must
-    never silently fall through and mask a shipped-snapshot defect."""
-    if _crosses_symlink(path) or not path.is_file():
+    Returns RegistryData for a valid snapshot, or None when the snapshot is
+    absent -- the one case the caller applies policy to, because a pack owes a
+    snapshot and an arbitrary checkout does not.
+
+    A path crossing a symlink boundary raises rather than returning None: it is
+    a rejected input, not a packaging gap, and the check runs before any read so
+    the target is never opened. A present-but-incompatible or malformed snapshot
+    also raises: it must never silently fall through and mask a shipped-snapshot
+    defect."""
+    if _crosses_symlink(path):
+        raise ReviewError(
+            f"refusing to follow symlinked registry snapshot path {path}"
+        )
+    if not path.is_file():
         return None
     text = _read_regular_text(path)
     try:
@@ -338,78 +331,6 @@ def _load_registry_snapshot(path: Path) -> RegistryData | None:
     return _registry_from_snapshot(payload, path)
 
 
-def _parse_registry(path: Path) -> RegistryData:
-    if not path.is_file() or path.is_symlink():
-        return RegistryData({}, (), (), (), {})
-    try:
-        tree = ast.parse(_read_regular_text(path), filename=str(path))
-    except SyntaxError:
-        return RegistryData({}, (), (), (), {})
-
-    family_order: list[str] = []
-    labels = _assignment(tree, "FAMILY_LABELS")
-    if isinstance(labels, ast.Dict):
-        family_order = [
-            family_key
-            for key_node in labels.keys
-            if (family_key := _string_value(key_node)) is not None
-        ]
-
-    families: dict[str, str] = {}
-    skill_order: list[str] = []
-    for assignment_name, constructor, family_position in (
-        ("SKILLS", "SkillInfo", 1),
-        ("COMMAND_REGISTRY", "CommandInfo", 2),
-    ):
-        assignment_node = _assignment(tree, assignment_name)
-        if not isinstance(assignment_node, (ast.Tuple, ast.List)):
-            continue
-        for entry in assignment_node.elts:
-            if not isinstance(entry, ast.Call):
-                continue
-            function = entry.func
-            function_name = function.id if isinstance(function, ast.Name) else None
-            if function_name != constructor:
-                continue
-            skill_name = _call_value(entry, "name", 0)
-            family = _call_value(entry, "family", family_position)
-            if skill_name and family:
-                if skill_name not in families:
-                    skill_order.append(skill_name)
-                families[skill_name] = family
-
-    platforms: list[str] = []
-    registry = _assignment(tree, "PLATFORM_REGISTRY")
-    if isinstance(registry, ast.Dict):
-        platforms = [
-            platform_key
-            for key_node in registry.keys
-            if (platform_key := _string_value(key_node)) is not None
-        ]
-
-    shared_references: dict[str, tuple[str, ...]] = {}
-    shared = _assignment(tree, "SHARED_REFERENCES")
-    if isinstance(shared, ast.Dict):
-        for index, key_node in enumerate(shared.keys):
-            value_node = shared.values[index]
-            key = _string_value(key_node)
-            if key is None or not isinstance(value_node, (ast.Tuple, ast.List)):
-                continue
-            consumers = tuple(
-                consumer
-                for entry in value_node.elts
-                if (consumer := _string_value(entry)) is not None
-            )
-            shared_references[key] = consumers
-    return RegistryData(
-        families,
-        tuple(family_order),
-        tuple(skill_order),
-        tuple(sorted(platforms)),
-        shared_references,
-    )
-
-
 def _package_context(root: Path) -> PackageContext:
     root = root.resolve()
     git_root = _git_root(root)
@@ -419,14 +340,21 @@ def _package_context(root: Path) -> PackageContext:
     version_value = manifest.get("version") if manifest else None
     name = name_value if isinstance(name_value, str) else None
     version = version_value if isinstance(version_value, str) else None
-    # Prefer the versioned generated snapshot; fall back to AST-parsing the
-    # checkout's registry.py when no usable snapshot is present (transitional,
-    # until every pack ships a snapshot). A present-but-broken snapshot raises.
-    registry = _load_registry_snapshot(
-        package_root / "generated" / "registry-snapshot.json"
-    )
+    # The generated snapshot is the sole registry source. A first-party pack
+    # owes one, so its absence is a packaging defect and fails closed; any other
+    # checkout ships no registry at all and resolves an empty one, which is what
+    # it already got before the AST fallback was removed. Keyed on the declared
+    # name rather than owner_kind so a fork -- whose remote does not match --
+    # cannot delete its snapshot and silently review with an empty registry.
+    snapshot_path = package_root / "generated" / "registry-snapshot.json"
+    registry = _load_registry_snapshot(snapshot_path)
     if registry is None:
-        registry = _parse_registry(package_root / "installer" / "registry.py")
+        if name in FIRST_PARTY_REMOTES:
+            raise ReviewError(
+                f"first-party pack {name!r} ships no registry snapshot at "
+                f"{snapshot_path}; the generator must write it"
+            )
+        registry = _empty_registry()
     remote = _run_git(package_root, "config", "--get", "remote.origin.url")
     normalized = _normalized_remote(remote)
 

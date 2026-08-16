@@ -1164,7 +1164,10 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 | The checkout sits under a host directory named `templates` or `generated` | The verdict is unchanged: `assert_generated_write_target` reads components relative to `ROOT` for any target inside the checkout, and only falls back to the whole path for the temporary trees the generator's own tests redirect output into. Nobody chooses where a clone lands, so no directory above the repository root may decide it. |
 | Frontmatter description contains a table pipe | Escape it as `\|` in the README cell. |
 | Manifest, README, bundled help catalog, or registry snapshot drifts | `--check` reports each drifted surface and exits nonzero. |
-| Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed; it does not silently fall back to the AST parser. |
+| Registry snapshot `schemaVersion` is a non-`int`, unsupported int, or the payload is malformed | Consumer raises `ReviewError` and fails closed. |
+| The snapshot is absent in a first-party pack checkout (`name` in `FIRST_PARTY_REMOTES`) | Consumer raises `ReviewError` naming the expected path. A pack owes a snapshot, so its absence is a packaging defect. Keyed on the declared name rather than `owner_kind`, so a fork whose remote does not match cannot delete its snapshot and silently review with an empty registry. |
+| The snapshot is absent in any other checkout | Consumer resolves an empty `RegistryData` and succeeds; skills report `Uncategorized`. Non-pack checkouts ship no registry at all, and the reviewer supports them. |
+| The snapshot path crosses a symlink boundary, at the leaf or any parent | Consumer raises `ReviewError` and never opens the target, in every checkout including `repo-local`. Not conditional on pack identity: a symlinked path is a rejected input, not a packaging gap. |
 | Family metadata edited at its source in `installer/registry.py` (`FAMILY_DESCRIPTIONS`, `FAMILY_LABELS`), or a change that alters `generated/registry-snapshot.json`, `manifest.json`, or any `templates/**`/`generated/**`/`installer/**`/`install.py` byte | The source and snapshot are shipped payload; the release gate requires a version bump and dated CHANGELOG heading. |
 | A change that touches no shipped payload byte at all (no diff under `templates/**`, `generated/**`, `installer/**`, `install.py`, or `manifest.json`) | Manifest and changelog stay unchanged; release gate passes without a bump. |
 | A branch bumps the version twice and stacks two `## <version> - <date>` headings | Release gate exits nonzero: the intermediate version never becomes a merge-base state, so the auto-tag workflow never tags it (this is how `0.53.0` was left untagged). Collapse into the one heading being released, or split into separate PRs. |
@@ -1190,9 +1193,13 @@ manifest/install order, and grouping must not reorder generated manifest rows.
   independent drift reporting (including the registry snapshot), coordinated
   rollback (including a snapshot write failure), and patched temporary output
   paths.
-- Consumer tests pin snapshot-preferred resolution matching the AST fallback,
-  absent- and symlinked-snapshot fallback, and fail-closed `ReviewError` for
-  unsupported/mistyped `schemaVersion` and malformed payloads.
+- Consumer tests pin snapshot-only resolution: fail-closed `ReviewError` for an
+  absent snapshot in a pack checkout, for a symlinked leaf and a symlinked parent
+  directory, and for unsupported/mistyped `schemaVersion` and malformed
+  payloads; plus an empty registry for a non-pack checkout. The symlink test
+  proves the content was never consumed by paired arms -- identical bytes
+  refused through a link and resolved as a regular file -- because an error
+  message is not evidence about which files were read.
 - One boundary test walks `templates/` from disk and fails on any file carrying
   the generator's do-not-edit marker. It enumerates rather than checking known
   paths, so it also catches a generated surface nobody thought to look for.
@@ -1733,15 +1740,16 @@ defaults installed discovery to `off` so callers and tests must opt in.
 - Every collapsed copy retains path, root, platform, observed hash, drift, and
   mapping evidence. Installed copies are evidence, never mutation targets.
 - Resolve the registry (families, family order, skill order, platforms, and
-  `SHARED_REFERENCES`) by preferring the generated
-  `generated/registry-snapshot.json` payload, falling back to a static AST parse
-  of `installer/registry.py` only when the snapshot is absent or crosses a
-  symlink boundary (the leaf or any parent component, via `_crosses_symlink`). The
-  snapshot's `schemaVersion` must be an exact `int` in
-  `SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS` before use — `bool`, `float`, or
-  a string version, an unsupported integer, malformed JSON, or a mistyped field
-  fails closed with a `ReviewError` rather than silently reverting to the AST
-  parser. Hash each selected canonical shared source into `relatedTemplates` and
+  shared references) from the generated `generated/registry-snapshot.json`
+  payload alone. There is no AST fallback: the consumer never reads
+  `installer/registry.py`. A path crossing a symlink boundary — the leaf or any
+  parent component, via `_crosses_symlink` — raises without opening the target.
+  An absent snapshot raises in a first-party pack checkout and resolves an empty
+  registry in any other, so non-pack checkouts keep working while a pack that
+  fails to ship its snapshot is caught. The snapshot's `schemaVersion` must be an
+  exact `int` in `SUPPORTED_REGISTRY_SNAPSHOT_SCHEMA_VERSIONS` before use —
+  `bool`, `float`, or a string version, an unsupported integer, malformed JSON,
+  or a mistyped field fails closed with a `ReviewError`. Hash each selected canonical shared source into `relatedTemplates` and
   snapshot identity without importing or executing reviewed repository code. The
   producer (`generate-skill-surfaces.py`) is the sole writer of the snapshot;
   `--check` fails when the committed snapshot drifts from `installer/registry.py`.

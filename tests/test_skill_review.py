@@ -111,15 +111,11 @@ class SkillReviewInventoryTest(TempDirTestCase):
         skill = root / "templates" / "skills" / "se-test" / "SKILL.md"
         skill.parent.mkdir(parents=True)
         skill.write_text(SKILL_TEXT.format(name="se-test"), encoding="utf-8")
-        registry = root / "installer" / "registry.py"
-        registry.parent.mkdir()
-        registry.write_text(
-            "FAMILY_LABELS = {'improve': 'Improve'}\n"
-            "SKILLS = (SkillInfo(name='se-test', family='improve'),)\n"
-            "PLATFORM_REGISTRY = {'agents': object(), 'claude': object(), "
-            "'codex': object()}\n",
-            encoding="utf-8",
-        )
+        # A real pack ships generated/registry-snapshot.json, and since the AST
+        # fallback was removed that file is the only registry source. The
+        # fixture deliberately writes no installer/registry.py: if anything
+        # still read it, these tests would resolve an empty registry and fail.
+        self.write_snapshot(root, dict(self.SE_SNAPSHOT))
         rows = [
             {
                 "platform": platform,
@@ -156,14 +152,7 @@ class SkillReviewInventoryTest(TempDirTestCase):
         for platform, path in adapters.items():
             path.parent.mkdir(parents=True)
             path.write_text(f"{platform} adapter.\n", encoding="utf-8")
-        registry = root / "installer" / "registry.py"
-        registry.parent.mkdir()
-        registry.write_text(
-            "COMMAND_REGISTRY = (CommandInfo('sd-test', 'test', 'verify'),)\n"
-            "PLATFORM_REGISTRY = {'shared': object(), 'claude': object(), "
-            "'gemini': object(), 'github': object()}\n",
-            encoding="utf-8",
-        )
+        self.write_snapshot(root, dict(self.SD_SNAPSHOT))
         sources = {
             "shared": "templates/.commands/sd-test.md",
             "claude": "templates/.claude/commands/sd/test.md",
@@ -229,6 +218,14 @@ class SkillReviewInventoryTest(TempDirTestCase):
         "sharedReferences": {},
     }
 
+    SD_SNAPSHOT = {
+        "schemaVersion": 1,
+        "familyOrder": ["verify"],
+        "skills": [{"name": "sd-test", "family": "verify"}],
+        "platforms": ["claude", "gemini", "github", "shared"],
+        "sharedReferences": {},
+    }
+
     def write_snapshot(self, root: Path, payload: object) -> Path:
         path = root / "generated" / "registry-snapshot.json"
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -238,35 +235,62 @@ class SkillReviewInventoryTest(TempDirTestCase):
             path.write_text(str(payload), encoding="utf-8")
         return path
 
-    def test_snapshot_preferred_matches_ast_fallback(self) -> None:
-        # A present, valid snapshot and the AST fallback derive an identical
-        # RegistryData for the same registry, so the emitted snapshotId is equal.
+    def test_absent_snapshot_fails_closed_for_a_first_party_pack(self) -> None:
+        # A pack owes a snapshot, so its absence is a packaging defect rather
+        # than a reason to resolve an empty registry.
         root, _ = self.write_se_pack()
-        fallback = self.inventory(root, "se-test")["snapshotId"]
-        self.write_snapshot(root, dict(self.SE_SNAPSHOT))
-        preferred = self.inventory(root, "se-test")["snapshotId"]
-        self.assertEqual(preferred, fallback)
+        (root / "generated" / "registry-snapshot.json").unlink()
+        with self.assertRaises(review.ReviewError) as absent:
+            self.inventory(root, "se-test")
+        # Asserting the message, not just the type: an absent snapshot must not
+        # be mistakable for a rejected one.
+        self.assertIn("ships no registry snapshot", str(absent.exception))
+        self.assertNotIn("symlink", str(absent.exception))
 
-    def test_absent_snapshot_falls_back_to_ast(self) -> None:
-        root, _ = self.write_se_pack()
+    def test_absent_snapshot_resolves_empty_registry_for_a_repo_local_checkout(
+        self,
+    ) -> None:
+        # The counterpart to the test above: an ordinary checkout ships no
+        # registry at all and must keep working exactly as it did before the
+        # AST fallback was removed.
+        root = self.base / "repo-local"
+        skill = root / "skills" / "demo" / "SKILL.md"
+        skill.parent.mkdir(parents=True)
+        skill.write_text(SKILL_TEXT.format(name="demo"), encoding="utf-8")
+        # A real git checkout with no recognised remote, because that is what
+        # the pre-change baseline was measured on. A plain directory resolves
+        # `unresolved` instead, which exercises the same empty-registry branch
+        # but is not the ownerKind the criterion names.
+        subprocess.run(["git", "init", "-q", str(root)], check=True, env=git_env())
+        self.assertFalse((root / "manifest.json").exists())
         self.assertFalse((root / "generated" / "registry-snapshot.json").exists())
-        # No raise; families resolved via the retained AST parser.
-        skill = self.inventory(root, "se-test")["skills"][0]
-        self.assertEqual(skill["family"], "improve")
+        payload = self.inventory(root, "demo")
+        # Pin the whole repository record, not just the skill family. The
+        # criterion this test exists for is byte-identity with a baseline
+        # captured before the AST fallback was removed, and three of its four
+        # fields live here; asserting only `family` would let ownerKind or an
+        # empty registry field regress silently.
+        repository = payload["repositories"][0]
+        self.assertEqual(repository["ownerKind"], "repo-local")
+        self.assertEqual(repository["familyOrder"], [])
+        self.assertEqual(repository["declaredPlatforms"], [])
+        self.assertEqual(payload["skills"][0]["family"], "Uncategorized")
 
-    def test_symlinked_snapshot_is_not_followed_and_falls_back(self) -> None:
+    def test_symlinked_snapshot_is_not_followed_and_fails_closed(self) -> None:
         root, _ = self.write_se_pack()
         external = self.base / "external-snapshot.json"
         external.write_text(json.dumps(dict(self.SE_SNAPSHOT)), encoding="utf-8")
         link = root / "generated" / "registry-snapshot.json"
-        link.parent.mkdir(parents=True, exist_ok=True)
+        link.unlink()
         link.symlink_to(external)
-        result = review._load_registry_snapshot(link)
-        self.assertIsNone(result)
-        # End-to-end still succeeds via the AST fallback.
-        self.assertEqual(
-            self.inventory(root, "se-test")["skills"][0]["family"], "improve"
-        )
+        with self.assertRaises(review.ReviewError) as rejected:
+            review._load_registry_snapshot(link)
+        self.assertIn("refusing to follow symlinked", str(rejected.exception))
+        # The refusal is not conditional on pack identity, and the message is
+        # distinguishable from the absent-snapshot one.
+        self.assertNotIn("ships no registry snapshot", str(rejected.exception))
+        with self.assertRaises(review.ReviewError):
+            self.inventory(root, "se-test")
 
     def test_symlinked_parent_directory_is_not_followed(self) -> None:
         # A regular snapshot file reached through a symlinked `generated/`
@@ -278,14 +302,64 @@ class SkillReviewInventoryTest(TempDirTestCase):
             json.dumps(dict(self.SE_SNAPSHOT)), encoding="utf-8"
         )
         link_dir = root / "generated"
+        shutil.rmtree(link_dir)
         link_dir.symlink_to(real_generated, target_is_directory=True)
         snapshot = link_dir / "registry-snapshot.json"
         self.assertTrue(snapshot.is_file())
         self.assertFalse(snapshot.is_symlink())
-        self.assertIsNone(review._load_registry_snapshot(snapshot))
-        self.assertEqual(
-            self.inventory(root, "se-test")["skills"][0]["family"], "improve"
-        )
+        with self.assertRaises(review.ReviewError) as rejected:
+            review._load_registry_snapshot(snapshot)
+        self.assertIn("refusing to follow symlinked", str(rejected.exception))
+        # End to end as well, so a symlinked parent cannot be treated more
+        # leniently than a symlinked leaf somewhere in _package_context.
+        with self.assertRaises(review.ReviewError) as end_to_end:
+            self.inventory(root, "se-test")
+        self.assertIn("refusing to follow symlinked", str(end_to_end.exception))
+
+    def test_symlinked_snapshot_content_is_never_consumed(self) -> None:
+        # The message alone is not evidence about which files were read. Paired
+        # arms: identical bytes reached through a symlink are refused and their
+        # distinctive contents appear nowhere, while the same bytes as a regular
+        # file resolve -- so the refusal came from the symlink and not from the
+        # run failing for some unrelated reason.
+        marker = "zzz-distinctive-marker"
+        payload = {
+            "schemaVersion": 1,
+            "familyOrder": [marker],
+            "skills": [{"name": "se-test", "family": marker}],
+            "platforms": ["agents", "claude", "codex"],
+            "sharedReferences": {},
+        }
+        root, _ = self.write_se_pack()
+        external = self.base / "marked-snapshot.json"
+        external.write_text(json.dumps(payload), encoding="utf-8")
+        link = root / "generated" / "registry-snapshot.json"
+        link.unlink()
+        link.symlink_to(external)
+        # Two independent proofs, because they answer different questions.
+        # The guard answers "was it opened": _read_regular_text is the single
+        # funnel through which the loader reads a snapshot, so tripping it means
+        # the refusal happened after a read. Unlike an st_atime probe this is
+        # exact -- no dependence on relatime, noatime, or the filesystem.
+        real_read = review._read_regular_text
+
+        def guarded(path: Path) -> str:
+            if Path(path) == link:
+                raise AssertionError(f"snapshot was read before refusal: {path}")
+            return real_read(path)
+
+        with mock.patch.object(review, "_read_regular_text", guarded):
+            with self.assertRaises(review.ReviewError) as rejected:
+                self.inventory(root, "se-test")
+        # And the marker answers "did the content reach the result", which the
+        # control arm below makes non-vacuous: the same bytes as a regular file
+        # do surface the marker, so its absence here is evidence rather than an
+        # artifact of the run having failed.
+        self.assertNotIn(marker, str(rejected.exception))
+
+        link.unlink()
+        link.write_text(external.read_text(encoding="utf-8"), encoding="utf-8")
+        self.assertEqual(self.inventory(root, "se-test")["skills"][0]["family"], marker)
 
     def test_snapshot_version_not_in_supported_set_fails_closed(self) -> None:
         root, _ = self.write_se_pack()
@@ -797,14 +871,18 @@ class SkillReviewInventoryTest(TempDirTestCase):
         second = root / "templates" / "skills" / "se-z" / "SKILL.md"
         second.parent.mkdir(parents=True)
         second.write_text(SKILL_TEXT.format(name="se-z"), encoding="utf-8")
-        (root / "installer" / "registry.py").write_text(
-            "FAMILY_LABELS = {'improve': 'Improve'}\n"
-            "SKILLS = ("
-            "SkillInfo(name='se-z', family='improve'), "
-            "SkillInfo(name='se-test', family='improve'),"
-            ")\n"
-            "PLATFORM_REGISTRY = {'agents': object()}\n",
-            encoding="utf-8",
+        self.write_snapshot(
+            root,
+            {
+                "schemaVersion": 1,
+                "familyOrder": ["improve"],
+                "skills": [
+                    {"name": "se-z", "family": "improve"},
+                    {"name": "se-test", "family": "improve"},
+                ],
+                "platforms": ["agents"],
+                "sharedReferences": {},
+            },
         )
         payload = review.build_inventory(
             root,
@@ -1249,12 +1327,11 @@ class SkillReviewInventoryTest(TempDirTestCase):
         shared = root / "templates" / "skills" / "_shared" / "references" / "source.md"
         shared.parent.mkdir(parents=True)
         shared.write_text("Shared evidence.\n", encoding="utf-8")
-        registry = root / "installer" / "registry.py"
-        registry.write_text(
-            registry.read_text(encoding="utf-8")
-            + "SHARED_REFERENCES = {'_shared/references/source.md': ('se-test',)}\n",
-            encoding="utf-8",
-        )
+        snapshot = dict(self.SE_SNAPSHOT)
+        snapshot["sharedReferences"] = {
+            "_shared/references/source.md": ["se-test"]
+        }
+        self.write_snapshot(root, snapshot)
 
         first = self.inventory(root, "se-test")
         skill = first["skills"][0]
@@ -1270,13 +1347,13 @@ class SkillReviewInventoryTest(TempDirTestCase):
 
     def test_missing_or_symlinked_shared_references_fail_closed(self) -> None:
         root, _ = self.write_se_pack()
-        registry = root / "installer" / "registry.py"
-        original = registry.read_text(encoding="utf-8")
-        registry.write_text(
-            original
-            + "SHARED_REFERENCES = {'_shared/references/missing.md': ('se-test',)}\n",
-            encoding="utf-8",
-        )
+
+        def declare_shared(relative: str) -> None:
+            snapshot = dict(self.SE_SNAPSHOT)
+            snapshot["sharedReferences"] = {relative: ["se-test"]}
+            self.write_snapshot(root, snapshot)
+
+        declare_shared("_shared/references/missing.md")
         with self.assertRaises(review.ReviewError) as missing:
             self.inventory(root, "se-test")
         self.assertIn("missing shared reference", str(missing.exception))
@@ -1286,11 +1363,7 @@ class SkillReviewInventoryTest(TempDirTestCase):
         linked = root / "templates" / "skills" / "_shared" / "references" / "linked.md"
         linked.parent.mkdir(parents=True)
         linked.symlink_to(outside)
-        registry.write_text(
-            original
-            + "SHARED_REFERENCES = {'_shared/references/linked.md': ('se-test',)}\n",
-            encoding="utf-8",
-        )
+        declare_shared("_shared/references/linked.md")
         with self.assertRaises(review.ReviewError) as symlinked:
             self.inventory(root, "se-test")
         self.assertIn("unsafe or missing shared reference", str(symlinked.exception))
