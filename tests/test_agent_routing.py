@@ -6,17 +6,15 @@ one routing document this repository owns, so it is where the canonical route
 is stated — outside the Trellis-managed block, which a `trellis update`
 overwrites.
 
-The wrapped set is derived here rather than listed, on two signals that must
-agree: a same-name pair of `sd-`/`trellis-` skill directories, and the `sd-`
-skill's body naming its twin. Names alone would admit `sd-check`, which has a
-`trellis-check` sibling it does not wrap; the body reference alone would admit
-`sd-work-backlog`, which loads `trellis-before-dev` without wrapping it.
-
-Both signals read vendored files, so an upstream refresh that adds, removes, or
-renames a wrapped workflow fails this module until `AGENTS.md` is updated. That
-alarm is the point: it is the only signal that the routing document has drifted
-from the shipped wrapper set. Update the section, never the floor, unless the
-removal is the real upstream change.
+The wrapped set used to be derived here, from a same-name pair of
+`sd-`/`trellis-` skill directories plus the `sd-` skill's body naming its twin.
+Both signals read vendored payload, and the thin conversion took that payload
+out of this tree: the `sd-` skills now live wherever the machine keeps the
+install, and CI has no install at all. `ROUTED_WORKFLOWS` below is that
+derivation's last answer, frozen as a repo-owned list. It still fails when
+someone edits the routing section, and it no longer claims to notice an
+upstream change this repository can no longer see -- when the pack adds or
+renames a wrapper, update the section and this list together.
 """
 
 from __future__ import annotations
@@ -26,7 +24,6 @@ import unittest
 
 from install_test_support import PACK_ROOT
 
-SKILLS_DIR = PACK_ROOT / ".agents" / "skills"
 AGENTS_DOC = PACK_ROOT / "AGENTS.md"
 
 TRELLIS_END = "<!-- TRELLIS:END -->"
@@ -46,28 +43,11 @@ ROUTE_LINE = re.compile(
 # as though the bypass had been closed.
 BYPASS_SENTENCE = "emits `/trellis:` next actions of its own"
 
-# Measured floor: `continue`, `finish-work`, `start`, `update-spec`. A derived
-# set below this means a signal broke, not that the pack shrank — an empty set
-# would otherwise satisfy set equality against an emptied section.
-MIN_WRAPPED_WORKFLOWS = 4
-
-
-def wrapped_workflows() -> set[str]:
-    """Workflows where an `sd-` skill wraps its same-name `trellis-` twin."""
-    found = set()
-    for skill in sorted(SKILLS_DIR.glob("sd-*/SKILL.md")):
-        workflow = skill.parent.name[len("sd-") :]
-        twin = f"trellis-{workflow}"
-        if not (SKILLS_DIR / twin / "SKILL.md").is_file():
-            continue
-        # Not a plain substring test: `trellis-update` occurs inside
-        # `trellis-update-spec`, so a hypothetical `sd-update` would match on
-        # its neighbour's name. The lookahead demands the reference end where
-        # the twin's name ends.
-        reference = re.compile(re.escape(twin) + r"(?![a-z0-9-])")
-        if reference.search(skill.read_text(encoding="utf-8")):
-            found.add(workflow)
-    return found
+# The workflows the pack wraps, as the removed derivation last reported them.
+# `check` is deliberately absent: `sd-check` has a `trellis-check` sibling it
+# does not wrap, which is why the old derivation demanded a body reference to
+# the twin and not a same-name pair alone.
+ROUTED_WORKFLOWS = frozenset({"continue", "finish-work", "start", "update-spec"})
 
 
 def routing_section() -> str:
@@ -177,29 +157,6 @@ class SectionParserTest(unittest.TestCase):
         self.assertIn("after the Trellis block closes", str(raised.exception))
 
 
-class WrappedWorkflowDerivationTest(unittest.TestCase):
-    def test_derivation_meets_its_floor(self) -> None:
-        derived = wrapped_workflows()
-        self.assertGreaterEqual(
-            len(derived),
-            MIN_WRAPPED_WORKFLOWS,
-            f"derived {sorted(derived)}; a set below the floor means a signal "
-            "broke — check whether the sd-* skills still name their twins",
-        )
-
-    def test_a_same_name_pair_alone_is_not_a_wrapper(self) -> None:
-        # `sd-check` and `trellis-check` are siblings; `sd-check` wraps nothing.
-        # If this stops holding upstream, `check` joins the derived set and the
-        # section must name it.
-        sd_check = SKILLS_DIR / "sd-check" / "SKILL.md"
-        trellis_check = SKILLS_DIR / "trellis-check" / "SKILL.md"
-        self.assertTrue(sd_check.is_file() and trellis_check.is_file())
-        self.assertEqual(
-            "trellis-check" in sd_check.read_text(encoding="utf-8"),
-            "check" in wrapped_workflows(),
-        )
-
-
 class RoutingSectionContentTest(unittest.TestCase):
     def test_every_route_line_names_one_workflow_consistently(self) -> None:
         for match in route_lines():
@@ -225,14 +182,13 @@ class RoutingSectionContentTest(unittest.TestCase):
         duplicates = sorted({name for name in listed if listed.count(name) > 1})
         self.assertEqual(duplicates, [], "one canonical route per workflow")
 
-    def test_the_section_names_exactly_the_derived_workflows(self) -> None:
+    def test_the_section_names_exactly_the_routed_workflows(self) -> None:
         listed = {match.group("workflow") for match in route_lines()}
-        derived = wrapped_workflows()
         self.assertEqual(
             listed,
-            derived,
-            f"AGENTS.md routes {sorted(listed)}; .agents/skills/ ships "
-            f"{sorted(derived)}",
+            set(ROUTED_WORKFLOWS),
+            f"AGENTS.md routes {sorted(listed)}; this module expects "
+            f"{sorted(ROUTED_WORKFLOWS)}",
         )
 
     def test_the_residual_bypass_is_stated(self) -> None:

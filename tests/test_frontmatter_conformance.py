@@ -192,9 +192,11 @@ class CorpusRegressionTests(unittest.TestCase):
 
         self.assertEqual(without_frontmatter, [])
         # Vacuity guards. An enumeration that quietly matched nothing would
-        # otherwise pass this group forever. Today: 180 documents, 14 boolean
-        # values, 29 double-quoted values.
-        self.assertGreaterEqual(len(documents), 150)
+        # otherwise pass this group forever. Today: 147 documents, 14 boolean
+        # values, 29 double-quoted values. The count fell from 180 when the
+        # thin conversion took the pack's own SKILL.md files out of the tree;
+        # what remains is this repository's corpus, and the floor tracks it.
+        self.assertGreaterEqual(len(documents), 120)
         self.assertGreaterEqual(booleans, 1)
         self.assertGreaterEqual(double_quoted, 1)
 
