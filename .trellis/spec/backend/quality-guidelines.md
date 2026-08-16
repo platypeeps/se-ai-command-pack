@@ -281,11 +281,27 @@ into `gh pr edit --body-file`, so nothing above the script changed
 (platypeeps/sd-ai-command-pack#480 — routing and evidence in the
 `08-10-review-scope-late-arrival` task's `disposition.md`).
 
-Until this repository's pack refresh lands 0.71.23 or later, the old refusal is
-still what runs here — the fix is upstream, not installed. Check before relying
-on it (`python3 -c 'import json;print(json.load(open(".sd-ai-command-pack/manifest.json"))["version"])'`),
-and hand-author the section on a mixed diff while the installed version is
-below 0.71.23.
+Until the pack refresh lands 0.71.23 or later, the old refusal is still what
+runs here — the fix is upstream, not installed. Hand-author the section on a
+mixed diff until then.
+
+Check the **behaviour**, not a version string. This repository is a `thin`
+consumer (`"mode": "thin"` in `.sd-ai-command-pack/manifest.json`), so that
+manifest holds the *pin* while the script that actually runs lives in the
+machine-scope install at `~/.agents/bin/`. Those two can diverge — `sd-status`
+reports "pin versus machine install" as its own skew row precisely because they
+do. Reading the pin can therefore report a version that is not what executes:
+
+```bash
+d=$(mktemp -d); printf 'body\n' > "$d/body.md"
+printf '.trellis/tasks/x/prd.md\0src/app.py\0' > "$d/paths.nul"
+python3 ~/.agents/bin/sd-ai-command-pack-pr-body-scope.py --prepare-tooling-body \
+  --body-file "$d/body.md" --changed-files "$d/paths.nul"; echo "exit=$?"
+```
+
+`exit=3` with `info: ... not tooling/generated-only` is the **old** behaviour —
+hand-author the section. `exit=0` with a `Tooling/generated scope:` heading
+appended to `$d/body.md` is 0.71.23 or later.
 
 In 0.71.23 and later, exit `3` means *nothing to declare*: an empty diff, or one
 with no generated path at all. Below 0.71.23 — including the version installed
