@@ -54,21 +54,16 @@ REQUIRED_EXCLUSIONS = {
     ".trellis/workspace/**",
     ".trellis/workflow.md",
     "generated/**",
-    "docs/SD_AI_COMMAND_PACK.md",
-    "scripts/sd-ai-command-pack-*",
 }
 
 EXCLUDED_MAP_HEADERS = {
-    "## File: .agents/skills/sd-review-pr/SKILL.md",
     "## File: .github/PULL_REQUEST_TEMPLATE.md",
     "## File: .github/copilot-instructions.md",
     "## File: .gito/config.toml",
     "## File: .prism/rules.json",
     "## File: .trellis/workflow.md",
-    "## File: docs/SD_AI_COMMAND_PACK.md",
     "## File: docs/repomix-map.md",
     "## File: generated/skills/claude/se-research/SKILL.md",
-    "## File: scripts/sd-ai-command-pack-full-check.sh",
 }
 
 REQUIRED_MAP_HEADERS = {

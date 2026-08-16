@@ -52,7 +52,7 @@ first. The sequence was identical — passed at `f4d17ef`, failed at the
 finalization head `ee0eb36` naming
 `.trellis/workspace/sdelmas/index.md` and `journal-4.md` — but the fix did not
 take effect. After `gh pr edit` added the section, the helper passed on its own
-(`bash scripts/sd-ai-command-pack-review-scope.sh`, exit 0) and a direct
+(`bash ~/.agents/bin/sd-ai-command-pack-review-scope.sh`, exit 0) and a direct
 `sd-check` passed 11/0, while `sd-review` kept reporting
 `pack.review-scope failed` with a byte-identical `durationMs: 940` across three
 further attempts.
@@ -108,12 +108,12 @@ fix cannot be proven at the same head.
   is a new attempt rather than a replay, or narrow what the stored record
   replays: the durable remote receipt is what resume-idempotency exists to
   protect, and the deterministic `check` block could re-run every time at a cost
-  of one gate execution. `scripts/sd-ai-command-pack-review.py` is vendored too,
+  of one gate execution. `~/.agents/bin/sd-ai-command-pack-review.py` is vendored too,
   so this shares the upstream-approval constraint below.
 
 Note the ownership constraint before choosing: both
-`scripts/sd-ai-command-pack-review-scope.sh` and
-`scripts/sd-ai-command-pack-pr-body-scope.py` are vendored (Registry B,
+`~/.agents/bin/sd-ai-command-pack-review-scope.sh` and
+`~/.agents/bin/sd-ai-command-pack-pr-body-scope.py` are vendored (Registry B,
 `install: "always"`), so any code change is an upstream pull request against
 platypeeps/sd-ai-command-pack and needs explicit per-PR approval. See
 `.trellis/tasks/archive/2026-08/08-10-review-check-cache-pr-body/disposition.md`

@@ -114,28 +114,28 @@ class OwnershipLookup:
         return self.classify(path) in {"repo-own", "repo-own-seeded"}
 
 
-class ScriptsDirectoryIsWhollyVendoredTest(unittest.TestCase):
-    """`scripts/` holds installed pack files only, so no exception is needed."""
+class ScriptsDirectoryStaysEmptyTest(unittest.TestCase):
+    """`scripts/` held installed pack files only, and the thin install has none.
+
+    The rule it enforced -- repo-own source belongs in `.github/scripts/`, never
+    beside vendored payload -- did not change with the conversion. What changed
+    is where it bites: `scripts/` is now empty, so any file appearing there is
+    repo-own by construction and this is the assertion that catches it.
+    """
 
     def setUp(self) -> None:
-        self.lookup = OwnershipLookup()
         self.tracked = tracked_files("scripts/")
 
-    def test_every_tracked_script_is_pack_vendored(self) -> None:
-        self.assertTrue(self.tracked, "expected tracked files under scripts/")
-        offenders = {
-            path: self.lookup.classify(path)
-            for path in self.tracked
-            if self.lookup.classify(path) != "vendored-pack"
-        }
+    def test_no_file_is_tracked_under_scripts(self) -> None:
         self.assertEqual(
-            offenders,
-            {},
-            "repo-own files belong in .github/scripts/, not scripts/ "
-            "(see CONTRIBUTING, 'Repo-own source vs vendored installs')",
+            self.tracked,
+            [],
+            "repo-own files belong in .github/scripts/, and the thin install "
+            "ships no payload here (see CONTRIBUTING, 'Repo-own source vs "
+            "vendored installs')",
         )
 
-    def test_receipts_agree_about_the_scripts_directory(self) -> None:
+    def test_receipts_agree_the_directory_is_gone(self) -> None:
         # The manifest decides ownership; provenance and installed-targets are
         # the content and destination receipts beside it. If they disagree, one
         # of the three is stale and the ownership answer is no longer trustworthy.
@@ -149,7 +149,9 @@ class ScriptsDirectoryIsWhollyVendoredTest(unittest.TestCase):
         self.assertEqual(provenance, set(self.tracked))
 
     def test_dead_wrapper_stays_deleted(self) -> None:
-        self.assertNotIn(DELETED_WRAPPER, self.tracked)
+        # Asserted against the whole tree, not just `scripts/`: the directory is
+        # empty now, so scoping the check there would pass on emptiness alone.
+        self.assertNotIn(DELETED_WRAPPER, tracked_files())
 
 
 class RepoOwnHomeIsUniformlyEditableTest(unittest.TestCase):

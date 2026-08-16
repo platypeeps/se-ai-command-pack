@@ -2,6 +2,6 @@
   "private": true,
   "scripts": {
     "check": "make check",
-    "check:full": "npm run check && bash scripts/sd-ai-command-pack-full-check.sh"
+    "check:full": "npm run check && bash ~/.agents/bin/sd-ai-command-pack-full-check.sh"
   }
 }

@@ -133,7 +133,13 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: "22"
-      - name: Run vendored review preflight
+      # The preflight is not in this tree since the thin conversion: it lives
+      # wherever the machine keeps the pack install, so the resolver -- not a
+      # path -- says where. A runner has no install, so this lane reports itself
+      # skipped there rather than failing on a file nobody shipped to it. The
+      # base-SHA guards still fail closed, because a bad base is a real defect
+      # whether or not the preflight can run.
+      - name: Run installed review preflight
         env:
           EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           EVENT_NAME: ${{ github.event_name }}
@@ -148,8 +154,15 @@ jobs:
             echo "error: push base is not an ancestor of the head (force push?); failing closed." >&2
             exit 1
           fi
+          preflight="$(python3 .sd-ai-command-pack/bin/sd-ai-command-pack-review-layout.py \
+            --resolve sd-ai-command-pack-review-preflight.mjs 2>/dev/null \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin).get("path",""))' 2>/dev/null || true)"
+          if [ -z "$preflight" ] || [ ! -f "$preflight" ]; then
+            echo "skipped: no resolvable sd-ai-command-pack install provides the review preflight"
+            exit 0
+          fi
           SD_AI_COMMAND_PACK_REVIEW_PREFLIGHT_BASE_REF="$EVENT_BASE_SHA" \
-            node scripts/sd-ai-command-pack-review-preflight.mjs
+            node "$preflight"
 
   ci-result:
     needs: [unittest, test-hermetic, lint, release-payload-gate, auto-tag-release, review-preflight]
