@@ -2,8 +2,8 @@
   "id": "review-scope-late-arrival",
   "name": "review-scope-late-arrival",
   "title": "Close the pack.review-scope late-arrival gap for mixed diffs",
-  "description": "The pack.review-scope gate requires a scope heading only once the branch diff contains a scoped file, but sd-ship Stage 2b's finalization adds the journal/index files that trigger it after the PR body is authored. --prepare-tooling-body declines to help on a mixed diff, so the failure lands on the successor-head re-entry. Observed on PRs #156, #163, #172, and #203.",
-  "status": "planning",
+  "description": "The pack.review-scope gate requires a scope heading only once the branch diff contains a scoped file, but sd-ship Stage 2b's finalization adds the journal/index files that trigger it after the PR body is authored. --prepare-tooling-body declines to help on a mixed diff, so the failure lands on the successor-head re-entry. Observed on PRs #156, #163, #172, #203, and #208. Remedy lands upstream in platypeeps/sd-ai-command-pack; this repository owns only the spec update and a disposition record.",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "tooling",
   "package": null,
@@ -26,7 +26,5 @@
     "scripts/sd-ai-command-pack-pr-body-scope.py"
   ],
   "notes": "",
-  "meta": {},
-  "blocked": true,
-  "blockedOn": "explicit approval for a pull request against the separate sd-ai-command-pack repository, which this repository cannot grant itself"
+  "meta": {}
 }

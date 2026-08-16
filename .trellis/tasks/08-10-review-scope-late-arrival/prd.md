@@ -1,9 +1,14 @@
 # Close the `pack.review-scope` late-arrival gap for mixed diffs
 
-> **Blocked on** explicit approval for a pull request against the separate
-> `sd-ai-command-pack` repository, which this repository cannot grant itself.
-> Every candidate design below lands in a vendored script, so there is no route
-> that implements this locally. Planning can proceed; implementation cannot.
+> **Route: upstream pull request.** Explicit per-PR approval for a pull request
+> against the separate `platypeeps/sd-ai-command-pack` repository was granted
+> 2026-08-16. The remedy lands in a vendored script, so nothing is implemented
+> in this repository; this task closes with a `disposition.md` recording the
+> upstream change, following the precedent in
+> `.trellis/tasks/archive/2026-08/08-10-review-check-cache-pr-body/`.
+>
+> This approval is per-PR. It does not create standing authority for any further
+> upstream pull request.
 
 ## Goal
 
@@ -47,71 +52,82 @@ The spec cites the same shape on PRs #156 and #172 (mixed diff, preparer exits
 `3`) and #163 (two review rounds burned without a proactive section). #203 is
 the fourth.
 
-PR #208 (2026-08-10) is the fifth, and it exposes a second defect layered on the
-first. The sequence was identical — passed at `f4d17ef`, failed at the
-finalization head `ee0eb36` naming
-`.trellis/workspace/sdelmas/index.md` and `journal-4.md` — but the fix did not
-take effect. After `gh pr edit` added the section, the helper passed on its own
-(`bash ~/.agents/bin/sd-ai-command-pack-review-scope.sh`, exit 0) and a direct
-`sd-check` passed 11/0, while `sd-review` kept reporting
-`pack.review-scope failed` with a byte-identical `durationMs: 940` across three
-further attempts.
+PR #208 (2026-08-10) is the fifth. It showed the same late-arrival sequence —
+passed at `f4d17ef`, failed at the finalization head `ee0eb36` naming
+`.trellis/workspace/sdelmas/index.md` and `journal-4.md` — layered over a
+second, separate defect in the review coordinator's attempt-state replay.
 
-The cause is the review coordinator's private attempt state. `_artifact_root`
-writes one file per attempt identity under `<cache-namespace>/review-controller`,
-and that identity — `{repository, scope, base, head, prNumber, controls}` — does
-not include the attempt number, so attempts 3 through 6 all resolved to the same
-stored record and replayed its `check` block instead of re-running the gate. The
-resume-idempotency rule in `sd-review`'s SKILL.md is what makes this correct for
-a delayed receipt and wrong here: `pack.review-scope` reads the **PR body**, an
-input that lives off-head, so the only way to re-verify after fixing it is to
-change the head or delete the state file. Deleting
-`review-853b0905b50c47b44655902a.json` (no dispatched remote request, so nothing
-to reconcile) made the next run report `ready` with `check passed 11/0`.
+### The replay half is closed; this task no longer carries it
 
-Whichever remedy is chosen for the late arrival itself, an attempt identity that
-ignores off-head deterministic inputs leaves a state where a correctly applied
-fix cannot be proven at the same head.
+That second defect was routed and fixed upstream by the sibling task
+`08-10-review-check-cache-pr-body` as platypeeps/sd-ai-command-pack#417, which
+shipped in pack v0.66.1. The remedy chosen upstream was not the identity widening
+this PRD originally proposed — that was considered and rejected there, because a
+body edit would discard the whole attempt including durable remote receipts.
+Upstream instead stopped persisting terminal-failure verdicts and made the
+deterministic `check` recompute on every invocation.
+
+Verified against upstream `main` at `c9405f0d` on 2026-08-16:
+`scripts/sd-ai-command-pack-review.py:1943` carries the comment "The
+deterministic check is recomputed on every invocation rather than served from
+the attempt state", and its three regression tests pass —
+`test_failed_check_is_recomputed_on_the_next_invocation`,
+`test_stored_passing_check_is_recomputed_and_can_still_block`, and
+`test_local_provider_failure_is_recomputed_on_the_next_invocation`
+(`.venv/bin/python -m unittest tests.test_review_controller -k recomputed`,
+`Ran 3 tests ... OK`). The middle test is precisely the scenario this PRD's
+fourth acceptance criterion demanded, so that criterion could not fail against
+today's code as it required.
+
+The replay requirement and its acceptance criterion are therefore retired from
+this task rather than carried as work. Installed provenance here is already
+v0.71.22, so this repository holds the fix. What remains open is only the
+late-arrival gap itself.
 
 ## Requirements
 
 - A PR that will acquire journal/index files at finalization must not fail
   `pack.review-scope` solely because those files did not exist when its body was
-  authored.
+  authored — **provided its creation-time diff already contains at least one
+  generated or bookkeeping path.** A branch with none is a residual gap the
+  chosen mechanism does not close; see "Residual gap, accepted knowingly" in
+  `design.md`. All five observed PRs fall inside the covered shape.
 - The remedy must not weaken the gate: a genuinely unexplained tooling/generated
   change must still fail.
 - It must not require the operator to remember a proactive section. The current
   guidance already says to write one; the recurrence across five PRs is the
   evidence that guidance alone is not closing it.
-- A `pack.review-scope` failure that is fixed off-head — by editing the PR body,
-  the only input the gate reads that is not in the commit — must be re-provable
-  at the same head through a sanctioned invocation, without deleting the
-  coordinator's private attempt state.
+- Whatever the preparer writes into a PR body must be true of the diff it was
+  written from. The present refusal on a mixed diff is a truthfulness guard, not
+  an oversight: the canned sentence claims the change is *limited to* generated
+  surfaces, which is false when authored files are also present.
 
-## Design questions for the planning phase
+Retired 2026-08-16 (see "The replay half is closed" above): the requirement that
+an off-head `pack.review-scope` fix be re-provable at the same head without
+deleting the coordinator's attempt state. Satisfied upstream by
+platypeeps/sd-ai-command-pack#417 in v0.66.1.
 
-- **Append for the tooling subset.** Let `--prepare-tooling-body` append a
-  section describing only the tooling paths in a mixed diff, instead of exiting
-  `3` and writing nothing. Smallest change to the observed failure; needs a
-  decision about what the section says when the tooling paths are a minority of
-  the diff.
+## Chosen mechanism
+
+**Append for the tooling subset**, selected 2026-08-16. On a mixed diff
+`--prepare-tooling-body` appends a section that enumerates only the paths it
+proved are tooling, instead of exiting `3` and writing nothing, and says so in
+wording that makes no completeness claim. A diff with no tooling path at all
+still exits `3` and still writes nothing.
+
+The two rejected alternatives, kept for the record:
+
 - **Prepare at finalization instead of creation.** Have the stage that commits
   the journal also ensure the body carries the heading, so the preparer runs
-  when the deciding diff actually exists. Correct by construction; puts a
-  GitHub body edit inside a finalization step that is otherwise local.
+  when the deciding diff actually exists. Correct by construction, but it puts a
+  GitHub body edit inside a finalization step that is otherwise local, and it
+  changes the `sd-create-pr` skill surface rather than one script.
 - **Predict the category.** At PR creation, treat a Trellis task branch as one
   that *will* gain journal/index files and require the section up front. No new
-  body edit late in the chain, but it asserts a future diff.
+  body edit late in the chain, but it asserts a future diff and would demand a
+  heading on branches that never acquire those files.
 
-- **Bind the attempt identity to the PR body, or scope the reuse.** Either fold
-  a digest of the resolved PR body into the attempt identity, so an edited body
-  is a new attempt rather than a replay, or narrow what the stored record
-  replays: the durable remote receipt is what resume-idempotency exists to
-  protect, and the deterministic `check` block could re-run every time at a cost
-  of one gate execution. `~/.agents/bin/sd-ai-command-pack-review.py` is vendored too,
-  so this shares the upstream-approval constraint below.
-
-Note the ownership constraint before choosing: both
+Note the ownership constraint: both
 `~/.agents/bin/sd-ai-command-pack-review-scope.sh` and
 `~/.agents/bin/sd-ai-command-pack-pr-body-scope.py` are vendored (Registry B,
 `install: "always"`), so any code change is an upstream pull request against
@@ -121,16 +137,36 @@ for the routing precedent.
 
 ## Acceptance criteria
 
-- [ ] A test reproduces the sequence at the layer that owns the defect: a body
-      valid for the creation-time diff, a finalization commit adding
-      journal/index files, and a `pack.review-scope` run that does not fail for
-      that reason alone. It must fail against today's code.
-- [ ] The chosen mechanism is documented in the existing "late arrival"
+Criteria 1, 3, 4 and 5 are ticked against upstream evidence in
+platypeeps/sd-ai-command-pack, following the precedent recorded in
+`08-10-review-check-cache-pr-body/disposition.md`. Each tick must quote the
+evidence and name the exact head it was taken at. Criterion 2 is the one
+deliverable owned by this repository.
+
+- [x] A test reproduces the sequence at the layer that owns the defect: a
+      creation-time mixed diff whose tooling paths are a minority, a
+      `--prepare-tooling-body` run that now writes a recognized heading instead
+      of exiting `3`, and a `pack.review-scope` run against the finalization
+      diff that passes with that body. It must fail against today's code, proven
+      by restoring the pre-change file with
+      `git checkout <base> -- <file>` rather than `git stash`.
+- [x] The chosen mechanism is documented in the existing "late arrival"
       section of `.trellis/spec/backend/quality-guidelines.md`, replacing the
       manual-workaround guidance rather than sitting beside it.
-- [ ] An unexplained copied/generated change with no heading still fails, with
-      its own test.
-- [ ] A test covers the replay defect: a stored attempt whose `check` failed,
-      an off-head input change that would now pass, and a same-head rerun that
-      reports the current verdict rather than the stored one — failing against
-      today's code.
+- [x] An unexplained copied/generated change with no heading still fails, with
+      its own test; and a diff containing no tooling path at all still exits `3`
+      and still leaves the body unchanged, with its own test.
+- [x] Every surface that states the old exit-`3` contract is updated in the same
+      change: the script's module docstring and `--help` text,
+      `templates/.agents/skills/sd-create-pr/SKILL.md`, and
+      `templates/docs/SD_AI_COMMAND_PACK.md`. Enumerated by grep, not from
+      memory.
+- [x] The section the preparer writes on a mixed diff is bounded and makes no
+      completeness claim, and an overflowing path list reports how many were
+      omitted rather than truncating silently.
+
+All five are ticked. Criterion 2 was met in this repository; criteria 1, 3, 4
+and 5 were met upstream in platypeeps/sd-ai-command-pack#480. The quoted
+evidence and the exact head for each is in `disposition.md`, which is the
+authoritative record — criterion 4 in particular is recorded there as a partial
+failure of the first grep sweep rather than a clean pass.
