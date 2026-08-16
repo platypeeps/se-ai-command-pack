@@ -69,7 +69,8 @@ falling back to today's literals when nothing is declared.
 ## Requirements
 
 - Decide Deliverable 1's consumer-guard question before opening the PR.
-- Deliverable 1 is relayed as an upstream issue (`#486`), not a pull request.
+- Deliverable 1 is relayed as an upstream issue (`platypeeps/sd-ai-command-pack#486`),
+  not a pull request.
   Deliverable 2 still needs an approach decision for `mindfold-ai/Trellis`; any
   pull request to either repository requires explicit per-PR approval.
 - Behavior in a repository with no SD pack installed must not change.
@@ -89,5 +90,8 @@ falling back to today's literals when nothing is declared.
 - Audit finding: A-005 (P3/S) — `.trellis/audit/report-2026-07-25.md:46`.
 - Predecessor: `07-25-audit-workflow-entrypoint-routing`, whose PRD carries the
   measured divergence and the ownership reasoning.
-- `blockedOn`: upstream PR approval in `platypeeps/sd-ai-command-pack` and
-  `mindfold-ai/Trellis`. The autonomous work loop must not select this task.
+- `blockedOn`: two different things now, which is why the task stays parked as
+  a whole. Deliverable 1 awaits upstream triage of `platypeeps/sd-ai-command-pack#486`
+  (relayed 2026-08-16, no longer PR-approval gated). Deliverable 2 still awaits
+  an approach decision and explicit per-PR approval for `mindfold-ai/Trellis`.
+  The autonomous work loop must not select this task.

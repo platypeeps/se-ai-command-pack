@@ -1,7 +1,8 @@
 # Upstream pack drift: finish-work placeholder guidance and the shared review round budget
 
 **RELAYED 2026-08-16.** Both findings are filed upstream as
-`platypeeps/sd-ai-command-pack#484` (Finding 1) and `#485` (Finding 2). They sit
+`platypeeps/sd-ai-command-pack#484` (Finding 1) and `platypeeps/sd-ai-command-pack#485`
+(Finding 2). They sit
 in vendored pack files that a refresh reverts, so neither is fixable from this
 repository.
 
@@ -61,7 +62,8 @@ Options for upstream to weigh:
 
 ## Requirements
 
-- Relayed upstream as issues (`#484`, `#485`) rather than a pull request, so no
+- Relayed upstream as issues (`platypeeps/sd-ai-command-pack#484`, `platypeeps/sd-ai-command-pack#485`)
+  rather than a pull request, so no
   per-PR approval is needed and no session runs in that checkout. If upstream
   asks for a PR instead, that still requires explicit per-PR approval.
 - Finding 2's fix must not weaken the round limit's purpose: bounding paid
@@ -82,5 +84,7 @@ Options for upstream to weigh:
 - Observed during `07-25-audit-workflow-entrypoint-routing`, PR #211
   (https://github.com/platypeeps/se-ai-command-pack/pull/211): see the round-5
   and round-6 disposition comments for the full evidence.
-- `blockedOn`: upstream PR approval in `platypeeps/sd-ai-command-pack`. The
-  autonomous work loop must not select this task.
+- `blockedOn`: upstream triage of `platypeeps/sd-ai-command-pack#484` and
+  `platypeeps/sd-ai-command-pack#485`. This is no longer PR-approval gating -- the findings
+  were relayed as issues on 2026-08-16 -- but the task is still not actionable
+  here, so the autonomous work loop must not select it.
