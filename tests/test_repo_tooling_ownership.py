@@ -25,7 +25,8 @@ TRELLIS_HASHES = PACK_ROOT / ".trellis" / ".template-hashes.json"
 HERMETICITY_UNTRACKED_PATHS = (".trellis/.template-hashes.json",)
 TRELLIS_PROVENANCE = PACK_ROOT / ".github" / "trellis-provenance.json"
 
-# The documented home for repo-own tooling. `scripts/` is wholly vendored.
+# The documented home for repo-own tooling. `scripts/` holds nothing since
+# the thin conversion, and `ScriptsDirectoryStaysEmptyTest` keeps it that way.
 REPO_OWN_HOME = ".github/scripts/"
 
 # Removed as dead code; asserted absent so it cannot return via a receipt.

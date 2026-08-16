@@ -2,6 +2,16 @@
 
 > Code quality standards for backend development.
 
+> **Reading the sd-ai-command-pack paths below.** This checkout installs the
+> pack in **thin** mode, so `scripts/sd-ai-command-pack-*`,
+> `docs/SD_AI_COMMAND_PACK.md`, `.agents/skills/sd-*`, and `.claude/skills/sd-*`
+> are not in this tree. Findings recorded before the conversion cite them by
+> the repository-relative path they had at the time; those citations are kept
+> verbatim because they are what the commit and the line numbers refer to.
+> Resolve any of them against the machine install with
+> `.sd-ai-command-pack/bin/sd-ai-command-pack-review-layout.py --resolve <name>`.
+> Cite the machine form, `~/.agents/...`, in anything written from here on.
+
 ---
 
 ## Overview
@@ -799,6 +809,17 @@ Ownership And Upstream Route"):
 ---
 
 ## Vendored Pack Lifecycle
+
+> **Historical for this checkout since the thin conversion.** There is no
+> vendored payload here any more: the executables, skills, and manual live in
+> the machine install and this repository keeps only its pin, its prompts, and
+> the layout resolver. A refresh updates the machine install, and the conflict
+> class all three contracts below are about — an installer overwriting payload
+> files tracked in this tree — cannot occur. Keep the section: a consumer that
+> converts back, or one still fat, is governed by it, and the reasoning behind
+> the `.bak` audit failure and the silent local-fork revert is what justifies
+> the current shape. Read it as the fat-install contract, not as this
+> checkout's procedure.
 
 The sd-ai-command-pack payload (`scripts/sd-ai-command-pack-*`,
 `.claude/skills/sd-*`, `.agents/skills/sd-*`, `docs/SD_AI_COMMAND_PACK.md`,
