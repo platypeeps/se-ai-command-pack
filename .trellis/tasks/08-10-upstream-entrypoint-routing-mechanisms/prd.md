@@ -1,8 +1,13 @@
 # Upstream canonical-entry-point mechanisms
 
-**PARKED — blocked on upstream PR approval in two repositories.** Nothing here
-is actionable from `se-ai-command-pack`; both deliverables edit vendored files
-that a refresh reverts.
+**PARTIALLY RELAYED 2026-08-16.** Deliverable 1 is filed upstream as
+`platypeeps/sd-ai-command-pack#486`, including the consumer-guard question it
+must answer and the rejected shadowing alternative. **Deliverable 2 is not
+filed** — it targets `mindfold-ai/Trellis`, which is outside the relay decision
+made for the SD pack.
+
+Still not actionable from `se-ai-command-pack`: both deliverables edit vendored
+files that a refresh reverts.
 
 ## Goal
 
@@ -64,8 +69,9 @@ falling back to today's literals when nothing is declared.
 ## Requirements
 
 - Decide Deliverable 1's consumer-guard question before opening the PR.
-- One PR per upstream repository; neither may be opened without explicit
-  per-PR approval.
+- Deliverable 1 is relayed as an upstream issue (`#486`), not a pull request.
+  Deliverable 2 still needs an approach decision for `mindfold-ai/Trellis`; any
+  pull request to either repository requires explicit per-PR approval.
 - Behavior in a repository with no SD pack installed must not change.
 
 ## Acceptance Criteria

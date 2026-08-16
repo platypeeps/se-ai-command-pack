@@ -1,8 +1,14 @@
 # Upstream pack drift: finish-work placeholder guidance and the shared review round budget
 
-**PARKED — blocked on upstream PR approval in `platypeeps/sd-ai-command-pack`.**
-Both findings sit in vendored pack files that a refresh reverts; neither is
-fixable from this repository.
+**RELAYED 2026-08-16.** Both findings are filed upstream as
+`platypeeps/sd-ai-command-pack#484` (Finding 1) and `#485` (Finding 2). They sit
+in vendored pack files that a refresh reverts, so neither is fixable from this
+repository.
+
+The blocker changed shape rather than clearing. This task no longer waits on
+approval to open an upstream PR from here; it waits on upstream triage of those
+two issues. The acceptance criteria below are unchanged and are still verified
+against this repository after a refresh, not against the issues.
 
 ## Goal
 
@@ -55,8 +61,9 @@ Options for upstream to weigh:
 
 ## Requirements
 
-- One PR against `platypeeps/sd-ai-command-pack`, not opened without explicit
-  per-PR approval.
+- Relayed upstream as issues (`#484`, `#485`) rather than a pull request, so no
+  per-PR approval is needed and no session runs in that checkout. If upstream
+  asks for a PR instead, that still requires explicit per-PR approval.
 - Finding 2's fix must not weaken the round limit's purpose: bounding paid
   remote review calls. An exemption must be provably free of provider calls.
 - Behavior for a single-round review with no finalization must not change.
