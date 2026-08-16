@@ -15,7 +15,9 @@ the AST parser that exists only to support the transitional fallback.
 ## Problem
 
 `_package_context` currently resolves the registry two ways
-(`templates/skills/se-review-skills/scripts/skill_review.py:421-428`):
+(`templates/skills/se-review-skills/scripts/skill_review.py:422-429`; the
+references in this section and the table below were taken at 0.67.1 and
+re-verified at 0.69.0 on 2026-08-16 — see the drift table in `design.md`):
 
 ```python
 # Prefer the versioned generated snapshot; fall back to AST-parsing the
@@ -38,16 +40,18 @@ code".
 
 | Symbol | Line | Role |
 | --- | --- | --- |
-| `_parse_registry` | `:340` | AST-parses `installer/registry.py` into `RegistryData`. |
-| `_assignment` | `:224` | Locates a module-level assignment by name. |
-| `_string_value` | `:235` | Extracts a string literal. |
-| `_call_value` | `:241` | Extracts a positional or keyword argument from a call. |
-| fallback branch | `:427-428` | The `if registry is None:` arm. |
-| `None` return | `:317-318` | `_load_registry_snapshot`'s absent/symlink return, which exists solely to trigger the fallback. |
+| `_parse_registry` | `:341` | AST-parses `installer/registry.py` into `RegistryData`. |
+| `_assignment` | `:225` | Locates a module-level assignment by name. |
+| `_string_value` | `:236` | Extracts a string literal. |
+| `_call_value` | `:242` | Extracts a positional or keyword argument from a call. |
+| `import ast` | `:11` | Unused once the three helpers and the parser go; every `ast.` reference in the file is inside them. |
+| fallback branch | `:428-429` | The `if registry is None:` arm. |
+| `None` return | `:318-319` | `_load_registry_snapshot`'s absent/symlink return. Only the *symlink* half exists solely to trigger the fallback; the *absent* half survives as the signal the caller applies policy to. |
 
-The three helpers are used only by `_parse_registry`; confirm that before
-deleting rather than assuming it, since `_string_value` is the kind of helper
-that acquires unrelated callers over time.
+The three helpers are used only by `_parse_registry`; confirmed by grep on
+2026-08-16 rather than assumed, since `_string_value` is the kind of helper that
+acquires unrelated callers over time. `_crosses_symlink` is **not** in the
+removal surface: it has two callers outside it (`:1087`, `:1909`) and stays.
 
 ## The two decisions this task must not get wrong
 
@@ -86,6 +90,33 @@ intended rather than incidental. If it is not acceptable, the fallback removal
 is not yet unblocked even after the SD twin ships, and that finding is a
 legitimate outcome of this task.
 
+**Established 2026-08-16 by measurement, and the answer is not the obvious one.**
+`_parse_registry` never raises: absent file, symlinked file, or `SyntaxError` all
+return `RegistryData({}, (), (), (), {})` (`:342-347`). For a checkout with no
+`installer/registry.py` — every non-pack repository — today's "fallback" performs
+no parse at all. It is a silent empty registry.
+
+Run against a throwaway git repository holding one `SKILL.md`, no
+`manifest.json`, no snapshot and no `installer/`:
+
+```
+"ownerKind": "repo-local", "familyOrder": [], "declaredPlatforms": []
+"skills": [{"name": "demo", "family": "Uncategorized", ...}]
+exit=0
+```
+
+So a hard error for absent snapshots is **not** acceptable across the board: it
+would withdraw support for every non-pack checkout, which the tool advertises via
+a first-class `ownerKind: "repo-local"`. The removal is still shippable, but the
+fail-closed rule is scoped to checkouts that owe a snapshot — `name in
+FIRST_PARTY_REMOTES`, not `owner_kind`, so a fork cannot silently degrade. The
+symlink refusal is *not* scoped: it raises everywhere. See `design.md`.
+
+The absent-snapshot criterion is amended accordingly and a new criterion added
+requiring the repo-local path to be provably unchanged. Amended because its premise was
+measured false, not to make an implementation pass — and before the amendment
+nothing in the criteria protected the repo-local path at all.
+
 ## Requirements
 
 - Delete `_parse_registry`, `_assignment`, `_string_value`, `_call_value`, and
@@ -98,8 +129,9 @@ legitimate outcome of this task.
   non-first-party checkout, and confirm it is intended. Do not ship the removal
   while that behaviour is unexamined.
 - Update `quality-guidelines.md` where it documents the fallback as current
-  behaviour — at minimum `:295`, `:318-319`, and `:835-838`, each of which
-  describes snapshot-preferred resolution *with* an AST fallback.
+  behaviour. The line references above were taken at 0.67.1 and are **stale**;
+  re-located 2026-08-16, the live claims are `:1167`, `:1193-1194` and
+  `:1737-1745`. Grep the whole file rather than trusting either list.
 - Rework the fallback tests rather than deleting them wholesale
   (`tests/test_skill_review.py`):
   - `test_snapshot_preferred_matches_ast_fallback` (`:241`) loses its
@@ -125,9 +157,14 @@ legitimate outcome of this task.
 - [ ] `grep -n 'installer/registry.py\|installer" / "registry'` over
       `skill_review.py` returns no matches, and none of the four removed
       symbols remains.
-- [ ] An absent snapshot raises `ReviewError`; a symlinked snapshot path raises
-      `ReviewError` and is not opened. Both are covered by tests, and the
-      symlink test asserts the path was not followed.
+- [ ] An absent snapshot raises `ReviewError` **in a first-party pack checkout**
+      (`name in FIRST_PARTY_REMOTES`); a symlinked snapshot path raises
+      `ReviewError` and is not opened, in **every** checkout. Both are covered by
+      tests, and the symlink test asserts the path was not followed.
+- [ ] A non-first-party checkout resolves an empty `RegistryData` and still
+      succeeds — byte-identical on `ownerKind`, `familyOrder`,
+      `declaredPlatforms` and per-skill `family` to a baseline captured **before**
+      the change. Covered by a test the suite did not previously have.
 - [ ] The two `ReviewError` messages are distinguishable — a test asserts on the
       message text of each, so an absent snapshot cannot be mistaken for a
       rejected one. Asserting only the exception type does not satisfy this.
@@ -155,8 +192,13 @@ legitimate outcome of this task.
   `blocked: true` and `blockedOn` in `task.json`; they are now `false` and null.
   Before 2026-08-06 the blocker existed only as prose in this file's Goal, which
   no ranking helper can read — an autonomous run could have selected it.
-- Line references verified against `se-ai-command-pack` 0.67.1.
+- Line references verified against `se-ai-command-pack` 0.67.1, and re-verified
+  2026-08-16 at 0.69.0. The `skill_review.py` and test references had drifted by
+  one line or not at all; the `quality-guidelines.md` references were wrong and
+  are corrected above. The drift table is in `design.md`.
 - Complex enough to warrant `design.md` and `implement.md` if the
   non-first-party-checkout question turns out to have a non-trivial answer;
   PRD-only otherwise. The repository contract requires both together for a
   complex task (`.trellis/workflow.md:164`), so the escalation is not partial.
+  **The escalation fired**: the answer is non-trivial (see above), so both
+  artifacts were written.

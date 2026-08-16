@@ -3,7 +3,7 @@
   "name": "audit-registry-snapshot-ast-removal",
   "title": "Remove skill_review AST registry fallback once both packs ship snapshots",
   "description": "UNBLOCKED 2026-08-16: the SD twin producer shipped in platypeeps/sd-ai-command-pack#483, squash-merged as 232138a8, and generated/registry-snapshot.json is present on that pack's main. Both SE and SD now ship the generated registry snapshot, so a bounded PR removes _parse_registry and its AST helpers (_assignment, _string_value, _call_value) plus the fallback branch and symlink-fallback path in skill_review.py, and makes _load_registry_snapshot the sole registry source. This meets the strict acceptance criterion 'skill_review.py no longer opens installer/registry.py' fleet-wide. Update the code-spec quality-guidelines.md snapshot-preferred section and drop the AST-fallback tests.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": null,
   "package": null,
