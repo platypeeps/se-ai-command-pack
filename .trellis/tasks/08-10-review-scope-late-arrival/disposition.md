@@ -145,7 +145,11 @@ the two spec rows and re-passes both gates.
   is not tooling/generated-only: ".trellis/spec/backend/guide.md"
   ```
 
-  Evidence retained at `scratchpad/g3-evidence.txt`.
+  The failure quoted above is the decisive line; the full capture was written
+  to a session scratchpad that is **not** in this repository and does not
+  outlive the session, so this file is the durable record rather than a pointer
+  to one. The probe is reproducible from the base SHA and the `git checkout`
+  command named above.
 - `make test` — exit `0`, 77 suites, zero failures. `make check` — exit `0`,
   `196 template twin pairs compared`, `release version gate: shipped payload
   changed; manifest version 0.71.22 -> 0.71.23`, `release changelog gate:

@@ -12,7 +12,7 @@ request against `platypeeps/sd-ai-command-pack`. It does not extend to a second.
 ## Step 0 — isolate
 
 ```bash
-cd /Users/sven/repos/platypeeps/sd-ai-command-pack
+cd ~/repos/platypeeps/sd-ai-command-pack   # the shared clone; do not work in it
 git fetch origin
 git worktree add /tmp/.../sd-pack-late-arrival -b fix/pr-body-scope-mixed-diff origin/main
 ```

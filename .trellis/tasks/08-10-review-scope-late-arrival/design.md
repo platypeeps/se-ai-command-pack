@@ -125,9 +125,17 @@ Three properties, each deliberate:
   65536-character ceiling and a generated-surface refresh can touch hundreds of
   paths.
 
-Paths are rendered inside backticks. They come from the branch diff, so they are
-repository-relative and already normalized by `_matches_normalized_pattern`'s
-caller; no path is echoed from an untrusted network source.
+Each path is rendered with `json.dumps(path, ensure_ascii=True)`, so it appears
+double-quoted and escaped rather than in backticks — matching the escaping idiom
+the same file already uses for its diagnostic lines. Backticks were the first
+draft and are not sufficient: these paths land in a *published* PR body, and a
+newline or Markdown metacharacter in a filename would otherwise inject structure
+into it. `ensure_ascii=True` also forces non-ASCII bytes into `\uXXXX` escapes,
+so a homoglyph or bidirectional-override character cannot make the rendered path
+read as something other than what it is. The paths are repository-relative and
+already normalized by `_matches_normalized_pattern`'s caller, but "not from the
+network" is not the same as "safe to interpolate", which is why the escaping is
+unconditional.
 
 The heading matches the gate's regex: `Tooling/generated scope:` at line start
 satisfies `^[[:space:]>#*\-]*(Tooling/generated scope)(:.*|[[:space:]]*)$`, and
