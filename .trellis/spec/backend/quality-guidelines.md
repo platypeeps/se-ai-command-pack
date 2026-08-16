@@ -821,11 +821,12 @@ Ownership And Upstream Route"):
 > the current shape. Read it as the fat-install contract, not as this
 > checkout's procedure.
 
-The sd-ai-command-pack payload (`scripts/sd-ai-command-pack-*`,
-`.claude/skills/sd-*`, `.agents/skills/sd-*`, `docs/SD_AI_COMMAND_PACK.md`,
-`.claude/sd-ai-command-pack/`) is installed and vouched via
-`.sd-ai-command-pack/manifest.json` + `provenance.json`. Three contracts,
-learned on the v0.64.3 → v0.64.32 refresh (2026-08-09):
+**On a fat install** the sd-ai-command-pack payload
+(`scripts/sd-ai-command-pack-*`, `.claude/skills/sd-*`, `.agents/skills/sd-*`,
+`docs/SD_AI_COMMAND_PACK.md`, `.claude/sd-ai-command-pack/`) is installed into
+the consumer tree and vouched via `.sd-ai-command-pack/manifest.json` +
+`provenance.json`. Three contracts, learned on the v0.64.3 → v0.64.32 refresh
+(2026-08-09):
 
 ### Convention: refresh only from a clean pinned source
 

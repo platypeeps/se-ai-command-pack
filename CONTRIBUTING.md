@@ -23,8 +23,9 @@ disappears later, so check ownership before you edit.
 **The short rule.** Repo-own tooling lives in `.github/scripts/`. This checkout
 installs the SD pack in **thin** mode, so the pack's executables and reference
 manual are not in this tree at all — they live wherever the machine keeps its
-install, and `.sd-ai-command-pack/bin/sd-ai-command-pack-review-layout.py
---resolve <name>` is what answers where. `scripts/` now tracks nothing.
+install. What answers where is the layout resolver:
+`.sd-ai-command-pack/bin/sd-ai-command-pack-review-layout.py --resolve <name>`.
+`scripts/` now tracks nothing.
 
 `.sd-ai-command-pack/installed-targets.txt` is the receipt of exactly what the
 SD pack owns here. The installer regenerates it, so it is right when the table
