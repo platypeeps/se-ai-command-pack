@@ -1,5 +1,22 @@
 #!/usr/bin/env python3
-"""Tag v<manifest version> at HEAD when the tag does not exist yet.
+"""Tag every version this push released, at HEAD, when the tag does not exist.
+
+Usually that is just v<manifest version>. It is more when one branch bumps the
+version several times: the changelog then gains several headings that all ship
+in a single merge, and tagging only the manifest's final value silently drops
+the intermediates. That is how v0.53.0 went missing (audit A-041) -- 0.53.0 and
+0.53.1 landed together and only 0.53.1 was tagged.
+
+"Released by this push" means: present in CHANGELOG.md and higher than the
+highest tag that already exists. Deliberately not "any untagged changelog
+version" -- that would backfill historical holes like v0.53.0 onto today's
+HEAD, which is a different and much worse claim than leaving them missing. A
+hole is repaired by tagging the commit that actually shipped it, which this
+script cannot know.
+
+The comparison is against existing tags rather than against the previous
+commit's changelog because CI checks out at depth 1: HEAD^ does not exist
+there, but `git ls-remote --tags` works regardless of clone depth.
 
 Idempotent: an existing tag is left untouched (a push without a version
 bump simply reports it), and the script never moves a tag. Pass --push to
@@ -10,12 +27,18 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 PACK_ROOT = Path(__file__).resolve().parents[2]
 GIT_TIMEOUT_SECONDS = 60
+# Matches the changelog's only heading form, e.g. `## 0.70.0 - 2026-08-16`.
+# Anchored and strict: a heading that does not match is not a release, and
+# guessing at a looser shape would invent tags for prose headings.
+CHANGELOG_VERSION = re.compile(r"^## (\d+\.\d+\.\d+) - ", re.MULTILINE)
+TAG_VERSION = re.compile(r"^v(\d+\.\d+\.\d+)$")
 
 
 class ReleaseTagError(Exception):
@@ -37,6 +60,65 @@ def run_git(repo: Path, *args: str) -> subprocess.CompletedProcess:
         raise ReleaseTagError(f"git {' '.join(args)} timed out") from None
 
 
+def _version_key(version: str) -> tuple[int, ...]:
+    return tuple(int(part) for part in version.split("."))
+
+
+def _existing_tag_versions(repo: Path, use_remote: bool) -> set[str]:
+    """Versions that already carry a tag.
+
+    Reads origin when pushing, because a CI checkout is shallow and carries no
+    local tags -- asking the local repo there would report "nothing tagged" and
+    make every changelog version look new.
+    """
+    if use_remote:
+        result = run_git(repo, "ls-remote", "--tags", "origin")
+        if result.returncode != 0:
+            # Phrased to match the per-tag check below: an unreachable origin
+            # now surfaces here first, and test_push_without_origin_fails_cleanly
+            # pins that wording as the user-facing contract.
+            raise ReleaseTagError(
+                f"cannot query origin for tags: {result.stderr.strip()}"
+            )
+        names = [
+            line.rsplit("/", 1)[-1]
+            for line in result.stdout.splitlines()
+            if "\trefs/tags/" in line
+        ]
+        # Peeled entries (`refs/tags/v1.0.0^{}`) name the same version; the set
+        # collapses them.
+        names = [name.removesuffix("^{}") for name in names]
+    else:
+        result = run_git(repo, "tag", "--list")
+        if result.returncode != 0:
+            raise ReleaseTagError(f"cannot list tags: {result.stderr.strip()}")
+        names = result.stdout.split()
+    return {m.group(1) for m in (TAG_VERSION.match(n) for n in names) if m}
+
+
+def _versions_to_tag(
+    changelog_versions: list[str], existing: set[str], manifest_version: str
+) -> list[str]:
+    """Versions this push released, oldest first.
+
+    The manifest version is always included: it is the release being made, and
+    a changelog that somehow omits it must still get its tag.
+    """
+    if existing:
+        highest = max(_version_key(v) for v in existing)
+        released = {v for v in changelog_versions if _version_key(v) > highest}
+    else:
+        # No tags at all: the whole changelog is history that predates tagging,
+        # so claim only the version actually being released rather than
+        # retroactively tagging every past release at HEAD.
+        released = set()
+    released.add(manifest_version)
+    # Not filtered against `existing`: an already-tagged manifest version must
+    # still reach _create_release_tag so a push without a bump keeps reporting
+    # "already exists; leaving it in place" rather than going silent.
+    return sorted(released, key=_version_key)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", default=str(PACK_ROOT))
@@ -52,9 +134,32 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: cannot read version from {manifest_path}: {error}",
               file=sys.stderr)
         return 1
-    tag = f"v{version}"
+    changelog_path = repo / "CHANGELOG.md"
     try:
-        return _create_release_tag(repo, tag, args)
+        changelog_text = changelog_path.read_text(encoding="utf-8")
+    except OSError:
+        # A missing changelog is not fatal: fall back to the manifest version,
+        # which is exactly the pre-A-041 behaviour.
+        changelog_text = ""
+    changelog_versions = CHANGELOG_VERSION.findall(changelog_text)
+
+    try:
+        existing = _existing_tag_versions(repo, args.push)
+        versions = _versions_to_tag(changelog_versions, existing, version)
+        if len(versions) > 1:
+            print(
+                "this push releases "
+                + ", ".join(f"v{v}" for v in versions)
+                + f" (manifest is v{version}); tagging each at HEAD"
+            )
+        status = 0
+        for released in versions:
+            result = _create_release_tag(repo, f"v{released}", args)
+            # Keep going after a failure so one bad tag does not strand the
+            # rest untagged, which is the failure mode this change exists to
+            # prevent.
+            status = status or result
+        return status
     except ReleaseTagError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1

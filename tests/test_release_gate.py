@@ -392,6 +392,76 @@ class ReleaseTagTest(TempDirTestCase):
         self.assertEqual(again.returncode, 0)
         self.assertIn("already exists", again.stdout)
 
+    def write_release(self, manifest_version: str, *changelog_versions: str) -> None:
+        """Point the manifest at one version and the changelog at several.
+
+        Changelog order is newest-first, as the real file is written.
+        """
+        (self.repo / "manifest.json").write_text(
+            json.dumps({"name": "se-ai-command-pack", "version": manifest_version})
+            + "\n",
+            encoding="utf-8",
+        )
+        body = "".join(
+            f"## {v} - 2026-08-16\n\n- Notes.\n\n" for v in changelog_versions
+        )
+        (self.repo / "CHANGELOG.md").write_text(
+            "# Changelog\n\n" + body, encoding="utf-8"
+        )
+        git(self.repo, "add", "-A")
+        git(self.repo, "commit", "-m", f"release {manifest_version}")
+
+    def test_multi_version_merge_tags_every_released_version(self) -> None:
+        # Audit A-041: one branch bumped twice, so the merge shipped two
+        # changelog versions. Tagging only the manifest's final value is what
+        # left v0.53.0 permanently missing.
+        git(self.repo, "tag", "v1.0.0")
+        self.write_release("1.1.1", "1.1.1", "1.1.0", "1.0.0")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.tags(), {"v1.0.0", "v1.1.0", "v1.1.1"})
+        # Both are announced, so the extra tag is visible in CI logs rather
+        # than appearing silently.
+        self.assertIn("v1.1.0", result.stdout)
+        self.assertIn("v1.1.1", result.stdout)
+
+    def test_older_untagged_version_is_not_backfilled(self) -> None:
+        # The v0.53.0 shape itself: a historical hole below the highest tag.
+        # Tagging it here would put it on today's HEAD, claiming a commit
+        # shipped a release it did not. Leaving it missing is the honest state.
+        git(self.repo, "tag", "v1.0.0")
+        git(self.repo, "tag", "v1.1.0")
+        self.write_release("1.1.0", "1.1.0", "1.0.1", "1.0.0")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertNotIn("v1.0.1", self.tags())
+        self.assertEqual(self.tags(), {"v1.0.0", "v1.1.0"})
+
+    def test_single_bump_still_tags_exactly_one(self) -> None:
+        # The ordinary case must not gain tags from the changelog scan.
+        git(self.repo, "tag", "v1.0.0")
+        self.write_release("1.1.0", "1.1.0", "1.0.0")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.tags(), {"v1.0.0", "v1.1.0"})
+        self.assertNotIn("this push releases", result.stdout)
+
+    def test_push_without_a_bump_reports_the_existing_tag(self) -> None:
+        git(self.repo, "tag", "v1.0.0")
+        self.write_release("1.0.0", "1.0.0")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.tags(), {"v1.0.0"})
+        self.assertIn("already exists", result.stdout)
+
+    def test_untagged_repository_tags_only_the_manifest_version(self) -> None:
+        # No tags at all: the changelog is pre-tagging history, so claiming all
+        # of it at HEAD would invent releases.
+        self.write_release("1.1.0", "1.1.0", "1.0.0", "0.9.0")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.tags(), {"v1.1.0"})
+
     def test_dry_run_creates_nothing(self) -> None:
         result = run_script(TAG_SCRIPT, "--repo", str(self.repo), "--dry-run")
         self.assertEqual(result.returncode, 0, result.stderr)
