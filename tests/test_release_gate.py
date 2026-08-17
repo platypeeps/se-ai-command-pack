@@ -44,6 +44,16 @@ def git(repo: Path, *args: str) -> None:
     )
 
 
+def git_out(repo: Path, *args: str) -> str:
+    return subprocess.run(
+        ["git", "-C", str(repo), *args],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=git_env(),
+    ).stdout.strip()
+
+
 def run_script(script: Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run(
         [sys.executable, str(script), *args],
@@ -290,6 +300,23 @@ class ReleaseGateTest(TempDirTestCase):
         result = self.gate(base="v1.0.0", step_base="HEAD^")
         self.assertEqual(result.returncode, 1)
         self.assertIn("adds 2 version headings", result.stderr)
+
+    def test_step_base_measures_the_whole_pushed_range(self) -> None:
+        # A push can land more than one commit -- a rebase-merge, or a direct
+        # multi-commit push. HEAD^ then sits *inside* the pushed range and sees
+        # only the last commit's heading, so CI passes the pre-push tip of main
+        # (github.event.before) instead, which spans everything the push added.
+        git(self.repo, "tag", "v1.0.0")
+        before = git_out(self.repo, "rev-parse", "HEAD")
+        self.release("1.1.0", ("1.0.0", "2026-07-16"))
+        self.release("1.2.0", ("1.1.0", "2026-07-18"), ("1.0.0", "2026-07-16"))
+        # HEAD^ is the first of the two pushed commits: too lenient, and the
+        # reason the workflow must not use it.
+        lenient = self.gate(base="v1.0.0", step_base="HEAD^")
+        self.assertEqual(lenient.returncode, 0, lenient.stderr)
+        strict = self.gate(base="v1.0.0", step_base=before)
+        self.assertEqual(strict.returncode, 1)
+        self.assertIn("adds 2 version headings", strict.stderr)
 
     def test_unresolvable_step_base_fails_cleanly(self) -> None:
         (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
