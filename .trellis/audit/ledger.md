@@ -120,14 +120,14 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   validates reverse citation closure.
 
 ## A-008 — --platform promise not honored for always/if-not-exists manifest rows
-- status: open
+- status: fixed
 - severity: P3 · effort: S · confidence: Plausible
 - dimension: design
 - first-seen: 2026-07-25 @ 4067caa
 - last-seen: 2026-07-25 @ 4067caa
 - evidence:
-  - install.py — `--platform` help promises platform-only install.
-  - installer/fileops.py:145 — ALWAYS_INSTALL/IF_NOT_EXISTS rows are selected before the platform_filter check at :152 (latent: all rows are if-anchor-exists).
+  - install.py @ 4067caa — `--platform` help promised "Install only this platform's skills", which the selection order did not honour. Amended at 06f9fa5 (2026-08-05); the help now states that pack-wide always-install and if-not-exists files install regardless of the filter.
+  - installer/fileops.py:145 — ALWAYS_INSTALL/IF_NOT_EXISTS rows are selected before the platform_filter check at :152. Unchanged, and now the documented behaviour rather than a contradiction of it.
 - why: First static row added through the preserved generator seam ignores --platform unnoticed.
 - fix: Apply platform filter before the install-mode shortcut, or amend the help text.
 - notes: 2026-08-15 reconciled at 564d4a2 — installer/fileops.py:145 still
@@ -136,6 +136,18 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - notes: 2026-08-16 reconciled at 74ad2f6 — still open. Line drift only:
   fileops.py:137 -> :145, with the platform filter at :152. The ordering that
   makes the finding true is unchanged.
+- notes: 2026-08-16 corrected and closed. The two reconciliations above are
+  wrong, and wrong the same way: both re-checked the selection order and neither
+  re-read the promise it was measured against. This finding is a mismatch
+  between two things, so confirming one of them confirms nothing. It was
+  resolved at 06f9fa5 (2026-08-05) by the second remedy this entry itself
+  proposed -- amending the help text -- and the resulting contract is pinned by
+  `test_platform_filter_keeps_always_and_if_not_exists`
+  (tests/test_install_core.py:258), which cites A-008 by name and asserts that a
+  --platform run keeps always/if-not-exists rows while skipping another
+  platform's anchored rows. Behaviour and documentation agree, and a test holds
+  them together, so there is nothing left to fix. Retained as evidence for the
+  next pass: check the contract, not only the line.
 
 ## A-009 — skill_review.py defines the same path-containment predicate twice under two names
 - status: fixed
