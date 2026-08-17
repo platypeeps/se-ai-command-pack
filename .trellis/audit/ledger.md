@@ -553,9 +553,9 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - first-seen: 2026-07-25 @ 4067caa
 - last-seen: 2026-07-25 @ 4067caa
 - evidence:
-  - .github/scripts/update-repomix:27 — `exec npx --yes "repomix@${repomix_version}"`; transitives fresh, lifecycle scripts on.
-  - .github/scripts/update-repomix:24 — a comment now acknowledges the unattended lifecycle-script exposure; it documents the risk rather than removing it.
-- why: Maintainer machines run a freshly resolved unlocked npm tree with scripts enabled.
+  - .github/scripts/update-repomix:27 — `exec npx --yes "repomix@${repomix_version}"`; transitives resolved fresh with no lockfile. The original finding also claimed "lifecycle scripts on"; that half no longer holds, see :26.
+  - .github/scripts/update-repomix:26 — `export NPM_CONFIG_IGNORE_SCRIPTS=true` disables lifecycle scripts for the unattended fetch (:24-25 are the comment explaining it), so that half of the original finding is mitigated.
+- why: Maintainer machines run a freshly resolved unlocked npm tree. (As first written this also said "with scripts enabled"; that no longer holds.)
 - fix: --ignore-scripts, or committed package-lock + npm ci, or record risk as accepted.
 - notes: 2026-08-15 reconciled at 564d4a2 — half addressed. The script moved to
   .github/scripts/update-repomix, which sets NPM_CONFIG_IGNORE_SCRIPTS=true at
@@ -567,6 +567,28 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   the repo-own tooling home. Checking only whether the old path exists would
   have retired a live finding -- `scripts/` is empty since `b7dd320`, so a
   path-existence test reports "gone" for a file that simply relocated.
+- notes: 2026-08-16 correction — the entry above misread the script. Line 24 is
+  a comment, but line 26 is `export NPM_CONFIG_IGNORE_SCRIPTS=true`, which
+  *disables* lifecycle scripts rather than merely documenting the risk. The
+  original finding's "lifecycle scripts on" half is therefore already fixed.
+  What remains: `npx --yes` pins only the top-level (`repomix@1.16.1`) and
+  resolves transitives fresh with no lockfile, so the residual exposure is
+  unpinned transitive resolution on a maintainer machine. Severity is lower
+  than the original P3/S text implies. Recorded as a correction rather than a
+  silent edit because the mistaken reading shipped in #242.
+- notes: 2026-08-16 second correction — the 2026-08-15 note below already
+  recorded the move to .github/scripts/update-repomix AND the
+  NPM_CONFIG_IGNORE_SCRIPTS=true mitigation at the correct line (:26). The
+  2026-08-16 pass overwrote that accurate evidence block with a worse one and
+  then reported the path move as something it had caught, which double-counted a
+  finding the previous pass already owned. Two lessons, both cheap to state and
+  apparently not cheap to learn: read an entry's existing notes before rewriting
+  its evidence, and a reconciliation that rewrites evidence can lose information
+  as easily as it adds it. The title still says "install scripts enabled"
+  deliberately -- it names the finding as first recorded and is quoted verbatim
+  by .trellis/spec/backend/quality-guidelines.md:2689, whose example is about
+  this very entry being wrongly retired by a path check. Renaming it here would
+  desync that quote.
 
 ## A-035 — Local release-payload gate goes vacuous once changes are committed
 - status: fixed
