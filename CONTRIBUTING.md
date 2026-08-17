@@ -131,12 +131,18 @@ the version changes.
 ### One version per pull request
 
 A branch may add exactly one `## <version> - YYYY-MM-DD` heading, and the gate
-fails the branch that adds more. Tags come from the version on `main` after the
-merge, so a version that is bumped and then re-bumped on the same branch never
-becomes a merge-base state and never gets a tag. That is how `0.53.0` was
-written, superseded by `0.53.1` in PR #89, and left permanently untagged — its
-changelog entry now carries that disposition, and no `v0.53.0` will be
-backfilled.
+fails the branch that adds more. A version bumped and then re-bumped on the same
+branch never becomes a merge-base state, and the tagger that ran at the time
+took its version from `manifest.json` alone, so the superseded heading was never
+tagged. That is how `0.53.0` was written, superseded by `0.53.1` in PR #89, and
+left permanently untagged — its changelog entry now carries that disposition,
+and no `v0.53.0` will be backfilled.
+
+Tagging no longer depends on that rule holding: a push to `main` tags every
+changelog heading newer than the highest existing tag, so a push that somehow
+carries two releases tags both. It still refuses to reach back below the highest
+tag — a hole like `0.53.0` stays a hole rather than being pinned to a `HEAD` it
+never shipped from.
 
 If you have already bumped and need to bump again, rewrite the heading you
 added rather than stacking a second one; ship genuinely separate releases as
