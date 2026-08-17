@@ -107,6 +107,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE_SHA: ${{ github.event.before }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "base=$PR_BASE_SHA" >> "$GITHUB_OUTPUT"
@@ -116,11 +117,38 @@ jobs:
             # gate reads as no diff and passes; that first payload was already
             # gated on its own pull request.
             echo "base=$(git describe --tags --abbrev=0 2>/dev/null || echo HEAD)" >> "$GITHUB_OUTPUT"
+            # The one-heading rule measures the pushed range instead. From the
+            # tag, a release that failed to tag stays in the diff forever, so
+            # the gate keeps failing and auto-tag-release -- which waits on
+            # this gate -- never runs to heal it.
+            #
+            # The range is the pre-push tip of main, not HEAD^: a push landing
+            # more than one commit (a rebase-merge, or a direct multi-commit
+            # push) puts HEAD^ inside the range, where it would see only the
+            # last commit and let a second heading through. Branch creation
+            # sends an all-zero before-SHA and a force-pushed-away one is not
+            # in the checkout, so both degrade to HEAD^, then to --base.
+            step_base=""
+            if git rev-parse --verify --quiet "${PUSH_BEFORE_SHA}^{commit}" >/dev/null; then
+              step_base="$PUSH_BEFORE_SHA"
+            elif git rev-parse --verify --quiet "HEAD~1^{commit}" >/dev/null; then
+              step_base="HEAD^"
+            fi
+            echo "step_base=$step_base" >> "$GITHUB_OUTPUT"
           fi
-      - run: python .github/scripts/check-release-payload.py --base "$BASE_REF"
+      - run: |
+          if [ -n "$STEP_BASE_REF" ]; then
+            python .github/scripts/check-release-payload.py \
+              --base "$BASE_REF" --step-base "$STEP_BASE_REF"
+          else
+            python .github/scripts/check-release-payload.py --base "$BASE_REF"
+          fi
         env:
           # On push the base is a ref (last release tag or HEAD), not a SHA.
           BASE_REF: ${{ steps.gate-base.outputs.base }}
+          # Empty on a pull request, and on the first commit of a repository
+          # with no parent to measure from; both fall back to --base.
+          STEP_BASE_REF: ${{ steps.gate-base.outputs.step_base }}
 
   review-preflight:
     runs-on: ubuntu-latest
