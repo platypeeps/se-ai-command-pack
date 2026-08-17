@@ -622,6 +622,39 @@ Neither direction can turn a red suite green: merging stays behind the
 housekeeping gate's own atomic eligibility recomputation, which none of this
 classification feeds.
 
+#### A review that exists is not a review that happened
+
+An automated reviewer can post a review whose entire body is `Copilot
+encountered an error and was unable to review this pull request. You can try
+again by re-requesting a review.` It is a real review object: the reviews array
+grows, `state` reads `COMMENTED`, and it carries zero inline comments. Nothing
+was reviewed.
+
+Nothing in the merge-readiness signals contradicts it. `mergeStateStatus:
+CLEAN` means no unresolved threads and no failing checks; it does not assert
+that a review happened. A poller that waits on `reviews | length` therefore
+reports a cleared review loop at exactly the moment the reviewer failed -- the
+same species of error as reading an absent thread list as "no threads".
+
+Poll the body, not the count, and classify it:
+
+```bash
+gh pr view <N> --json reviews \
+  --jq '[.reviews[]|select(.author.login|test("copilot"))]|last|.body'
+```
+
+- contains `unable to review` -> the reviewer errored. Not a verdict; re-request.
+- contains `generated no new comments` -> reviewed, nothing found.
+- contains `generated <n> comment` -> findings to read and answer.
+
+A reviewer that fails repeatedly is the blocker, not the gate: by the rule
+above, a second identical failure signature is the answer. Report it and let
+the maintainer decide, rather than dropping the review requirement quietly. On
+2026-08-17 three consecutive requests on PR #248 returned only the error
+string; it was merged without a review by explicit maintainer decision, and the
+pull request carries a comment saying so. An unobtainable review is a stated
+gap in the record, never an implied pass.
+
 ### A stopped work-loop run is inert, not pending cleanup
 
 `sd-work-backlog`'s status helper reports `recovery.reasonCode: run_stopped`
@@ -2706,7 +2739,57 @@ when *deletion is the fix* — A-026's unreferenced dead wrapper qualifies.
 where the construct went before choosing a status. Relocation alone is
 `open`.
 
-### 5. Tests Required
+### 5. Common Mistake: re-verifying one side of a two-sided finding
+
+**Symptom**: a finding whose claim is a *mismatch* between two things stays
+`open` across repeated passes, each pass confirming the half that never
+changed.
+
+**Cause**: many findings do not assert "X is wrong" but "X disagrees with Y" --
+behaviour against a documented promise, a value against its schema, an
+implementation against its own docstring. Re-reading X and finding it unchanged
+feels like a re-check and produces a confident `still open`. It establishes
+nothing: either side moving resolves the finding, and the side that moves is
+usually the cheaper one, which is the documentation.
+
+A-008 is the worked case. It claimed `--platform` promised platform-only
+install while `installer/fileops.py:145` selects `ALWAYS_INSTALL` /
+`IF_NOT_EXISTS` rows ahead of the platform filter. Two reconciliations
+(2026-08-15, 2026-08-16) re-read the selection order, found it unchanged, and
+recorded `still open`. Both were wrong: `06f9fa5` had amended the help text on
+2026-08-05 -- the second remedy the finding itself proposed -- and pinned the
+result in `tests/test_install_core.py:258`, a test that names A-008. The
+finding sat wrongly open for three weeks, and the third pass nearly reordered
+live installer code to fix a contradiction that no longer existed.
+
+#### Wrong
+
+```python
+# Confirms the selection order. The finding was never about the order alone.
+"A-008": lambda: (
+    "ALWAYS_INSTALL" in read("installer/fileops.py").split("platform_filter")[0],
+    "rows are still selected before the platform filter",
+),
+```
+
+#### Correct
+
+```python
+# Both sides, and the finding survives only while they still disagree.
+"A-008": lambda: (
+    selects_before_filter("installer/fileops.py")
+    and "installed regardless of this filter" not in read("install.py"),
+    "selection order still contradicts the documented --platform contract",
+),
+```
+
+**Prevention**: read the finding's title as a sentence and count its nouns. If
+it names two things, the re-check asserts both, and a passing re-check must
+state which side it observed moving. A finding that cites a promise is closed
+by the promise changing just as surely as by the code changing -- and when a
+test already pins the agreement, the question is settled, not open.
+
+### 6. Tests Required
 
 A reconciliation ships a re-check script that reads the ledger to discover
 which findings claim `fixed`, rather than accepting that list as input.
