@@ -534,6 +534,18 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   - .gitignore:52 — node_modules ignored, so OpenCode auto-installs fresh floating 1.x per machine.
 - why: Unpinned npm fetch on every machine for a package nothing imports.
 - fix: Remove; or pin exact + commit lockfile if kept for editor types.
+- notes: 2026-08-17 dispositioned; nothing further is actionable here. The
+  local half is merged (PR #197, 2026-08-10) and the file itself is an
+  upstream-Trellis vendored artifact, so removing the dependency in this
+  repository would be reverted by the next Trellis refresh -- CONTRIBUTING.md:224
+  already records that, and editing a vendored file in place as a workaround is
+  prohibited. The remaining half is the upstream pull request, tracked by
+  `.trellis/tasks/08-10-upstream-relay-opencode-plugin-dep` with
+  blockedOn "explicit per-PR approval for an upstream mindfold-ai/Trellis pull
+  request"; the maintainer was asked on 2026-08-17 and declined to grant it for
+  now. Status stays `open` because the declaration is still there
+  (.opencode/package.json:3, verified at this commit), but it is not this
+  repository's to fix. Do not re-derive a local remedy for it.
 - notes: 2026-08-15 reconciled at 564d4a2 — .opencode/package.json:3 still
   declares the floating dependency; `git log` on that path shows only the
   original add. The local disposition recorded in task
@@ -569,6 +581,23 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   - .github/scripts/update-repomix:26 — `export NPM_CONFIG_IGNORE_SCRIPTS=true` disables lifecycle scripts for the unattended fetch (:24-25 are the comment explaining it), so that half of the original finding is mitigated.
 - why: Maintainer machines run a freshly resolved unlocked npm tree. (As first written this also said "with scripts enabled"; that no longer holds.)
 - fix: --ignore-scripts, or committed package-lock + npm ci, or record risk as accepted.
+- notes: 2026-08-17 residual risk accepted by the maintainer; no code change.
+  The two controls that matter are already in place and verified at this
+  commit: update-repomix:5 pins `repomix_version="1.16.1"` exactly (not a
+  range), and :26 exports NPM_CONFIG_IGNORE_SCRIPTS=true, so no lifecycle
+  script from the fetched tree runs. What remains is repomix's own transitive
+  tree -- 28 direct dependencies, all floating -- resolved fresh per run.
+  Weighed against: the script is reachable only through `make repomix`
+  (Makefile:95-96), appears nowhere in .github/workflows (0 hits), runs
+  unattended in no automated context, uses an isolated NPM_CONFIG_CACHE, and
+  produces a documentation diff that is reviewed in a pull request. The
+  committed-lockfile remedy was declined deliberately: it would pin hundreds of
+  transitives that need refreshing on every repomix bump and would make this the
+  repository's first real npm manifest, which by CONTRIBUTING.md's own rule
+  obliges a Dependabot npm ecosystem block. Status stays `open` because the
+  vocabulary is open|fixed|regressed and the unlocked tree is still a fact --
+  accepted is not the same as absent. Revisit if this script ever runs in CI or
+  on any unattended machine, which is the assumption the acceptance rests on.
 - notes: 2026-08-15 reconciled at 564d4a2 — half addressed. The script moved to
   .github/scripts/update-repomix, which sets NPM_CONFIG_IGNORE_SCRIPTS=true at
   :26, closing the lifecycle-script half. `npx --yes repomix@1.16.1` at :27
