@@ -462,6 +462,36 @@ class ReleaseTagTest(TempDirTestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self.tags(), {"v1.1.0"})
 
+    def test_non_semver_manifest_version_fails_cleanly(self) -> None:
+        # Ordering versions needs numeric parts, so a pre-release string has to
+        # be rejected with a message rather than a ValueError traceback out of
+        # _version_key, which main() does not catch.
+        self.write_release("1.1.0-rc1", "1.0.0")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("is not X.Y.Z", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(self.tags(), set())
+
+    def test_unreadable_changelog_fails_instead_of_falling_back(self) -> None:
+        # A changelog that exists but cannot be read must not degrade to
+        # manifest-only tagging: that silent fallback is the A-041 loss mode.
+        self.write_release("1.1.0", "1.1.0", "1.0.9")
+        git(self.repo, "tag", "v1.0.8")
+        changelog = self.repo / "CHANGELOG.md"
+        changelog.write_bytes(b"# Changelog\n\n## 1.1.0 - \xff\xfe not utf-8\n")
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("cannot read", result.stderr)
+        self.assertEqual(self.tags(), {"v1.0.8"})
+
+    def test_missing_changelog_still_tags_the_manifest_version(self) -> None:
+        # Absent is the benign case and keeps the pre-A-041 behaviour.
+        (self.repo / "CHANGELOG.md").unlink(missing_ok=True)
+        result = run_script(TAG_SCRIPT, "--repo", str(self.repo))
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(self.tags(), {"v1.0.0"})
+
     def test_dry_run_creates_nothing(self) -> None:
         result = run_script(TAG_SCRIPT, "--repo", str(self.repo), "--dry-run")
         self.assertEqual(result.returncode, 0, result.stderr)

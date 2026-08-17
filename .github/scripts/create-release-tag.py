@@ -37,8 +37,12 @@ GIT_TIMEOUT_SECONDS = 60
 # Matches the changelog's only heading form, e.g. `## 0.70.0 - 2026-08-16`.
 # Anchored and strict: a heading that does not match is not a release, and
 # guessing at a looser shape would invent tags for prose headings.
-CHANGELOG_VERSION = re.compile(r"^## (\d+\.\d+\.\d+) - ", re.MULTILINE)
-TAG_VERSION = re.compile(r"^v(\d+\.\d+\.\d+)$")
+VERSION = r"\d+\.\d+\.\d+"
+CHANGELOG_VERSION = re.compile(rf"^## ({VERSION}) - ", re.MULTILINE)
+TAG_VERSION = re.compile(rf"^v({VERSION})$")
+# The manifest is the one version that reaches _version_key without having
+# passed a pattern first, so it is checked against the same shape.
+RELEASE_VERSION = re.compile(rf"^{VERSION}$")
 
 
 class ReleaseTagError(Exception):
@@ -134,13 +138,27 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: cannot read version from {manifest_path}: {error}",
               file=sys.stderr)
         return 1
+    if not isinstance(version, str) or not RELEASE_VERSION.match(version):
+        # Ordering versions requires numeric parts. Reported here rather than
+        # left to _version_key, which would raise ValueError past the only
+        # handler main() installs and exit with a traceback.
+        print(f"error: manifest version {version!r} in {manifest_path} is not "
+              f"X.Y.Z; cannot order it against existing tags",
+              file=sys.stderr)
+        return 1
     changelog_path = repo / "CHANGELOG.md"
     try:
         changelog_text = changelog_path.read_text(encoding="utf-8")
-    except OSError:
+    except FileNotFoundError:
         # A missing changelog is not fatal: fall back to the manifest version,
         # which is exactly the pre-A-041 behaviour.
         changelog_text = ""
+    except (OSError, UnicodeDecodeError) as error:
+        # A changelog that exists but cannot be read is fatal. Falling back
+        # would quietly tag the manifest version alone -- the exact silent
+        # under-tagging this change exists to prevent.
+        print(f"error: cannot read {changelog_path}: {error}", file=sys.stderr)
+        return 1
     changelog_versions = CHANGELOG_VERSION.findall(changelog_text)
 
     try:
