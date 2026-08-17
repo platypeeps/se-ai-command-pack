@@ -554,7 +554,7 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
 - last-seen: 2026-07-25 @ 4067caa
 - evidence:
   - .github/scripts/update-repomix:27 — `exec npx --yes "repomix@${repomix_version}"`; transitives fresh, lifecycle scripts on.
-  - .github/scripts/update-repomix:24 — a comment now acknowledges the unattended lifecycle-script exposure; it documents the risk rather than removing it.
+  - .github/scripts/update-repomix:25 — `export NPM_CONFIG_IGNORE_SCRIPTS=true` disables lifecycle scripts for the unattended fetch, so that half of the original finding is mitigated.
 - why: Maintainer machines run a freshly resolved unlocked npm tree with scripts enabled.
 - fix: --ignore-scripts, or committed package-lock + npm ci, or record risk as accepted.
 - notes: 2026-08-15 reconciled at 564d4a2 — half addressed. The script moved to
@@ -567,6 +567,15 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   the repo-own tooling home. Checking only whether the old path exists would
   have retired a live finding -- `scripts/` is empty since `b7dd320`, so a
   path-existence test reports "gone" for a file that simply relocated.
+- notes: 2026-08-16 correction — the entry above misread the script. Line 24 is
+  a comment, but line 25 is `export NPM_CONFIG_IGNORE_SCRIPTS=true`, which
+  *disables* lifecycle scripts rather than merely documenting the risk. The
+  original finding's "lifecycle scripts on" half is therefore already fixed.
+  What remains: `npx --yes` pins only the top-level (`repomix@1.16.1`) and
+  resolves transitives fresh with no lockfile, so the residual exposure is
+  unpinned transitive resolution on a maintainer machine. Severity is lower
+  than the original P3/S text implies. Recorded as a correction rather than a
+  silent edit because the mistaken reading shipped in #242.
 
 ## A-035 — Local release-payload gate goes vacuous once changes are committed
 - status: fixed
