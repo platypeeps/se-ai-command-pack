@@ -14,6 +14,15 @@ Enforces the pack's release discipline against a base revision:
    re-bumped to `0.53.1` inside PR #89, and `v0.53.0` does not exist. Collapse
    intra-branch bumps into the single heading you intend to release.
 
+Check 3 measures from `--step-base` when given, while checks 1 and 2 keep
+measuring from `--base`. On a push to main the two differ: payload is gated
+from the last release tag, so an ungated payload cannot accumulate, but the
+one-heading rule is measured from the previous commit on main, which is the
+only thing that actually says whether *this* push released more than once.
+Measuring check 3 from the tag too made a missing tag self-perpetuating -- the
+untagged release stayed in the diff, the gate failed, and the tagging job that
+would have healed it never ran because it waits on this gate.
+
 Changes are measured from the merge-base of --base and HEAD to the working
 tree (uncommitted and untracked files included), so the gate works both
 locally before a commit and in CI against the PR base.
@@ -163,6 +172,10 @@ def check_single_version_step(repo: Path, merge_base: str) -> None:
     tag is ever created for it. Comparing heading sets against the merge-base is
     what distinguishes "added two versions" from "wrote one version, then fixed
     its date": the latter leaves the version token untouched.
+
+    ``merge_base`` is the caller's step base, which on a push to main is the
+    previous commit on main rather than the last release tag -- see the module
+    docstring for why the two must not be the same revision there.
     """
     base_show = run_git(repo, "show", f"{merge_base}:{CHANGELOG_NAME}")
     if base_show.returncode != 0:
@@ -209,7 +222,7 @@ def resolve_base(repo: Path, base: str) -> str:
     return "origin/main" if origin.returncode == 0 else "HEAD"
 
 
-def run_gate(repo: Path, base: str) -> str:
+def run_gate(repo: Path, base: str, step_base: str | None = None) -> str:
     head = run_git(repo, "rev-parse", "--verify", "HEAD")
     if head.returncode != 0:
         # Repo without commits: everything is new; just require a matching
@@ -247,10 +260,32 @@ def run_gate(repo: Path, base: str) -> str:
         )
     if version_changed:
         check_changelog_heading(repo, current_version)
-        check_single_version_step(repo, merge_base_sha)
+        step_sha = merge_base_sha
+        measured_from = "base"
+        if step_base is not None:
+            # Resolved only once the check is actually reached: a repository
+            # whose HEAD has no parent never needs it, and failing there would
+            # reject a legitimate first release.
+            step_commit = run_git(repo, "rev-parse", "--verify", f"{step_base}^{{commit}}")
+            if step_commit.returncode != 0:
+                raise GateError(
+                    f"cannot resolve version-step base {step_base!r}: "
+                    f"{step_commit.stderr.strip()}"
+                )
+            step_merge_base = run_git(
+                repo, "merge-base", step_commit.stdout.strip(), "HEAD"
+            )
+            if step_merge_base.returncode != 0:
+                raise GateError(
+                    f"cannot compute merge-base of {step_base!r} and HEAD: "
+                    f"{step_merge_base.stderr.strip()}"
+                )
+            step_sha = step_merge_base.stdout.strip()
+            measured_from = step_base
+        check_single_version_step(repo, step_sha)
         return (
             f"version {base_version or '(new)'} -> {current_version}; "
-            "changelog heading matches; one version step"
+            f"changelog heading matches; one version step from {measured_from}"
         )
     return "no payload change; no version bump required"
 
@@ -271,10 +306,20 @@ def main(argv: list[str] | None = None) -> int:
             "to use origin/main when it resolves, falling back to HEAD."
         ),
     )
+    parser.add_argument(
+        "--step-base",
+        default=None,
+        help=(
+            "Base revision for the one-heading rule only (CI passes the "
+            "previous commit on main when tagging from a push). Defaults to "
+            "--base, which is what a pull request wants: one release per "
+            "branch, measured against the branch point."
+        ),
+    )
     args = parser.parse_args(argv if argv is not None else sys.argv[1:])
     repo = Path(args.repo).resolve()
     try:
-        summary = run_gate(repo, resolve_base(repo, args.base))
+        summary = run_gate(repo, resolve_base(repo, args.base), args.step_base)
     except GateError as error:
         print(f"error: release payload gate: {error}", file=sys.stderr)
         return 1

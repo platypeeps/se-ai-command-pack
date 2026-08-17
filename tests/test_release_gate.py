@@ -84,8 +84,22 @@ class ReleaseGateTest(TempDirTestCase):
             encoding="utf-8",
         )
 
-    def gate(self, base: str = "HEAD") -> subprocess.CompletedProcess:
-        return run_script(GATE_SCRIPT, "--repo", str(self.repo), "--base", base)
+    def gate(
+        self, base: str = "HEAD", step_base: str | None = None
+    ) -> subprocess.CompletedProcess:
+        extra = () if step_base is None else ("--step-base", step_base)
+        return run_script(
+            GATE_SCRIPT, "--repo", str(self.repo), "--base", base, *extra
+        )
+
+    def release(self, version: str, *older: tuple[str, str]) -> None:
+        """Commit one release: payload edit, manifest bump, changelog heading."""
+        (self.repo / "templates" / "skill.md").write_text(
+            f"{version}\n", encoding="utf-8"
+        )
+        self.write_manifest(version)
+        self.write_changelog_entries((version, "2026-07-18"), *older)
+        git(self.repo, "commit", "-am", f"release {version}")
 
     def test_clean_tree_passes(self) -> None:
         result = self.gate()
@@ -238,6 +252,53 @@ class ReleaseGateTest(TempDirTestCase):
         result = self.gate(base="main")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("one version step", result.stdout)
+
+    def test_missed_tag_deadlocks_the_push_gate_without_a_step_base(self) -> None:
+        # Push-to-main resolves its base to the last release tag. If a release
+        # ever fails to tag, that release stays inside the diff, so the next
+        # push looks like a two-heading branch -- and the tagging job that
+        # would create the missing tag waits on this gate, so nothing heals it.
+        git(self.repo, "tag", "v1.0.0")
+        self.release("1.1.0", ("1.0.0", "2026-07-16"))  # tagging failed here
+        self.release("1.2.0", ("1.1.0", "2026-07-18"), ("1.0.0", "2026-07-16"))
+        stuck = self.gate(base="v1.0.0")
+        self.assertEqual(stuck.returncode, 1)
+        self.assertIn("adds 2 version headings", stuck.stderr)
+
+    def test_step_base_lets_the_push_gate_recover_a_missed_tag(self) -> None:
+        # Same repository state, measured the way CI now measures it: payload
+        # still gated from the last tag, one-heading rule from the previous
+        # commit on main. This push released once, so it passes and the tagger
+        # downstream gets to create both missing tags.
+        git(self.repo, "tag", "v1.0.0")
+        self.release("1.1.0", ("1.0.0", "2026-07-16"))
+        self.release("1.2.0", ("1.1.0", "2026-07-18"), ("1.0.0", "2026-07-16"))
+        result = self.gate(base="v1.0.0", step_base="HEAD^")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("one version step from HEAD^", result.stdout)
+
+    def test_step_base_still_rejects_two_headings_in_one_push(self) -> None:
+        # The rule itself is not relaxed: one commit that adds two headings is
+        # exactly what the gate exists to stop, step base or not.
+        git(self.repo, "tag", "v1.0.0")
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        self.write_manifest("1.2.0")
+        self.write_changelog_entries(
+            ("1.2.0", "2026-07-18"), ("1.1.0", "2026-07-17"), ("1.0.0", "2026-07-16")
+        )
+        git(self.repo, "commit", "-am", "two releases in one commit")
+        result = self.gate(base="v1.0.0", step_base="HEAD^")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("adds 2 version headings", result.stderr)
+
+    def test_unresolvable_step_base_fails_cleanly(self) -> None:
+        (self.repo / "templates" / "skill.md").write_text("v2\n", encoding="utf-8")
+        self.write_manifest("1.1.0")
+        self.write_changelog_entries(("1.1.0", "2026-07-18"), ("1.0.0", "2026-07-16"))
+        result = self.gate(step_base="refs/heads/nonexistent")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("cannot resolve version-step base", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
 
     def test_bump_reusing_a_base_heading_fails(self) -> None:
         # The entry must be written on the branch that releases it. A heading

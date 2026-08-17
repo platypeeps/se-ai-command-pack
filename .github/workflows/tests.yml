@@ -116,11 +116,25 @@ jobs:
             # gate reads as no diff and passes; that first payload was already
             # gated on its own pull request.
             echo "base=$(git describe --tags --abbrev=0 2>/dev/null || echo HEAD)" >> "$GITHUB_OUTPUT"
+            # The one-heading rule measures from the previous commit on main
+            # instead. From the tag, a release that failed to tag stays in the
+            # diff forever, so the gate keeps failing and auto-tag-release --
+            # which waits on this gate -- never runs to heal it.
+            echo "step_base=$(git rev-parse --verify --quiet HEAD^ || true)" >> "$GITHUB_OUTPUT"
           fi
-      - run: python .github/scripts/check-release-payload.py --base "$BASE_REF"
+      - run: |
+          if [ -n "$STEP_BASE_REF" ]; then
+            python .github/scripts/check-release-payload.py \
+              --base "$BASE_REF" --step-base "$STEP_BASE_REF"
+          else
+            python .github/scripts/check-release-payload.py --base "$BASE_REF"
+          fi
         env:
           # On push the base is a ref (last release tag or HEAD), not a SHA.
           BASE_REF: ${{ steps.gate-base.outputs.base }}
+          # Empty on a pull request, and on the first commit of a repository
+          # with no parent to measure from; both fall back to --base.
+          STEP_BASE_REF: ${{ steps.gate-base.outputs.step_base }}
 
   review-preflight:
     runs-on: ubuntu-latest
