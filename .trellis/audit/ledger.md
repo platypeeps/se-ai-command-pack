@@ -692,6 +692,13 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   releases accumulated, including v0.70.0 which tagged correctly. So the
   multi-bump-in-one-branch shape has not recurred since, but the historical
   hole is unrepaired.
+- notes: 2026-08-16 prevention shipped at 0a41046. `create-release-tag.py`
+  now tags every changelog version newer than the highest existing tag, not
+  only the manifest's, so a merge carrying two bumps can no longer drop the
+  intermediate release. Deliberately excludes backfill: v0.53.0 stays
+  untagged rather than being pinned to a present-day HEAD it never shipped
+  from. Status stays `open` because the finding's literal claim -- 0.53.0
+  has no tag -- remains true; only recurrence is closed.
 
 ## A-042 — No documented bump policy: perpetual 0.x with no minor-vs-patch rule or breaking-change signal
 - status: fixed
