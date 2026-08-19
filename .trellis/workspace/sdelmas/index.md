@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 187
-- **Last Active**: 2026-08-15
+- **Total Sessions**: 188
+- **Last Active**: 2026-08-19
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1435 | Active |
+| `journal-4.md` | ~1476 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 188 | 2026-08-19 | Refresh sd-ai-command-pack to 0.71.33 | `fd1c0a585f73e66dfe1eae8e7211b1c5ab817ec3` | `chore/pack-refresh-0.71.33` |
 | 187 | 2026-08-15 | Reconcile the stale sd-audit-repo ledger against HEAD | `89d295f`, `e7e4314`, `64b3e28`, `9220aff`, `d5120ab`, `cc1673c`, `3a1624e`, `21c98c7`, `70adcf4`, `fa55264` | `task/audit-ledger-reconcile` |
 | 186 | 2026-08-14 | sd-update-deps batch triage and the lock-parity dead end | `b2b7748`, `026a06b`, `286a362`, `2893cfe`, `8ce817f`, `75aea7b` | `main` |
 | 185 | 2026-08-14 | chore: refresh sd-ai-command-pack to 0.71.6 | `901cb9346cce6e3c70e66a189aee97d78bdee625` | `chore/sd-ai-command-pack-0-71-6` |

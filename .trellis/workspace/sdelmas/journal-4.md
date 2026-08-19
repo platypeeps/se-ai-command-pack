@@ -1439,3 +1439,41 @@ All 44 audit findings read 'status: open' while 35 had been fixed and merged; no
 ### Next Steps
 
 - None - task complete
+
+
+## Session 188: Refresh sd-ai-command-pack to 0.71.33
+
+**Date**: 2026-08-19
+**Task**: Refresh sd-ai-command-pack to 0.71.33
+**Branch**: `chore/pack-refresh-0.71.33`
+
+### Summary
+
+Fleet refresh of the installed sd-ai-command-pack payload from 0.71.22 to 0.71.33 for this thin consumer, limited to installer-managed platform files and pack receipts.
+
+### Main Changes
+
+- Installed sd-ai-command-pack v0.71.33 (tag v0.71.33 @ 6c6d05a6) for the pinned claude, gemini, github, and opencode platform set; no --platform flag, since a thin consumer's platform set is owned by its pin.
+- Diff limited to two installer-managed .github/prompts files plus the pack manifest and provenance receipts. No product code changed.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fd1c0a585f73e66dfe1eae8e7211b1c5ab817ec3` | chore(pack): refresh sd-ai-command-pack to 0.71.33 |
+
+### Testing
+
+- [OK] pack install audit, run from the sd-ai-command-pack source checkout against this repo: 31 targets checked, installed payload provenance 0.71.33, vouched file hashes match
+- [OK] make gate-test, make gate-lint, make lock-check, make shell-syntax, make trellis-provenance: all passed
+- [OK] manifest-ordered check, the pack housekeeping self-test: all scenarios passed
+- [WARN] shared review preflight: 29 findings, all in two pre-existing files untouched by this refresh and byte-present in origin/main, dispositioned as consumer-unrelated / defer-follow-up with zero blockers
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
