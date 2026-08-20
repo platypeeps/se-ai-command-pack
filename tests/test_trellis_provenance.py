@@ -381,5 +381,60 @@ class WiringTest(unittest.TestCase):
         self.assertIn("python .github/scripts/check-trellis-provenance.py", gate_job)
 
 
+class TrellisManagedBlockTest(unittest.TestCase):
+    """AGENTS.md is dual-owned: a Trellis block inside repo-authored prose.
+
+    Same contract as the .gitignore case above, different marker family --
+    Trellis writes one unnamed `<!-- TRELLIS:START/END -->` block, the pack
+    writes several named `# sd-ai-command-pack <name> start|end` ones.
+    """
+
+    TRELLIS_BLOCK = (
+        "<!-- TRELLIS:START -->\n"
+        "This project is managed by Trellis.\n"
+        "<!-- TRELLIS:END -->\n"
+    )
+    REPO_PROSE = "# Repo conventions\n\nRun `make test` before pushing.\n"
+
+    def mask(self, text: str) -> str:
+        return checker.strip_managed_blocks(
+            text, "AGENTS.md", checker.TRELLIS_BLOCK_MARKER_RE
+        )
+
+    def test_agents_md_is_registered_as_dual_owned(self) -> None:
+        self.assertIs(
+            checker.DUAL_OWNED_FILES.get("AGENTS.md"),
+            checker.TRELLIS_BLOCK_MARKER_RE,
+        )
+        # Derived, so a file can never be masked without being checked.
+        self.assertIn("AGENTS.md", checker.EXTRA_COVERED_UNIVERSE)
+
+    def test_trellis_block_rewrite_is_not_drift(self) -> None:
+        before = self.mask(self.TRELLIS_BLOCK + self.REPO_PROSE)
+        rewritten = self.TRELLIS_BLOCK.replace(
+            "This project is managed by Trellis.\n",
+            "Rewritten by a future Trellis release.\nWith an extra line.\n",
+        )
+        self.assertEqual(self.mask(rewritten + self.REPO_PROSE), before)
+
+    def test_repo_authored_prose_edit_is_drift(self) -> None:
+        before = self.mask(self.TRELLIS_BLOCK + self.REPO_PROSE)
+        edited = self.REPO_PROSE + "sneaky-hand-edit\n"
+        self.assertNotEqual(self.mask(self.TRELLIS_BLOCK + edited), before)
+
+    def test_unclosed_trellis_block_is_malformed(self) -> None:
+        with self.assertRaises(checker.CheckError):
+            self.mask("<!-- TRELLIS:START -->\norphan\n")
+
+    def test_unmatched_trellis_block_end_is_malformed(self) -> None:
+        with self.assertRaises(checker.CheckError):
+            self.mask("prose\n<!-- TRELLIS:END -->\n")
+
+    def test_pack_markers_are_inert_in_agents_md(self) -> None:
+        """A pack marker in AGENTS.md is ordinary text, not a block edge."""
+        text = "# sd-ai-command-pack obsidian-kb start\n" + self.REPO_PROSE
+        self.assertIn("obsidian-kb start", self.mask(text))
+
+
 if __name__ == "__main__":
     unittest.main()

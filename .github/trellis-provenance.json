@@ -239,6 +239,7 @@
     ".opencode/skills/trellis-spec-bootstrap/references/repository-analysis.md",
     ".opencode/skills/trellis-spec-bootstrap/references/spec-task-planning.md",
     ".opencode/skills/trellis-spec-bootstrap/references/spec-writing.md",
-    ".opencode/skills/trellis-update-spec/SKILL.md"
+    ".opencode/skills/trellis-update-spec/SKILL.md",
+    "AGENTS.md"
   ]
 }
