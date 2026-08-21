@@ -912,7 +912,7 @@ Each `files[]` row:
 | `kind` | `skill` for everything in v0.1. Known kinds also include `command`, `config`, `doc`, `prompt`, `script`, `workflow` for later. |
 | `scope` | `user` — targets resolve against the install root (default `$HOME`). `project` is reserved for per-folder installs. |
 | `source` | Repo-relative path under `templates/` (canonical sources) or `generated/` (rendered overlays). As of v0.66.2: 328 `templates/` + 55 `generated/` rows. |
-| `target` | Root-relative install path (e.g. `.claude/skills/se-research/SKILL.md`). |
+| `target` | Root-relative install path (e.g. `.claude/skills/se-research/SKILL.md` [absent: example install target, resolved against the install root, not a repo path]). |
 | `anchor` | Root-relative dir gating `if-anchor-exists` selection. |
 | `install` | `if-anchor-exists` (all v0.1 rows), `always`, or `if-not-exists`. |
 
