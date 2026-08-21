@@ -9,6 +9,6 @@
 # Ruff and mypy provide the CI lint lane.
 # coverage powers the repo-own coverage floor enforced by `make test` and CI.
 PyYAML==6.0.3
-ruff==0.16.2
-mypy==2.3.0
+ruff==0.16.3
+mypy==2.3.1
 coverage==7.15.4
