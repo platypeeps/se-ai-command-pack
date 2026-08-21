@@ -2,15 +2,19 @@
 
 ## Status
 
-**RELAYED — upstream PR filed; awaiting upstream review/merge.**
+**RESOLVED IN THE FORK — upstream PR withdrawn after a retarget decision.**
 
 Per-PR approval record: on 2026-08-20 the maintainer explicitly approved
 opening this specific upstream PR (interactive session selection "Yes, open
 PR" against this task). With that approval recorded, the relay was executed
-the same day: **mindfold-ai/Trellis#565**
-(`sdelmas:fix/drop-unused-opencode-plugin-dep` → `mindfold-ai:main`) proposes
-dropping the unused dependency by reducing the vendored template manifest to
-`{}`, with the pin+lockfile alternative offered in the PR body.
+the same day as **mindfold-ai/Trellis#565** (proposing an empty `{}` template
+manifest). Later the same day the maintainer directed the relays at the fork
+the fleet actually consumes (`sdelmas/Trellis`, the source of the vendored
+`0.6.16-sd.*` runtime). Fork `main` already ships the fix — the vendored
+OpenCode template manifest is `{"type": "module"}` with no
+`@opencode-ai/plugin` dependency — so there was nothing to retarget and
+**#565 was closed with that rationale**. The defect is resolved for every
+fork consumer; reopening upstream remains available if ever wanted.
 
 Previously PARKED: the autonomous run-level authority excludes opening an
 upstream Trellis pull request (`.trellis/spec/backend/quality-guidelines.md`,
@@ -44,7 +48,9 @@ repository's autonomous runs do not have.
 - **Proposed upstream fix**: drop the dependency, or pin it exactly and ship a
   lockfile if it is kept for editor types.
 - **Upstream pull request**: mindfold-ai/Trellis#565, opened 2026-08-20 with
-  the per-PR approval recorded under Status above.
+  the per-PR approval recorded under Status above; closed the same day after
+  the retarget decision — fork `main` (`sdelmas/Trellis`) already carries the
+  fix.
 
 The full four-field record lives in
 `.trellis/spec/backend/quality-guidelines.md` ("Scenario: Vendored OpenCode npm
@@ -55,7 +61,9 @@ Manifest") and in the archived task's `prd.md`.
 - [x] Explicit per-PR approval from the maintainer is recorded in this task
       before any upstream repository is touched. (Status section, 2026-08-20.)
 - [x] An upstream pull request against `mindfold-ai/Trellis` proposes the fix,
-      citing the import evidence above. (mindfold-ai/Trellis#565.)
+      citing the import evidence above. (mindfold-ai/Trellis#565; withdrawn
+      2026-08-20 after the maintainer retargeted the relays at the
+      `sdelmas/Trellis` fork, whose `main` already ships the fix.)
 - [x] The relay is logged the way that the precedented relays are
       (`quality-guidelines.md` cites platypeeps/sd-ai-command-pack#397, #398,
       #399 as the pattern), and the local-only record is updated to point at

@@ -543,10 +543,11 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   `.trellis/tasks/08-10-upstream-relay-opencode-plugin-dep`, which until
   2026-08-20 carried blockedOn "explicit per-PR approval for an upstream
   mindfold-ai/Trellis pull request"; the maintainer was asked on 2026-08-17 and declined to grant it for
-  now. 2026-08-20: the maintainer granted per-PR approval and the relay is
-  filed as mindfold-ai/Trellis#565. Status stays `open` because the
-  declaration is still there until the PR merges and a Trellis refresh brings
-  the fix into this repository
+  now. 2026-08-20: the maintainer granted per-PR approval; the relay was filed
+  as mindfold-ai/Trellis#565, then withdrawn the same day when relays were
+  retargeted at the sdelmas/Trellis fork, whose main already ships the
+  manifest without the dependency. Status stays `open` until a Trellis
+  refresh from the fork brings the fix into this repository
   (.opencode/package.json:3, verified at this commit), but it is not this
   repository's to fix. Do not re-derive a local remedy for it.
 - notes: 2026-08-15 reconciled at 564d4a2 — .opencode/package.json:3 still
