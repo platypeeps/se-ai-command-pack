@@ -2563,9 +2563,12 @@ python -m pip install --require-hashes --only-binary :all: -r requirements-dev.l
    So a caret range is resolved and installed for a package nothing uses, and
    `.gitignore:70` ignores `.opencode/node_modules/`, meaning those installs
    land inside the checkout.
-4. **No upstream pull request was opened**, and upstream approval was not
-   sought. An upstream PR requires explicit per-PR approval, which this task's
-   run-level authority excludes.
+4. **Upstream pull request** — mindfold-ai/Trellis#565 proposes dropping the
+   unused dependency (the vendored template manifest becomes `{}`), citing the
+   import evidence above. The explicit per-PR approval it required was
+   recorded in task `08-10-upstream-relay-opencode-plugin-dep` on 2026-08-20
+   before the PR was opened, following the relay pattern precedented by
+   platypeeps/sd-ai-command-pack#397, #398, #399.
 
 ### 3. Contracts
 

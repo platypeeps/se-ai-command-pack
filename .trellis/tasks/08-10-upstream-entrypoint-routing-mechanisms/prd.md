@@ -1,10 +1,18 @@
 # Upstream canonical-entry-point mechanisms
 
-**PARTIALLY RELAYED 2026-08-16.** Deliverable 1 is filed upstream as
-`platypeeps/sd-ai-command-pack#486`, including the consumer-guard question it
-must answer and the rejected shadowing alternative. **Deliverable 2 is not
-filed** — it targets `mindfold-ai/Trellis`, which is outside the relay decision
-made for the SD pack.
+**FULLY RELAYED 2026-08-20.** Deliverable 1 is filed upstream as
+`platypeeps/sd-ai-command-pack#486` (2026-08-16), including the consumer-guard
+question it must answer and the rejected shadowing alternative. **Deliverable 2
+is filed as an upstream pull request: mindfold-ai/Trellis#566**
+(`sdelmas:feat/declared-entry-point-seam` → `mindfold-ai:main`, 2026-08-20,
+opened with explicit per-PR approval — interactive maintainer selection "Draft
+full PR" against this task). The PR implements the declared-entry-point seam:
+an installed pack may write `.trellis/entry-points.json` (schemaVersion 1,
+keys `start`/`continue`/`finish-work`/`update-spec`, strictly validated
+all-or-nothing), consulted both at init/update write chokepoints (riding the
+`replacePythonCommandLiterals` transform points, so template hash tracking
+stays consistent) and at runtime by the dynamic emitters enumerated below;
+every path falls back to today's literals when nothing is declared.
 
 Still not actionable from `se-ai-command-pack`: both deliverables edit vendored
 files that a refresh reverts.
@@ -71,16 +79,17 @@ falling back to today's literals when nothing is declared.
 - Decide Deliverable 1's consumer-guard question before opening the PR.
 - Deliverable 1 is relayed as an upstream issue (`platypeeps/sd-ai-command-pack#486`),
   not a pull request.
-  Deliverable 2 still needs an approach decision for `mindfold-ai/Trellis`; any
-  pull request to either repository requires explicit per-PR approval.
+  Deliverable 2 is relayed as mindfold-ai/Trellis#566, opened with the
+  explicit per-PR approval recorded above.
 - Behavior in a repository with no SD pack installed must not change.
 
 ## Acceptance Criteria
 
 - [ ] A `sd-ai-command-pack` PR adds the `AGENTS.md` managed-block row and its
       generated content, with the consumer-guard decision recorded.
-- [ ] A Trellis PR adds the declared-entry-point seam, with the emitters above
+- [x] A Trellis PR adds the declared-entry-point seam, with the emitters above
       consulting it and falling back when undeclared.
+      (mindfold-ai/Trellis#566, awaiting upstream review/merge.)
 - [ ] After both land and this repository refreshes, its hand-written
       `AGENTS.md` section is replaced by the installed block and
       `tests/test_agent_routing.py` still passes against it.
@@ -90,8 +99,10 @@ falling back to today's literals when nothing is declared.
 - Audit finding: A-005 (P3/S) — `.trellis/audit/report-2026-07-25.md:46`.
 - Predecessor: `07-25-audit-workflow-entrypoint-routing`, whose PRD carries the
   measured divergence and the ownership reasoning.
-- `blockedOn`: two different things now, which is why the task stays parked as
-  a whole. Deliverable 1 awaits upstream triage of `platypeeps/sd-ai-command-pack#486`
-  (relayed 2026-08-16, no longer PR-approval gated). Deliverable 2 still awaits
-  an approach decision and explicit per-PR approval for `mindfold-ai/Trellis`.
-  The autonomous work loop must not select this task.
+- `blockedOn`: both deliverables are now relayed and await upstream action —
+  Deliverable 1 on triage of `platypeeps/sd-ai-command-pack#486` (relayed
+  2026-08-16), Deliverable 2 on review/merge of mindfold-ai/Trellis#566
+  (relayed 2026-08-20 with per-PR approval). Nothing remains actionable from
+  this repository until upstream lands; the final acceptance criterion (hand
+  edits replaced after refresh) closes only after both merge and this
+  repository refreshes. The autonomous work loop must not select this task.

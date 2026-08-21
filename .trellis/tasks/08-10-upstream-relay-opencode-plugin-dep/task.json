@@ -1,8 +1,8 @@
 {
   "id": "upstream-relay-opencode-plugin-dep",
   "name": "upstream-relay-opencode-plugin-dep",
-  "title": "PARKED: Relay A-032 unused @opencode-ai/plugin dependency upstream to mindfold-ai/Trellis",
-  "description": "PARKED pending explicit per-PR approval. Relay audit finding A-032 (.opencode/package.json declares an unused @opencode-ai/plugin) upstream to mindfold-ai/Trellis. The local disposition is complete and merged in PR #197; only the upstream pull request remains, and that is outside autonomous run-level authority.",
+  "title": "Relay A-032 unused @opencode-ai/plugin dependency upstream to mindfold-ai/Trellis (relayed: PR #565)",
+  "description": "Relay audit finding A-032 (.opencode/package.json declares an unused @opencode-ai/plugin) upstream to mindfold-ai/Trellis. The local disposition is complete and merged in PR #197. Per-PR approval was recorded 2026-08-20 and the upstream PR is filed as mindfold-ai/Trellis#565; the task now waits on upstream review/merge.",
   "status": "planning",
   "dev_type": null,
   "scope": null,
@@ -29,5 +29,5 @@
   "notes": "",
   "meta": {},
   "blocked": true,
-  "blockedOn": "explicit per-PR approval for an upstream mindfold-ai/Trellis pull request"
+  "blockedOn": "upstream review/merge of mindfold-ai/Trellis#565"
 }

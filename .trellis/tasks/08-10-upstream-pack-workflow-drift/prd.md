@@ -6,10 +6,23 @@
 in vendored pack files that a refresh reverts, so neither is fixable from this
 repository.
 
-The blocker changed shape rather than clearing. This task no longer waits on
-approval to open an upstream PR from here; it waits on upstream triage of those
-two issues. The acceptance criteria below are unchanged and are still verified
-against this repository after a refresh, not against the issues.
+**FIXES IN FLIGHT 2026-08-20.** With the maintainer's explicit approval
+("Yes, fix both upstream", interactive selection against this task), both
+fixes were implemented in the upstream `sd-ai-command-pack` checkout and filed
+as **platypeeps/sd-ai-command-pack#525** (release 0.71.38, `Closes #484` /
+`Closes #485`). Finding 1's guidance was updated to describe the current
+recorder behavior — the vendored `add_session.py` at the pack's Trellis
+≥ 0.6.16 floor omits sections it was given no content for rather than writing
+the default sentences named below, so the fix tells agents to pass
+`--summary`/`--change`/`--test` up front and treat a missing section as a
+missing flag. Finding 2 took the first option below: an evidence-backed
+`--successor bookkeeping` re-entry gets its own bounded budget of two rounds
+past `roundLimit`, gated on the `--bookkeeping-evidence` payload that
+`review-local.py` validates before any provider spend.
+
+The task now waits on upstream merge of that PR and a subsequent pack refresh
+here. The acceptance criteria below are unchanged and are still verified
+against this repository after a refresh, not against the issues or the PR.
 
 ## Goal
 
@@ -29,8 +42,10 @@ writes instead. Only `(see git log)` at `:222` still appears.
 
 The guidance is therefore unactionable on the fallback path it governs: an
 agent following it searches for two strings that are never written, and may
-conclude the recorder failed. The fix is to name the two default sentences,
-which are what actually need replacing.
+conclude the recorder failed. As observed, the fix was to name the two default
+sentences; the fix actually shipped (see Status above) describes the current
+recorder's omission behavior instead, because the recorder itself changed
+again before the fix landed.
 
 Classification: `.agents/skills/sd-finish-work/SKILL.md` is `vendored-pack`
 under `tests/test_repo_tooling_ownership.py::OwnershipLookup`.
@@ -84,7 +99,7 @@ Options for upstream to weigh:
 - Observed during `07-25-audit-workflow-entrypoint-routing`, PR #211
   (https://github.com/platypeeps/se-ai-command-pack/pull/211): see the round-5
   and round-6 disposition comments for the full evidence.
-- `blockedOn`: upstream triage of `platypeeps/sd-ai-command-pack#484` and
-  `platypeeps/sd-ai-command-pack#485`. This is no longer PR-approval gating -- the findings
-  were relayed as issues on 2026-08-16 -- but the task is still not actionable
-  here, so the autonomous work loop must not select it.
+- `blockedOn`: upstream merge of `platypeeps/sd-ai-command-pack#525`
+  (implements both fixes, opened 2026-08-20 with explicit approval) and the
+  pack refresh that brings 0.71.38 into this repository. The task is still not
+  actionable here, so the autonomous work loop must not select it.
