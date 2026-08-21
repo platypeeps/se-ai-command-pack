@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 189
+- **Total Sessions**: 190
 - **Last Active**: 2026-08-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1507 | Active |
+| `journal-4.md` | ~1556 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 190 | 2026-08-20 | Refresh to pack 0.71.39 and Trellis 0.6.16-sd.8; close the 08-10 upstream trilogy | `e795afc`, `bbf3ead`, `6425a84` | `chore/refresh-0.71.39-trellis-sd.8` |
 | 189 | 2026-08-20 | Refresh sd-ai-command-pack to 0.71.38 | `4fdc00e57a2ea26979eedf9478a4e8b287ecc4e7` | `chore/pack-refresh-0.71.38` |
 | 188 | 2026-08-19 | Refresh sd-ai-command-pack to 0.71.33 | `fd1c0a585f73e66dfe1eae8e7211b1c5ab817ec3` | `chore/pack-refresh-0.71.33` |
 | 187 | 2026-08-15 | Reconcile the stale sd-audit-repo ledger against HEAD | `89d295f`, `e7e4314`, `64b3e28`, `9220aff`, `d5120ab`, `cc1673c`, `3a1624e`, `21c98c7`, `70adcf4`, `fa55264` | `task/audit-ledger-reconcile` |
