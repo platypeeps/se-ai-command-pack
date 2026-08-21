@@ -93,8 +93,13 @@ falling back to today's literals when nothing is declared.
       generated content, with the consumer-guard decision recorded.
 - [x] A Trellis PR adds the declared-entry-point seam, with the emitters above
       consulting it and falling back when undeclared.
-      (sdelmas/Trellis#6, awaiting review/merge in the fork; upstream
-      mindfold-ai/Trellis#566 withdrawn on retarget.)
+      (sdelmas/Trellis#6, merged 2026-08-20 as fork release 0.6.16-sd.8;
+      upstream mindfold-ai/Trellis#566 withdrawn on retarget. Delivered here
+      at the 0.6.16-sd.8 vendored-runtime refresh: the runtime loaders —
+      `.trellis/scripts/common/entry_points.py`, the shared session-start and
+      inject-workflow-state hooks, `.opencode/lib/session-utils.js` — now
+      consult `.trellis/entry-points.json` with all-or-nothing validation and
+      fall back when undeclared.)
 - [ ] After both land and this repository refreshes, its hand-written
       `AGENTS.md` section is replaced by the installed block and
       `tests/test_agent_routing.py` still passes against it.
@@ -104,11 +109,13 @@ falling back to today's literals when nothing is declared.
 - Audit finding: A-005 (P3/S) — `.trellis/audit/report-2026-07-25.md:46`.
 - Predecessor: `07-25-audit-workflow-entrypoint-routing`, whose PRD carries the
   measured divergence and the ownership reasoning.
-- `blockedOn`: both deliverables are now relayed and await upstream action —
-  Deliverable 1 on triage of `platypeeps/sd-ai-command-pack#486` (relayed
-  2026-08-16), Deliverable 2 on review/merge of sdelmas/Trellis#6
-  (relayed 2026-08-20 with per-PR approval; upstream #566 withdrawn on
-  retarget). Nothing remains actionable from
-  this repository until upstream lands; the final acceptance criterion (hand
-  edits replaced after refresh) closes only after both merge and this
-  repository refreshes. The autonomous work loop must not select this task.
+- `blockedOn`: Deliverable 2 is done — sdelmas/Trellis#6 merged 2026-08-20
+  (fork release 0.6.16-sd.8) and this repository refreshed to sd.8 the same
+  day, so the seam's runtime loaders are installed here. Deliverable 1 still
+  waits on triage of `platypeeps/sd-ai-command-pack#486` (relayed
+  2026-08-16): the `AGENTS.md` managed-block row, its generated content, and
+  the consumer-guard decision. The final acceptance criterion (hand-written
+  `AGENTS.md` section replaced by the installed block,
+  `tests/test_agent_routing.py` still green) closes only after that pack
+  change ships and this repository refreshes to it. Nothing is actionable
+  here until then; the autonomous work loop must not select this task.
