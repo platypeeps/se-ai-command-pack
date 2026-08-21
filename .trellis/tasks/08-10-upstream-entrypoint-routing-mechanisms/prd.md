@@ -10,7 +10,7 @@ It was first opened upstream as mindfold-ai/Trellis#566 with explicit per-PR
 approval (interactive maintainer selection "Draft full PR" against this
 task), then withdrawn the same day when the maintainer retargeted the relays
 at the fork. The PR implements the declared-entry-point seam:
-an installed pack may write `.trellis/entry-points.json` (schemaVersion 1,
+an installed pack may write `.trellis/entry-points.json` [absent: written by an installed pack at runtime; not present in this repository] (schemaVersion 1,
 keys `start`/`continue`/`finish-work`/`update-spec`, strictly validated
 all-or-nothing), consulted both at init/update write chokepoints (riding the
 `replacePythonCommandLiterals` transform points, so template hash tracking
@@ -98,7 +98,7 @@ falling back to today's literals when nothing is declared.
       at the 0.6.16-sd.8 vendored-runtime refresh: the runtime loaders —
       `.trellis/scripts/common/entry_points.py`, the shared session-start and
       inject-workflow-state hooks, `.opencode/lib/session-utils.js` — now
-      consult `.trellis/entry-points.json` with all-or-nothing validation and
+      consult `.trellis/entry-points.json` [absent: written by an installed pack at runtime; not present in this repository] with all-or-nothing validation and
       fall back when undeclared.)
 - [ ] After both land and this repository refreshes, its hand-written
       `AGENTS.md` section is replaced by the installed block and

@@ -4,13 +4,16 @@
 
 > **Reading the sd-ai-command-pack paths below.** This checkout installs the
 > pack in **thin** mode, so `scripts/sd-ai-command-pack-*`,
-> `docs/SD_AI_COMMAND_PACK.md`, `.agents/skills/sd-*`, and `.claude/skills/sd-*`
+> `docs/SD_AI_COMMAND_PACK.md` [absent: named here precisely because it is not in this tree], `.agents/skills/sd-*`, and `.claude/skills/sd-*`
 > are not in this tree. Findings recorded before the conversion cite them by
 > the repository-relative path they had at the time; those citations are kept
 > verbatim because they are what the commit and the line numbers refer to.
 > Resolve any of them against the machine install with
 > `.sd-ai-command-pack/bin/sd-ai-command-pack-review-layout.py --resolve <name>`.
 > Cite the machine form, `~/.agents/...`, in anything written from here on.
+> Each kept citation carries an `[absent: ...]` marker so the review preflight
+> does not read it as a dangling path. The marker is bookkeeping; the citation
+> itself is the finding's evidence and is not rewritten.
 
 ---
 
@@ -232,7 +235,7 @@ Six ship-loop conventions that cost rounds when a run rediscovers them.
 
 ### The `pack.review-scope` gate: three categories, three headings, late arrival
 
-The check lives in `scripts/sd-ai-command-pack-review-scope.sh` (vendored,
+The check lives in `scripts/sd-ai-command-pack-review-scope.sh` [absent: pre-conversion path, kept verbatim; see this file's header] (vendored,
 `install: "always"` — re-locate by symbol, not line, after any pack refresh).
 It fails when the branch diff contains a scoped file and the PR body lacks a
 recognized scope heading. Two distinct lists matter, and conflating them is
@@ -264,7 +267,7 @@ decides the requirement does not exist yet when the PR is opened (PR #162
 passed with a proactive section, PR #163 burned two rounds without one).
 
 **From pack 0.71.23 the preparer closes this for the ordinary case.**
-`--prepare-tooling-body` (`scripts/sd-ai-command-pack-pr-body-scope.py`) used
+`--prepare-tooling-body` (`scripts/sd-ai-command-pack-pr-body-scope.py` [absent: pre-conversion path, kept verbatim; see this file's header]) used
 to append the section only when *every* changed path matched a tooling
 pattern; a diff mixing tooling with authored prose (e.g. `.trellis/spec/**`,
 which matches no tooling pattern) exited `3` and wrote nothing. That refusal
@@ -373,7 +376,7 @@ of the branch — including the archive commit — not merely once during
 with one `_example` row whose own text says to delete it once real entries are
 added. The review preflight exempts that pristine scaffold deliberately —
 `validateBookkeepingTaskContexts` in
-`scripts/sd-ai-command-pack-review-preflight.mjs` gates on
+`scripts/sd-ai-command-pack-review-preflight.mjs` [absent: pre-conversion path, kept verbatim; see this file's header] gates on
 `!archived && isPlainObject(record) && record.status === 'planning'` — so
 creating a task never fails either lane. The `isPlainObject` term is not
 incidental: a missing or unparsable `task.json` leaves the planning status
@@ -453,7 +456,7 @@ Rules of use:
   receipt, observation, recorded dispositions — while the local stage's durable
   provider receipt survives and is reused, because its identity is
   `_receipt_identity(target, plan)` and carries no attempt id
-  (`scripts/sd-ai-command-pack-review-local.py`, `execute`). From v0.66.1
+  (`scripts/sd-ai-command-pack-review-local.py` [absent: pre-conversion path, kept verbatim; see this file's header], `execute`). From v0.66.1
   neither is
   needed: the rejection is not persisted, so the next invocation reuses a prior
   stored report or recomputes when none exists — never replays the rejection
@@ -490,7 +493,7 @@ before the real cause was found).
   `.prism/rules.json` to prism any more.
 - **sd-review lane** — the lane `sd-ship` Stage 2 runs, and so the lane that
   gates shipping. The built-in adapter in
-  `scripts/sd-ai-command-pack-review-local.py` (`_expand_argv`, `:1376`)
+  `scripts/sd-ai-command-pack-review-local.py` [absent: pre-conversion path, kept verbatim; see this file's header] (`_expand_argv`, `:1376`)
   builds `prism review range <base>..<head> --format json` with **none** of
   `--rules`, `--exclude`, `--fail-on`, and never reads `.prism/`. Prism does
   not auto-discover the file (`prism config show` reports no rules entry).
@@ -501,7 +504,7 @@ variants); the flag asymmetry is the same in each.
 **Gate mechanics, so the divergence is priced correctly:** `--fail-on`
 governs prism's *exit status*, not the coordinator's gate. The adapter maps
 any non-empty findings list to a `findings` outcome for the non-terminal exit
-codes 0/1 (`scripts/sd-ai-command-pack-review-local.py:254-260`,
+codes 0/1 (`scripts/sd-ai-command-pack-review-local.py:254-260` [absent: pre-conversion path, kept verbatim; see this file's header],
 `:1752-1756`; exits 3/4 stay `unavailable`, unmapped codes `failed`). Low
 findings alone block shipping (`remoteGate: blocked
 (actionable-local-findings)`), so an inert rule converts directly into a
@@ -520,14 +523,14 @@ malformed file straight to prism; both behaviours left with the script.)
 **Ownership.** `.prism/rules.json` is Registry B `install: "if-not-exists"` —
 repository-owned after first install; a pack refresh will not discard its
 edits, and rules added to it are durable, only undelivered to the sd-review
-lane. `scripts/sd-ai-command-pack-review-local.py` is Registry B
+lane. `scripts/sd-ai-command-pack-review-local.py` [absent: pre-conversion path, kept verbatim; see this file's header] is Registry B
 `install: "always"` (vendored); its shell sibling was retired in 0.65.0.
 
 **Local-only record** (per the four-field format in "Vendored-Artifact
 Ownership And Upstream Route"):
 
 - Owning pack: sd-ai-command-pack.
-- Files: `scripts/sd-ai-command-pack-review-local.py` (Registry B,
+- Files: `scripts/sd-ai-command-pack-review-local.py` [absent: pre-conversion path, kept verbatim; see this file's header] (Registry B,
   `kind: script`, `install: "always"`).
 - Behaviour: the built-in prism adapter builds its argv with no `--rules`,
   `--exclude`, or `--fail-on` and never reads `.prism/rules.json`, so
@@ -572,7 +575,7 @@ Classify in this order:
    case: an all-green-but-BLOCKED PR triggers its own thread collection and
    returns `merge_blocked_conversation` (unresolved threads, with a
    `reviewThreads` evidence block) or `merge_blocked_review` instead of the
-   generic code (`scripts/sd-ai-command-pack-pr-eligibility.py:706-721`).
+   generic code (`scripts/sd-ai-command-pack-pr-eligibility.py:706-721` [absent: pre-conversion path, kept verbatim; see this file's header]).
    A specific code is the answer; act on it directly. The result also
    carries `checks.items` — every CheckRun `conclusion` and StatusContext
    `state` from the script's bounded fail-closed pager. Non-blocking
@@ -666,7 +669,7 @@ which may since have been parked, and that pointer is equally inert.
 
 The proof is in the helper's own `start` path: it resumes an existing run only
 when `state["status"] in {"active", "paused"}`
-(`scripts/sd-ai-command-pack-work-loop.py:2864`). A `stopped` run falls through
+(`scripts/sd-ai-command-pack-work-loop.py:2864` [absent: pre-conversion path, kept verbatim; see this file's header]). A `stopped` run falls through
 to `new_state(...)`, so the next invocation begins a fresh run and never
 resumes into the stale task. Read that branch before treating a stopped run as
 an anomaly; the status collector already agrees, printing a bare `none` under
@@ -684,9 +687,9 @@ Local-only record (format per "Vendored-Artifact Ownership And Upstream
 Route" below; task `08-06-work-loop-shipped-sha-after-branch-delete`):
 
 1. **Owning pack**: sd-ai-command-pack.
-2. **File**: `scripts/sd-ai-command-pack-work-loop.py` (`install: "always"`),
-   with the documented call shape in `.agents/skills/sd-work-backlog/SKILL.md`
-   (`install: "always"`) and `.claude/skills/sd-work-backlog/SKILL.md`
+2. **File**: `scripts/sd-ai-command-pack-work-loop.py` [absent: pre-conversion path, kept verbatim; see this file's header] (`install: "always"`),
+   with the documented call shape in `.agents/skills/sd-work-backlog/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header]
+   (`install: "always"`) and `.claude/skills/sd-work-backlog/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header]
    (no `install` key = `if-anchor-exists`) — all pack-vendored.
 3. **Behaviour**: the one-shot merge-boundary evidence call the skill
    documents fails after housekeeping deletes the merged branch — the branch
@@ -737,7 +740,7 @@ a63a871 chore: record journal   <- Stage 2b planning finalization
 ```
 
 Stage 4 must recompute the planning receipt from the **captured base**
-(`.agents/skills/sd-ship/SKILL.md:179-186`), the fix commit put an authored
+(`.agents/skills/sd-ship/SKILL.md:179-186` [absent: pre-conversion path, kept verbatim; see this file's header]), the fix commit put an authored
 path inside that range, and Stage 4 is forbidden from invoking any finish-work
 flow — so no receipt the chain may compute is valid, and the chain stops with
 the validator's report. The trigger is review *timing*, not content; the trap
@@ -777,12 +780,12 @@ succeeded only after the fresh invocation.
 Ownership And Upstream Route"):
 
 - Owning pack: sd-ai-command-pack.
-- Files: `.agents/skills/sd-ship/SKILL.md` and
-  `.agents/skills/sd-finish-work/SKILL.md` (Registry B, `kind: skill`,
-  `install: "always"`); `.claude/skills/sd-ship/SKILL.md` and
-  `.claude/skills/sd-finish-work/SKILL.md` (Registry B, `kind: skill`,
+- Files: `.agents/skills/sd-ship/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] and
+  `.agents/skills/sd-finish-work/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] (Registry B, `kind: skill`,
+  `install: "always"`); `.claude/skills/sd-ship/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] and
+  `.claude/skills/sd-finish-work/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] (Registry B, `kind: skill`,
   `anchor: ".claude"`, if-anchor-exists); and
-  `scripts/sd-ai-command-pack-review-preflight.mjs` (Registry B,
+  `scripts/sd-ai-command-pack-review-preflight.mjs` [absent: pre-conversion path, kept verbatim; see this file's header] (Registry B,
   `kind: script`, `install: "always"`).
 - Behaviour: Stage 4's planning-mode moved-head recomputation reuses the
   captured base and forbids in-chain finish-work, so a post-finalization
@@ -844,7 +847,7 @@ wrong value is still recognizable as the current feature branch.
 **Detection today.** `create` and `start` stay silent. At PR time, the
 preflight hard-gates a changed root-task record whose `base_branch` is not
 the repository default (`validateTrellisRootTaskBaseBranch`,
-`scripts/sd-ai-command-pack-review-preflight.mjs:3331-3354`, wired at
+`scripts/sd-ai-command-pack-review-preflight.mjs:3331-3354` [absent: pre-conversion path, kept verbatim; see this file's header], wired at
 `:3159-3188`); child tasks are checked permissively against their parent
 (`:3294-3328`), and the shape checks (`:3409-3420`) are guarded off while
 `branch` is `null`. Consumption is narrow: `sd-create-pr` resolves the PR
@@ -871,7 +874,7 @@ Ownership And Upstream Route"):
 - Owning pack: upstream Trellis for the seeding surface
   (`.trellis/scripts/common/task_store.py`, Registry A) and
   sd-ai-command-pack for the gate diagnostic
-  (`scripts/sd-ai-command-pack-review-preflight.mjs`, Registry B,
+  (`scripts/sd-ai-command-pack-review-preflight.mjs` [absent: pre-conversion path, kept verbatim; see this file's header], Registry B,
   `kind: script`, `install: "always"`).
 - Files: as above, each with its registry entry.
 - Behaviour: pre-v0.6.8 `create` seeds `base_branch` from the checkout, and
@@ -900,7 +903,7 @@ Ownership And Upstream Route"):
 
 **On a fat install** the sd-ai-command-pack payload
 (`scripts/sd-ai-command-pack-*`, `.claude/skills/sd-*`, `.agents/skills/sd-*`,
-`docs/SD_AI_COMMAND_PACK.md`, `.claude/sd-ai-command-pack/`) is installed into
+`docs/SD_AI_COMMAND_PACK.md` [absent: pre-conversion path, kept verbatim; see this file's header], `.claude/sd-ai-command-pack/`) is installed into
 the consumer tree and vouched via `.sd-ai-command-pack/manifest.json` +
 `provenance.json`. Three contracts, learned on the v0.64.3 → v0.64.32 refresh
 (2026-08-09):
@@ -933,7 +936,7 @@ conflict is an upstream-version difference, not local drift.
 > **Warning**: Any locally committed edit to a vendored payload file is
 > overwritten without a distinct notice — it surfaces only as one more
 > "conflict" row in the dry run. The v0.64.32 refresh reverted local commit
-> `bc01bc2` (`_resolve_check` in `scripts/sd-ai-command-pack-review.py`) and
+> `bc01bc2` (`_resolve_check` in `scripts/sd-ai-command-pack-review.py` [absent: pre-conversion path, kept verbatim; see this file's header]) and
 > stranded the local `test_review_coordinator.py` regression tests (since
 > deleted) pinning the removed symbol.
 >
@@ -1027,7 +1030,7 @@ lookup above yields exactly this row:
 
 | File | Classification |
 | --- | --- |
-| `scripts/sd-ai-command-pack-review.py` | Registry B, `install: "always"` — vendored |
+| `scripts/sd-ai-command-pack-review.py` [absent: pre-conversion path, kept verbatim; see this file's header] | Registry B, `install: "always"` — vendored |
 | `.claude/rules/sd-planning-adversarial-review.md` | Registry B, no `install` key (`if-anchor-exists`) — vendored |
 | `.prism/rules.json` | Registry B, `install: "if-not-exists"` — repo-owned after first install |
 | `.github/copilot-instructions.md` | Registry A + Registry B `managed-block` — dual-owned, drift expected |
@@ -1076,7 +1079,7 @@ Worked example, each field filled in (the full record is this file's
 "Scenario: SD Status Pack-Freshness Signal" section):
 
 1. Owning pack: sd-ai-command-pack.
-2. File: `scripts/sd-ai-command-pack-status.py`, manifest entry
+2. File: `scripts/sd-ai-command-pack-status.py` [absent: pre-conversion path, kept verbatim; see this file's header], manifest entry
    `install: "always"`.
 3. Behaviour: local-mode `collect_versions` resolves no target pack version
    in a consumer repository, so a stale installed pack reports
@@ -2257,8 +2260,8 @@ installed sha256 != prior provenance -> conflict + no writes
 
 ### 2. Disposition: local-only guidance (upstream approval not sought)
 
-Both `scripts/sd-ai-command-pack-status.py` and
-`scripts/sd_ai_command_pack_fleet_lib.py` are vendored with
+Both `scripts/sd-ai-command-pack-status.py` [absent: pre-conversion path, kept verbatim; see this file's header] and
+`scripts/sd_ai_command_pack_fleet_lib.py` [absent: pre-conversion path, kept verbatim; see this file's header] are vendored with
 `install: "always"` (`.sd-ai-command-pack/manifest.json`), so a local edit is
 overwritten by the next pack refresh. A behavior change is therefore an
 upstream pull request against `sd-ai-command-pack`, which needs explicit
@@ -2696,7 +2699,7 @@ pack gate without creating a recursive review path.
 ### 2. Contracts
 
 - Status vocabulary is closed: `open`, `fixed`, `regressed`, per
-  `.claude/skills/sd-audit-repo/SKILL.md:246`. There is no status for "real,
+  `.claude/skills/sd-audit-repo/SKILL.md:246` [absent: pre-conversion path, kept verbatim; see this file's header]. There is no status for "real,
   but the remaining fix is upstream" — that belongs in `notes:` naming the
   blocked Trellis task that owns it.
 - `notes:` is the human-editable field and may already hold text. Append;

@@ -189,7 +189,7 @@ Every quotation below is output from a run at head `40c53aa9` unless stated.
       boundary clean
       ```
 
-      Run in `/Users/sven/repos/platypeeps/se-ai-command-pack`, confirmed by
+      Run in the main `se-ai-command-pack` checkout, confirmed by
       `pwd`, after a first invocation had run in the worktree instead and would
       have reported a vacuous pass.
 
