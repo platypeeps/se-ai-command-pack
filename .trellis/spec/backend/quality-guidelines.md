@@ -689,7 +689,7 @@ Route" below; task `08-06-work-loop-shipped-sha-after-branch-delete`):
 1. **Owning pack**: sd-ai-command-pack.
 2. **File**: `scripts/sd-ai-command-pack-work-loop.py` [absent: pre-conversion path, kept verbatim; see this file's header] (`install: "always"`),
    with the documented call shape in `.agents/skills/sd-work-backlog/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header]
-   (`install: "always"`) and `.claude/skills/sd-work-backlog/SKILL.md`
+   (`install: "always"`) and `.claude/skills/sd-work-backlog/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header]
    (no `install` key = `if-anchor-exists`) — all pack-vendored.
 3. **Behaviour**: the one-shot merge-boundary evidence call the skill
    documents fails after housekeeping deletes the merged branch — the branch
@@ -782,8 +782,8 @@ Ownership And Upstream Route"):
 - Owning pack: sd-ai-command-pack.
 - Files: `.agents/skills/sd-ship/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] and
   `.agents/skills/sd-finish-work/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] (Registry B, `kind: skill`,
-  `install: "always"`); `.claude/skills/sd-ship/SKILL.md` and
-  `.claude/skills/sd-finish-work/SKILL.md` (Registry B, `kind: skill`,
+  `install: "always"`); `.claude/skills/sd-ship/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] and
+  `.claude/skills/sd-finish-work/SKILL.md` [absent: pre-conversion path, kept verbatim; see this file's header] (Registry B, `kind: skill`,
   `anchor: ".claude"`, if-anchor-exists); and
   `scripts/sd-ai-command-pack-review-preflight.mjs` [absent: pre-conversion path, kept verbatim; see this file's header] (Registry B,
   `kind: script`, `install: "always"`).
@@ -2699,7 +2699,7 @@ pack gate without creating a recursive review path.
 ### 2. Contracts
 
 - Status vocabulary is closed: `open`, `fixed`, `regressed`, per
-  `.claude/skills/sd-audit-repo/SKILL.md:246`. There is no status for "real,
+  `.claude/skills/sd-audit-repo/SKILL.md:246` [absent: pre-conversion path, kept verbatim; see this file's header]. There is no status for "real,
   but the remaining fix is upstream" — that belongs in `notes:` naming the
   blocked Trellis task that owns it.
 - `notes:` is the human-editable field and may already hold text. Append;
