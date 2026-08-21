@@ -24,6 +24,14 @@ The task now waits on upstream merge of that PR and a subsequent pack refresh
 here. The acceptance criteria below are unchanged and are still verified
 against this repository after a refresh, not against the issues or the PR.
 
+**COMPLETE 2026-08-20.** #525 merged upstream as release **0.71.39** (the
+version moved past 0.71.38 when another release landed first; the PR was
+re-versioned before merge; `Closes #484` / `Closes #485` both closed). This
+repository refreshed: the thin pin and `.sd-ai-command-pack/manifest.json`
+read 0.71.39, and the machine-scope install serving this thin consumer was
+refreshed to 0.71.39 in the same session. Acceptance verified against the
+refreshed install — evidence on the checked criteria below.
+
 ## Goal
 
 Record two defects observed while shipping
@@ -87,19 +95,36 @@ Options for upstream to weigh:
 
 ## Acceptance Criteria
 
-- [ ] `sd-finish-work` names the sentences `add_session.py` actually writes on
-      the fallback path.
-- [ ] A completed `sd-ship until=merge` chain whose review needed four rounds
+- [x] `sd-finish-work` names the sentences `add_session.py` actually writes on
+      the fallback path. (Verified in the refreshed 0.71.39 machine install:
+      the skill now says the recorder omits any section it was given no
+      content for — no placeholder sentences — and directs
+      `--summary`/`--change`/`--test` on the first invocation, matching the
+      vendored recorder's actual behavior.)
+- [x] A completed `sd-ship until=merge` chain whose review needed four rounds
       reaches merge without a `review.round-extension` decision.
-- [ ] The round limit still stops an over-limit attempt that would make a
-      provider call.
+      (Mechanism verified structurally, not by replaying a live four-round
+      chain: the 0.71.39 review controller grants an evidence-backed
+      `--successor bookkeeping` re-entry `BOOKKEEPING_REENTRY_ROUNDS = 2`
+      rounds past `roundLimit`, gated on the validated
+      `--bookkeeping-evidence` payload under automatic local provider
+      selection. Present in the refreshed machine-scope
+      `sd-ai-command-pack-review.py` this thin consumer resolves.)
+- [x] The round limit still stops an over-limit attempt that would make a
+      provider call. (Upstream regression tests pin this:
+      `test_bookkeeping_reentry_has_its_own_bounded_round_budget` asserts a
+      `ReviewError` naming `roundLimit` before any provider check runs, for
+      the base limit, past the extended budget, and for every path that
+      skips evidence validation — explicit `--local` overrides and
+      `--family-evidence`.)
 
 ## Notes
 
 - Observed during `07-25-audit-workflow-entrypoint-routing`, PR #211
   (https://github.com/platypeeps/se-ai-command-pack/pull/211): see the round-5
   and round-6 disposition comments for the full evidence.
-- `blockedOn`: upstream merge of `platypeeps/sd-ai-command-pack#525`
+- `blockedOn` (resolved): upstream merge of `platypeeps/sd-ai-command-pack#525`
   (implements both fixes, opened 2026-08-20 with explicit approval) and the
-  pack refresh that brings 0.71.38 into this repository. The task is still not
-  actionable here, so the autonomous work loop must not select it.
+  pack refresh bringing the release into this repository. Both happened on
+  2026-08-20 — #525 merged as release 0.71.39 and this repository's thin pin
+  plus the serving machine install refreshed to it. Task archived.

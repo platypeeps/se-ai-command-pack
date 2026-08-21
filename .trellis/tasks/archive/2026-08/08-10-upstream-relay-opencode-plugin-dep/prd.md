@@ -16,6 +16,13 @@ OpenCode template manifest is `{"type": "module"}` with no
 **#565 was closed with that rationale**. The defect is resolved for every
 fork consumer; reopening upstream remains available if ever wanted.
 
+**COMPLETE — verified in this repository at the 0.6.16-sd.8 refresh
+(2026-08-20).** `.opencode/package.json` here is `{"type": "module"}` with no
+dependency; `git log` on the path shows the fixed manifest actually arrived
+with the 0.6.16-sd.1 vendored roll (#251, commit 644c560), before this task's
+relay was even filed. Ledger A-032 closed as fixed in the same change; the
+spec scenario's field 4 records the resolution. Task archived.
+
 Previously PARKED: the autonomous run-level authority excludes opening an
 upstream Trellis pull request (`.trellis/spec/backend/quality-guidelines.md`,
 "Vendored-Artifact Ownership And Upstream Route", rule 4); the per-PR approval

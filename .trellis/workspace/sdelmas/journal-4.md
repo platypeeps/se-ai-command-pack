@@ -1515,3 +1515,42 @@ Fleet refresh to 0.71.38; repairs the vendored review-layout helper's executable
 ### Next Steps
 
 - None - task complete
+
+
+## Session 190: Refresh to pack 0.71.39 and Trellis 0.6.16-sd.8; close the 08-10 upstream trilogy
+<!-- trellis-session: v=2 fp=9fe0e9ce363517d3 -->
+
+**Date**: 2026-08-20
+**Task**: Refresh to pack 0.71.39 and Trellis 0.6.16-sd.8; close the 08-10 upstream trilogy
+**Branch**: `chore/refresh-0.71.39-trellis-sd.8`
+
+### Summary
+
+Vendored the 0.6.16-sd.8 Trellis runtime (declared-entry-point seam: entry_points.py loader, hook and session-utils consultation, all-or-nothing validation), bumped the thin sd-ai-command-pack pin to 0.71.39 with the serving machine install refreshed to match, and closed out the upstream trilogy: relay task and pack-drift task archived complete with acceptance verified against the refreshed install, A-032 closed as fixed (the fixed OpenCode manifest had shipped since the sd.1 roll in #251), and the entry-point task narrowed to Deliverable 1 (#486) only.
+
+### Main Changes
+
+- Trellis runtime refreshed to 0.6.16-sd.8 across .trellis scripts, platform hooks, and the OpenCode session-utils library; .claude/settings.json preserved byte-identical after restoring the pack's plugin keys the template write dropped
+- sd-ai-command-pack thin pin and vendored manifest bumped to 0.71.39; trellis-provenance manifest regenerated for the re-receipted settings file
+- A-032 closed as fixed in the audit ledger and spec scenario; 08-10-upstream-relay-opencode-plugin-dep and 08-10-upstream-pack-workflow-drift archived; 08-10-upstream-entrypoint-routing-mechanisms blockedOn narrowed to sd-ai-command-pack#486
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e795afc` | chore(trellis): refresh the vendored runtime to 0.6.16-sd.8 |
+| `bbf3ead` | chore: refresh sd-ai-command-pack to 0.71.39 |
+| `6425a84` | chore(tasks): close out the 2026-08-10 upstream trilogy after the refreshes |
+
+### Testing
+
+- [OK] make check green in the refresh worktree (tests, lint, lock-check, release-check, shell-syntax, trellis-provenance: ok, 11 hashed, 257 tracked platform files covered)
+- [OK] install.py --check: machine and pin at 0.71.39; .opencode/package.json verified {"type": "module"} with no dependency
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Fleet campaign to roll 0.71.39 to the remaining consumers is a separate decision

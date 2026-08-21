@@ -524,7 +524,7 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   drives the update path.
 
 ## A-032 — .opencode/package.json declares an unused, floating @opencode-ai/plugin with no lockfile
-- status: open
+- status: fixed
 - severity: P3 · effort: S · confidence: Plausible
 - dimension: dependencies
 - first-seen: 2026-07-25 @ 4067caa
@@ -534,6 +534,15 @@ Cross-session memory of sd-audit-repo findings for platypeeps/se-ai-command-pack
   - .gitignore:52 — node_modules ignored, so OpenCode auto-installs fresh floating 1.x per machine.
 - why: Unpinned npm fetch on every machine for a package nothing imports.
 - fix: Remove; or pin exact + commit lockfile if kept for editor types.
+- notes: 2026-08-20 closed as fixed at the 0.6.16-sd.8 vendored-runtime
+  refresh. `.opencode/package.json` in this tree is `{"type": "module"}` with
+  no `@opencode-ai/plugin` and no lockfile need; `git log` on the path shows
+  the fix actually arrived with the 0.6.16-sd.1 roll (#251, commit 644c560),
+  so the 2026-08-20 "clears on next refresh" note below was already stale
+  when written. Fix delivered upstream-first via the `sdelmas/Trellis` fork
+  (mindfold-ai/Trellis#565 withdrawn as unnecessary), exactly the route the
+  disposition required. Owning task
+  `08-10-upstream-relay-opencode-plugin-dep` archived in the same change.
 - notes: 2026-08-17 dispositioned; nothing further is actionable here. The
   local half is merged (PR #197, 2026-08-10) and the file itself is an
   upstream-Trellis vendored artifact, so removing the dependency in this

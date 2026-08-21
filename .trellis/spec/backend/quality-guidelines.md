@@ -2570,8 +2570,13 @@ python -m pip install --require-hashes --only-binary :all: -r requirements-dev.l
    The same day the maintainer retargeted relays at `sdelmas/Trellis`, the
    fork this fleet consumes; its `main` already ships the template manifest
    as `{"type": "module"}` with no `@opencode-ai/plugin`, so #565 was closed
-   as unnecessary for the fleet. The defect clears here with the next Trellis
-   refresh from the fork.
+   as unnecessary for the fleet. Resolution: inspection during the
+   0.6.16-sd.8 refresh (2026-08-20) showed the fixed manifest had already
+   reached this repository with the 0.6.16-sd.1 vendored roll (#251, commit
+   644c560) — `.opencode/package.json` ships `{"type": "module"}` with no
+   dependency. The 2026-08-20 claim that the defect would clear "with the
+   next Trellis refresh" understated the state of the tree: it had already
+   cleared. A-032 is closed as fixed.
 
 ### 3. Contracts
 
