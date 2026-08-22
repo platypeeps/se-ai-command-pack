@@ -14,6 +14,7 @@
     ".gitignore": "395726f73f150a94e5147792bbc5d3aaf3d74c56cf20fcce419252dfbe4c0260"
   },
   "repoOwn": [
+    ".claude/settings.json",
     ".github/PULL_REQUEST_TEMPLATE.md",
     ".github/dependabot.yml",
     ".github/scripts/aggregate-ci-result.py",
@@ -78,7 +79,6 @@
     ".claude/hooks/inject-subagent-context.py",
     ".claude/hooks/inject-workflow-state.py",
     ".claude/hooks/session-start.py",
-    ".claude/settings.json",
     ".claude/skills/trellis-before-dev/SKILL.md",
     ".claude/skills/trellis-brainstorm/SKILL.md",
     ".claude/skills/trellis-break-loop/SKILL.md",
