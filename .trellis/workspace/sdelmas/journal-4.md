@@ -1582,7 +1582,7 @@ Reinstalled the thin sd-ai-command-pack payload at 0.71.45 (from 0.71.39), verif
 
 - [OK] sd-ai-command-pack install audit from the pack source checkout: passed, 31 targets, provenance 0.71.45.
 - [OK] bash $HOME/.agents/bin/sd-ai-command-pack-housekeeping.sh --self-test: all scenarios passed.
-- [OK] npm run check:full: make check stopped at trellis-provenance on a pre-existing, gitignored, local-only template-snapshot mismatch; sd-ai-command-pack-full-check.sh was then run separately and exited 0. All three findings dispositioned through the fleet finding severity gate: continue-with-follow-ups, zero blockers.
+- [WARN] npm run check:full: exited 2. `make check` stopped at trellis-provenance on a pre-existing, gitignored, local-only template-snapshot mismatch, so its second half never ran; `sd-ai-command-pack-full-check.sh` was then run separately and exited 0. All three findings dispositioned through the fleet finding severity gate: continue-with-follow-ups, zero blockers.
 
 ### Status
 
