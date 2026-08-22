@@ -1554,3 +1554,40 @@ Vendored the 0.6.16-sd.8 Trellis runtime (declared-entry-point seam: entry_point
 ### Next Steps
 
 - Fleet campaign to roll 0.71.39 to the remaining consumers is a separate decision
+
+
+## Session 191: Refresh sd-ai-command-pack to 0.71.45
+<!-- trellis-session: v=2 fp=2b9caa3ab61121c1 -->
+
+**Date**: 2026-08-21
+**Task**: Refresh sd-ai-command-pack to 0.71.45
+**Branch**: `chore/pack-refresh-0.71.45`
+
+### Summary
+
+Reinstalled the thin sd-ai-command-pack payload at 0.71.45 (from 0.71.39), verified the install audit and the housekeeping self-test, and dispositioned three advisory local-gate findings through the fleet finding severity gate with zero blockers.
+
+### Main Changes
+
+- Reinstalled the sd-ai-command-pack thin payload at 0.71.45; four .github/prompts adapters plus the manifest and provenance receipts updated.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7af8f9ac6acc543e144e5fc4d55cd9ffe5ecbae7` | chore(pack): refresh sd-ai-command-pack to 0.71.45 |
+
+### Testing
+
+- [OK] sd-ai-command-pack install audit from the pack source checkout: passed, 31 targets, provenance 0.71.45.
+- [OK] bash $HOME/.agents/bin/sd-ai-command-pack-housekeeping.sh --self-test: all scenarios passed.
+- [OK] npm run check:full: make check stopped at trellis-provenance on a pre-existing, gitignored, local-only template-snapshot mismatch; sd-ai-command-pack-full-check.sh was then run separately and exited 0. All three findings dispositioned through the fleet finding severity gate: continue-with-follow-ups, zero blockers.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
