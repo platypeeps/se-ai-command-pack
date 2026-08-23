@@ -24,7 +24,10 @@
     ".github/scripts/create-release-tag.py",
     ".github/scripts/generate-skill-surfaces.py",
     ".github/scripts/update-repomix",
+    ".github/sd-github-review.json",
     ".github/trellis-provenance.json",
+    ".github/workflows/ai-review-router.yml",
+    ".github/workflows/sd-review.yml",
     ".github/workflows/tests.yml"
   ],
   "templateReceipted": [
