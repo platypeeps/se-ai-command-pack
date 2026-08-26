@@ -68,7 +68,7 @@ Do not infer this pack's platform set from the directories above. The in-repo
 platforms are declared in `installer/registry.py` (`PLATFORM_REGISTRY`), which
 is the only source of truth for them, and its skills install into user-level
 platform directories rather than into this repository. Gemini is not among
-them — the `sd/*` adapters a developer may see under `~/.gemini/commands/`
+them — the adapters a developer may see under `~/.gemini/commands/sd/`
 come from `sd-ai-command-pack`'s user-level install, not from here.
 
 ### Exceptions worth knowing
