@@ -31,7 +31,7 @@ The decision therefore belongs to `platypeeps/sd-ai-command-pack`, a different
 repository.
 
 Full evidence:
-`.trellis/tasks/08-23-review-gemini-codex-retirement/research/inventory-2026-08-26.md`.
+`.trellis/tasks/archive/2026-08/08-23-review-gemini-codex-retirement/research/inventory-2026-08-26.md`.
 
 ## Requirements
 
