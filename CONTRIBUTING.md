@@ -63,6 +63,14 @@ is supported: create the file and add its path to `repoOwn` in
 repo-own that way. Only `.trellis/**` is owned wholesale, and even there
 `spec/`, `tasks/`, and `workspace/` are yours.
 
+Do not infer this pack's platform set from the directories above. The in-repo
+`.gemini/**` and `.codex/**` trees are Trellis payload; this pack's own
+platforms are declared in `installer/registry.py` (`PLATFORM_REGISTRY`), which
+is the only source of truth for them, and its skills install into user-level
+platform directories rather than into this repository. Gemini is not among
+them — the `sd/*` adapters a developer may see under `~/.gemini/commands/`
+come from `sd-ai-command-pack`'s user-level install, not from here.
+
 ### Exceptions worth knowing
 
 - **`.sd-ai-command-pack/check.json` is repo-own**, even though the three files
