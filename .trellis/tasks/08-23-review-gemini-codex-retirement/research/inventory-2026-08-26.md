@@ -17,7 +17,7 @@ retirement.
 | Evidence | Finding |
 |---|---|
 | `installer/registry.py:56-74` | `PLATFORM_REGISTRY` declares exactly three platforms: `agents`, `claude`, `codex`. No `gemini` row. |
-| `manifest.json` | 0 occurrences of the string `gemini`. 185 `files[]` rows carry `platform: codex`, 183 of them targeting `.codex/skills/**` (the skill fan-out); the remaining 2 are `source` rows. |
+| `manifest.json` | 0 occurrences of the string `gemini`. 185 `files[]` rows carry `platform: codex`, 183 of them targeting `.codex/skills/**` (the skill fan-out) and the remaining 2 targeting `.codex/agents/**` (`se-claim-verifier.toml`, `se-source-reader.toml`). |
 | `templates/` | Contains only `agents/` and `skills/`. No `templates/.gemini/`. |
 
 Adding or removing a platform is one registry row plus `make generate`
