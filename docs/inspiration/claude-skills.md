@@ -14,8 +14,16 @@ was deliberately changed, what was declined and why, and how to harvest more.
 | `opencode-cfg` | `b37c6ec` | Private local checkout, no remote. Design source for the agent trio only; its configuration holds private infrastructure identifiers and must never gain a public remote. |
 
 Neither is a dependency. There is no submodule, no vendored copy, and no CI
-job that fetches either one. The pin exists so a harvest knows where it left
-off.
+job that fetches either one.
+
+The two pins do different jobs. The upstream pin is a harvest cursor: anyone
+can clone that repository and diff it, so the ritual below can be run by
+someone who was not here. The `opencode-cfg` pin is provenance only. It names
+the revision the agent trio was designed against on one machine, and nobody
+else can fetch it — so it records where an idea came from and never feeds the
+harvest. The ritual below covers the upstream source alone; changes on the
+private side reach this pack as an ordinary Trellis task, described in the
+task rather than diffed from a pin.
 
 ## Inspiration map
 

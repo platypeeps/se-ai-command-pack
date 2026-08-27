@@ -36,9 +36,17 @@ Unknown argument names are an error — stop and report them before starting.
 
 ## Workflow
 
-1. Probe the gate before judging anything. Check for a `make prose-lint`
-   target and for the binary itself (`vale --version`). Four states:
-   - **full gate** — target and binary present: run `make prose-lint`;
+1. Probe the gate before judging anything. Look for a `make prose-lint`
+   target, and treat the target as authoritative over a local
+   `vale --version`: the target may reach a pinned, vendored, or
+   containerized Vale that a bare binary probe never sees, so where a
+   target exists, run it and let its own failure classify the state. Four
+   states:
+   - **full gate** — the target runs: take its verdict for repository
+     prose. It lints the corpus the repository configured, not the subset
+     under review, so read its findings against the target files and say
+     which alerts fall outside them. A draft that is not yet a file is
+     invisible to it: lint that through Vale on stdin and report both;
    - **binary only** — Vale and a config exist without the Make target: run
      Vale directly on the target files, or on stdin for drafts that are not
      yet files;

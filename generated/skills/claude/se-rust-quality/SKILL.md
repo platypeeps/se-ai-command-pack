@@ -45,7 +45,10 @@ Unknown argument names are an error — stop and report them before starting.
    on differently and collapses the ones it must not. No boxed
    `dyn Error` in library signatures; convert at boundaries with
    `#[from]` and `.map_err()` so low-level errors never leak into domain
-   signatures.
+   signatures. `#[from]` is the weaker of the two: it keeps the source
+   type inside the variant, so the wrapped type joins the crate's public
+   contract. Use it where that type is one you are willing to publish and
+   version; map to an owned variant where it is not.
 3. Prefer the named idioms:
    - `transpose()` for `Option<Result<T, E>>` conversions;
    - `Arc::clone(&x)` over `x.clone()` on reference-counted types;

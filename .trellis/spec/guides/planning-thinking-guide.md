@@ -83,7 +83,12 @@ wrong thing. Scope it to the blast radius.
 - [ ] Is every step **independently verifiable**? Name the command and
       the result that means failure, not "check it works."
 - [ ] Does each step name its **rollback point**? "Revert this file
-      alone" is a rollback point; "undo the change" is not.
+      alone" is a rollback point; "undo the change" is not. Name the
+      whole unit the revert has to cover, not the file you happen to be
+      editing: a step that changes a template and its generated surfaces,
+      or a schema and its migration, rolls back as one or leaves the tree
+      inconsistent. If a step has no single revertible unit, that is the
+      step telling you it is really two.
 - [ ] Is the **ordering** forced by real dependencies, or is it just the
       order you thought of things? Forced ordering belongs in the plan;
       incidental ordering is noise.

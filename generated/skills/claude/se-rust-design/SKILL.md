@@ -69,17 +69,24 @@ Unknown argument names are an error — stop and report them before starting.
      port, bounded range).
    Implement `Display` and `AsRef` as the value warrants; never
    `DerefMut`, which bypasses the constraint. Keep test-only constructors
-   under `#[cfg(test)]` and nowhere else.
+   behind a gate: `#[cfg(test)]` reaches unit tests in the same crate and
+   nothing else, so a `tests/` integration test that needs one requires a
+   `#[cfg(feature = "test-util")]` constructor and a feature the test
+   profile enables. Pick the gate from who must call it, and never ship an
+   ungated one.
 5. Parse, don't validate. Fallible constructors return
    `Result<Self, Error>` with the error enum written up front; downstream
    code accepts only already-valid types, so no check is ever repeated and
    no validate-then-use gap can open.
 6. Compose errors railway-style: propagate with `?`, convert at
-   boundaries with `#[from]` or `.map_err()`, and keep low-level error
-   types out of domain signatures. Use combinators for linear
-   `Option`/`Result` chains; reserve `match` for genuine branching across
-   three or more variants, and keep exhaustiveness — no `_` wildcard on
-   enums you own.
+   boundaries with `.map_err()` or, where the crate derives its error
+   types with `thiserror` or a similar macro, `#[from]` — that attribute
+   is the derive's, not the language's, so name the dependency before
+   reaching for it. Keep low-level error types out of domain signatures.
+   Use combinators for linear `Option`/`Result` chains and `match` where
+   branching is what the code is doing — a two-variant match that stays
+   exhaustive beats a combinator chain that hides the second arm. Keep
+   exhaustiveness either way: no `_` wildcard on enums you own.
 7. Treat `.clone()` as a design decision, not a compiler fix. When the
    borrow checker objects, try in order: restructure scope, take a
    reference, narrow the borrow, `Cow` for sometimes-owned data,

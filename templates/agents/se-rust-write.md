@@ -54,11 +54,14 @@ belong to other workers — `se-rust-fill` fills the holes and
   (`cargo test --no-run`) to prove they build and stop there.
 - Those commands write build outputs and resolve dependencies over the
   network on a cold cache. That is expected of the build, not an edit you
-  made: `target/` is ignored, and `Cargo.lock` is the one tracked file a
-  build may touch without the brief naming it — report it in your return
-  if it moved, and never edit it by hand. Use `--offline` when the
-  dependencies are already present, and report a genuinely missing
-  dependency instead of adding one yourself.
+  made: `target/` is ignored. Pass `--locked` so `Cargo.lock` stays a
+  tracked file you did not touch — cargo then fails instead of rewriting
+  it, and that failure is a finding for your return rather than something
+  to work around. Use `--offline` when the dependencies are already
+  present, and report a genuinely missing dependency instead of adding one
+  yourself. Compiling is not neutral either: it runs the repository's own
+  `build.rs` scripts and proc macros, so read what the brief had you write
+  and what the crate already builds before you run it.
 
 ## Refusal boundary
 

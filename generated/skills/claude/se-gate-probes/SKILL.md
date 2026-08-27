@@ -10,9 +10,12 @@ effort: high
 Run eleven universal quality probes over a diff or an implementation plan
 before it is offered for review. The probes catch scope, duplication,
 coherence, and plan-quality defects early, so the review lane spends its
-attention on judgment rather than mechanics. Every probe returns PASS or
-FAIL with evidence; a FAIL either blocks the gate or warns, per the table
-below.
+attention on judgment rather than mechanics. Every probe returns PASS,
+FAIL, or UNSCORED with evidence; a FAIL either blocks the gate or warns,
+per the table below. UNSCORED is for a probe that applies but whose
+evidence this run could not obtain — a command that would not run, a plan
+section the artifact does not contain. A probe that does not apply to the
+artifact at all is not-applicable, not UNSCORED, and neither is a PASS.
 
 This skill inspects and reports. It never commits, pushes, or edits the
 change it is probing, and it never issues a review verdict.
@@ -42,7 +45,11 @@ Unknown argument names are an error — stop and report them before starting.
 
 1. Identify the artifact: a diff (working tree, staged, or a commit
    range) or a plan document. Enumerate the changed files or the plan
-   steps so every probe cites concrete evidence.
+   steps so every probe cites concrete evidence. Record the request the
+   artifact answers in the same breath — the task brief, the issue, the
+   user's stated goal — and quote it. The scope probes below judge the
+   change against that request, so an unrecorded request makes the sprawl
+   and traceability probes UNSCORED rather than PASS.
 2. Run the applicable probes, gathering one line of evidence per probe:
 
    **Quality probes (diffs):**
@@ -127,7 +134,9 @@ Unknown argument names are an error — stop and report them before starting.
   pushes, and no fixing of unrelated findings (probe 6 exists to prevent
   exactly that).
 - Never invent evidence. A probe without a concrete citation — file,
-  line, step number, or command output — is not scored.
+  line, step number, or command output — is UNSCORED, and an UNSCORED
+  probe whose FAIL would have blocked the gate blocks it too. Missing
+  evidence fails loud; it never resolves to a quiet PASS.
 - Route only to surfaces this pack ships: `trellis-check`, the sd-review
   lane, `task.py` surfaces, and sibling `se-*` skills by their final
   names. Do not route to anything else.
@@ -137,9 +146,11 @@ Unknown argument names are an error — stop and report them before starting.
 ## Final report
 
 - **Gate probe results** — the table of probe / status / evidence for
-  every probe run, with skipped probes marked not-applicable and why;
+  every applicable probe, each PASS, FAIL, or UNSCORED, with probes that
+  do not apply to this artifact marked not-applicable and why;
 - **Gate verdict** — PASS, or FAIL with the blocking findings listed
-  first and warn-level findings after;
+  first, warn-level findings after, and any blocking-scope UNSCORED probe
+  among the blockers;
 - **Overrides** — any user-accepted blocking FAIL, stated as an override;
 - **Next step** — the routing rows that apply, each marked `not run`, and
   a reminder that the review verdict belongs to the sd-review lane.

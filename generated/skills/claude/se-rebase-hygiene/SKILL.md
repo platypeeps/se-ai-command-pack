@@ -43,8 +43,15 @@ Unknown argument names are an error — stop and report them before starting.
 
 ## Workflow
 
-1. **Fetch first — never trust local state.** Resolve the remote name
-   rather than assuming `origin`: `git config branch.<branch>.remote`.
+1. **Fetch first — never trust local state.** Start from a clean
+   working tree: `git status --porcelain` must be empty, since a rebase
+   refuses to start over uncommitted changes and a stash hidden mid-plan
+   is how a resolution gets silently dropped. Resolve the remote name
+   rather than assuming `origin`: `git config branch.<branch>.remote` is
+   the starting guess, not the answer — in a fork workflow the base lives
+   on a different remote from the one this branch pushes to, so confirm
+   with the user which remote carries the base whenever
+   `git ls-remote --exit-code --heads <remote> <base>` does not find it.
    Do not derive the base from the branch's own upstream — that is this
    branch's remote copy (`<remote>/<branch>`), not what you rebase onto;
    the base is the one the user named. Fetch that remote, then rebase onto
@@ -62,22 +69,34 @@ Unknown argument names are an error — stop and report them before starting.
    report the conflicts it finds. Treat that as a lower bound, not the
    whole list: it simulates one merge of the two endpoints, while a rebase
    replays your commits one at a time, so an intermediate commit can
-   conflict where the endpoint merge is clean. Re-run this step if the base
-   moved while the resolution plan was being agreed. Report the conflict
-   surface before rebasing anything.
+   conflict where the endpoint merge is clean. Record the base head you
+   planned against (`git rev-parse <remote>/<base>`); step 3 checks it
+   again. Report the conflict surface before rebasing anything.
 3. **Pre-plan every resolution.** For each conflicting file, decide the
    resolution before the rebase starts: which side wins, or what the
    merged shape is, and why. Present the complete resolution plan to the
-   user and get their go-ahead. Before the rebase rewrites anything, cut
+   user and get their go-ahead. Approval takes as long as it takes, and
+   the base moves while it does: re-fetch and compare
+   `git rev-parse <remote>/<base>` against the head recorded in step 2
+   before touching anything. A base that moved invalidates the plan the
+   user approved — re-run step 2 and re-present it, rather than rebasing
+   onto commits nobody looked at. Before the rebase rewrites anything, cut
    a recovery ref at the current head (`git branch backup/<branch>-<date>`)
    so the pre-rebase history stays reachable without digging through the
    reflog, and check for merge commits on your side
    (`git log --merges --oneline <remote>/<base>..HEAD`): a plain rebase
    flattens them away, so either rebase with `--rebase-merges` or agree
    with the user to linearize deliberately. Only then rebase, applying
-   exactly the planned resolutions. If a conflict appears that the plan did not
-   predict, stop, abort or pause the rebase, and re-run step 2 — never
-   improvise mid-rebase.
+   exactly the planned resolutions. If a conflict appears that the plan
+   did not predict, `git rebase --abort` and re-plan — abort, not pause,
+   because a paused rebase leaves HEAD detached partway through the
+   replay, where step 2's `<remote>/<base>..HEAD` ranges describe a
+   history that does not exist yet. Re-plan from what actually conflicted:
+   the endpoint simulation already failed to predict it, so re-running it
+   unchanged predicts the same nothing. Name the commit that conflicted
+   (the rebase reports it) and diff that commit against the base for the
+   files it touches, then fold the result into a revised plan and take it
+   back to the user. Never improvise mid-rebase.
 4. **Push only with approval, then verify the remote moved.** A rebased
    branch needs a force push, and this repository forbids unapproved
    force pushes: present the exact push command
@@ -89,7 +108,9 @@ Unknown argument names are an error — stop and report them before starting.
    never bare `--force-with-lease`: the bare form checks against your
    remote-tracking ref, so any fetch since you last looked silently
    refreshes it and the lease passes over commits you never saw.
-   After the push, prove it landed: `git fetch`, then compare
+   After the push, prove it landed: `git fetch <remote>` — bare
+   `git fetch` refreshes the default remote, which need not be this one —
+   then compare
    `git rev-parse HEAD` with `git rev-parse <remote>/<remote-branch>` —
    the remote-side name, which need not match the local one — and they
    must be equal. The push command exiting zero is not the check; the remote

@@ -47,7 +47,11 @@ and `se-rust-async` skills set. Authoring belongs to `se-rust-write` and
 - Bash is for inspection and for the build, test, and lint commands that
   inform a finding (`cargo check`, `cargo test`, `cargo clippy`), plus
   read-only git inspection (`git diff`, `git log`, `git show`). Never run
-  git mutation and never install tools.
+  git mutation and never install tools. Pass `--locked` on every cargo
+  command: it makes cargo fail rather than rewrite `Cargo.lock`, which is
+  what keeps this stage read-only toward tracked files. A crate whose
+  lockfile is genuinely out of date is a finding to report, not a
+  lockfile to update.
 - Be honest about what those commands do: compiling runs the repository's
   own `build.rs` scripts and proc macros, and `cargo test` runs its test
   bodies, so you are executing code from the diff you are judging. They also

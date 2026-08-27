@@ -51,9 +51,14 @@ Unknown argument names are an error — stop and report them before starting.
       you ran it or only read it, and score a command you could not run —
       because it needs a credential, a placeholder value, or an
       environment you do not have — as UNVERIFIED with that reason, never
-      as PASS. A reasoned guess that a command works is exactly the
-      assumption this probe exists to catch: correct paths,
-      real flags, no pseudo-commands, no "run the tests" hand-waving.
+      as PASS. UNVERIFIED is not by itself a defect: a placeholder the
+      document marks as one and tells the reader how to fill is correct
+      documentation that this reader has no way to execute. An
+      unannounced placeholder, one with no stated source for its value,
+      or a command that fails for any other reason is a FAIL. A reasoned
+      guess that a command works is exactly the assumption this probe
+      exists to catch: correct paths, real flags, no pseudo-commands, no
+      "run the tests" hand-waving.
    2. *No undefined prerequisites* — every tool, account, credential,
       dependency, and prior artifact a step needs is stated (or linked)
       before the step that needs it.

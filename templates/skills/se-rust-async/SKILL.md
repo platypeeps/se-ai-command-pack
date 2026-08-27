@@ -33,10 +33,13 @@ Unknown argument names are an error — stop and report them before starting.
 
 1. Establish the runtime context: which runtime and flavor the crate
    uses, whether the code is library or application, and what the
-   surrounding code already does. Never nest or interleave runtimes on one
-   thread — entering a runtime from inside another panics or deadlocks —
-   and treat a second runtime on its own thread as a deliberate bridge to
-   record, never a default. Keep library code runtime-agnostic where the
+   surrounding code already does. Do not nest or interleave runtimes on
+   one thread: entering a runtime from inside one panics outright on the
+   current-thread flavor and starves the worker it borrows on the
+   multi-thread flavor, where the sanctioned escape is the runtime's own
+   blocking hand-off (`block_in_place` and a handle) rather than a second
+   entry. Treat a second runtime on its own thread as a deliberate bridge
+   to record, never a default. Keep library code runtime-agnostic where the
    API allows it, and record the runtime choice where a new one is made.
 2. Keep the executor unblocked. Worker threads are scarce — roughly one
    per core — so a task that runs long between `.await` points starves

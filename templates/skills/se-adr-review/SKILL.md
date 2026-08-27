@@ -82,8 +82,12 @@ Unknown argument names are an error — stop and report them before starting.
      against measured reality.
    Grade every premise still-true, changed, or unverifiable. A change
    that undercuts the decision is a P1; a change the outcome survives is
-   a P2 with the drift recorded, so the record can be corrected without
-   reopening the decision. Say which of the two it is and why.
+   a P2. Record either as drift, never as a correction to the premise
+   text: the record states what was believed when the decision was made,
+   and rewriting that erases the reasoning the decision rests on. Drift
+   belongs in a dated review note or an addendum below the original,
+   which is also how a P1 stays visible until a successor record
+   supersedes it. Say which of the two it is and why.
 8. Assign severities:
    - **P1** — missing decision outcome or drivers, an option set with no
      real alternative, consequences with no downside, or a changed premise
@@ -94,7 +98,11 @@ Unknown argument names are an error — stop and report them before starting.
    - **P3** — a title that could be sharper, missing cross-links, or drift
      from the house record style.
 9. Emit the fixed report block for each record, ending in exactly one
-   verdict line:
+   verdict line for that record. Reviewing several records emits one
+   block each, in the order reviewed, and closes with a single roll-up
+   line — `Reviewed <n> records: <c> clean, <a> acceptable, <b> blocked` —
+   so the per-record verdicts stay one-to-one and the run still has one
+   answer:
 
    ```text
    ## ADR review: <title>

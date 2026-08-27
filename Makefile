@@ -163,6 +163,13 @@ lint:
 # A missing binary is a hard failure, not a silent pass, so an environment
 # without Vale cannot report a clean corpus it never linted. Contributors
 # install it once (see CONTRIBUTING.md); CI installs a pinned build.
+#
+# A present binary is not enough either: a clean corpus is only evidence if
+# the rules still fire. The target lints .vale/fixtures/positive-detection.md
+# first and fails unless it reports its expected 8 alerts across both styles,
+# which catches a broken regex, a renamed style, or an unresolved StylesPath
+# before the corpus verdict is believed. The major-version check is advisory:
+# the styles are written for Vale 3, and CI pins an exact build.
 prose-lint: SHELL := /bin/bash
 prose-lint:
 	@set -euo pipefail; \
@@ -170,6 +177,22 @@ prose-lint:
 	  echo "prose-lint: vale not installed (developed against vale 3.18)" >&2; \
 	  echo "prose-lint: install with 'brew install vale' or see https://vale.sh" >&2; \
 	  exit 1; }; \
+	major="$$(vale --version | sed -n 's/.*vale version \([0-9][0-9]*\).*/\1/p')"; \
+	if [ -n "$$major" ] && [ "$$major" != "3" ]; then \
+	  echo "prose-lint: vale major $$major, styles developed against 3;" \
+	    "rule syntax may differ" >&2; \
+	fi; \
+	fx="$$(vale --output=line .vale/fixtures/positive-detection.md || true)"; \
+	fxn="$$(printf '%s' "$$fx" | grep -c . || true)"; \
+	if [ "$$fxn" -ne 8 ] \
+	  || ! printf '%s\n' "$$fx" | grep -q 'se.Weasel' \
+	  || ! printf '%s\n' "$$fx" | grep -q 'se.AiTells'; then \
+	  printf '%s\n' "$$fx"; \
+	  echo "prose-lint: positive-detection fixture reported $$fxn alert(s)," \
+	    "expected 8 across se.Weasel and se.AiTells; the styles are not" \
+	    "firing, so a clean corpus proves nothing" >&2; \
+	  exit 1; \
+	fi; \
 	out="$$(vale --output=line README.md CONTRIBUTING.md AGENTS.md templates/skills)" || { \
 	  printf '%s\n' "$$out"; exit 1; }; \
 	if [ -n "$$out" ]; then \

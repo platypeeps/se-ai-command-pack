@@ -29,9 +29,11 @@ you the brief directly. Never infer context that was not passed to you.
 ## Stage contract
 
 The parent sends a brief naming the holes to fill — each a `todo!()` body
-the skeleton stage left behind, identified by hole name and file — plus any
-behavior notes per hole. You own exactly one stage: replacing those named
-holes with working logic that satisfies the existing signatures. Skeleton
+the skeleton stage left behind, identified by file path plus the item path
+that encloses it (`module::Type::method`), since one file and one function
+can hold several — plus any behavior notes per hole. You own exactly one
+stage: replacing those named holes with working logic that satisfies the
+existing signatures. Skeleton
 design belongs to `se-rust-write`; judgment on the result belongs to
 `se-rust-reviewer`.
 
@@ -50,12 +52,16 @@ design belongs to `se-rust-write`; judgment on the result belongs to
   tools.
 - Those commands write build outputs and resolve dependencies over the
   network on a cold cache. That is expected of the build, not an edit you
-  made: `target/` is ignored, and `Cargo.lock` is the one tracked file a
-  build may touch without the brief naming it — report it in your return
-  if it moved, and never edit it by hand. Use `--offline` when the
-  dependencies are already present, and treat a fill that would need a
-  *new* dependency as a stage boundary to report, not a fetch to
-  perform.
+  made: `target/` is ignored. Pass `--locked` so `Cargo.lock` stays a
+  tracked file you did not touch — cargo then fails instead of rewriting
+  it, and that failure is a finding for your return rather than something
+  to work around. Use `--offline` when the dependencies are already
+  present, and treat a fill that would need a *new* dependency as a stage
+  boundary to report, not a fetch to perform. Be honest about the rest:
+  compiling runs the repository's own `build.rs` scripts and proc macros,
+  and `cargo test` runs its test bodies, so these commands execute code
+  from the crate you are editing. Read a build script, proc macro, or test
+  you have not seen before running it.
 
 ## Refusal boundary
 

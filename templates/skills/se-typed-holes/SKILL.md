@@ -55,16 +55,22 @@ Unknown argument names are an error — stop and report them before starting.
    - both markers get explicit removal steps in the fill plan — a filled
      body that still ignores a parameter keeps its marker silent, so
      each fill sweeps by hand.
-4. Gate and commit the skeleton alone: workspace check and clippy with
-   warnings denied, plus a format check, all green with every behavioral
-   body still `todo!()` — the trivial accessors step 2 asks you to
-   implement stay implemented. The skeleton is its own commit so the
-   reviewed design is a retrievable git object, not a conversation.
+4. Gate the skeleton alone: workspace check and clippy with warnings
+   denied, plus a format check, all green with every behavioral body
+   still `todo!()` — the trivial accessors step 2 asks you to implement
+   stay implemented. Then propose the skeleton as its own commit, so the
+   reviewed design is a retrievable git object rather than a
+   conversation, and let the user make it. Committing is theirs to
+   authorize; this workflow reaching step 4 is not that authorization.
 5. Track the holes deterministically — `todo!()` is a diverging panic the
-   compiler happily accepts, so nothing tracks it for you. Either enable
-   the clippy lint for `todo!()` at warn during the fill phase and flip
-   it to deny as the completion gate, or baseline `grep -rn 'todo!('`
-   at the skeleton commit and account for every changed line per fill.
+   compiler happily accepts, so nothing tracks it for you. Prefer the
+   clippy lint for `todo!()`: warn during the fill phase, deny as the
+   completion gate. A `grep -rn 'todo!('` baseline is the fallback, and
+   it is a lower bound rather than a census — it misses a hole written
+   `todo! ()` or produced by a macro, and counts occurrences in comments
+   and string literals. Take the baseline at the skeleton commit, account
+   for every changed line per fill, and let the lint, never the grep,
+   decide that the holes are closed.
 6. Review the skeleton before any body lands: apply the
    `se-rust-review` probe lens to the skeleton diff and route the change
    through the `sd-review` lane, which owns the verdict. Design repairs

@@ -40,8 +40,12 @@ Unknown argument names are an error — stop and report them before starting.
 ## Workflow
 
 1. Take the deterministic findings first. When `se-prose-lint` results
-   accompany the request, treat them as hard constraints — every
-   error-level finding is addressed in the rewrite, not merely considered.
+   accompany the request, take its disposition per finding rather than
+   rewriting on the alert alone: a `fix` is a hard constraint addressed in
+   the rewrite, a `suppress` is a judgement already made that the rewrite
+   preserves, and a `promote` is a rule question for the repository, not a
+   span to edit. Rewriting a suppressed span silently overturns the call
+   that suppressed it.
    When none were provided and Vale is available, run it for the same
    constraint set. Where Vale is absent, state the gap in one plain
    sentence and continue — a missing gate never blocks the rewrite.
@@ -86,8 +90,9 @@ Unknown argument names are an error — stop and report them before starting.
    specificity, and read the result aloud in your head for cadence.
 6. Run the adversarial closing pass: ask what still reads as generated in
    the rewrite, fix exactly those remnants, and deliver the final version.
-   When invoked by another skill as a chained final pass, return only the
-   revised text and a one-line status.
+   When invoked by another skill as a chained final pass, return the
+   reduced contract instead of the full report below: the revised text and
+   a one-line status, nothing more.
 
 ## Safety rules
 
@@ -105,6 +110,9 @@ Unknown argument names are an error — stop and report them before starting.
   negations in specs and decision records stay exactly as written.
 
 ## Final report
+
+This is the direct-invocation report. A chained final pass returns the
+reduced contract from step 6 instead, and never both.
 
 - **Rewrite** — the revised text, or the locator of the edited file;
 - **What changed** — the pattern families that fired, with a representative
