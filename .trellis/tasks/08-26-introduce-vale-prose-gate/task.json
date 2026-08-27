@@ -21,6 +21,6 @@
   "children": [],
   "parent": "08-26-adopt-claude-skills",
   "relatedFiles": [],
-  "notes": "",
+  "notes": "AC3/AC4 tuning record (2026-08-26, at commit 148ef50): `make prose-lint` reports 43 alerts, all se.Weasel (actually 25, clearly 9, just 6, very 1, simply 1); se.AiTells 0 on the current corpus. Promotion into `make check`/CI is DEFERRED as a follow-up with blocking count 43. Three reasons: the weasel tokens need calibration (several `just` hits are quantitative or contrastive, not hedging), both rules are suggestion-level while the gating invocation per design D3 uses --minAlertLevel=error so promotion also requires deciding which rules graduate, and the corpus just grew by 13 skills so the count is not yet stable.",
   "meta": {}
 }
