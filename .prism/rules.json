@@ -13,6 +13,14 @@
   ],
   "required": [
     {
+      "id": "comment-intent",
+      "text": "Comments must state a constraint, a rejected alternative, or a non-obvious why. Report comments that restate what the next line does, narrate the change's provenance, or argue that the change is correct; those address the reviewer, not the next reader."
+    },
+    {
+      "id": "fail-loud",
+      "text": "Flag error handling that swallows failure: bare or broad `except` that continues, a defaulted return that hides an unavailable dependency, or a caught exception logged at debug level and dropped. Unavailable evidence must surface as an explicit failure or a named limitation, never as an empty-but-healthy result."
+    },
+    {
       "id": "installer-safety",
       "text": "For installers or generated files, verify path validation, conflict handling, rollback behavior, and explicit user consent before overwriting local files."
     },
@@ -25,12 +33,16 @@
       "text": "Confirm no credentials, API keys, provider tokens, local cache paths, or machine-specific secret locations are committed or logged."
     },
     {
-      "id": "trellis-task-scope",
-      "text": "Check that changes are limited to the active Trellis task and do not silently alter unrelated workflow, task, or platform files."
+      "id": "single-traversal-projection",
+      "text": "When code walks a tree, file set, or record stream more than once to build related outputs, prefer one traversal feeding several projections. Repeated walks drift apart as one is updated and the others are not, and they make the per-item cost implicit."
     },
     {
       "id": "trellis-scaffold-convention",
       "text": "Do not report the lone generated `_example` row in a planning task's implement.jsonl or check.jsonl as leftover placeholder content. `task.py create` writes that row, its own text says to delete it once real entries are added, and the review preflight exempts the pristine scaffold on purpose (validateBookkeepingTaskContexts in ~/.agents/bin/sd-ai-command-pack-review-preflight.mjs) so creating a task never fails either lane. Report these files only when a row is malformed JSONL, references a path outside the allowed spec/research roots, or mixes real entries with the scaffold row."
+    },
+    {
+      "id": "trellis-task-scope",
+      "text": "Check that changes are limited to the active Trellis task and do not silently alter unrelated workflow, task, or platform files."
     }
   ]
 }

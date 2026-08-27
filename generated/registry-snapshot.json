@@ -6,7 +6,8 @@
     "create",
     "coordinate",
     "operate",
-    "improve"
+    "improve",
+    "engineer"
   ],
   "skills": [
     {
@@ -224,6 +225,58 @@
     {
       "name": "se-brand-voice",
       "family": "improve"
+    },
+    {
+      "name": "se-rust-design",
+      "family": "engineer"
+    },
+    {
+      "name": "se-rust-quality",
+      "family": "engineer"
+    },
+    {
+      "name": "se-rust-modules",
+      "family": "engineer"
+    },
+    {
+      "name": "se-rust-async",
+      "family": "engineer"
+    },
+    {
+      "name": "se-rust-review",
+      "family": "engineer"
+    },
+    {
+      "name": "se-typed-holes",
+      "family": "engineer"
+    },
+    {
+      "name": "se-gate-probes",
+      "family": "engineer"
+    },
+    {
+      "name": "se-docs-bustest",
+      "family": "engineer"
+    },
+    {
+      "name": "se-rebase-hygiene",
+      "family": "engineer"
+    },
+    {
+      "name": "se-skill-retro",
+      "family": "engineer"
+    },
+    {
+      "name": "se-prose-lint",
+      "family": "engineer"
+    },
+    {
+      "name": "se-humanizer",
+      "family": "engineer"
+    },
+    {
+      "name": "se-adr-review",
+      "family": "engineer"
     }
   ],
   "platforms": [

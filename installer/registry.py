@@ -85,6 +85,7 @@ FAMILY_LABELS: dict[str, str] = {
     "coordinate": "Coordinate",
     "operate": "Operate",
     "improve": "Improve",
+    "engineer": "Engineer",
 }
 
 FAMILY_DESCRIPTIONS: dict[str, str] = {
@@ -94,6 +95,10 @@ FAMILY_DESCRIPTIONS: dict[str, str] = {
     "coordinate": "Align people, plans, status, and handoffs.",
     "operate": "Manage durable user context and operate the SE skill pack.",
     "improve": "Reflect, learn, and strengthen future work.",
+    "engineer": (
+        "Design, build, and review software with disciplined "
+        "engineering workflows."
+    ),
 }
 
 # Canonical skill registry. Row order remains the manifest/install order;
@@ -153,6 +158,19 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-video-notes", family="understand"),
     SkillInfo(name="se-watchlist", family="operate"),
     SkillInfo(name="se-brand-voice", family="improve"),
+    SkillInfo(name="se-rust-design", family="engineer"),
+    SkillInfo(name="se-rust-quality", family="engineer"),
+    SkillInfo(name="se-rust-modules", family="engineer"),
+    SkillInfo(name="se-rust-async", family="engineer"),
+    SkillInfo(name="se-rust-review", family="engineer"),
+    SkillInfo(name="se-typed-holes", family="engineer"),
+    SkillInfo(name="se-gate-probes", family="engineer"),
+    SkillInfo(name="se-docs-bustest", family="engineer"),
+    SkillInfo(name="se-rebase-hygiene", family="engineer"),
+    SkillInfo(name="se-skill-retro", family="engineer"),
+    SkillInfo(name="se-prose-lint", family="engineer"),
+    SkillInfo(name="se-humanizer", family="engineer"),
+    SkillInfo(name="se-adr-review", family="engineer"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 
@@ -175,6 +193,10 @@ INDEPENDENT_RED_TEAM = RuntimeProfile(
     "user-only", "fresh-session", "deep", "xhigh"
 )
 PACKAGE_REVIEW = RuntimeProfile("user-only", "inline", "deep", "xhigh")
+# Review lenses that trigger on a diff rather than on an operator request, so
+# "both" rather than PACKAGE_REVIEW's "user-only"; the xhigh effort is the
+# shared review posture.
+ENGINEERING_REVIEW = RuntimeProfile("both", "inline", "deep", "xhigh")
 # Pilot delegated profiles: same execution axes as DEEP_ANALYSIS, but each names
 # one optional worker role. Split out so delegation reaches only the two pilot
 # skills and not the rest of the DEEP_ANALYSIS group. Roles are existence-gated
@@ -215,6 +237,8 @@ RUNTIME_PROFILE_ASSIGNMENTS: tuple[
             "se-publish",
             "se-propose-skills",
             "se-retro",
+            "se-docs-bustest",
+            "se-prose-lint",
         ),
     ),
     (DEEP_ANALYSIS_SOURCE_READING, ("se-research",)),
@@ -256,13 +280,36 @@ RUNTIME_PROFILE_ASSIGNMENTS: tuple[
             "se-runbook",
             "se-postmortem",
             "se-weekly-review",
+            "se-rebase-hygiene",
+            "se-skill-retro",
         ),
     ),
-    (INSTRUCTIONAL, ("se-tutorial", "se-sop", "se-technical-editor")),
+    (
+        INSTRUCTIONAL,
+        (
+            "se-tutorial",
+            "se-sop",
+            "se-technical-editor",
+            "se-rust-design",
+            "se-rust-quality",
+            "se-rust-modules",
+            "se-rust-async",
+            "se-typed-holes",
+            "se-gate-probes",
+            "se-humanizer",
+        ),
+    ),
     (DISCOVERY_UTILITY, ("se-help",)),
     (CAPTURE_UTILITY, ("se-capture",)),
     (INDEPENDENT_RED_TEAM, ("se-red-team",)),
     (PACKAGE_REVIEW, ("se-review-skills",)),
+    (
+        ENGINEERING_REVIEW,
+        (
+            "se-rust-review",
+            "se-adr-review",
+        ),
+    ),
 )
 
 

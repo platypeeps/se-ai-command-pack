@@ -1,0 +1,27 @@
+# AI-tell vocabulary: words and phrases characteristic of generated filler.
+# The rule stays at suggestion level on purpose: `make prose-lint` fails on
+# any alert, so severity is Vale's advice to a human reader, not the gate.
+#
+# RFC-2119 carve-out (design D2): every token is matched with word boundaries
+# and none collides with MUST / SHOULD / MAY / SHALL, so contract keywords in
+# skill documents are never flagged by this rule.
+extends: existence
+message: "'%s' is an AI-tell; cut it or say something concrete."
+level: suggestion
+ignorecase: true
+tokens:
+  - delv(?:e|es|ed|ing)
+  - crucial(?:ly)?
+  - leverag(?:e|es|ed|ing)
+  - utiliz(?:e|es|ed|ing|ation)
+  - seamless(?:ly)?
+  - (?:it(?:'|’)s )?important to note
+  - furthermore
+  - moreover
+  - game[- ]?chang(?:er|ers|ing)
+  - a testament to
+  - in today(?:'|’)s (?:fast-paced |ever-changing |digital )?(?:world|landscape|environment)
+  - tapestry
+  - myriad
+  - plethora
+  - synerg(?:y|ies|istic)

@@ -1,0 +1,36 @@
+# Hedging and filler words (design D2).
+#
+# Token selection is the tuning pass's output, not a generic weasel list. The
+# first pass over this corpus flagged 43 sites, of which 41 were load-bearing:
+#
+#   actually — contrastive throughout ("the period it actually covers", "a
+#     source you did not actually open"). It separates a claim from the fact,
+#     which is the opposite of padding. 25 sites, 25 false positives.
+#   clearly  — an adverb of manner here, not a hedge ("clearly separated",
+#     "clearly labeled", "a clearly named credential"). 9 sites, 9 false
+#     positives.
+#   just     — quantitative or contrastive ("just under that minimum", "not
+#     just uncommitted work", "just answer that directly"). 6 sites, 6 false
+#     positives.
+#
+# A rule that is wrong 95% of the time trains readers to ignore the gate, so
+# those three tokens are out. What remains is padding in nearly every context.
+# Re-add a token only with corpus evidence that it pads here.
+#
+# RFC-2119 carve-out (design D2): tokens are word-bounded and none is a
+# MUST / SHOULD / MAY / SHALL contract keyword ("may" is deliberately absent).
+extends: existence
+message: "'%s' hedges or pads; delete it or commit to the claim."
+level: suggestion
+ignorecase: true
+tokens:
+  - very
+  - quite
+  - simply
+  - really
+  - basically
+  - obviously
+  - easily
+  - of course
+  - needless to say
+  - as you can see

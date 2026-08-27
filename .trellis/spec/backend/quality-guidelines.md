@@ -1153,7 +1153,7 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - Every `SkillInfo.name` is non-empty, unique, `se-` prefixed, and backed by a
   flat `templates/skills/<name>/SKILL.md` directory.
 - Every skill has exactly one family from Understand, Decide, Create,
-  Coordinate, Operate, or Improve. Empty families remain valid: the compact
+  Coordinate, Operate, Improve, or Engineer. Empty families remain valid: the compact
   README catalog omits them, while the bundled help catalog renders every
   family with its canonical outcome description.
 - `SKILL_NAMES` is derived for compatibility; no consumer owns a second skill
@@ -1293,6 +1293,24 @@ shared golden literal.
 The golden-literal design is intentional — a registry-derived expectation would
 accept whatever the registry says and prove nothing — so treat these edits as
 part of the change, not as test churn.
+
+Introducing a **new family** widens that list rather than reusing it. `Engineer`
+was added in 0.71.0 and tripped four more hand-maintained inventories, none of
+which the four skill literals above cover:
+
+| Literal | File | Failure when missed |
+|---|---|---|
+| expected `FAMILY_LABELS` order | `tests/test_skills.py` | family-order assertion; catalog order is public |
+| `FAMILY_DESCRIPTIONS` entry | `installer/registry.py` | import-time raise: every label needs a description |
+| family list in the add-a-skill instructions | `docs/SE_AI_COMMAND_PACK.md` | no test; the operator guide silently omits the family |
+
+`RUNTIME_PROFILE_ASSIGNMENTS` is per skill, not per family, so it belongs to
+the skill sweep above rather than this one — but a new family arrives with a
+batch of new skills, and a missing row raises at import. The routing example
+in `templates/skills/se-help/references/examples.md` is pinned by a test and
+belongs to the same sweep. Enumerate these from the
+filesystem before claiming a family is fully registered: a grep for the family
+name finds only what already mentions it, never the inventory that should.
 
 The corpus also pins two literal strings in every `SKILL.md`: the exact sentence
 `Unknown argument names are an error` and, for any skill listed in

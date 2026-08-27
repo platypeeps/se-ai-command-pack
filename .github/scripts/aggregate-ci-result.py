@@ -21,6 +21,7 @@ REQUIRED_LANES = {
     "unittest",
     "test-hermetic",
     "lint",
+    "prose-lint",
     "release-payload-gate",
     "review-preflight",
 }

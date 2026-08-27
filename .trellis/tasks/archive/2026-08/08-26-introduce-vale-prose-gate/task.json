@@ -1,0 +1,28 @@
+{
+  "id": "introduce-vale-prose-gate",
+  "name": "introduce-vale-prose-gate",
+  "title": "Introduce the Vale prose gate",
+  "description": "Add a repo-local Vale configuration and se- style set as a deterministic prose gate for templates/skills/ and top-level docs, advisory first, promoted to make check after tuning.",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-26",
+  "completedAt": "2026-08-26",
+  "branch": "feat/adopt-claude-skills",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [],
+  "parent": "08-26-adopt-claude-skills",
+  "relatedFiles": [],
+  "notes": "AC3/AC4 tuning record (2026-08-26, at commit 148ef50): `make prose-lint` reports 43 alerts, all se.Weasel (actually 25, clearly 9, just 6, very 1, simply 1); se.AiTells 0 on the current corpus. Promotion into `make check`/CI is DEFERRED as a follow-up with blocking count 43. Three reasons: the weasel tokens need calibration (several `just` hits are quantitative or contrastive, not hedging), both rules are suggestion-level while the gating invocation per design D3 uses --minAlertLevel=error so promotion also requires deciding which rules graduate, and the corpus just grew by 13 skills so the count is not yet stable.",
+  "meta": {
+    "notes": "AC3/AC4 tuning record (2026-08-26). The first pass over the corpus reported 43 alerts, all se.Weasel (actually 25, clearly 9, just 6, very 1, simply 1); se.AiTells reported 0. Every one of the 43 was read in place: 41 were load-bearing usages, not hedges — 'actually' is contrastive throughout, 'clearly' is an adverb of manner, and 'just' is quantitative or contrastive. A rule wrong 95% of the time trains readers to ignore the gate, so those three tokens were removed from se.Weasel with that evidence recorded in the rule file, and the 2 genuine findings (CONTRIBUTING.md 'simply', se-distill 'very') were fixed. The corpus is now clean at 0 alerts, so promotion was NOT deferred: prose-lint is in the 'check' aggregate and runs as its own CI lane with Vale 3.18.0 pinned by version and SHA-256. Blocking count at promotion time: 0."
+  }
+}
