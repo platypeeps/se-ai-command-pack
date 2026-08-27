@@ -1591,3 +1591,54 @@ Reinstalled the thin sd-ai-command-pack payload at 0.71.45 (from 0.71.39), verif
 ### Next Steps
 
 - None - task complete
+
+
+## Session 193: Adopt the claude-skills library as pack-product inspiration
+<!-- trellis-session: v=2 fp=ffc43fe5b13639f7 -->
+
+**Date**: 2026-08-26
+**Task**: Adopt the claude-skills library as pack-product inspiration
+**Branch**: `feat/adopt-claude-skills`
+
+### Summary
+
+Re-authored the durable ideas from Shearerbeard/claude-skills as pack product surfaces rather than importing them: a new Engineer skill family with 13 se-* skills, the rust agent trio, a promoted Vale prose gate, folded planning and review probes, and a tracked inspiration pin. Every acceptance criterion across the parent and its five children was verified against real output before archive.
+
+### Main Changes
+
+- Authored 13 se-* skills in a new Engineer family, registered in installer/registry.py and fanned out through the generator to the Claude and Codex surfaces, the manifest, and the catalogs.
+- Added the se-rust-write, se-rust-fill, and se-rust-reviewer agents, each carrying its own stage contract, refusal boundary, and return contract, with no model pin and no private hostname.
+- Calibrated the Vale weasel rule against the corpus: of 43 first-pass alerts, 41 were load-bearing usages, so actually, clearly, and just were removed with the evidence recorded in the rule file, and the 2 genuine findings were fixed.
+- Promoted the prose gate from advisory to enforcing: prose-lint joined the check aggregate and became its own CI lane, installing Vale 3.18.0 pinned by version and SHA-256 so an upstream release cannot change the verdict without a commit here.
+- Folded the non-skill-shaped upstream content into existing surfaces: three new required prism checks and a planning thinking guide under the Trellis spec guides, with the click and pytest mandates that contradict this repo's conventions edited out.
+- Recorded the upstream pin, a 16-row inspiration map, the non-adoption table, and the harvest ritual in docs/inspiration/claude-skills.md, with no build-system fetch of the upstream checkout.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fad361b` | docs(task): plan the claude-skills inspiration adoption tree |
+| `5653415` | feat(spec): fold planning and python review probes into repo surfaces |
+| `9de85c3` | feat(skills): add the Engineer family, 13 se-* skills, and the rust agent trio |
+| `148ef50` | docs(inspiration): record the claude-skills pin, map, and harvest ritual |
+| `daa0b31` | chore(task): record the vale tuning count and task activation state |
+| `1991a64` | feat(prose): promote the Vale gate into make check and CI |
+| `c3de4f2` | chore(trellis): record verified acceptance criteria for the adoption tree |
+| `aa3cbf6` | chore(trellis): activate and branch the adoption parent task |
+
+### Testing
+
+- [OK] make check green: 762 tests, 0 failures, plus lint, lock-check, release-check, shell-syntax, trellis-provenance, and prose-lint
+- [OK] prose-lint falsification: 4 alerts on seeded weasel and AI-tell text, clean after revert
+- [OK] generate-skill-surfaces.py --check: manifest, README, skill-catalog, registry-snapshot, Claude skills, and agent overlays all match
+- [OK] local prism run receipt carries the folded comment-intent tag, proving the added checks load
+- [OK] pre-archive gate over all six task directories: pre_archive_valid, 0 findings
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 191
-- **Last Active**: 2026-08-21
+- **Total Sessions**: 193
+- **Last Active**: 2026-08-26
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1593 | Active |
+| `journal-4.md` | ~1632 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 193 | 2026-08-26 | Adopt the claude-skills library as pack-product inspiration | `fad361b`, `5653415`, `9de85c3`, `148ef50`, `daa0b31`, `1991a64`, `c3de4f2`, `aa3cbf6` | `feat/adopt-claude-skills` |
 | 191 | 2026-08-21 | Refresh sd-ai-command-pack to 0.71.45 | `7af8f9ac6acc543e144e5fc4d55cd9ffe5ecbae7` | `chore/pack-refresh-0.71.45` |
 | 190 | 2026-08-20 | Refresh to pack 0.71.39 and Trellis 0.6.16-sd.8; close the 08-10 upstream trilogy | `e795afc`, `bbf3ead`, `6425a84` | `chore/refresh-0.71.39-trellis-sd.8` |
 | 189 | 2026-08-20 | Refresh sd-ai-command-pack to 0.71.38 | `4fdc00e57a2ea26979eedf9478a4e8b287ecc4e7` | `chore/pack-refresh-0.71.38` |
