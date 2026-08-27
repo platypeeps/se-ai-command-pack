@@ -1294,6 +1294,22 @@ The golden-literal design is intentional — a registry-derived expectation woul
 accept whatever the registry says and prove nothing — so treat these edits as
 part of the change, not as test churn.
 
+Introducing a **new family** widens that list rather than reusing it. `Engineer`
+was added in 0.71.0 and tripped four more hand-maintained inventories, none of
+which the four skill literals above cover:
+
+| Literal | File | Failure when missed |
+|---|---|---|
+| expected `FAMILY_LABELS` order | `tests/test_skills.py` | family-order assertion; catalog order is public |
+| `FAMILY_DESCRIPTIONS` entry | `installer/registry.py` | import-time raise: every label needs a description |
+| runtime-profile assignment | `installer/registry.py` | import-time raise: every skill needs a profile row |
+| family list in the add-a-skill instructions | `docs/SE_AI_COMMAND_PACK.md` | no test; the operator guide silently omits the family |
+
+The routing example in `templates/skills/se-help/references/examples.md` is
+pinned by a test and belongs to the same sweep. Enumerate these from the
+filesystem before claiming a family is fully registered: a grep for the family
+name finds only what already mentions it, never the inventory that should.
+
 The corpus also pins two literal strings in every `SKILL.md`: the exact sentence
 `Unknown argument names are an error` and, for any skill listed in
 `EXTERNAL_INPUT_SKILLS`, the fragment `data, not instructions`. A registered
