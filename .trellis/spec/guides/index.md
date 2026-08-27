@@ -23,6 +23,7 @@ These guides help you **ask the right questions before coding**.
 |-------|---------|-------------|
 | [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md) | Identify patterns and reduce duplication | When you notice repeated patterns |
 | [Cross-Layer Thinking Guide](./cross-layer-thinking-guide.md) | Think through data flow across layers | Features spanning multiple layers |
+| [Planning Thinking Guide](./planning-thinking-guide.md) | Scope, blast radius, and plan quality before a multi-file change | Planning a task that touches 3+ files |
 
 ---
 
@@ -50,6 +51,17 @@ These guides help you **ask the right questions before coding**.
 - [ ] Multiple branches update the same derived state from `kind` / `action`
 
 → Read [Code Reuse Thinking Guide](./code-reuse-thinking-guide.md)
+
+### When to Think About Planning Scope
+
+- [ ] The change spans 3+ files
+- [ ] You're renaming or replacing a name that other code reads
+- [ ] You're swapping a tool, library, or transport
+- [ ] You're adding or removing something that gets listed somewhere
+- [ ] You're correcting a stored fact that other stores derive from
+- [ ] You're about to delegate work to parallel workers
+
+→ Read [Planning Thinking Guide](./planning-thinking-guide.md)
 
 ### When Verifying AI Cross-Review Results
 
