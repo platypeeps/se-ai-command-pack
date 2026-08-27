@@ -898,13 +898,15 @@ The Engineer family carries the pack's software-engineering discipline. Its
 members are advisory lenses and authoring aids: none of them owns a review
 verdict, which stays with the `sd-review` lane.
 
-The Rust line splits by concern so a change consults exactly one bar.
+The Rust line splits by concern so a change consults the bar it actually
+touches, with `se-rust-review` the one member that applies all four at once.
 `se-rust-design` owns the type surface — making illegal states
 unrepresentable, parse-don't-validate boundaries, typestate transitions, and
 the clone-avoidance ladder. `se-rust-quality` owns the idiomatic bar: error
 type design, API-guidelines naming, clippy posture, and comment discipline.
-`se-rust-modules` owns layout and visibility — file structure, closed-by-
-default `pub(crate)` discipline, facade re-exports, and split criteria.
+`se-rust-modules` owns layout and visibility — file structure,
+closed-by-default visibility widened one rung at a time, facade re-exports,
+and split criteria.
 `se-rust-async` owns concurrency structure: executor unblocking, `Send` and
 `'static` bounds by construction, locks across await points, cancellation
 safety, and spawn hygiene. `se-rust-review` applies all four bars to a diff as

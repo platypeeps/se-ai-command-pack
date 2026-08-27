@@ -105,8 +105,9 @@ Unknown argument names are an error — stop and report them before starting.
 
 - **Documents and reader** — the documents tested and the cold reader
   they were tested against;
-- **Probe results** — the five probes, each PASS or FAIL with cited
-  evidence (file and section or line);
+- **Probe results** — the five probes, each PASS, FAIL, or UNVERIFIED
+  with cited evidence (file and section or line). UNVERIFIED names what
+  blocked the check; it never stands in for a pass;
 - **Findings** — P1, then P2, then P3, one line each: file, location,
   what stops or stalls the cold reader;
 - **Bus-test verdict** — survives cold execution, survives with

@@ -1153,7 +1153,7 @@ manifest/install order, and grouping must not reorder generated manifest rows.
 - Every `SkillInfo.name` is non-empty, unique, `se-` prefixed, and backed by a
   flat `templates/skills/<name>/SKILL.md` directory.
 - Every skill has exactly one family from Understand, Decide, Create,
-  Coordinate, Operate, or Improve. Empty families remain valid: the compact
+  Coordinate, Operate, Improve, or Engineer. Empty families remain valid: the compact
   README catalog omits them, while the bundled help catalog renders every
   family with its canonical outcome description.
 - `SKILL_NAMES` is derived for compatibility; no consumer owns a second skill

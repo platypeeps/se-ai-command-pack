@@ -103,8 +103,8 @@ Unknown argument names are an error — stop and report them before starting.
 
 ## Final report
 
-- **Gate state** — full gate, binary only, or absent, with the gap stated
-  plainly when the deterministic pass could not run;
+- **Gate state** — full gate, binary only, target only, or absent, with
+  the gap stated plainly when the deterministic pass could not run;
 - **Deterministic findings** — per file: rule, severity, and the
   disposition each error received (fix, suppress, promote);
 - **Suppressions** — every suppression with its recorded justification;

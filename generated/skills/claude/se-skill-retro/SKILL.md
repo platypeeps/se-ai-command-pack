@@ -47,7 +47,7 @@ Unknown argument names are an error — stop and report them before starting.
    installed: before calling any gap uncovered, check it against the
    installed inventory, since a skill that covers it but never triggered
    is a routing defect, not a missing skill.
-2. Walk the session for the four finding classes:
+2. Walk the session for the five finding classes:
    - **fired and earned it** — the skill loaded and its workflow was used;
    - **should have fired** — the session did work a skill covers, without
      loading it;
@@ -105,7 +105,9 @@ Unknown argument names are an error — stop and report them before starting.
 
 - **Session and scope** — which session was audited and any stated limits;
 - **Trigger audit** — table of skill / class (fired, should-have-fired,
-  misfired, gap) / failed channel / evidence from the log;
+  misfired, fired-and-ignored, gap) / failed channel / evidence from the
+  log. A fired-and-ignored row has no failed channel, since the trigger
+  worked; name the step that was skipped instead;
 - **Routed findings** — each vetted finding with its owner and destination
   (`templates/skills/` fix, owning-repository task, or
   `se-propose-skills` input);

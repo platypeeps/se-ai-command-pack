@@ -40,14 +40,13 @@ Unknown argument names are an error — stop and report them before starting.
 
 ## Workflow
 
-1. **Fetch first — never trust local state.** Resolve the tracking remote
-   rather than assuming `origin` — `git config branch.<branch>.remote`
-   gives the remote name, and
-   `git rev-parse --abbrev-ref --symbolic-full-name @{u}` gives the full
-   upstream ref (`<remote>/<base>`), not the remote alone — then fetch
-   that remote.
-   Rebase onto the remote-tracking ref (`<remote>/<base>`), never the bare
-   local branch name: a fetch updates `<remote>/<base>` and leaves a local
+1. **Fetch first — never trust local state.** Resolve the remote name
+   rather than assuming `origin`: `git config branch.<branch>.remote`.
+   Do not derive the base from the branch's own upstream — that is this
+   branch's remote copy (`<remote>/<branch>`), not what you rebase onto;
+   the base is the one the user named. Fetch that remote, then rebase onto
+   the base's remote-tracking ref (`<remote>/<base>`), never the bare local
+   branch name: a fetch updates `<remote>/<base>` and leaves a local
    `<base>` exactly as stale as it was. In a worktree, confirm which
    checkout is active (`git worktree list`) and that the branch tracks the
    remote the user thinks it does (`git branch -vv`). State the resolved
@@ -88,8 +87,9 @@ Unknown argument names are an error — stop and report them before starting.
    remote-tracking ref, so any fetch since you last looked silently
    refreshes it and the lease passes over commits you never saw.
    After the push, prove it landed: `git fetch`, then compare
-   `git rev-parse HEAD` with `git rev-parse <remote>/<branch>` — they must
-   match. The push command exiting zero is not the check; the remote
+   `git rev-parse HEAD` with `git rev-parse <remote>/<remote-branch>` —
+   the remote-side name, which need not match the local one — and they
+   must be equal. The push command exiting zero is not the check; the remote
    ref is.
 
 ## Safety rules
