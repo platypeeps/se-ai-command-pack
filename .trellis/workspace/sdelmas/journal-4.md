@@ -1593,6 +1593,50 @@ Reinstalled the thin sd-ai-command-pack payload at 0.71.45 (from 0.71.39), verif
 - None - task complete
 
 
+## Session 192: Review the gemini/codex retirements: inventory, decision, and upstream relay
+<!-- trellis-session: v=2 fp=1ccb7701b57fe0a7 -->
+
+**Date**: 2026-08-25
+**Task**: Review the gemini/codex retirements: inventory, decision, and upstream relay
+**Branch**: `docs/gemini-codex-retirement-inventory`
+
+### Summary
+
+Inventoried this repo's gemini and codex-desktop touchpoints and found the task's premise half wrong: se-ai-command-pack has never shipped a gemini platform, so the gemini retirement decision has no referent here. Recorded the evidence, added a CONTRIBUTING.md note so the in-tree .gemini/** payload is not mistaken for this pack's platform set, confirmed the codex CLI path is desktop-app-free, and filed the upstream decision as a follow-up Trellis task.
+
+### Main Changes
+
+- Added research/inventory-2026-08-26.md: PLATFORM_REGISTRY declares only agents/claude/codex; manifest.json has 0 gemini strings; the nine in-tree .gemini/** files are Trellis-vendored and hash-guarded by the release-payload-gate; the sd-ai-command-pack 0.71.51 gemini adapters install at user level, not into this repo
+- Recorded decisions D1-D5 and a superseding acceptance-criteria block in prd.md; the original second criterion presumed a gemini platform this repo does not have
+- CONTRIBUTING.md now states that the pack's platform set comes from installer/registry.py, not from the in-tree .gemini/** and .codex/** Trellis payload, and that gemini is not among them
+- Confirmed R3 clean: no brew --cask, no .app bundle paths; .codex/config.toml:24 mentions the desktop app only as a compatibility warning, not a dependency
+- Filed .trellis/tasks/08-25-relay-gemini-retirement-sd-pack to carry the gemini-CLI retirement decision (2026-12-18 disable date) upstream to platypeeps/sd-ai-command-pack
+- Ran the planning adversarial review lane: concern ledger C-1..C-8, two rounds, four self-caught citation errors corrected, verdict PASS (research/planning-review-2026-08-26.md)
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f158f40ce0beef0f75f4e86e1e5ad069987c0673` | docs(contributing): record that this pack ships no gemini platform |
+
+### Testing
+
+- [OK] sd-ai-command-pack-review-preflight.mjs: 0 failures after correcting the .codex/skills path reference
+- [OK] make check: rc=0 before publishing PR #273
+- [OK] sd-review scope=pr: local prism clean, Copilot COMMENTED with 0 threads/0 unresolved/0 blocking checks, 12 deterministic checks (11 passed, 1 advisory skip)
+- [OK] sd-review-learnings --github-pr 273 --dry-run: 0 findings, preview only, no write
+- [OK] pre-archive gate: schemaVersion 1, status valid, pre_archive_valid
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
 ## Session 193: Adopt the claude-skills library as pack-product inspiration
 <!-- trellis-session: v=2 fp=ffc43fe5b13639f7 -->
 
