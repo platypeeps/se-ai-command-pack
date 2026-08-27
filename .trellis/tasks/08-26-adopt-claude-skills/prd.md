@@ -100,24 +100,24 @@ skills to user scope everywhere.
 
 ## Acceptance Criteria
 
-- [ ] AC1. 13 new `se-*` skills exist in `templates/skills/`, registered, and
+- [x] AC1. 13 new `se-*` skills exist in `templates/skills/`, registered, and
       `generate-skill-surfaces.py --check` passes; catalog and manifest
       regenerate cleanly.
-- [ ] AC2. The rust agent trio ships from `templates/agents/` with no foreign
+- [x] AC2. The rust agent trio ships from `templates/agents/` with no foreign
       model pin and the workflow contract stated in each file.
-- [ ] AC3. `make prose-lint` runs Vale over `templates/skills/` and top-level
+- [x] AC3. `make prose-lint` runs Vale over `templates/skills/` and top-level
       docs; promotion into `make check`/CI is done, or recorded as a follow-up
       with the blocking finding count (per the vale child's AC4).
-- [ ] AC4. `.prism/rules.json` carries the folded python probes; the Trellis
+- [x] AC4. `.prism/rules.json` carries the folded python probes; the Trellis
       planning guidance carries the plan-discipline checklist; neither
       contradicts repo conventions.
-- [ ] AC5. A tracked inspiration pin records the upstream SHA, the
+- [x] AC5. A tracked inspiration pin records the upstream SHA, the
       inspiration map, and the non-adoption table above; the harvest ritual
       is documented and produces a reviewable report.
-- [ ] AC6. No re-authored skill or agent references an upstream skill that
+- [x] AC6. No re-authored skill or agent references an upstream skill that
       was not adopted (no dangling routes) — checked by grep over
       `templates/` for the non-adopted names.
-- [ ] AC7. `make check` green over the whole outcome.
+- [x] AC7. `make check` green over the whole outcome.
 
 Merge, branch deletion, and default-branch synchronization are the
 post-archive handoff, not acceptance criteria.

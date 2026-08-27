@@ -53,13 +53,13 @@ assumptions). The durable half becomes deterministic local-review checks.
 
 ## Acceptance Criteria
 
-- [ ] AC1. The chosen Trellis guide file carries the folded planning
+- [x] AC1. The chosen Trellis guide file carries the folded planning
       checklist; `task.py validate` and the guide index stay consistent.
-- [ ] AC2. `.prism/rules.json` parses and the added checks appear in a local
+- [x] AC2. `.prism/rules.json` parses and the added checks appear in a local
       sd-review run's prism receipt.
-- [ ] AC3. Grep over both edited surfaces for `plan-discipline`,
+- [x] AC3. Grep over both edited surfaces for `plan-discipline`,
       `python-review`, `python-quality` returns nothing.
-- [ ] AC4. No folded item contradicts `make lint`/repo conventions (argparse,
+- [x] AC4. No folded item contradicts `make lint`/repo conventions (argparse,
       unittest, ruff config) — reviewed against the conflict findings.
 
 Lightweight task: PRD-only.

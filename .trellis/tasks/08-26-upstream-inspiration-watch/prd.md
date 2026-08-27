@@ -38,12 +38,12 @@ tooling (all dead with import mode).
 
 ## Acceptance Criteria
 
-- [ ] AC1. The inspiration file described in D1 exists with pin, map,
+- [x] AC1. The inspiration file described in D1 exists with pin, map,
       non-adoption table, and ritual sections.
-- [ ] AC2. The map's `se-*` column matches the shipped roster exactly
+- [x] AC2. The map's `se-*` column matches the shipped roster exactly
       (checked by listing `templates/skills/se-*` and
       `templates/agents/se-rust-*` against the map rows).
-- [ ] AC3. No new CI job, Make target, script, or test references the
+- [x] AC3. No new CI job, Make target, script, or test references the
       upstream checkout; `grep -r 'claude-skills' Makefile .github/workflows/`
       stays clean of fetch/check steps.
 

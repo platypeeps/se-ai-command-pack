@@ -72,13 +72,13 @@ Very specific to the ADR **review** process; fleet repos will carry ADRs.
 
 ## Acceptance Criteria
 
-- [ ] AC1. All 13 `templates/skills/<name>/SKILL.md` files exist with valid
+- [x] AC1. All 13 `templates/skills/<name>/SKILL.md` files exist with valid
       canonical frontmatter.
-- [ ] AC2. `installer/registry.py` registers exactly these 13 new names; the
+- [x] AC2. `installer/registry.py` registers exactly these 13 new names; the
       family decision is recorded in `design.md` and implemented.
-- [ ] AC3. Generator `--check` passes and regenerated surfaces (catalog,
+- [x] AC3. Generator `--check` passes and regenerated surfaces (catalog,
       manifest, per-platform trees) are committed.
-- [ ] AC4. Grep over `templates/` for the non-adopted upstream names
+- [x] AC4. Grep over `templates/` for the non-adopted upstream names
       (`git-commit`, `codex-cli`, `opencode-cli`,
       `collaborating-with-antigravity`, `mermaid`, `plan-discipline`,
       `process-feedback`, bare `adr-review`, bare `skill-retro`,
@@ -86,7 +86,7 @@ Very specific to the ADR **review** process; fleet repos will carry ADRs.
       `rebase-hygiene`/`prose-lint`/`humanizer` as skill references) returns
       no dangling route. Inspiration-map mentions live in the
       inspiration-watch child, not in skill bodies.
-- [ ] AC5. `make check` green.
+- [x] AC5. `make check` green.
 
 This is a complex task: `design.md` (family decision, per-skill frontmatter
 plan, shared conventions) and `implement.md` (ordered authoring + regeneration

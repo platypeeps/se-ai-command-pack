@@ -50,15 +50,15 @@ a repo-local Vale configuration with committed `se-` styles, run over
 
 ## Acceptance Criteria
 
-- [ ] AC1. `.vale.ini` and committed styles exist; `vale ls-config` resolves
+- [x] AC1. `.vale.ini` and committed styles exist; `vale ls-config` resolves
       them from the repo root.
-- [ ] AC2. `make prose-lint` runs the scoped lint and exits nonzero on a
+- [x] AC2. `make prose-lint` runs the scoped lint and exits nonzero on a
       seeded violation in a scratch file (falsification check), zero after
       removal.
-- [ ] AC3. The tuning pass is recorded: every finding on the current corpus
+- [x] AC3. The tuning pass is recorded: every finding on the current corpus
       fixed or suppressed with justification, alert count at promotion time
       noted in the task.
-- [ ] AC4. Either `prose-lint` is in `make check` + CI, or the promotion
+- [x] AC4. Either `prose-lint` is in `make check` + CI, or the promotion
       follow-up is recorded with the blocking finding count.
 
 Medium task: PRD plus `design.md` (style inventory, scoping, promotion

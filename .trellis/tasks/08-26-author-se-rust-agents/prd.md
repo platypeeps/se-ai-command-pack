@@ -47,13 +47,13 @@ teaches the workflow, the agents execute stages of it.
 
 ## Acceptance Criteria
 
-- [ ] AC1. `templates/agents/se-rust-write.md`, `se-rust-fill.md`,
+- [x] AC1. `templates/agents/se-rust-write.md`, `se-rust-fill.md`,
       `se-rust-reviewer.md` exist and follow the existing agent conventions.
-- [ ] AC2. `grep -riE 'model:|tail8432e9|nobara|fedora-cube' templates/agents/se-rust-*.md`
+- [x] AC2. `grep -riE 'model:|tail8432e9|nobara|fedora-cube' templates/agents/se-rust-*.md`
       shows no model pin and no private hostname.
-- [ ] AC3. Each file contains its workflow-stage contract, refusal boundary,
+- [x] AC3. Each file contains its workflow-stage contract, refusal boundary,
       and return contract.
-- [ ] AC4. Install/generate pipeline runs clean with the new files;
+- [x] AC4. Install/generate pipeline runs clean with the new files;
       `make check` green.
 
 Lightweight-leaning task: PRD plus a short `design.md` capturing the
