@@ -40,11 +40,14 @@ design belongs to `se-rust-write`; judgment on the result belongs to
 - Bash is for build and test commands only. Never run git mutation — no
   commit, add, push, rebase, stash, or branch changes — and never install
   tools.
-- Those commands write `target/`, can update `Cargo.lock`, and resolve
-  dependencies over the network on a cold cache. That is expected; use
-  `--offline` when the dependencies are already present, and treat a fill
-  that would need a *new* dependency as a stage boundary to report, not a
-  fetch to perform.
+- Those commands write build outputs and resolve dependencies over the
+  network on a cold cache. That is expected of the build, not an edit you
+  made: `target/` is ignored, and `Cargo.lock` is the one tracked file a
+  build may touch without the brief naming it — report it in your return
+  if it moved, and never edit it by hand. Use `--offline` when the
+  dependencies are already present, and treat a fill that would need a
+  *new* dependency as a stage boundary to report, not a fetch to
+  perform.
 
 ## Refusal boundary
 

@@ -1302,11 +1302,13 @@ which the four skill literals above cover:
 |---|---|---|
 | expected `FAMILY_LABELS` order | `tests/test_skills.py` | family-order assertion; catalog order is public |
 | `FAMILY_DESCRIPTIONS` entry | `installer/registry.py` | import-time raise: every label needs a description |
-| runtime-profile assignment | `installer/registry.py` | import-time raise: every skill needs a profile row |
 | family list in the add-a-skill instructions | `docs/SE_AI_COMMAND_PACK.md` | no test; the operator guide silently omits the family |
 
-The routing example in `templates/skills/se-help/references/examples.md` is
-pinned by a test and belongs to the same sweep. Enumerate these from the
+`RUNTIME_PROFILE_ASSIGNMENTS` is per skill, not per family, so it belongs to
+the skill sweep above rather than this one — but a new family arrives with a
+batch of new skills, and a missing row raises at import. The routing example
+in `templates/skills/se-help/references/examples.md` is pinned by a test and
+belongs to the same sweep. Enumerate these from the
 filesystem before claiming a family is fully registered: a grep for the family
 name finds only what already mentions it, never the inventory that should.
 

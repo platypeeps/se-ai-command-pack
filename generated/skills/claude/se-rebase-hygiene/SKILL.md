@@ -44,8 +44,11 @@ Unknown argument names are an error — stop and report them before starting.
 ## Workflow
 
 1. **Fetch first — never trust local state.** Resolve the tracking remote
-   rather than assuming `origin`
-   (`git rev-parse --abbrev-ref --symbolic-full-name @{u}`), then fetch it.
+   rather than assuming `origin` — `git config branch.<branch>.remote`
+   gives the remote name, and
+   `git rev-parse --abbrev-ref --symbolic-full-name @{u}` gives the full
+   upstream ref (`<remote>/<base>`), not the remote alone — then fetch
+   that remote.
    Rebase onto the remote-tracking ref (`<remote>/<base>`), never the bare
    local branch name: a fetch updates `<remote>/<base>` and leaves a local
    `<base>` exactly as stale as it was. In a worktree, confirm which

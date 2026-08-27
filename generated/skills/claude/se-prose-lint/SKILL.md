@@ -45,15 +45,16 @@ Unknown argument names are an error — stop and report them before starting.
      Vale directly on the target files, or on stdin for drafts that are not
      yet files;
    - **target only** — the repository gates on prose but this environment
-     has no Vale: say so and stop, rather than silently skipping the
-     canonical target. A repository that gates on prose is entitled to a
-     real answer, and the fix is to install Vale, not to route around it;
+     has no Vale: name that gap explicitly, since a skipped gate is not a
+     clean one, and say that installing Vale is what closes it. Then
+     continue with the judgment pass;
    - **absent** — no Vale in this repository.
-2. Where Vale is absent, degrade gracefully: report the gap in one plain
-   sentence ("no deterministic prose gate in this repository; continuing
-   with the judgment pass") and move on. Never fail, block, or stall the
-   session over a missing gate — the hard requirement lives only in the
-   pack repository's own CI, not fleet-wide.
+2. Where the deterministic gate cannot run, degrade gracefully: report the
+   gap in one plain sentence, naming which of the two reasons applies —
+   no gate in this repository, or a gate this environment cannot run —
+   and move on. Never fail, block, or stall the session over a missing
+   gate; the hard requirement lives in the gating repository's own CI, not
+   in this skill.
 3. Run the deterministic pass over the scoped targets and collect findings
    by file, line, rule, and severity. Prefer changed files and changed
    sections; a whole-repository sweep needs an explicit request.

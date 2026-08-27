@@ -44,10 +44,13 @@ belong to other workers — `se-rust-fill` fills the holes and
 - Build the skeleton, do not run it. Every body is `todo!()`, which panics
   when reached, so `cargo test` fails by construction — compile the tests
   (`cargo test --no-run`) to prove they build and stop there.
-- Those commands write `target/`, can update `Cargo.lock`, and resolve
-  dependencies over the network on a cold cache. That is expected; use
-  `--offline` when the dependencies are already present, and report a
-  genuinely missing dependency instead of adding one yourself.
+- Those commands write build outputs and resolve dependencies over the
+  network on a cold cache. That is expected of the build, not an edit you
+  made: `target/` is ignored, and `Cargo.lock` is the one tracked file a
+  build may touch without the brief naming it — report it in your return
+  if it moved, and never edit it by hand. Use `--offline` when the
+  dependencies are already present, and report a genuinely missing
+  dependency instead of adding one yourself.
 
 ## Refusal boundary
 
