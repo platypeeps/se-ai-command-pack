@@ -7,7 +7,7 @@ RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON
 LINT_PATHS = install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
 MYPY_PATHS = installer install.py templates/skills/se-review-skills/scripts/skill_review.py
 
-.PHONY: setup lock lock-check relock-pr generate repomix sync test test-hermetic lint release-check check shell-syntax gate-test gate-lint trellis-provenance
+.PHONY: setup lock lock-check relock-pr generate repomix sync test test-hermetic lint prose-lint release-check check shell-syntax gate-test gate-lint trellis-provenance
 
 # --clear: `python -m venv` reuses an existing directory, so without it a
 # package that dropped out of the lock survives and the gate runs against a
@@ -145,6 +145,36 @@ test-hermetic:
 lint:
 	"$(RUN_PYTHON)" -m ruff check $(LINT_PATHS)
 	"$(RUN_PYTHON)" -m mypy $(MYPY_PATHS)
+
+# Advisory prose gate over the skill corpus and the root docs
+# (.trellis/tasks/08-26-introduce-vale-prose-gate/). Deliberately NOT in
+# `check` yet — promotion happens after the tuning pass (task AC4). Which
+# files get which styles lives in .vale.ini's glob sections; this path list
+# only decides what Vale walks, so keep the two in step when adding a root
+# doc. CHANGELOG.md is out of scope on purpose: historical release text, and
+# rewriting it to satisfy a linter would falsify the record.
+#
+# Vale exits 0 when every alert is below error severity, so the recipe fails
+# on any alert itself — otherwise the suggestion-level initial rules could
+# never trip the falsification check (task AC2). The promoted gating
+# invocation switches to `--minAlertLevel=error` instead (design D3). A
+# missing binary is a hard failure, not a silent pass (design D4): CI must
+# install Vale (same major as 3.18) before running this.
+prose-lint: SHELL := /bin/bash
+prose-lint:
+	@set -euo pipefail; \
+	command -v vale >/dev/null || { \
+	  echo "prose-lint: vale not installed (developed against vale 3.18)" >&2; \
+	  echo "prose-lint: install with 'brew install vale' or see https://vale.sh" >&2; \
+	  exit 1; }; \
+	out="$$(vale --output=line README.md CONTRIBUTING.md AGENTS.md templates/skills)" || { \
+	  printf '%s\n' "$$out"; exit 1; }; \
+	if [ -n "$$out" ]; then \
+	  printf '%s\n' "$$out"; \
+	  echo "prose-lint: $$(printf '%s\n' "$$out" | wc -l | tr -d ' ') alert(s); fix or suppress with justification" >&2; \
+	  exit 1; \
+	fi; \
+	echo "prose-lint: clean"
 
 # Guard-safe variants for sd-check registration (.sd-ai-command-pack/check.json):
 # no coverage data, no linter caches — nothing under sd-check's GUARDED_PATHS.

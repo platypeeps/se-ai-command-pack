@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.71.0 - 2026-08-26
+
+- **New skill family: Engineer.** Thirteen skills join the pack, carrying its
+  software-engineering discipline. They are advisory lenses and authoring
+  aids; none owns a review verdict, which stays with the `sd-review` lane.
+  - Rust line, split so a change consults exactly one bar: `se-rust-design`
+    (type surface, illegal states unrepresentable, parse-don't-validate,
+    typestate), `se-rust-quality` (error design, API-guidelines naming, clippy
+    posture, comment discipline), `se-rust-modules` (layout, closed-by-default
+    visibility, facade re-exports), `se-rust-async` (executor unblocking,
+    `Send`/`'static` bounds, locks across await, cancellation safety), and
+    `se-rust-review`, which applies the four bars to a diff as a local lens.
+  - `se-typed-holes` owns skeleton-first delivery: a compiling skeleton of
+    named `todo!()` holes lands as its own unit, and the fill pass never
+    changes the surface it was handed.
+  - `se-gate-probes` runs pre-merge probes over a diff or plan against a
+    per-probe block-or-warn table, routing each finding to the owning lane.
+    `se-docs-bustest` applies the cold-newcomer test to documentation.
+  - `se-rebase-hygiene` (user-invoked only) owns the deliberate rebase ritual:
+    fetch first, dry-run the merge, pre-plan every conflict resolution, verify
+    the remote ref moved. It plans and verifies; the user approves the push.
+  - `se-adr-review` reviews architecture decision records only — MADR section
+    completeness, RFC-2119 driver force, honest consequences, forward links
+    from superseded records, lifecycle validity, and a premise-freshness sweep
+    that re-checks whether the facts the record rests on still hold.
+  - `se-skill-retro` (user-invoked only) audits skill triggering after a
+    session and routes each finding to the repository that owns the surface.
+  - `se-prose-lint` and `se-humanizer` own prose quality for the product's own
+    deliverable. Both degrade gracefully where the Vale gate is absent.
+- **New agents.** `se-rust-write`, `se-rust-fill`, and `se-rust-reviewer`
+  execute the `se-typed-holes` stages: skeleton authoring, hole filling that
+  never touches signatures, and read-only review. No model pin; they inherit
+  the session model.
+- **Vale prose gate.** A repo-local `.vale.ini` with committed `se` styles
+  covers `templates/skills/` and the top-level docs. `make prose-lint` runs it
+  and fails loudly when the binary is absent. Advisory for now — promotion
+  into `make check` is deferred with a recorded finding count.
+- Prism required checks gain `fail-loud`, `single-traversal-projection`, and
+  `comment-intent`. A new planning thinking guide covers the scope interview,
+  blast-radius enumeration, plan-quality probes, and the delegation inventory.
+
 ## 0.70.0 - 2026-08-16
 
 - **Breaking:** `skill_review.py` resolves the registry from

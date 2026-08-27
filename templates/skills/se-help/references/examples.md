@@ -11,6 +11,7 @@ not this file, remains authoritative for bundled skill ownership.
 - **Coordinate**: `$se-help goal="Report project outcomes, blockers, risks, decisions, and next actions since Friday."` routes to `$se-status`.
 - **Operate**: `$se-help mode=tour` introduces the pack and its current availability labels.
 - **Improve**: `$se-help goal="Review this technical draft for correctness, citations, structure, and voice before revision."` routes to `$se-technical-editor`.
+- **Engineer**: `$se-help goal="Design a Rust type surface whose illegal states cannot be represented, then lay a compiling skeleton."` routes to `$se-rust-design`.
 
 ## Common comparisons
 

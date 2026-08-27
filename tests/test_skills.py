@@ -267,6 +267,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 ("coordinate", "Coordinate"),
                 ("operate", "Operate"),
                 ("improve", "Improve"),
+                ("engineer", "Engineer"),
             ],
         )
 
@@ -333,6 +334,19 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-video-notes",
                 "se-watchlist",
                 "se-brand-voice",
+                "se-rust-design",
+                "se-rust-quality",
+                "se-rust-modules",
+                "se-rust-async",
+                "se-rust-review",
+                "se-typed-holes",
+                "se-gate-probes",
+                "se-docs-bustest",
+                "se-rebase-hygiene",
+                "se-skill-retro",
+                "se-prose-lint",
+                "se-humanizer",
+                "se-adr-review",
             ),
         )
         self.assertEqual(
@@ -392,6 +406,19 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-video-notes": "understand",
                 "se-watchlist": "operate",
                 "se-brand-voice": "improve",
+                "se-rust-design": "engineer",
+                "se-rust-quality": "engineer",
+                "se-rust-modules": "engineer",
+                "se-rust-async": "engineer",
+                "se-rust-review": "engineer",
+                "se-typed-holes": "engineer",
+                "se-gate-probes": "engineer",
+                "se-docs-bustest": "engineer",
+                "se-rebase-hygiene": "engineer",
+                "se-skill-retro": "engineer",
+                "se-prose-lint": "engineer",
+                "se-humanizer": "engineer",
+                "se-adr-review": "engineer",
             },
         )
 

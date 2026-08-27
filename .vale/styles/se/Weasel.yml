@@ -1,0 +1,25 @@
+# Hedging and filler words (design D2). Suggestion level: these are often
+# deletable but sometimes load-bearing, so the rule surfaces them without
+# gating. Promotion to a gating level happens only after the tuning pass
+# shows the corpus is clean (design D3).
+#
+# RFC-2119 carve-out (design D2): tokens are word-bounded and none is a
+# MUST / SHOULD / MAY / SHALL contract keyword ("may" is deliberately absent).
+extends: existence
+message: "'%s' hedges or pads; delete it or commit to the claim."
+level: suggestion
+ignorecase: true
+tokens:
+  - very
+  - quite
+  - simply
+  - just
+  - really
+  - basically
+  - obviously
+  - easily
+  - actually
+  - clearly
+  - of course
+  - needless to say
+  - as you can see

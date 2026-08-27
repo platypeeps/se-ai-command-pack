@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "se-ai-command-pack",
-  "version": "0.70.0",
+  "version": "0.71.0",
   "license": "MIT",
   "description": "Install user-level knowledge-work skills for personal profiles, consultation, technical authoring, checkpoint-driven technical tutorials, timestamped video notes, source watchlists, destination-neutral capture, critical checklists, controlled standard operating procedures, safe operational runbooks, evidence-aware stakeholder mapping, source-bound study guides, message-evidenced conversation digests, neutral comparisons, evidence-traceable diagrams, auditable extreme distillation, rubric-driven evaluations, evidence-backed editorial opportunity ranking, report-first technical editing, audience-calibrated explanations, traceable feedback synthesis, evidence-backed context handoffs, preview-first knowledge publishing, bounded knowledge-system audits, adaptive mastery learning paths, source-traceable literature maps, evidence-linked meeting follow-through, portable baseline monitoring, methodologically gated research papers, outcome-based execution planning, evidence-linked blameless postmortems, pre-execution failure stress tests, source-grounded presentation blueprints, decision-ready proposal development, source-faithful destination adaptation, constructive adversarial reviews, evidence-led general retrospectives, evidence-backed personal weekly reviews, bookmark and action-inbox triage, agendas, research, fact checks, decisions, status reports, discovery, briefs, meeting prep, scans, and digests into agent skill directories.",
   "files": [
@@ -4947,6 +4947,357 @@
       "install": "if-anchor-exists"
     },
     {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-design/SKILL.md",
+      "target": ".config/agents/skills/se-rust-design/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-rust-design/SKILL.md",
+      "target": ".claude/skills/se-rust-design/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-design/SKILL.md",
+      "target": ".codex/skills/se-rust-design/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-quality/SKILL.md",
+      "target": ".config/agents/skills/se-rust-quality/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-rust-quality/SKILL.md",
+      "target": ".claude/skills/se-rust-quality/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-quality/SKILL.md",
+      "target": ".codex/skills/se-rust-quality/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-modules/SKILL.md",
+      "target": ".config/agents/skills/se-rust-modules/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-rust-modules/SKILL.md",
+      "target": ".claude/skills/se-rust-modules/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-modules/SKILL.md",
+      "target": ".codex/skills/se-rust-modules/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-async/SKILL.md",
+      "target": ".config/agents/skills/se-rust-async/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-rust-async/SKILL.md",
+      "target": ".claude/skills/se-rust-async/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-async/SKILL.md",
+      "target": ".codex/skills/se-rust-async/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-review/SKILL.md",
+      "target": ".config/agents/skills/se-rust-review/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-rust-review/SKILL.md",
+      "target": ".claude/skills/se-rust-review/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rust-review/SKILL.md",
+      "target": ".codex/skills/se-rust-review/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-typed-holes/SKILL.md",
+      "target": ".config/agents/skills/se-typed-holes/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-typed-holes/SKILL.md",
+      "target": ".claude/skills/se-typed-holes/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-typed-holes/SKILL.md",
+      "target": ".codex/skills/se-typed-holes/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-gate-probes/SKILL.md",
+      "target": ".config/agents/skills/se-gate-probes/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-gate-probes/SKILL.md",
+      "target": ".claude/skills/se-gate-probes/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-gate-probes/SKILL.md",
+      "target": ".codex/skills/se-gate-probes/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-docs-bustest/SKILL.md",
+      "target": ".config/agents/skills/se-docs-bustest/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-docs-bustest/SKILL.md",
+      "target": ".claude/skills/se-docs-bustest/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-docs-bustest/SKILL.md",
+      "target": ".codex/skills/se-docs-bustest/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rebase-hygiene/SKILL.md",
+      "target": ".config/agents/skills/se-rebase-hygiene/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-rebase-hygiene/SKILL.md",
+      "target": ".claude/skills/se-rebase-hygiene/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-rebase-hygiene/SKILL.md",
+      "target": ".codex/skills/se-rebase-hygiene/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-skill-retro/SKILL.md",
+      "target": ".config/agents/skills/se-skill-retro/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-skill-retro/SKILL.md",
+      "target": ".claude/skills/se-skill-retro/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-skill-retro/SKILL.md",
+      "target": ".codex/skills/se-skill-retro/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-prose-lint/SKILL.md",
+      "target": ".config/agents/skills/se-prose-lint/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-prose-lint/SKILL.md",
+      "target": ".claude/skills/se-prose-lint/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-prose-lint/SKILL.md",
+      "target": ".codex/skills/se-prose-lint/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-humanizer/SKILL.md",
+      "target": ".config/agents/skills/se-humanizer/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-humanizer/SKILL.md",
+      "target": ".claude/skills/se-humanizer/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-humanizer/SKILL.md",
+      "target": ".codex/skills/se-humanizer/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-adr-review/SKILL.md",
+      "target": ".config/agents/skills/se-adr-review/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-adr-review/SKILL.md",
+      "target": ".claude/skills/se-adr-review/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-adr-review/SKILL.md",
+      "target": ".codex/skills/se-adr-review/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
       "platform": "claude",
       "kind": "agent",
       "scope": "user",
@@ -4961,6 +5312,60 @@
       "scope": "user",
       "source": "generated/agents/codex/se-claim-verifier.toml",
       "target": ".codex/agents/se-claim-verifier.toml",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "agent",
+      "scope": "user",
+      "source": "generated/agents/claude/se-rust-fill.md",
+      "target": ".claude/agents/se-rust-fill.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "agent",
+      "scope": "user",
+      "source": "generated/agents/codex/se-rust-fill.toml",
+      "target": ".codex/agents/se-rust-fill.toml",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "agent",
+      "scope": "user",
+      "source": "generated/agents/claude/se-rust-reviewer.md",
+      "target": ".claude/agents/se-rust-reviewer.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "agent",
+      "scope": "user",
+      "source": "generated/agents/codex/se-rust-reviewer.toml",
+      "target": ".codex/agents/se-rust-reviewer.toml",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "agent",
+      "scope": "user",
+      "source": "generated/agents/claude/se-rust-write.md",
+      "target": ".claude/agents/se-rust-write.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "agent",
+      "scope": "user",
+      "source": "generated/agents/codex/se-rust-write.toml",
+      "target": ".codex/agents/se-rust-write.toml",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },

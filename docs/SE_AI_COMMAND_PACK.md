@@ -892,6 +892,55 @@ not invoke them. Private-channel information remains within the authorized
 source and stated audience, and posting, reacting, canvases, lists, monitoring,
 messages, tasks, persistence, and other external mutations remain `not run`.
 
+### Engineer family workflow boundary
+
+The Engineer family carries the pack's software-engineering discipline. Its
+members are advisory lenses and authoring aids: none of them owns a review
+verdict, which stays with the `sd-review` lane.
+
+The Rust line splits by concern so a change consults exactly one bar.
+`se-rust-design` owns the type surface — making illegal states
+unrepresentable, parse-don't-validate boundaries, typestate transitions, and
+the clone-avoidance ladder. `se-rust-quality` owns the idiomatic bar: error
+type design, API-guidelines naming, clippy posture, and comment discipline.
+`se-rust-modules` owns layout and visibility — file structure, closed-by-
+default `pub(crate)` discipline, facade re-exports, and split criteria.
+`se-rust-async` owns concurrency structure: executor unblocking, `Send` and
+`'static` bounds by construction, locks across await points, cancellation
+safety, and spawn hygiene. `se-rust-review` applies all four bars to a diff as
+a local lens.
+
+`se-typed-holes` owns the skeleton-first delivery workflow: a compiling
+skeleton whose bodies are named `todo!()` holes lands as its own unit, and the
+fill pass never changes the surface it was handed. The `se-rust-write`,
+`se-rust-fill`, and `se-rust-reviewer` agents execute its stages.
+
+`se-gate-probes` owns pre-merge probes over a diff or a plan, reporting
+findings against a per-probe block-or-warn table and routing each to the lane
+that owns it. `se-docs-bustest` owns the cold-newcomer test for documentation:
+whether the steps execute as written with no unstated prerequisite.
+`se-rebase-hygiene` is user-invoked only and owns the deliberate rebase ritual
+— fetch first, dry-run the merge before touching the working tree, pre-plan
+every conflict resolution, and verify the remote ref moved. It plans and
+verifies; the user approves the push.
+
+`se-adr-review` owns architecture-decision-record review only: MADR section
+completeness, RFC-2119 force in the decision drivers, honest consequences,
+forward links from superseded records, lifecycle validity, and the premise-
+freshness sweep that re-checks whether the facts the record rests on still
+hold. It never authors or templates a record.
+
+`se-skill-retro` is user-invoked only and audits skill triggering after a
+session — what fired, what should have fired, what misfired, and what has no
+skill at all — routing an `se-*` defect to this repository and an `sd-*` or
+Trellis defect to its owning repository.
+
+`se-prose-lint` and `se-humanizer` own prose quality for the product's own
+deliverable. `se-prose-lint` drives the deterministic Vale gate where one
+exists and degrades to a reported gap where it does not; `se-humanizer` owns
+the de-AI-ifying rewrite pass. Both stay advisory outside this repository,
+whose CI carries the only hard prose requirement.
+
 ## Manifest schema
 
 Header (preserved verbatim by the generator):
@@ -988,7 +1037,7 @@ uses `fresh-session`.
    focused tests; keep judgment and approval logic in `SKILL.md`.
 3. Add one `SkillInfo(name=..., family=...)` row to `SKILLS` in
    `installer/registry.py`. Choose exactly one of Understand, Decide, Create,
-   Coordinate, Operate, or Improve. Registry order remains manifest order;
+   Coordinate, Operate, Improve, or Engineer. Registry order remains manifest order;
    `SKILL_NAMES` is derived and must not be edited separately.
 4. Assign the skill to exactly one portable runtime profile in
    `RUNTIME_PROFILE_ASSIGNMENTS` (`installer/registry.py`) — see
