@@ -146,20 +146,23 @@ lint:
 	"$(RUN_PYTHON)" -m ruff check $(LINT_PATHS)
 	"$(RUN_PYTHON)" -m mypy $(MYPY_PATHS)
 
-# Advisory prose gate over the skill corpus and the root docs
-# (.trellis/tasks/08-26-introduce-vale-prose-gate/). Deliberately NOT in
-# `check` yet — promotion happens after the tuning pass (task AC4). Which
-# files get which styles lives in .vale.ini's glob sections; this path list
-# only decides what Vale walks, so keep the two in step when adding a root
-# doc. CHANGELOG.md is out of scope on purpose: historical release text, and
-# rewriting it to satisfy a linter would falsify the record.
+# Enforcing prose gate over the skill corpus and the root docs; part of
+# `check` and its own CI lane. Which files get which styles lives in
+# .vale.ini's glob sections; this path list only decides what Vale walks, so
+# keep the two in step when adding a root doc. CHANGELOG.md is out of scope
+# on purpose: historical release text, and rewriting it to satisfy a linter
+# would falsify the record.
 #
 # Vale exits 0 when every alert is below error severity, so the recipe fails
-# on any alert itself — otherwise the suggestion-level initial rules could
-# never trip the falsification check (task AC2). The promoted gating
-# invocation switches to `--minAlertLevel=error` instead (design D3). A
-# missing binary is a hard failure, not a silent pass (design D4): CI must
-# install Vale (same major as 3.18) before running this.
+# on any alert itself rather than raising the rules to error severity. That
+# is deliberate: the rules stay at suggestion so a human reading Vale's own
+# output sees advice, while the gate still refuses to pass with advice
+# outstanding. Raising them to error to use --minAlertLevel=error would say
+# the same thing twice and lose that distinction.
+#
+# A missing binary is a hard failure, not a silent pass, so an environment
+# without Vale cannot report a clean corpus it never linted. Contributors
+# install it once (see CONTRIBUTING.md); CI installs a pinned build.
 prose-lint: SHELL := /bin/bash
 prose-lint:
 	@set -euo pipefail; \

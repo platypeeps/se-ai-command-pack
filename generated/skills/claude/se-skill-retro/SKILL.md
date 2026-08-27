@@ -43,7 +43,10 @@ Unknown argument names are an error — stop and report them before starting.
 1. Reconstruct the trigger record from evidence, never from memory. List
    which skills actually loaded during the session, then read each cited
    skill's file on disk and verify its frontmatter and description before
-   quoting or judging its trigger text.
+   quoting or judging its trigger text. Loaded is not the same as
+   installed: before calling any gap uncovered, check it against the
+   installed inventory, since a skill that covers it but never triggered
+   is a routing defect, not a missing skill.
 2. Walk the session for the four finding classes:
    - **fired and earned it** — the skill loaded and its workflow was used;
    - **should have fired** — the session did work a skill covers, without

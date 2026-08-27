@@ -46,9 +46,13 @@ Unknown argument names are an error — stop and report them before starting.
      restructuring ownership;
    - a `_ =>` wildcard arm on an owned enum that will silently absorb
      future variants;
-   - a `use` of a crate absent from `[dependencies]`;
-   - `.map_err(|e| Variant(e))` where `#[from]` makes
-     `.map_err(Variant)` work;
+   - a `use` of a crate absent from every dependency table that could
+     supply it — `[dependencies]`, `[dev-dependencies]` for test and
+     example code, `[build-dependencies]` for build scripts,
+     `[target.'cfg(...)'.dependencies]`, and workspace inheritance;
+   - `.map_err(|e| Variant(e))` where `.map_err(Variant)` says the same
+     thing, or any `map_err` at all where the variant derives `#[from]`
+     and `?` already converts;
    - a suppressed type-complexity lint that should be a type alias;
    - a single-arm `match` that should be `if let`, or nested `match`
      where combinators are flatter;

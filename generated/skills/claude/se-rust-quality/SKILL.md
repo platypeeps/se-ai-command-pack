@@ -51,8 +51,10 @@ Unknown argument names are an error — stop and report them before starting.
    - `Arc::clone(&x)` over `x.clone()` on reference-counted types;
    - `if let` over a single-arm `match`;
    - `.to_owned()` over `.to_string()` on `&str`;
-   - `.map_err(Variant)` over `.map_err(|e| Variant(e))` when `#[from]`
-     makes the variant a function pointer;
+   - `.map_err(Variant)` over `.map_err(|e| Variant(e))` — a tuple
+     variant is already a constructor function, so the closure only
+     restates it; where the variant also derives `#[from]`, drop the
+     `map_err` and let `?` convert;
    - explicit enum arms over `_ =>` on enums you own;
    - a type alias over suppressing the type-complexity lint;
    - newtype wrappers over stringly-typed parameters;

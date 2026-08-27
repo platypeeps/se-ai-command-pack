@@ -43,17 +43,25 @@ Unknown argument names are an error — stop and report them before starting.
 
 ## Workflow
 
-1. **Fetch first — never trust local state.** Run `git fetch origin`
-   before any assessment. In a worktree, confirm which checkout is
-   active (`git worktree list`) and that the branch tracks the remote
-   the user thinks it does (`git branch -vv`). State the resolved
+1. **Fetch first — never trust local state.** Resolve the tracking remote
+   rather than assuming `origin`
+   (`git rev-parse --abbrev-ref --symbolic-full-name @{u}`), then fetch it.
+   Rebase onto the remote-tracking ref (`<remote>/<base>`), never the bare
+   local branch name: a fetch updates `<remote>/<base>` and leaves a local
+   `<base>` exactly as stale as it was. In a worktree, confirm which
+   checkout is active (`git worktree list`) and that the branch tracks the
+   remote the user thinks it does (`git branch -vv`). State the resolved
    branch, base, and their current heads.
 2. **Dry-run the merge before touching the working tree.** Enumerate
-   both sides (`git log --oneline <base>..HEAD` and
-   `git log --oneline HEAD..<base>`), then compute the overlap: files
+   both sides (`git log --oneline <remote>/<base>..HEAD` and
+   `git log --oneline HEAD..<remote>/<base>`), then compute the overlap: files
    changed on both sides since the merge base. Run
-   `git merge-tree --write-tree <base> HEAD` (git 2.38+); the conflict
-   markers in its output are the real conflict list. Report the conflict
+   `git merge-tree --write-tree <remote>/<base> HEAD` (git 2.38+) and
+   report the conflicts it finds. Treat that as a lower bound, not the
+   whole list: it simulates one merge of the two endpoints, while a rebase
+   replays your commits one at a time, so an intermediate commit can
+   conflict where the endpoint merge is clean. Re-run this step if the base
+   moved while the resolution plan was being agreed. Report the conflict
    surface before rebasing anything.
 3. **Pre-plan every resolution.** For each conflicting file, decide the
    resolution before the rebase starts: which side wins, or what the
@@ -65,10 +73,14 @@ Unknown argument names are an error — stop and report them before starting.
 4. **Push only with approval, then verify the remote moved.** A rebased
    branch needs a force push, and this repository forbids unapproved
    force pushes: present the exact push command
-   (`git push --force-with-lease origin <branch>` — never bare
-   `--force`) and wait for the user's explicit approval before running
-   it. After the push, prove it landed: `git fetch`, then compare
-   `git rev-parse HEAD` with `git rev-parse origin/<branch>` — they must
+   — `git push --force-with-lease=<branch>:<observed-sha> <remote> <branch>`,
+   pinning the lease to the SHA you actually inspected — and wait for the
+   user's explicit approval before running it. Never bare `--force`, and
+   never bare `--force-with-lease`: the bare form checks against your
+   remote-tracking ref, so any fetch since you last looked silently
+   refreshes it and the lease passes over commits you never saw.
+   After the push, prove it landed: `git fetch`, then compare
+   `git rev-parse HEAD` with `git rev-parse <remote>/<branch>` — they must
    match. The push command exiting zero is not the check; the remote
    ref is.
 

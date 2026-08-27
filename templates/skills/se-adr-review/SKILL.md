@@ -41,7 +41,8 @@ Unknown argument names are an error — stop and report them before starting.
 2. Score MADR-style section completeness, each section present or absent:
    - a **title** that states the decision in plain language, not a topic;
    - **status, date, deciders** — status one of proposed, accepted,
-     rejected, deprecated, or superseded-by;
+     rejected, deprecated, or superseded; a superseded record names the
+     record that replaces it, but the status word itself is `superseded`;
    - **context and problem statement** naming the forces and constraints;
    - **decision drivers** tied to concrete needs or stakeholders;
    - **considered options** — at least two genuine candidates, not one
@@ -76,14 +77,17 @@ Unknown argument names are an error — stop and report them before starting.
      that shipped, stalled, or was rejected changes this record's standing;
    - **quantitative claims** (counts, limits, versions) — re-confirm
      against measured reality.
-   Grade every premise still-true, changed, or unverifiable. A changed
-   premise is a P1: the decision rests on it.
+   Grade every premise still-true, changed, or unverifiable. A change
+   that undercuts the decision is a P1; a change the outcome survives is
+   a P2 with the drift recorded, so the record can be corrected without
+   reopening the decision. Say which of the two it is and why.
 8. Assign severities:
    - **P1** — missing decision outcome or drivers, an option set with no
-     real alternative, consequences with no downside, or a changed premise;
+     real alternative, consequences with no downside, or a changed premise
+     the decision does not survive;
    - **P2** — vague or untestable drivers, a rejection with no stated
-     reason, a deferred dependency with no link, or a stale date with no
-     review note;
+     reason, a deferred dependency with no link, a stale date with no
+     review note, or a changed premise the outcome survives;
    - **P3** — a title that could be sharper, missing cross-links, or drift
      from the house record style.
 9. Emit the fixed report block for each record, ending in exactly one

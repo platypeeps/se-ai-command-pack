@@ -65,8 +65,9 @@ Unknown argument names are an error — stop and report them before starting.
    shutdown signal rather than relying on drop order.
 6. Keep spawn hygiene: every spawned task has an owner. Hold the join
    handle or collect tasks into a set that is joined or aborted at
-   shutdown; a detached spawn whose handle is dropped is a leak that
-   outlives the request and swallows its own panics. Check join results —
+   shutdown; dropping a join handle detaches the task rather than
+   stopping it, so it runs on unsupervised past the request that spawned
+   it and swallows its own panics. Check join results —
    a task that panicked reports it there and nowhere else.
 7. Remember `Drop` is synchronous. Cleanup that needs async work is
    handed off through a channel to a background task that performs the

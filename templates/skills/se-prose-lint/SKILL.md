@@ -37,11 +37,15 @@ Unknown argument names are an error — stop and report them before starting.
 ## Workflow
 
 1. Probe the gate before judging anything. Check for a `make prose-lint`
-   target and for the binary itself (`vale --version`). Three states:
+   target and for the binary itself (`vale --version`). Four states:
    - **full gate** — target and binary present: run `make prose-lint`;
    - **binary only** — Vale and a config exist without the Make target: run
      Vale directly on the target files, or on stdin for drafts that are not
      yet files;
+   - **target only** — the repository gates on prose but this environment
+     has no Vale: say so and stop, rather than silently skipping the
+     canonical target. A repository that gates on prose is entitled to a
+     real answer, and the fix is to install Vale, not to route around it;
    - **absent** — no Vale in this repository.
 2. Where Vale is absent, degrade gracefully: report the gap in one plain
    sentence ("no deterministic prose gate in this repository; continuing
@@ -53,8 +57,11 @@ Unknown argument names are an error — stop and report them before starting.
    sections; a whole-repository sweep needs an explicit request.
 4. Give every error-level finding exactly one disposition — an error with
    no disposition is unfinished work:
-   - **fix** — the rule is right; change the text, and the diff is the
-     record;
+   - **fix** — the rule is right and the correction is mechanical, fully
+     determined by the rule itself: delete the hedge, cut the AI-tell.
+     Anything needing the sentence re-composed is rewrite-shaped and goes
+     to `se-humanizer` under step 7, which is what "never rewrites" above
+     means;
    - **suppress** — the rule is right in general and wrong for this span;
      suppress inline with a written justification recorded at the
      suppression site, never a bare suppression;

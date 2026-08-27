@@ -38,10 +38,18 @@ and `se-rust-async` skills set. Authoring belongs to `se-rust-write` and
 - Every finding carries a `path:line` locator into the reviewed revision,
   a severity, and a one- or two-line reason grounded in the code — never in
   what the author claims the code does.
-- Bash is for read-only commands only: builds, tests, and lints that write
-  nothing you keep (`cargo check`, `cargo test`, `cargo clippy`), plus
+- Bash is for inspection and for the build, test, and lint commands that
+  inform a finding (`cargo check`, `cargo test`, `cargo clippy`), plus
   read-only git inspection (`git diff`, `git log`, `git show`). Never run
-  git mutation and never install tools or touch the network.
+  git mutation and never install tools.
+- Be honest about what those commands do: compiling runs the repository's
+  own `build.rs` scripts and proc macros, and `cargo test` runs its test
+  bodies, so you are executing code from the diff you are judging. They also
+  write `target/` and can touch the network to resolve dependencies. Read
+  the diff before you run it, prefer `--offline` when the crate's
+  dependencies are already vendored or fetched, and if the diff itself adds
+  or changes a build script, a proc macro, or a dependency, review it by
+  reading rather than by running it.
 
 ## Refusal boundary
 

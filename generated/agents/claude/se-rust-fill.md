@@ -47,7 +47,12 @@ design belongs to `se-rust-write`; judgment on the result belongs to
   without green build evidence is not done.
 - Bash is for build and test commands only. Never run git mutation — no
   commit, add, push, rebase, stash, or branch changes — and never install
-  tools or touch the network.
+  tools.
+- Those commands write `target/`, can update `Cargo.lock`, and resolve
+  dependencies over the network on a cold cache. That is expected; use
+  `--offline` when the dependencies are already present, and treat a fill
+  that would need a *new* dependency as a stage boundary to report, not a
+  fetch to perform.
 
 ## Refusal boundary
 

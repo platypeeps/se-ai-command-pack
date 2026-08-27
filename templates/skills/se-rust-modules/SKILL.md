@@ -43,10 +43,13 @@ Unknown argument names are an error — stop and report them before starting.
        └── invoice.rs
    ```
 
-3. Default visibility closed and widen deliberately: private until a
-   consumer outside the item's module exists, `pub(crate)` when the
-   consumer is elsewhere in the crate, bare `pub` only when an external
-   consumer needs it. Every widening names the consumer that forced it —
+3. Default visibility closed and widen deliberately, one rung at a time:
+   private until a consumer outside the item's module exists,
+   `pub(super)` when the only consumer is the parent module,
+   `pub(in path)` when it is one known ancestor, `pub(crate)` when the
+   consumer is elsewhere in the crate, and bare `pub` only when an
+   external consumer needs it. Reaching straight for `pub(crate)` when
+   `pub(super)` would do is the same overshoot as reaching for `pub`. Every widening names the consumer that forced it —
    a `pub` with no external caller is API surface you now maintain for
    free.
 4. Keep the public API flat behind facades. Internal trees nest as deep

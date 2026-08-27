@@ -5,6 +5,11 @@
 0. Run `make setup` once per fresh clone to create the virtualenv and install
    the dev dependencies (PyYAML, ruff, mypy, coverage); `make generate` and
    `make check` import PyYAML and crash without it.
+0b. Install [Vale](https://vale.sh) once (`brew install vale`, or a packaged
+   build of the same major as 3.18). `make check` runs the prose gate over the
+   skill corpus and the root docs, and a missing binary is a hard failure
+   rather than a silent pass — an environment without Vale must not be able to
+   report a corpus it never linted.
 1. Branch from `main`; open a PR for every change.
 2. Edit canonical skills under `templates/skills/` and canonical agents under
    `templates/agents/`, never the generated `manifest.json` rows or

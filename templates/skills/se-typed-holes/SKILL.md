@@ -54,8 +54,9 @@ Unknown argument names are an error — stop and report them before starting.
      body that still ignores a parameter keeps its marker silent, so
      each fill sweeps by hand.
 4. Gate and commit the skeleton alone: workspace check and clippy with
-   warnings denied, plus a format check, all green with every body still
-   `todo!()`. The skeleton is its own commit so the reviewed design is a
+   warnings denied, plus a format check, all green with every behavioral
+   body still `todo!()` — the trivial accessors step 2 asks you to
+   implement stay implemented. The skeleton is its own commit so the reviewed design is a
    retrievable git object, not a conversation.
 5. Track the holes deterministically — `todo!()` is a diverging panic the
    compiler happily accepts, so nothing tracks it for you. Either enable
