@@ -35,11 +35,21 @@
   the session model.
 - **Vale prose gate.** A repo-local `.vale.ini` with committed `se` styles
   covers `templates/skills/` and the top-level docs. `make prose-lint` runs it
-  and fails loudly when the binary is absent. Advisory for now — promotion
-  into `make check` is deferred with a recorded finding count.
+  and fails loudly when the binary is absent.
 - Prism required checks gain `fail-loud`, `single-traversal-projection`, and
   `comment-intent`. A new planning thinking guide covers the scope interview,
   blast-radius enumeration, plan-quality probes, and the delegation inventory.
+- **The Vale prose gate is promoted.** `prose-lint` joins `make check` and runs
+  as its own CI lane, wired into the `ci-result` aggregate. The lane installs
+  Vale 3.18.0 pinned by version and SHA-256 checksum, so a future upstream
+  release cannot change the corpus verdict without a commit here.
+- **Weasel rule calibrated against the corpus.** The first tuning pass flagged
+  43 sites, of which 41 were load-bearing: `actually` is contrastive
+  throughout ("the period it actually covers"), `clearly` is an adverb of
+  manner ("clearly separated", "clearly labeled"), and `just` is quantitative
+  or contrastive ("just under that minimum"). All three tokens are out, with
+  the evidence recorded in the rule file — a rule wrong 95% of the time trains
+  readers to ignore the gate. The two genuine findings are fixed.
 
 ## 0.70.0 - 2026-08-16
 

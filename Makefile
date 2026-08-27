@@ -199,4 +199,4 @@ release-check:
 trellis-provenance:
 	"$(RUN_PYTHON)" .github/scripts/check-trellis-provenance.py
 
-check: test lint lock-check release-check shell-syntax trellis-provenance
+check: test lint lock-check release-check shell-syntax trellis-provenance prose-lint

@@ -129,7 +129,7 @@ Any change to the shipped payload — `templates/**`, `generated/**`,
 - add a matching top heading to `CHANGELOG.md` in the form
   `## <version> - YYYY-MM-DD`.
 
-The gate is diff-based, so the carve-out is simply this: a change that leaves
+The gate is diff-based, so the carve-out is this: a change that leaves
 every shipped payload path byte-identical (no git diff) needs no bump. Note that
 `generated/registry-snapshot.json` is itself shipped payload, and family
 descriptions now live in gated installer code (`installer/registry.py`), so a

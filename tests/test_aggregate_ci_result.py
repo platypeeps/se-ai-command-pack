@@ -42,6 +42,7 @@ def payload(**overrides: str) -> dict[str, dict[str, str]]:
         "unittest": "success",
         "test-hermetic": "success",
         "lint": "success",
+        "prose-lint": "success",
         "release-payload-gate": "success",
         "review-preflight": "success",
         "auto-tag-release": "skipped",

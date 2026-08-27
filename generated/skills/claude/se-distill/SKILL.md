@@ -89,7 +89,7 @@ reading or compressing source material.
    examples, repetition, and secondary support before citations, constraints,
    contradictions, or exceptions.
 9. Measure the draft using the same method as the corpus and calculate
-   `output size / input size`. For very short sources, prefer a minimum useful
+   `output size / input size`. For short sources, prefer a minimum useful
    artifact and disclose that the ratio is not meaningful instead of producing
    fragments.
 10. Run an invariant audit from source to output. Every non-negotiable item must
