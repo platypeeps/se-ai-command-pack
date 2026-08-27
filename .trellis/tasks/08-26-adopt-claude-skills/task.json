@@ -1,0 +1,32 @@
+{
+  "id": "adopt-claude-skills",
+  "name": "adopt-claude-skills",
+  "title": "Adopt the claude-skills library as pack-product inspiration",
+  "description": "Re-author selected Shearerbeard/claude-skills skills and opencode-cfg agents as se-* pack product surfaces, add a Vale prose gate, fold non-skill checklists into existing surfaces, and keep a lightweight upstream inspiration watch.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "sdelmas",
+  "assignee": "sdelmas",
+  "createdAt": "2026-08-26",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "08-26-author-se-rust-agents",
+    "08-26-upstream-inspiration-watch",
+    "08-26-author-se-skills",
+    "08-26-introduce-vale-prose-gate",
+    "08-26-fold-inspiration-checklists"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
