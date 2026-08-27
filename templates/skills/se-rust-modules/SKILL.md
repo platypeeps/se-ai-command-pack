@@ -43,8 +43,11 @@ Unknown argument names are an error — stop and report them before starting.
        └── invoice.rs
    ```
 
-3. Default visibility closed and widen deliberately, one rung at a time:
-   private until a consumer outside the item's module exists,
+3. Default visibility closed and widen deliberately, one rung at a time.
+   Check first whether widening is needed at all: a descendant module
+   already sees its ancestors' private items, so a child consuming a
+   parent's item needs no marker and adding one only widens the surface.
+   Otherwise: private until a consumer outside that subtree exists,
    `pub(super)` when the only consumer is the parent module,
    `pub(in path)` when it is one known ancestor, `pub(crate)` when the
    consumer is elsewhere in the crate, and bare `pub` only when an

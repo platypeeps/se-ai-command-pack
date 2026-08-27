@@ -71,9 +71,11 @@ Unknown argument names are an error — stop and report them before starting.
    `DerefMut`, which bypasses the constraint. Keep test-only constructors
    behind a gate: `#[cfg(test)]` reaches unit tests in the same crate and
    nothing else, so a `tests/` integration test that needs one requires a
-   `#[cfg(feature = "test-util")]` constructor and a feature the test
-   profile enables. Pick the gate from who must call it, and never ship an
-   ungated one.
+   `#[cfg(feature = "test-util")]` constructor instead. Nothing turns that
+   feature on for you — no profile implies it — so the test run enables it
+   explicitly (`cargo test --features test-util`, or a self path
+   dev-dependency that carries it). Pick the gate from who must call it,
+   and never ship an ungated one.
 5. Parse, don't validate. Fallible constructors return
    `Result<Self, Error>` with the error enum written up front; downstream
    code accepts only already-valid types, so no check is ever repeated and

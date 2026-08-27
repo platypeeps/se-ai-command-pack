@@ -48,10 +48,12 @@ Unknown argument names are an error — stop and report them before starting.
 3. Mark the holes so they ask to be removed:
    - each `todo!()` function with parameters carries
      `#[expect(unused_variables, reason = "hole; filled by <unit>")]` —
-     once the lint stops firing the marker warns; leave zero-parameter
-     holes unmarked, and receiver-only holes too, since
-     `unused_variables` never fires on `self` and the expectation would
-     go unfulfilled the moment it was written;
+     once the lint stops firing the marker warns; leave a hole unmarked
+     wherever the lint could not fire in the first place and the
+     expectation would go unfulfilled the moment it was written — a
+     zero-parameter hole, a receiver-only one (`unused_variables` never
+     fires on `self`), and one whose parameters are all
+     underscore-prefixed, which is the same suppression by another name;
    - the module enters with `#![allow(dead_code)]`, removed slice by
      slice as the surface goes live;
    - both markers get explicit removal steps in the fill plan — a filled
