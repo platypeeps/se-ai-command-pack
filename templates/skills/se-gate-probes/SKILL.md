@@ -91,9 +91,13 @@ Unknown argument names are an error — stop and report them before starting.
    | 10 | Rollback points | Block |
    | 11 | Blast radius | Block |
 
-   Any blocking FAIL fails the gate: report it and stop; do not hand the
-   artifact onward until it is resolved or the user overrides. Warn-level
-   FAILs are reported with evidence but do not stop the gate.
+   Score every applicable probe before reporting — a gate that stops at
+   the first blocking FAIL sends the author back for one fix at a time,
+   when the whole list was available in one pass. Then any blocking FAIL
+   fails the gate: report the complete scorecard and do not hand the
+   artifact onward until the blocking rows are resolved or the user
+   overrides. Warn-level FAILs are reported with evidence but do not stop
+   the gate.
 
 4. Route onward — never repeating work already done for this artifact:
 

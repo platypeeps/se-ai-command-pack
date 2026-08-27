@@ -45,7 +45,12 @@ Unknown argument names are an error — stop and report them before starting.
 2. Walk the document top to bottom as that reader and score five probes,
    each with cited evidence:
    1. *Commands run as written* — every command is copy-pastable and
-      would succeed verbatim in the stated environment: correct paths,
+      succeeds verbatim in the stated environment. Say for each whether
+      you ran it or only read it, and score a command you could not run —
+      because it needs a credential, a placeholder value, or an
+      environment you do not have — as UNVERIFIED with that reason, never
+      as PASS. A reasoned guess that a command works is exactly the
+      assumption this probe exists to catch: correct paths,
       real flags, no pseudo-commands, no "run the tests" hand-waving.
    2. *No undefined prerequisites* — every tool, account, credential,
       dependency, and prior artifact a step needs is stated (or linked)

@@ -67,7 +67,9 @@ Unknown argument names are an error — stop and report them before starting.
    for the unhappy paths. A record with only upside is under-reviewed.
 6. Check the status lifecycle: an accepted record is never silently
    rewritten when the decision changes — a new record supersedes it and the
-   two link to each other; every superseded or deprecated record carries a
+   two link to each other; a superseded record names the record that
+   replaced it, while a deprecated one names why it was retired rather
+   than a successor it never had; each carries a
    forward link to its successor.
 7. Run the premise-freshness sweep. Records encode premises that were true
    at writing time and quietly rot; re-verify each against current reality:

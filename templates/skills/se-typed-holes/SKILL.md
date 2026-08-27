@@ -47,7 +47,9 @@ Unknown argument names are an error — stop and report them before starting.
    - each `todo!()` function with parameters carries
      `#[expect(unused_variables, reason = "hole; filled by <unit>")]` —
      once the lint stops firing the marker warns; leave zero-parameter
-     holes unmarked, since their expectation would fail immediately;
+     holes unmarked, and receiver-only holes too, since
+     `unused_variables` never fires on `self` and the expectation would
+     go unfulfilled the moment it was written;
    - the module enters with `#![allow(dead_code)]`, removed slice by
      slice as the surface goes live;
    - both markers get explicit removal steps in the fill plan — a filled
@@ -56,8 +58,8 @@ Unknown argument names are an error — stop and report them before starting.
 4. Gate and commit the skeleton alone: workspace check and clippy with
    warnings denied, plus a format check, all green with every behavioral
    body still `todo!()` — the trivial accessors step 2 asks you to
-   implement stay implemented. The skeleton is its own commit so the reviewed design is a
-   retrievable git object, not a conversation.
+   implement stay implemented. The skeleton is its own commit so the
+   reviewed design is a retrievable git object, not a conversation.
 5. Track the holes deterministically — `todo!()` is a diverging panic the
    compiler happily accepts, so nothing tracks it for you. Either enable
    the clippy lint for `todo!()` at warn during the fill phase and flip

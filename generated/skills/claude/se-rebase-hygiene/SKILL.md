@@ -69,15 +69,23 @@ Unknown argument names are an error — stop and report them before starting.
 3. **Pre-plan every resolution.** For each conflicting file, decide the
    resolution before the rebase starts: which side wins, or what the
    merged shape is, and why. Present the complete resolution plan to the
-   user and get their go-ahead. Only then rebase, applying exactly the
-   planned resolutions. If a conflict appears that the plan did not
+   user and get their go-ahead. Before the rebase rewrites anything, cut
+   a recovery ref at the current head (`git branch backup/<branch>-<date>`)
+   so the pre-rebase history stays reachable without digging through the
+   reflog, and check for merge commits on your side
+   (`git log --merges --oneline <remote>/<base>..HEAD`): a plain rebase
+   flattens them away, so either rebase with `--rebase-merges` or agree
+   with the user to linearize deliberately. Only then rebase, applying
+   exactly the planned resolutions. If a conflict appears that the plan did not
    predict, stop, abort or pause the rebase, and re-run step 2 — never
    improvise mid-rebase.
 4. **Push only with approval, then verify the remote moved.** A rebased
    branch needs a force push, and this repository forbids unapproved
    force pushes: present the exact push command
-   — `git push --force-with-lease=<branch>:<observed-sha> <remote> <branch>`,
-   pinning the lease to the SHA you actually inspected — and wait for the
+   — `git push --force-with-lease=<remote-branch>:<observed-sha> <remote>
+   <local-branch>:<remote-branch>`, pinning the lease to the SHA you
+   actually inspected and naming both sides, since the lease is checked
+   against the remote-side name and the two need not match — and wait for the
    user's explicit approval before running it. Never bare `--force`, and
    never bare `--force-with-lease`: the bare form checks against your
    remote-tracking ref, so any fetch since you last looked silently

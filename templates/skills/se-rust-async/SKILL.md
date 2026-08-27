@@ -33,12 +33,17 @@ Unknown argument names are an error — stop and report them before starting.
 
 1. Establish the runtime context: which runtime and flavor the crate
    uses, whether the code is library or application, and what the
-   surrounding code already does. Never mix runtimes in one process;
-   keep library code runtime-agnostic where the API allows it, and record
-   the runtime choice where a new one is being made.
+   surrounding code already does. Never nest or interleave runtimes on one
+   thread — entering a runtime from inside another panics or deadlocks —
+   and treat a second runtime on its own thread as a deliberate bridge to
+   record, never a default. Keep library code runtime-agnostic where the
+   API allows it, and record the runtime choice where a new one is made.
 2. Keep the executor unblocked. Worker threads are scarce — roughly one
-   per core — so a task should not run more than a few dozen
-   microseconds between `.await` points. Route work by kind:
+   per core — so a task that runs long between `.await` points starves
+   every other task on that thread. There is no universal budget: the
+   limit is whatever the service's latency target can absorb, so measure
+   against that rather than a number quoted from a blog post. Route work
+   by kind:
    - synchronous I/O (files, blocking database drivers) to the runtime's
      blocking pool (`spawn_blocking`);
    - sustained CPU-bound computation to a compute pool such as `rayon`,

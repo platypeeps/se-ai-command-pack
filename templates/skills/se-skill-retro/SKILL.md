@@ -48,8 +48,11 @@ Unknown argument names are an error — stop and report them before starting.
    - **fired and earned it** — the skill loaded and its workflow was used;
    - **should have fired** — the session did work a skill covers, without
      loading it;
-   - **fired wrongly** — a skill loaded for work outside its scope, or its
-     workflow was loaded and then ignored;
+   - **fired wrongly** — a skill loaded for work outside its scope;
+   - **fired and was ignored** — the right skill loaded and its workflow
+     was not followed. Keep this separate from a misfire: the trigger
+     worked, so the repair is in the workflow or the session, and filing
+     it as a trigger defect sends the fix to the wrong place;
    - **uncovered gap** — recurring work in the session that no installed
      skill addresses at all.
 3. Classify every miss by the trigger channel that failed:
