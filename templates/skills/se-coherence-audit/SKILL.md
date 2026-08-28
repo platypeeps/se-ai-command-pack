@@ -66,7 +66,10 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
 
 1. Resolve scope. Expand `input=` minus `exclude=` into an explicit file list.
    State the file count and total size before reading. Stop if `input=` is
-   absent or resolves to nothing. Never read outside the resolved set.
+   absent or resolves to nothing. Resolve every symlink and drop any whose
+   target lands outside the boundary, naming it as an exclusion — a corpus that
+   links out is common, and following the link is how an audit silently widens.
+   Never read outside the resolved set.
 2. Resolve precedence. Use `precedence=` when given; otherwise search the corpus
    for a declared ordering. Record which of the two happened, or record
    `precedence: undeclared` — that recorded value is what makes step 5 report a
@@ -80,9 +83,11 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
    with the portion read and the portion left unread — never as read in full.
 4. Run the detectors named in `classes=` against the index, applying
    `references/detector-criteria.md`. Group index entries by the subject they
-   govern first, then compare pairwise **within a group**, across files —
-   comparing every entry against every other does not survive a corpus of any
-   size, and two entries about different subjects cannot contradict. State the
+   govern first, then compare pairwise **within a group** — a group spans files
+   and includes entries that share one file, since a corpus contradicts itself
+   inside a document as readily as across two. Comparing every entry against
+   every other does not survive a corpus of any size, and two entries about
+   different subjects cannot contradict. State the
    grouping in the report so a reader can see what was never compared. Scan
    entries individually for vagueness and bandaid. A finding is reportable only
    when it names the class criterion it satisfies.

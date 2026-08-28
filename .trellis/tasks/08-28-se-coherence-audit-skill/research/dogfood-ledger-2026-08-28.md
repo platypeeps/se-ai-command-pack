@@ -10,8 +10,10 @@ Acceptance A6. Invocation: `input=AGENTS.md,.claude/rules/`
 - Precedence: **declared in the corpus, partially** — `AGENTS.md:44-48` declares
   that the repo-own routing block overrides Trellis-emitted next actions, and
   enumerates three sources it governs
-- Severity floor: `low`, set by the default `min_severity=`; `depth=` was left
-  at `standard` and so set no floor of its own
+- Depth: `deep` — the run lists its near-misses and dropped candidates
+  individually, which is what `deep` adds
+- Severity floor: `low`, set by the default `min_severity=`; `depth=` sets no
+  floor of its own
 - Sensitivity: `standard` — the corpus is agent-instruction text with no
   secret-shaped or customer material, so nothing was redacted or withheld
 - Output shape: `ledger`

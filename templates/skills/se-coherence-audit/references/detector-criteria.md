@@ -89,7 +89,9 @@ Guidance shaped as a patch rather than a rule.
   and being followed as one.
 
 **Evidence required**: one `path:line`, the verbatim text, and which marker of
-patch-shape it carries.
+patch-shape it carries — except `stacked-exception`, which is a property of a
+chain and so requires every passage in it, each with its own `path:line` and
+verbatim text, in the order a reader must chain them.
 
 **Near-misses — do not report**
 
