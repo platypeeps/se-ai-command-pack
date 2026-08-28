@@ -31,7 +31,7 @@ corrected rather than satisfied with a substitute.
 ## Findings ledger
 
 ```
-C-1  contradiction  high  confidence: medium
+C-1  missing-precedence  high  confidence: medium
   criterion: exclusive-trigger
   AGENTS.md:13
     "If a Trellis command is available on your platform (e.g.
@@ -41,12 +41,14 @@ C-1  contradiction  high  confidence: medium
      `trellis-finish-work` directly"
   why: the same trigger — needing to finish work — routes to `/trellis:finish-work`
        by one passage and away from it by the other, which calls that route a
-       bypass rather than an alternative. The precedence clause at AGENTS.md:44-48
-       nearly settles it, but enumerates "the session hooks, the
-       `.trellis/workflow.md` phase flows, and the Trellis CLI itself" and omits
-       the vendored Trellis block of AGENTS.md, which is where line 13 lives.
-       Confidence is medium, not high, because a reader may extend that clause by
-       analogy — but the corpus does not say so.
+       bypass rather than an alternative. Classified `missing-precedence` rather
+       than `contradiction`: the clause at AGENTS.md:44-48 declares an ordering
+       but does not cover both sides, because it enumerates "the session hooks,
+       the `.trellis/workflow.md` phase flows, and the Trellis CLI itself" and
+       omits the vendored Trellis block of AGENTS.md, which is where line 13
+       lives. No declared ordering reaches these two passages, so the absent
+       precedence is the finding. Confidence is medium, not high, because a
+       reader may extend that clause by analogy — but the corpus does not say so.
   resolution: add the vendored `AGENTS.md` Trellis block to the enumeration at
        AGENTS.md:44-48, so the precedence covers the file it is written in.
 ```
@@ -54,10 +56,12 @@ C-1  contradiction  high  confidence: medium
 ```
 R-1  redundancy  high  confidence: high
   criterion: overlapping-authority
-  AGENTS.md:24
-    "## Canonical command entry points"
-  AGENTS.md:55
-    "## Canonical Entry Points"
+  AGENTS.md:29
+    "The SD command pack wraps four Trellis workflows. For each, the `sd:*`
+     wrapper is the canonical entry point in this repository."
+  AGENTS.md:57
+    "The SD AI Command Pack wraps several Trellis workflows. Where a wrapper
+     exists, it is the canonical entry point"
   why: two managed blocks in one file each define which entry points are
        canonical for wrapped workflows, and neither declares a relationship to
        the other. They are owned by different writers — the first is repo-own,
@@ -102,7 +106,9 @@ R-1  redundancy  high  confidence: high
 ## Verification of A6
 
 - Every reported finding carries at least one `path:line` and verbatim quoted
-  text: **yes** (C-1: 2 locations; R-1: 2 locations).
+  text: **yes** (C-1: 2 locations; R-1: 2 locations). R-1 quotes the two
+  authority-claiming sentences rather than the block headings above them: a
+  heading names a section, it is not the rule that overlaps.
 - Every reported contradiction manually confirmed against both quoted passages:
   **yes** — C-1's two quotes were re-read at `AGENTS.md:13` and `AGENTS.md:35`
   and the precedence clause at `AGENTS.md:44-48` was read in full before

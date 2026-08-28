@@ -16,8 +16,10 @@ Two passages that cannot both be followed.
 
 - `direct-negation` — one passage requires what another forbids, on the same
   subject and the same trigger.
-- `incompatible-threshold` — two passages set different values, limits, counts,
-  or deadlines for the same measured thing.
+- `incompatible-threshold` — two passages set values, limits, counts, or
+  deadlines for the same measured thing that **cannot both hold**. Merely
+  different numbers do not qualify: a floor and a ceiling, or a default and an
+  override, are compatible by construction.
 - `conflicting-order` — two passages demand different sequences for the same
   steps, or each claims authority over the other.
 - `exclusive-trigger` — the same observable condition routes to two mutually
@@ -28,6 +30,9 @@ of every side. A contradiction reported from one location is not reportable.
 
 **Near-misses — do not report**
 
+- Two passages with different numbers for the same thing that are compatible:
+  a minimum beside a maximum, a default beside an explicit override, or a
+  guideline beside a hard limit.
 - Two rules whose scopes are stated and do not overlap. "Force-push is forbidden
   on the default branch" and "force-push the rebased branch with a pinned lease"
   govern different branches; they only look opposed.
@@ -117,5 +122,8 @@ of each copy. Redundancy reported from one location is not reportable.
 - A worked example that instantiates a rule stated elsewhere.
 - Two passages that share vocabulary but govern different subjects.
 - A deliberate restatement the corpus marks as such ("repeated here for
-  emphasis"), unless the two copies have already drifted apart — drifted copies
-  are a contradiction, and are reported as one.
+  emphasis"), while the copies still agree. Copies that have drifted apart are
+  reported: as **redundancy** at raised severity when the versions can still
+  both be followed, and as a **contradiction** only when they cannot. Drift is
+  not by itself a contradiction — a copy that gained a clarification its
+  original lacks has drifted without conflicting.

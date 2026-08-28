@@ -4199,7 +4199,7 @@ class CoherenceAuditSkillTest(unittest.TestCase):
             "`precedence: undeclared`",
             "`resolved-by-precedence`",
             "`missing-precedence`",
-            "they conflict and nothing declares which wins",
+            "the passages themselves are the finding",
         ):
             self.assertIn(phrase, workflow)
 
@@ -4286,10 +4286,16 @@ class CoherenceAuditSkillTest(unittest.TestCase):
             "**Coverage**",
             "**Findings ledger**",
             "**Observations**",
-            "**Proposed resolutions**",
             "**Limits**",
         ):
             self.assertIn(field, raw)
+        # Resolution is a field of each finding, not a separate report section:
+        # a section would let a ledger carry findings with no resolution beside
+        # them.
+        self.assertIn(
+            "its\n  proposed resolution, which is a proposal and is never applied",
+            raw,
+        )
 
 
 class ReviewSkillsGotchaMandateTest(unittest.TestCase):

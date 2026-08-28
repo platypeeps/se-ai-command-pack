@@ -47,9 +47,17 @@ reading the corpus.
 - `precedence=` — the corpus authority order, most authoritative first. Optional;
   when absent the skill looks for an ordering declared inside the corpus.
 - `depth=standard|brief|deep` — `brief` reports blocking and high findings only;
-  `deep` adds low-severity findings and near-miss observations.
+  `deep` adds low-severity findings, near-misses, and dropped low-confidence
+  candidates.
 - `min_severity=` — reporting floor. Default `low`.
+- `sensitivity=standard|restricted|minimal` — how much of a quoted passage the
+  report may reproduce. Default `standard`.
 - `format=ledger|memo` — output shape. Default `ledger`.
+
+`depth=` and `min_severity=` can each set a floor. The **stricter** of the two
+wins and the report states which: `depth=brief` raises the floor to `high`, and
+`min_severity=` may raise it further but never lowers it below the floor
+`depth=` set.
 
 ## Workflow
 
@@ -66,21 +74,31 @@ reading the corpus.
    index in later steps, never your memory of the files. Mark any file too
    large to read in full as sampled.
 4. Run the detectors named in `classes=` against the index, applying
-   `references/detector-criteria.md`. Compare index entries pairwise, within and
-   across files, for contradiction and redundancy; scan entries individually for
-   vagueness and bandaid. A finding is reportable only when it names the
-   class criterion it satisfies.
-5. Classify each conflict as `contradiction` (both sides live and no ordering
-   resolves them), `resolved-by-precedence` (an ordering settles it — an
-   observation, not a defect), or `missing-precedence` (they conflict and
-   nothing declares which wins).
+   `references/detector-criteria.md`. Group index entries by the subject they
+   govern first, then compare pairwise **within a group**, across files —
+   comparing every entry against every other does not survive a corpus of any
+   size, and two entries about different subjects cannot contradict. State the
+   grouping in the report so a reader can see what was never compared. Scan
+   entries individually for vagueness and bandaid. A finding is reportable only
+   when it names the class criterion it satisfies.
+5. Classify each conflict by what step 2 recorded, so exactly one label
+   applies:
+   - `resolved-by-precedence` — an ordering is declared, covers both sides, and
+     settles which governs. An observation, not a defect.
+   - `missing-precedence` — no ordering is declared over these two passages at
+     all. The absent precedence is the finding, not the passages.
+   - `contradiction` — an ordering is declared and covers both sides, yet still
+     does not settle them: they sit at the same authority level, or the
+     ordering leaves both live. The passages themselves are the finding.
 6. Score severity by consequence, per `references/ledger-format.md`: whether a
    reader acting on the passage would do the wrong thing, and whether the
    passage is load-bearing. Sort by severity, then by number of affected
-   locations. Drop every finding below `confidence: medium` rather than
-   reporting it.
-7. Report the coverage block first — read in full, sampled, skipped with the
-   reason — then the ledger, then the proposed resolutions.
+   locations. Drop every finding below `confidence: medium` from the ledger,
+   but keep a count of what was dropped and why — a silent drop is
+   indistinguishable from having found nothing.
+7. Report in the order the Final report section fixes, and report the dropped
+   low-confidence count in every run; list those candidates individually only at
+   `depth=deep`.
 
 ## Safety rules
 
@@ -99,21 +117,31 @@ reading the corpus.
   in `references/detector-criteria.md` exist to be applied, not skimmed.
 - A corpus that could not be audited in full is reported as partially audited
   with the unaudited remainder named. Never present a partial pass as complete.
+- Quote only the span that carries the defect, never a whole passage for
+  convenience. A corpus can contain credentials, tokens, personal data, or
+  customer material, and this skill reproduces text verbatim by design. Redact a
+  secret-shaped value inside a quote — keep the structure that makes the finding
+  legible, replace the value — and say that you redacted it. Under
+  `sensitivity=restricted` withhold named sensitive material; under
+  `sensitivity=minimal` report the location and the criterion and omit the quote,
+  marking the finding as unquotable rather than dropping it.
 - Never invent a location, quotation, criterion, severity, or resolution.
 
 ## Final report
 
 - **Audit contract** — the resolved file set with its count and size,
   exclusions, detector classes run, precedence source (supplied, declared in the
-  corpus, or undeclared), severity floor, and overall confidence;
+  corpus, or undeclared), the effective severity floor and which argument set
+  it, the sensitivity level, and overall confidence;
 - **Coverage** — files read in full, files sampled with the sampled portion, and
   files skipped with the reason for each;
 - **Findings ledger** — each finding with its id, class, severity, every
   `path:line`, the verbatim quote per location, the named criterion it
-  satisfies, what a reader acting on it would get wrong, and its confidence;
-- **Observations** — conflicts resolved by a declared precedence, plus
-  near-misses when `depth=deep`;
-- **Proposed resolutions** — one per finding, stated as a proposal and never
-  applied; and
+  satisfies, what a reader acting on it would get wrong, its confidence, and its
+  proposed resolution, which is a proposal and is never applied;
+- **Observations** — conflicts resolved by a declared precedence, the count of
+  candidates dropped below `confidence: medium`, and, at `depth=deep`, those
+  candidates and the near-misses individually; and
 - **Limits** — the unaudited remainder, sampling boundaries, unreadable files,
+  redacted or withheld quotes, subjects whose groups were never compared,
   pointers outside the corpus, and conclusions the evidence does not support.

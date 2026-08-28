@@ -1,8 +1,10 @@
 # Ledger format
 
-The report shape: the coverage block first, then the findings ledger, then the
-proposed resolutions. Coverage comes first because a ledger read without knowing
-what was skipped is read as complete.
+The report shape: the audit contract, the coverage block, the findings ledger,
+the observations, then the limits. Coverage precedes the ledger because a ledger
+read without knowing what was skipped is read as complete. There is no separate
+resolutions section — `resolution` is a field of each finding, so a proposal
+travels with the finding it belongs to instead of being restated apart from it.
 
 ## Coverage block
 
@@ -110,6 +112,10 @@ Two things are reported outside the ledger, because neither is a corpus defect:
 
 - `resolved-by-precedence` — a conflict that a declared ordering settles. Record
   both sides, the ordering, and which one wins.
-- near-misses, reported only at `depth=deep` — candidates dropped by a near-miss
+- the count of candidates dropped below `confidence: medium`, reported in every
+  run. A silent drop is indistinguishable from having found nothing, so the
+  count is not optional; the candidates themselves are listed only at
+  `depth=deep`.
+- near-misses, listed only at `depth=deep` — candidates dropped by a near-miss
   rule, with the rule that dropped them. These show the audit's reach without
   inflating the ledger.
