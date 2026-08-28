@@ -1318,6 +1318,19 @@ The corpus also pins two literal strings in every `SKILL.md`: the exact sentence
 consumer of a shared reference must additionally cite `references/<basename>.md`
 in its body, which the standard Arguments preamble satisfies.
 
+**`git add` the new skill directory before running `make check`.**
+`tests/test_update_e2e.py` builds its fixture from `git ls-files`, so a
+still-untracked `templates/skills/<name>/**` is absent from the clone the lane
+installs from. The failure names the destination
+(`error: missing pack template <tmp>/src/templates/skills/<name>/SKILL.md`) and
+reads as a generator or registry defect, but nothing in the working tree is
+wrong — only the index. `make generate` and `make release-check` both pass at
+that moment, because they read the working tree, which is what makes the lone
+`test_update_e2e` failure look like a real drift. Stage the directory and re-run;
+no code change is involved. This is the reverse of the hermeticity rule above:
+there the hazard is a test *reading* an untracked path, here it is a new payload
+file the tracked-files-only fixture cannot see.
+
 ### 7. Wrong vs Correct
 
 #### Wrong

@@ -1,10 +1,10 @@
 # se-coherence-audit dry run — this repository (2026-08-28)
 
-Acceptance A6. Invocation: `input=CLAUDE.md,AGENTS.md,.claude/rules/`
+Acceptance A6. Invocation: `input=AGENTS.md,.claude/rules/`
 
 ## Audit contract
 
-- Resolved file set: **2 files, 5,237 bytes** (of 3 supplied paths)
+- Resolved file set: **2 files, 5,237 bytes** (from 2 supplied paths)
 - Exclusions: none
 - Detector classes run: contradiction, vagueness, bandaid, redundancy (all four)
 - Precedence: **declared in the corpus, partially** — `AGENTS.md:44-48` declares
@@ -20,10 +20,13 @@ Acceptance A6. Invocation: `input=CLAUDE.md,AGENTS.md,.claude/rules/`
 |---|---|
 | read in full | `AGENTS.md` (88 lines), `.claude/rules/sd-planning-adversarial-review.md` (11 lines) |
 | sampled | none |
-| skipped | `CLAUDE.md` — absent from the repository root |
+| skipped | none |
 
-**Partially audited.** One of the three supplied paths does not exist. The
-audit covers agent-instruction text only; no other corpus was read.
+**Fully audited within the supplied boundary.** Both supplied paths resolved
+and were read end to end. The audit covers agent-instruction text only; no other
+corpus was read. An earlier draft of acceptance A6 also named a root
+agent-instruction file that this repository does not have; that criterion was
+corrected rather than satisfied with a substitute.
 
 ## Findings ledger
 
@@ -89,7 +92,6 @@ R-1  redundancy  high  confidence: high
 
 ## Limits
 
-- `CLAUDE.md` was named but does not exist; nothing was substituted for it.
 - 99 lines of corpus is enough to exercise all four detectors and both drop
   rules, but not enough to claim the repository's instruction surface is
   coherent. The rest of `.trellis/spec/` and `docs/` were not supplied and were

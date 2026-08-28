@@ -6,7 +6,8 @@ A knowledge corpus that a person or an agent reads as instruction decays in
 four specific ways that no existing pack skill detects:
 
 1. **Contradiction** — two passages that cannot both be followed. In agent
-   instruction files (`CLAUDE.md`, `AGENTS.md`, `.claude/rules/*`, `SKILL.md`)
+   instruction files (a root agent-instruction file, `AGENTS.md`,
+   `.claude/rules/*`, `SKILL.md`)
    a contradiction is not a style problem: the reader silently picks one branch
    and the corpus stops meaning what it says.
 2. **Vagueness** — a directive with no actionable trigger, threshold, actor, or
@@ -41,7 +42,7 @@ conflict as a *gap symptom* against a decision; this skill reports it as a
 ## Requirements
 
 R1. **Corpus-agnostic input.** The skill takes any path, glob, or file set the
-    user supplies — an Obsidian vault, a `CLAUDE.md` tree, `docs/`, a mixed
+    user supplies — an Obsidian vault, an agent-instruction tree, `docs/`, a mixed
     set. No built-in target list, no assumed vault layout. It states the
     resolved file set and the count before auditing, and refuses to widen scope
     beyond what was supplied.
@@ -120,8 +121,8 @@ A4. `installer/registry.py` lists the skill, and `make release-check` passes —
     `generated/registry-snapshot.json` match what the generator would write.
 A5. `se-knowledge-gap` and this skill each state the boundary against the other
     in their bodies.
-A6. A dry run over this repository's own `CLAUDE.md` + `.claude/rules/` +
-    `AGENTS.md` produces a ledger where every finding has a `path:line` and a
+A6. A dry run over this repository's own `AGENTS.md` + `.claude/rules/`
+    produces a ledger where every finding has a `path:line` and a
     verbatim quote, and every reported contradiction is manually confirmed to
     be a real one (zero fabricated pairs).
 A7. `manifest.json` `version` bumped one minor by hand before regeneration

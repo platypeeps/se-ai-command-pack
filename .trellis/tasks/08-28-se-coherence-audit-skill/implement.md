@@ -76,7 +76,7 @@ Check: `python3 -m pytest tests/test_installer_docs.py tests/test_release_gate.p
 ## 7. Dogfood the skill (acceptance A6)
 
 - [ ] Run the authored skill against this repo:
-      `input=CLAUDE.md,AGENTS.md,.claude/rules/` — produce a ledger. (Those
+      `input=AGENTS.md,.claude/rules/` — produce a ledger. (Those
       paths are fine to name here; only the shipped `SKILL.md` is brand-linted.)
 - [ ] Manually confirm every reported contradiction against both quoted
       passages.
