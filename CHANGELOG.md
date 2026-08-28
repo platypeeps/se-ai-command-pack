@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.72.0 - 2026-08-28
+
+- **New skill: `se-coherence-audit`** (family Improve). Audits a bounded corpus
+  — a note vault, agent-instruction files, per-directory rule files, or a docs
+  tree — against **itself**, for four defects no other pack skill detects:
+  contradiction, vagueness, bandaid guidance, and redundancy. It builds an
+  index of the corpus's own directives and assertions before comparing them, so
+  findings come from the text rather than from recall.
+
+  The skill is read-only and returns a prioritized ledger. Every finding carries
+  its `path:line` locations, the offending text quoted verbatim (both sides for
+  contradiction and redundancy), the named criterion it satisfies, and a
+  proposed resolution the user applies. A conflict that a declared precedence
+  settles is reported as an observation rather than a defect; a conflict with
+  **no** declared precedence makes that missing precedence the finding.
+
+  Two guards address the class's primary failure mode — confidently pairing
+  passages that are not actually opposed. `references/detector-criteria.md`
+  gives every class at least one near-miss that must not be reported, and any
+  finding below `confidence: medium` is dropped rather than reported. Coverage
+  is stated before the ledger: files read in full, sampled, and skipped with the
+  reason, so a partial audit is never presented as complete.
+
+  `se-knowledge-gap` gains the reciprocal boundary statement: it reports
+  conflict as a gap symptom against a stated decision, while the new skill
+  reports it as a corpus defect with both sides quoted.
+
 ## 0.71.0 - 2026-08-26
 
 - **New skill family: Engineer.** Thirteen skills join the pack, carrying its

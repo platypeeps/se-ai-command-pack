@@ -1,0 +1,115 @@
+# Ledger format
+
+The report shape: the coverage block first, then the findings ledger, then the
+proposed resolutions. Coverage comes first because a ledger read without knowing
+what was skipped is read as complete.
+
+## Coverage block
+
+State three sets explicitly. An empty set is written `none`, never omitted.
+
+| Set | What it records |
+|---|---|
+| read in full | every file read end to end |
+| sampled | file, which portion was read, and why the rest was not |
+| skipped | file and the reason: size, binary, unreadable, excluded |
+
+A corpus that could not be audited in full is reported as **partially audited**
+with the unaudited remainder named. Coverage is never inferred from the number
+of findings.
+
+## Finding schema
+
+| Field | Rule |
+|---|---|
+| `id` | `C-1`, `V-3`, `B-2`, `R-4` — class letter and a number, stable within one report |
+| `class` | contradiction, vagueness, bandaid, or redundancy |
+| `severity` | blocking, high, medium, or low |
+| `locations` | every `path:line`; contradiction and redundancy require at least two |
+| `quotes` | the verbatim text at each location, never paraphrased |
+| `criterion` | the named criterion from `references/detector-criteria.md` that it satisfies |
+| `why` | what a reader acting on this passage would get wrong |
+| `resolution` | the proposed fix, stated as a proposal and never applied |
+| `confidence` | high or medium; a low-confidence finding is dropped, not reported |
+
+## Severity
+
+Severity is scored by consequence, not by how many locations a finding touches.
+Three duplicated passages that currently agree are `low`; one contradiction on a
+destructive action is `blocking`.
+
+- **blocking** — a reader following the corpus would take a wrong, hard-to-undo
+  action, or two passages demand opposite actions on the same trigger.
+- **high** — load-bearing guidance that a competent reader will plausibly
+  misread.
+- **medium** — a real defect on a low-blast-radius or rarely-reached path.
+- **low** — drift risk with no present-tense wrong outcome, such as a duplicate
+  whose copies still agree.
+
+## Worked examples
+
+One per class. Each shows the evidence the schema requires.
+
+### Contradiction
+
+```
+C-1  contradiction  blocking  confidence: high
+  criterion: exclusive-trigger
+  docs/release.md:41
+    "Tag the release before the gate runs, so the gate sees the tag."
+  CONTRIBUTING.md:88
+    "Never tag until the gate is green."
+  why: the same trigger — a release being cut — routes to two exclusive
+       orderings, and nothing declares which file wins.
+  resolution: state the ordering in one file and have the other point at it.
+```
+
+### Vagueness
+
+```
+V-2  vagueness  high  confidence: high
+  criterion: undefined-gate
+  docs/deploy.md:17
+    "Deploy once the change is production-ready."
+  why: "production-ready" is the pass condition and is defined nowhere in the
+       corpus, so a reader cannot tell whether the gate is met.
+  resolution: replace with the checks that must pass, or point at their
+       definition.
+```
+
+### Bandaid
+
+```
+B-1  bandaid  medium  confidence: medium
+  criterion: expired-interim
+  scripts/README.md:63
+    "For now, re-run the importer twice; the first pass drops rows."
+  why: a defect is being worked around with no recorded cause and no exit
+       condition, so the workaround is read as the permanent procedure.
+  resolution: record the root cause and the condition under which the second
+       pass stops being required.
+```
+
+### Redundancy
+
+```
+R-3  redundancy  low  confidence: high
+  criterion: paraphrase-duplicate
+  CONTRIBUTING.md:12
+    "Every pull request needs one approving review."
+  docs/process.md:47
+    "A pull request merges after one reviewer approves."
+  why: the same rule in two places; editing one copy converts this into a
+       contradiction.
+  resolution: keep the rule in one file and have the other cite it.
+```
+
+## Observations
+
+Two things are reported outside the ledger, because neither is a corpus defect:
+
+- `resolved-by-precedence` — a conflict that a declared ordering settles. Record
+  both sides, the ordering, and which one wins.
+- near-misses, reported only at `depth=deep` — candidates dropped by a near-miss
+  rule, with the rule that dropped them. These show the audit's reach without
+  inflating the ledger.

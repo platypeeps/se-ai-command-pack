@@ -277,6 +277,10 @@
     {
       "name": "se-adr-review",
       "family": "engineer"
+    },
+    {
+      "name": "se-coherence-audit",
+      "family": "improve"
     }
   ],
   "platforms": [
@@ -401,7 +405,8 @@
       "se-video-notes",
       "se-watchlist",
       "se-weekly-review",
-      "se-brand-voice"
+      "se-brand-voice",
+      "se-coherence-audit"
     ],
     "_shared/references/personal-profile-contract.md": [
       "se-profile",

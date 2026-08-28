@@ -133,6 +133,7 @@ never goes stale by hand-editing.
 | `se-weekly-review` | Use when the user wants an evidence-backed personal weekly review across configured work and knowledge sources, with outcomes, activity, carryover, lessons, patterns, and next-week focus kept distinct. |
 | `se-review-skills` | Use when the user wants AI skills reviewed for defects, harmful instructions, observed session mistakes, interaction design, overlap, missing capabilities, capability-preserving brevity, metadata, portability, context, delegation, model routing, and selectable improvements or Trellis tasks. |
 | `se-brand-voice` | Use when the user wants written content validated against a defined brand voice - tone, terminology, style, and audience fit - with located findings and suggested rewrites, or wants starter voice guidelines drafted from representative samples when none exist. |
+| `se-coherence-audit` | Use when a knowledge corpus — a note vault, agent-instruction files, or a docs tree — must be audited against itself for contradictions, vagueness, bandaid guidance, and redundancy, returning a read-only findings ledger with both sides quoted. |
 
 ### Engineer
 

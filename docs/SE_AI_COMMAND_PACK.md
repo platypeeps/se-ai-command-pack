@@ -118,7 +118,34 @@ dates and authority signals. Individual claim verdicts stay with
 `se-fact-check`, new external evidence with `se-research`, source consolidation
 with an explicit documentation task, and continuous freshness checking with
 `se-monitor` when that separate capability is available. The audit remains
-read-only and reports every proposed follow-up as not run.
+read-only and reports every proposed follow-up as not run. Auditing a corpus
+against *itself* belongs to `se-coherence-audit`.
+
+### Coherence-audit workflow boundary
+
+`se-coherence-audit` audits a bounded corpus against itself for four internal
+defects: contradiction, vagueness, bandaid guidance, and redundancy. It resolves
+the file set from `input=` minus `exclude=`, states the count and size before
+reading, and builds an index of the corpus's own directives and assertions so
+comparisons come from the text rather than from recall. A conflict that a
+declared precedence settles is an observation; a conflict with no declared
+precedence makes that missing precedence the finding.
+
+Every reported finding carries its `path:line` locations, the offending text
+quoted verbatim — both sides for contradiction and redundancy — the named
+criterion from `references/detector-criteria.md` that it satisfies, and a
+proposed resolution. Findings below `confidence: medium` are dropped rather than
+reported, and each detector class states a near-miss that must not be reported,
+because the class's primary failure mode is confidently pairing passages that
+are not actually opposed. Coverage — read in full, sampled, skipped with the
+reason — precedes the ledger, so a partial audit is never presented as complete.
+
+The skill is read-only and never applies a resolution. It looks inward:
+`se-knowledge-gap` owns what is missing relative to a stated decision or
+audience, `se-fact-check` owns claims against external evidence, `se-prose-lint`
+owns wording and mechanics, `se-docs-bustest` owns whether a newcomer can
+execute a document cold, and `se-red-team` owns adversarial attack on a single
+artifact.
 
 ### Adaptive-learning workflow boundary
 

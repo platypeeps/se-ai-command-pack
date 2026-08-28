@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Verify canonical registration, generated parity, release metadata, prose-lint, and behavior test coverage for the new skill."}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Verify every registry, manifest, generated-overlay, documentation, and test consumer of the new skill stays aligned."}
+{"file":"tests/test_generate.py","reason":"Verify EXPECTED_SHARED_SOURCES snapshot includes the skill and test_registered_shared_sources_match_snapshot passes."}
+{"file":"tests/test_skills.py","reason":"Verify the new skill test class exists, runs under -k coherence, and matches the shape used by neighboring skills."}
+{"file":"templates/skills/se-knowledge-gap/SKILL.md","reason":"Verify the reciprocal boundary paragraph required by acceptance criterion A5."}

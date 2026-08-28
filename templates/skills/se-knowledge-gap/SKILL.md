@@ -21,7 +21,12 @@ duplicate authorities, or unresolved questions.
 
 Do not use for an individual claim verdict; route that to `se-fact-check`. Do
 not use for open-ended external evidence gathering; route that to
-`se-research`. This workflow audits the existing knowledge system. It may
+`se-research`. Auditing a corpus against itself — for passages that contradict
+each other, directives with no actionable trigger, guidance shaped as a patch,
+and rules restated in several places — belongs to `se-coherence-audit`, which
+reports those as corpus defects with both sides quoted; this skill reports a
+conflict only as a gap symptom against the stated decision or audience. This
+workflow audits the existing knowledge system. It may
 propose `se-monitor` for ongoing freshness checks, but must report that workflow
 as unavailable when it is not present in the installed or discoverable pack.
 
