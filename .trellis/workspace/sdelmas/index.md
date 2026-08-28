@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-4.md`
-- **Total Sessions**: 193
-- **Last Active**: 2026-08-26
+- **Total Sessions**: 194
+- **Last Active**: 2026-08-28
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-4.md` | ~1688 | Active |
+| `journal-4.md` | ~1715 | Active |
 | `journal-3.md` | ~1985 | Archived |
 | `journal-2.md` | ~1969 | Archived |
 | `journal-1.md` | ~1982 | Archived |
@@ -32,6 +32,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 194 | 2026-08-28 | Refresh sd-ai-command-pack to 0.71.62 | `b7ab060f8b40f00dcb1492519ba8e7cc6afca432` | `chore/pack-refresh-0.71.62` |
 | 193 | 2026-08-26 | Adopt the claude-skills library as pack-product inspiration | `fad361b`, `5653415`, `9de85c3`, `148ef50`, `daa0b31`, `1991a64`, `c3de4f2`, `aa3cbf6` | `feat/adopt-claude-skills` |
 | 192 | 2026-08-25 | Review the gemini/codex retirements: inventory, decision, and upstream relay | `f158f40ce0beef0f75f4e86e1e5ad069987c0673` | `docs/gemini-codex-retirement-inventory` |
 | 191 | 2026-08-21 | Refresh sd-ai-command-pack to 0.71.45 | `7af8f9ac6acc543e144e5fc4d55cd9ffe5ecbae7` | `chore/pack-refresh-0.71.45` |

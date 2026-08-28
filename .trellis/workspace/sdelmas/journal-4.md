@@ -1686,3 +1686,39 @@ Re-authored the durable ideas from Shearerbeard/claude-skills as pack product su
 ### Next Steps
 
 - None - task complete
+
+
+## Session 194: Refresh sd-ai-command-pack to 0.71.62
+<!-- trellis-session: v=2 fp=c0750152ac57b050 -->
+
+**Date**: 2026-08-28
+**Task**: Refresh sd-ai-command-pack to 0.71.62
+**Branch**: `chore/pack-refresh-0.71.62`
+
+### Summary
+
+Fleet refresh: advanced the se-ai-command-pack thin pin from 0.71.51 to 0.71.62.
+
+### Main Changes
+
+- Advanced the thin pin to v0.71.62 and refreshed installer-managed adapters, the AGENTS.md entry-point block, and the .sd-ai-command-pack receipts.
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b7ab060f8b40f00dcb1492519ba8e7cc6afca432` | chore(pack): refresh sd-ai-command-pack to 0.71.62 |
+
+### Testing
+
+- [OK] sd-ai-command-pack-housekeeping.sh --self-test passed: all scenarios passed.
+- [OK] npm run check:full passed with zero findings.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
