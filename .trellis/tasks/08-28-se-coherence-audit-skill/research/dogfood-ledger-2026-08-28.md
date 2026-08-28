@@ -17,6 +17,11 @@ Acceptance A6. Invocation: `input=AGENTS.md,.claude/rules/`
 - Sensitivity: `standard` — the corpus is agent-instruction text with no
   secret-shaped or customer material, so nothing was redacted or withheld
 - Output shape: `ledger`
+- Comparison grouping: three subject groups — **entry-point authority** (which
+  command or wrapper is canonical), **workflow routing** (which next action a
+  reader takes and when), and **planning-review procedure**. Entries in
+  different groups were never compared, so a conflict spanning two of them would
+  not have been found
 - Overall confidence: medium — the corpus is small, so the run exercises the
   detectors rather than establishing that the repository is coherent
 
@@ -83,6 +88,9 @@ R-1  redundancy  low  confidence: high
 ```
 
 ## Observations
+
+**Candidates dropped below `confidence: medium`: 1** — listed below, because
+this run is `depth=deep`.
 
 **Near-misses dropped** (`depth=deep`):
 

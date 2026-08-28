@@ -149,8 +149,9 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
 - **Coverage** — files read in full, files sampled with the sampled portion, and
   files skipped with the reason for each;
 - **Findings ledger** — each finding with its id, class, severity, every
-  `path:line`, the verbatim quote per location, the named criterion it
-  satisfies, what a reader acting on it would get wrong, its confidence, and its
+  `path:line`, the verbatim quote per location — redacted, or withheld and the
+  finding marked unquotable, where `sensitivity=` requires — the named criterion
+  it satisfies, what a reader acting on it would get wrong, its confidence, and its
   proposed resolution, which is a proposal and is never applied;
 - **Observations** — conflicts resolved by a declared precedence, the count of
   candidates dropped below `confidence: medium`, and, at `depth=deep`, those

@@ -4,8 +4,11 @@
 
 - **New skill: `se-coherence-audit`** (family Improve). Audits a bounded corpus
   — a note vault, agent-instruction files, per-directory rule files, or a docs
-  tree — against **itself**, for four defects no other pack skill detects:
-  contradiction, vagueness, bandaid guidance, and redundancy. It builds an
+  tree — against **itself**, for four defects: contradiction, vagueness, bandaid
+  guidance, and redundancy. No other pack skill audits a corpus against itself
+  this way; `se-knowledge-gap` measures a corpus against a stated decision and
+  reports conflict only as a gap symptom, and `se-prose-lint` reads wording
+  rather than what two passages jointly require. It builds an
   index of the corpus's own directives and assertions before comparing them, so
   findings come from the text rather than from recall.
 

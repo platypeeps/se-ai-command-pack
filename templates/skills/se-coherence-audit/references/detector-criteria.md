@@ -18,8 +18,9 @@ Two passages that cannot both be followed.
   subject and the same trigger.
 - `incompatible-threshold` — two passages set values, limits, counts, or
   deadlines for the same measured thing that **cannot both hold**. Merely
-  different numbers do not qualify: a floor and a ceiling, or a default and an
-  override, are compatible by construction.
+  different numbers do not qualify on their own: a floor below its ceiling, or a
+  default and an override, are compatible. Compare the values, not their roles —
+  a floor above its ceiling admits nothing and does qualify.
 - `conflicting-order` — two passages demand different sequences for the same
   steps, or each claims authority over the other.
 - `exclusive-trigger` — the same observable condition routes to two mutually
