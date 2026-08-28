@@ -10,7 +10,11 @@ Acceptance A6. Invocation: `input=AGENTS.md,.claude/rules/`
 - Precedence: **declared in the corpus, partially** — `AGENTS.md:44-48` declares
   that the repo-own routing block overrides Trellis-emitted next actions, and
   enumerates three sources it governs
-- Severity floor: `low`
+- Severity floor: `low`, set by the default `min_severity=`; `depth=` was left
+  at `standard` and so set no floor of its own
+- Sensitivity: `standard` — the corpus is agent-instruction text with no
+  secret-shaped or customer material, so nothing was redacted or withheld
+- Output shape: `ledger`
 - Overall confidence: medium — the corpus is small, so the run exercises the
   detectors rather than establishing that the repository is coherent
 
@@ -31,8 +35,9 @@ corrected rather than satisfied with a substitute.
 ## Findings ledger
 
 ```
-C-1  missing-precedence  high  confidence: medium
+M-1  missing-precedence  high  confidence: medium
   criterion: exclusive-trigger
+  precedence: declared at AGENTS.md:44-48 but reaching neither side
   AGENTS.md:13
     "If a Trellis command is available on your platform (e.g.
      `/trellis:finish-work`, `/trellis:continue`), prefer it over manual steps."
@@ -54,7 +59,7 @@ C-1  missing-precedence  high  confidence: medium
 ```
 
 ```
-R-1  redundancy  high  confidence: high
+R-1  redundancy  low  confidence: high
   criterion: overlapping-authority
   AGENTS.md:29
     "The SD command pack wraps four Trellis workflows. For each, the `sd:*`
@@ -67,7 +72,9 @@ R-1  redundancy  high  confidence: high
        the other. They are owned by different writers — the first is repo-own,
        the second is replaced on the next pack install — so they drift
        independently, and a reader asking "which entry point is canonical" gets
-       two answers with no rule for which governs.
+       two answers with no rule for which governs. Severity is `low`, not
+       higher: the two copies agree today, so the harm is drift risk with no
+       present-tense wrong outcome — the severity model's own `low` case.
   resolution: have the repo-own block state its relationship to the pack block
        (which one governs when they differ), since only the repo-own block can
        be edited here.
@@ -106,10 +113,12 @@ R-1  redundancy  high  confidence: high
 ## Verification of A6
 
 - Every reported finding carries at least one `path:line` and verbatim quoted
-  text: **yes** (C-1: 2 locations; R-1: 2 locations). R-1 quotes the two
+  text: **yes** (M-1: 2 locations; R-1: 2 locations). R-1 quotes the two
   authority-claiming sentences rather than the block headings above them: a
   heading names a section, it is not the rule that overlaps.
-- Every reported contradiction manually confirmed against both quoted passages:
-  **yes** — C-1's two quotes were re-read at `AGENTS.md:13` and `AGENTS.md:35`
+- Every reported pairing manually confirmed against both quoted passages:
+  **yes** — M-1's two quotes were re-read at `AGENTS.md:13` and `AGENTS.md:35`
   and the precedence clause at `AGENTS.md:44-48` was read in full before
-  classifying. Zero fabricated pairs.
+  classifying. Zero fabricated pairs. The run reported no `contradiction`: the
+  one conflict it found is classified `missing-precedence`, because no declared
+  ordering reaches both of its sides.

@@ -4216,7 +4216,7 @@ class CoherenceAuditSkillTest(unittest.TestCase):
     def test_findings_need_quotes_locations_and_confidence(self) -> None:
         safety = skill_section("se-coherence-audit", "## Safety rules").lower()
         for phrase in (
-            "never report a contradiction without both sides quoted verbatim",
+            "never report a contradiction whose sides you could not read and quote",
             "a pairing you cannot quote is not a finding",
             "never report a low-confidence finding",
             "never invent a location, quotation, criterion, severity, or resolution",

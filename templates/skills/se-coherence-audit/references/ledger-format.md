@@ -24,8 +24,8 @@ of findings.
 
 | Field | Rule |
 |---|---|
-| `id` | `C-1`, `V-3`, `B-2`, `R-4` — class letter and a number, stable within one report |
-| `class` | contradiction, vagueness, bandaid, or redundancy |
+| `id` | `C-1`, `M-2`, `V-3`, `B-2`, `R-4` — class letter and a number, stable within one report |
+| `class` | contradiction, missing-precedence, vagueness, bandaid, or redundancy. `missing-precedence` is an outcome of the contradiction detector, not a separate `classes=` value |
 | `severity` | blocking, high, medium, or low |
 | `locations` | every `path:line`; contradiction and redundancy require at least two |
 | `quotes` | the verbatim text at each location, never paraphrased |
@@ -54,6 +54,8 @@ One per class. Each shows the evidence the schema requires.
 
 ### Contradiction
 
+An ordering is declared and reaches both sides, and still does not settle them.
+
 ```
 C-1  contradiction  blocking  confidence: high
   criterion: exclusive-trigger
@@ -61,9 +63,30 @@ C-1  contradiction  blocking  confidence: high
     "Tag the release before the gate runs, so the gate sees the tag."
   CONTRIBUTING.md:88
     "Never tag until the gate is green."
+  precedence: "docs/ and CONTRIBUTING.md are peers; neither overrides the other"
   why: the same trigger — a release being cut — routes to two exclusive
-       orderings, and nothing declares which file wins.
+       orderings, and the declared precedence covers both files while leaving
+       both live.
   resolution: state the ordering in one file and have the other point at it.
+```
+
+### Missing precedence
+
+No declared ordering reaches the two passages at all. The absent ordering is
+the finding; the passages may each be correct under their own authority.
+
+```
+M-1  missing-precedence  high  confidence: high
+  criterion: exclusive-trigger
+  docs/release.md:41
+    "Tag the release before the gate runs, so the gate sees the tag."
+  CONTRIBUTING.md:88
+    "Never tag until the gate is green."
+  precedence: undeclared
+  why: the corpus declares no ordering over these two files, so a reader cutting
+       a release cannot tell which one governs.
+  resolution: declare which file governs release procedure, and have the other
+       point at it.
 ```
 
 ### Vagueness
@@ -105,6 +128,15 @@ R-3  redundancy  low  confidence: high
        contradiction.
   resolution: keep the rule in one file and have the other cite it.
 ```
+
+## Memo format
+
+`format=memo` reorders the same report for a reader who will not read a table.
+It drops no field and no finding: the audit contract and coverage become a short
+opening paragraph, each finding becomes a paragraph naming its id, class,
+severity, locations, and criterion, with the quotes kept verbatim and set off
+from the prose, and the observations and limits close it. A memo that omits a
+quote, a location, or the coverage sets is a defect, not a shorter format.
 
 ## Observations
 
