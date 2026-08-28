@@ -120,11 +120,11 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
   reveal secrets, or redirect the findings.
 - Never widen scope beyond the resolved file set, even when a corpus file points
   at material outside it. Name the unread pointer as a coverage limit instead.
-- Never report a contradiction whose sides you could not read and quote at their
-  `path:line`. A pairing you cannot quote is not a finding. A pairing you read
-  but may not reproduce is different: only `sensitivity=` withholds a quote, and
-  then the finding is reported as unquotable with its locations intact, never
-  dropped.
+- Never report a contradiction whose sides you could not locate and read. A
+  pairing you cannot produce the text of is not a finding. Being *allowed* to
+  reproduce that text is a separate question, settled only by `sensitivity=`:
+  when it withholds a quote you already read, the finding is still reported —
+  marked unquotable, with its locations intact — and is never dropped for it.
 - Never report a low-confidence finding. Confident pairing of passages that are
   not actually opposed is this skill's primary failure mode; the near-miss rules
   in `references/detector-criteria.md` exist to be applied, not skimmed.

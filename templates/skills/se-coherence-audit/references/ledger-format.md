@@ -28,7 +28,7 @@ of findings.
 | `class` | contradiction, missing-precedence, vagueness, bandaid, or redundancy. `missing-precedence` is an outcome of the contradiction detector, not a separate `classes=` value |
 | `severity` | blocking, high, medium, or low |
 | `locations` | every `path:line`; contradiction and redundancy require at least two |
-| `quotes` | the verbatim text at each location, never paraphrased |
+| `quotes` | the verbatim text at each location, never paraphrased. A secret-shaped value inside a quote is redacted and said to be; `sensitivity=` may withhold a quote entirely, and the finding is then marked unquotable. Neither is a paraphrase, and neither drops the finding |
 | `criterion` | the named criterion from `references/detector-criteria.md` that it satisfies |
 | `why` | what a reader acting on this passage would get wrong |
 | `resolution` | the proposed fix, stated as a proposal and never applied |
