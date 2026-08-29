@@ -158,6 +158,7 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-video-notes", family="understand"),
     SkillInfo(name="se-watchlist", family="operate"),
     SkillInfo(name="se-brand-voice", family="improve"),
+    SkillInfo(name="se-coherence-audit", family="improve"),
     SkillInfo(name="se-rust-design", family="engineer"),
     SkillInfo(name="se-rust-quality", family="engineer"),
     SkillInfo(name="se-rust-modules", family="engineer"),
@@ -171,7 +172,6 @@ SKILLS: tuple[SkillInfo, ...] = (
     SkillInfo(name="se-prose-lint", family="engineer"),
     SkillInfo(name="se-humanizer", family="engineer"),
     SkillInfo(name="se-adr-review", family="engineer"),
-    SkillInfo(name="se-coherence-audit", family="improve"),
 )
 SKILL_NAMES: tuple[str, ...] = tuple(skill.name for skill in SKILLS)
 

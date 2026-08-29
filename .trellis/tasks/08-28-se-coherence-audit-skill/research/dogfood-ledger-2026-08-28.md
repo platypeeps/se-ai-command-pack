@@ -44,7 +44,8 @@ corrected rather than satisfied with a substitute.
 ```
 M-1  missing-precedence  high  confidence: medium
   criterion: exclusive-trigger
-  precedence: declared at AGENTS.md:44-48 but reaching neither side
+  precedence: declared at AGENTS.md:44-48; it reaches the repo-own side and
+       not the vendored one, so it settles nothing between them
   AGENTS.md:13
     "If a Trellis command is available on your platform (e.g.
      `/trellis:finish-work`, `/trellis:continue`), prefer it over manual steps."

@@ -335,6 +335,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-video-notes",
                 "se-watchlist",
                 "se-brand-voice",
+                "se-coherence-audit",
                 "se-rust-design",
                 "se-rust-quality",
                 "se-rust-modules",
@@ -348,7 +349,6 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-prose-lint",
                 "se-humanizer",
                 "se-adr-review",
-                "se-coherence-audit",
             ),
         )
         self.assertEqual(

@@ -4950,6 +4950,114 @@
       "platform": "agents",
       "kind": "skill",
       "scope": "user",
+      "source": "templates/skills/se-coherence-audit/SKILL.md",
+      "target": ".config/agents/skills/se-coherence-audit/SKILL.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-coherence-audit/references/detector-criteria.md",
+      "target": ".config/agents/skills/se-coherence-audit/references/detector-criteria.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-coherence-audit/references/ledger-format.md",
+      "target": ".config/agents/skills/se-coherence-audit/references/ledger-format.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".config/agents/skills/se-coherence-audit/references/argument-vocabulary.md",
+      "anchor": ".config/agents",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "generated/skills/claude/se-coherence-audit/SKILL.md",
+      "target": ".claude/skills/se-coherence-audit/SKILL.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-coherence-audit/references/detector-criteria.md",
+      "target": ".claude/skills/se-coherence-audit/references/detector-criteria.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-coherence-audit/references/ledger-format.md",
+      "target": ".claude/skills/se-coherence-audit/references/ledger-format.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "claude",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".claude/skills/se-coherence-audit/references/argument-vocabulary.md",
+      "anchor": ".claude",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-coherence-audit/SKILL.md",
+      "target": ".codex/skills/se-coherence-audit/SKILL.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-coherence-audit/references/detector-criteria.md",
+      "target": ".codex/skills/se-coherence-audit/references/detector-criteria.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/se-coherence-audit/references/ledger-format.md",
+      "target": ".codex/skills/se-coherence-audit/references/ledger-format.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "codex",
+      "kind": "skill",
+      "scope": "user",
+      "source": "templates/skills/_shared/references/argument-vocabulary.md",
+      "target": ".codex/skills/se-coherence-audit/references/argument-vocabulary.md",
+      "anchor": ".codex",
+      "install": "if-anchor-exists"
+    },
+    {
+      "platform": "agents",
+      "kind": "skill",
+      "scope": "user",
       "source": "templates/skills/se-rust-design/SKILL.md",
       "target": ".config/agents/skills/se-rust-design/SKILL.md",
       "anchor": ".config/agents",
@@ -5294,114 +5402,6 @@
       "scope": "user",
       "source": "templates/skills/se-adr-review/SKILL.md",
       "target": ".codex/skills/se-adr-review/SKILL.md",
-      "anchor": ".codex",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "agents",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/SKILL.md",
-      "target": ".config/agents/skills/se-coherence-audit/SKILL.md",
-      "anchor": ".config/agents",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "agents",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/references/detector-criteria.md",
-      "target": ".config/agents/skills/se-coherence-audit/references/detector-criteria.md",
-      "anchor": ".config/agents",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "agents",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/references/ledger-format.md",
-      "target": ".config/agents/skills/se-coherence-audit/references/ledger-format.md",
-      "anchor": ".config/agents",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "agents",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/_shared/references/argument-vocabulary.md",
-      "target": ".config/agents/skills/se-coherence-audit/references/argument-vocabulary.md",
-      "anchor": ".config/agents",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "claude",
-      "kind": "skill",
-      "scope": "user",
-      "source": "generated/skills/claude/se-coherence-audit/SKILL.md",
-      "target": ".claude/skills/se-coherence-audit/SKILL.md",
-      "anchor": ".claude",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "claude",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/references/detector-criteria.md",
-      "target": ".claude/skills/se-coherence-audit/references/detector-criteria.md",
-      "anchor": ".claude",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "claude",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/references/ledger-format.md",
-      "target": ".claude/skills/se-coherence-audit/references/ledger-format.md",
-      "anchor": ".claude",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "claude",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/_shared/references/argument-vocabulary.md",
-      "target": ".claude/skills/se-coherence-audit/references/argument-vocabulary.md",
-      "anchor": ".claude",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "codex",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/SKILL.md",
-      "target": ".codex/skills/se-coherence-audit/SKILL.md",
-      "anchor": ".codex",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "codex",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/references/detector-criteria.md",
-      "target": ".codex/skills/se-coherence-audit/references/detector-criteria.md",
-      "anchor": ".codex",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "codex",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/se-coherence-audit/references/ledger-format.md",
-      "target": ".codex/skills/se-coherence-audit/references/ledger-format.md",
-      "anchor": ".codex",
-      "install": "if-anchor-exists"
-    },
-    {
-      "platform": "codex",
-      "kind": "skill",
-      "scope": "user",
-      "source": "templates/skills/_shared/references/argument-vocabulary.md",
-      "target": ".codex/skills/se-coherence-audit/references/argument-vocabulary.md",
       "anchor": ".codex",
       "install": "if-anchor-exists"
     },

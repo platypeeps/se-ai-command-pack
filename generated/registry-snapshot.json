@@ -227,6 +227,10 @@
       "family": "improve"
     },
     {
+      "name": "se-coherence-audit",
+      "family": "improve"
+    },
+    {
       "name": "se-rust-design",
       "family": "engineer"
     },
@@ -277,10 +281,6 @@
     {
       "name": "se-adr-review",
       "family": "engineer"
-    },
-    {
-      "name": "se-coherence-audit",
-      "family": "improve"
     }
   ],
   "platforms": [
