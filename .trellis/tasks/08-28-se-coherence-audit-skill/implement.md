@@ -78,7 +78,10 @@ Check: `python3 -m pytest tests/test_installer_docs.py tests/test_release_gate.p
 - [x] Run the authored skill against this repo:
       `input=AGENTS.md,.claude/rules/` — produce a ledger. (Those
       paths are fine to name here; only the shipped `SKILL.md` is brand-linted.)
-      Ledger: `research/dogfood-ledger-2026-08-28.md`.
+      Ledger: `research/dogfood-ledger-2026-08-28.md`. The corpus is narrower
+      than A6 first named: the root agent-instruction file it also listed does
+      not exist in this repository, so A6 was corrected rather than satisfied
+      with a substitute.
 - [x] Manually confirm every reported contradiction against both quoted
       passages. The run reported no `contradiction`; its one conflict is
       `missing-precedence`, and both of its passages were re-read.

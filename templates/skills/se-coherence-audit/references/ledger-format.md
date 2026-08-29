@@ -57,7 +57,9 @@ One per class. Each shows the evidence the schema requires.
 ### Contradiction
 
 No ordering could settle it, because both passages sit at one authority. Here
-they are in one file, so there is no ranking left to invoke.
+they share a single block of one file, so there is no ranking left to invoke —
+two separately owned blocks of one file would rank against each other, and this
+would be a missing precedence instead.
 
 ```
 C-1  contradiction  blocking  confidence: high
@@ -146,7 +148,8 @@ quote, a location, or the coverage sets is a defect, not a shorter format.
 
 ## Observations
 
-Two things are reported outside the ledger, because neither is a corpus defect:
+Three things are reported outside the ledger, because none of them is a corpus
+defect:
 
 - `resolved-by-precedence` — a conflict that a declared ordering settles. Record
   both sides, the ordering, and which one wins.
