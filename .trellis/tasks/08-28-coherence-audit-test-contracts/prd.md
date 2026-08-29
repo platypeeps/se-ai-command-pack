@@ -44,23 +44,23 @@ research notes.
 
 ## Acceptance Criteria
 
-- [ ] No assertion in `CoherenceAuditSkillTest` requires a full prose sentence
+- [x] No assertion in `CoherenceAuditSkillTest` requires a full prose sentence
       to match verbatim, and every contract with a structural carrier is
       asserted against that carrier rather than against prose about it. A
       surviving token pin is permitted only where the research notes name the
       contract and show no structural surface exists for it.
-- [ ] Rewording a sentence whose contract has a structural carrier — an
+- [x] Rewording a sentence whose contract has a structural carrier — an
       argument, a ledger field, a class, a criterion, a report field — leaves
       the suite green. Contracts with no structural carrier (the read-only
       safety rules, the confidence floor) keep a shortest-token pin, which a
       voice-inverting rewrite still breaks; that bound is deliberate and is
       recorded in the research notes. Demonstrate both halves with worked
       rewordings there.
-- [ ] Deleting a documented argument, a ledger field, a conflict class, or a
+- [x] Deleting a documented argument, a ledger field, a conflict class, or a
       detector class still fails the suite.
-- [ ] Dropping the redaction carve-out from either `SKILL.md` or
+- [x] Dropping the redaction carve-out from either `SKILL.md` or
       `ledger-format.md`, or letting the two disagree, fails the suite.
-- [ ] `make check` is green.
+- [x] `make check` is green.
 
 ## Notes
 
