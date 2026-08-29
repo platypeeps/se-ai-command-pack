@@ -38,9 +38,10 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 
 Arguments arrive as free text with the invocation: `key=value` pairs and bare
 flags. Unknown argument names are an error — stop and report them before
-reading the corpus. So is a value outside the set its argument names, a
-duplicated key, and a bare value where a pair belongs: report the argument, the
-value received, and the values it accepts, and read nothing. Never repair an
+reading the corpus. A value outside the set its argument names, a duplicated
+key, and a bare value where a pair belongs are errors on the same footing:
+report the argument, the value received, and the values it accepts, and read
+nothing. Never repair an
 argument by guessing what was meant.
 
 - `input=` — the corpus: paths, globs, or a vault root. Required. Never
@@ -111,11 +112,13 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
    - `missing-precedence` — an ordering could settle it, but none that is
      declared reaches both sides. The absent ordering is the finding; the
      passages may each be correct under their own authority.
-   - `contradiction` — no ordering could settle it. The passages cannot both be
-     followed in the same scope, so ranking their files changes nothing: a
-     direct negation on one subject and trigger is a contradiction whether or
-     not the corpus declares any precedence at all. The passages themselves are
-     the finding.
+   - `contradiction` — no ordering could settle it, because the passages sit at
+     one authority: the same file or block, or two the corpus declares peers.
+     There is no ranking left to invoke, so the passages themselves are the
+     finding. Note what this excludes — two passages in two files that a
+     precedence *could* separate are `missing-precedence` until one is declared,
+     however flatly they negate each other, because declaring it retires one of
+     them.
 6. Score severity by consequence, per `references/ledger-format.md`: whether a
    reader acting on the passage would do the wrong thing, and whether the
    passage is load-bearing. Sort most severe first, and within one severity

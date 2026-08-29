@@ -56,23 +56,23 @@ One per class. Each shows the evidence the schema requires.
 
 ### Contradiction
 
-No ordering could settle it: the two passages cannot both be followed in one
-scope, so ranking their files changes nothing.
+No ordering could settle it, because both passages sit at one authority. Here
+they are in one file, so there is no ranking left to invoke.
 
 ```
 C-1  contradiction  blocking  confidence: high
   criterion: direct-negation
   docs/release.md:41
     "Tag the release before the gate runs, so the gate sees the tag."
-  CONTRIBUTING.md:88
+  docs/release.md:88
     "Never tag until the gate is green."
-  precedence: irrelevant — the two demands are on the same tag, in the same
-       scope, and cannot both be met whichever file governs
+  precedence: irrelevant — one file, one authority; no ordering can retire
+       either sentence
   why: a release cannot be both tagged before the gate and untagged until it is
-       green; whoever cuts one takes an action the corpus also forbids, and
+       green, so whoever cuts one takes an action the same file forbids, and
        retagging a published release is costly to undo.
-  resolution: change one of the two demands — ranking the files cannot help,
-       because the loser's rule still forbids what the winner's requires.
+  resolution: delete or rewrite one of the two sentences. Nothing outside the
+       file can choose between them.
 ```
 
 ### Missing precedence
