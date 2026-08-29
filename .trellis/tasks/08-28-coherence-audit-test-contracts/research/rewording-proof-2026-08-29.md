@@ -251,3 +251,55 @@ repeat now, like the two projections fixed in round 4.
 Also fixed: the focused validation command in `implement.md` excluded the helper
 class, and `-k "A or B"` is not a thing — `unittest -k` takes patterns, and
 multiple `-k` flags are what unions them.
+
+
+## Round 6: the anchor that only looked like an anchor
+
+The reviewer said the `authority` + `block` pin still breaks under a
+contract-preserving rewording. It does. The obvious repair — drop `block`,
+keep `authority`, lean on anchor 2 — was wrong, and the probe said so.
+
+**P20 — delete the block-level rule from the `contradiction` bullet.** With
+`authority` as the only anchor: **passed**. Deleting the rule leaves "the
+passages sit at one authority" in the bullet, so the word survives its own
+contract. Anchor 2 (`precedence: irrelevant`, in `ledger-format.md`) did not
+catch it either: that token models "no ordering applies", not "authority is
+sub-file". The contract was unguarded.
+
+Adding a `{block, section}` vocabulary check did not fix it on the first try —
+P20 still passed, because `bullet_body()` was returning the whole rest of the
+section. The bullet is the *last* sub-bullet of step 5's nested list, and the
+reader stopped only at the next `- `; with no sibling after it, the body ran on
+through steps 6 and 7, where "Final report section" supplied the word
+`section`. Every pin scoped to a trailing sub-bullet was reading the section,
+not the bullet.
+
+`bullet_body()` now ends a body at its own list level: a sibling bullet, a
+de-indent, or the enclosing numbered step. `MarkdownContractHelperTest` covers
+it with a nested fixture whose last sub-bullet is followed by an outer step.
+
+With both fixes:
+
+- **P20** (delete the rule) — **FAILED (failures=1)**, as required.
+- **P21** (reword block/file to section/document throughout, contract intact) —
+  **OK**.
+
+The lesson generalizes past this bullet: a pin is only scoped as tightly as the
+parser scopes it, and a parser that over-collects turns a bullet pin into a
+section pin without changing a line of the test. The deletion probe is what
+tells the two apart — the assertion itself reads the same either way.
+
+### Round 6: the parser findings
+
+- `_table_rows()` collected every pipe line in a section, so two tables under
+  one heading merged into one and a name lookup could resolve against the wrong
+  one. It now stops at the first non-pipe line after the table starts.
+- `argument_names()` skipped a bullet head without `=`, reporting a malformed
+  declaration as no declaration. It raises.
+- `argument_values()` returned an empty set for an argument that declares no
+  values, and its `[a-z_]+` charset hid any value with a digit or a hyphen. It
+  raises on empty and reads `[a-z0-9_-]+`.
+- Criterion slugs read `[a-z0-9-]+` for the same reason.
+
+Each parse decision has a case in `MarkdownContractHelperTest` rather than
+being proven incidentally by a caller.

@@ -100,10 +100,14 @@ schema-row half is new.
 **Classification by settleable authority.** Two independent anchors, so a
 rewording of either leaves the other standing:
 
-1. In the `contradiction` bullet of `## Workflow` step 5 — scoped to that bullet,
-   not the section — assert both `authority` and `block` appear. Deleting the
-   block-level rule removes both; rewording "Authority is the block a passage
-   lives in, not the file" keeps them.
+1. In the `contradiction` bullet of `## Workflow` step 5 — scoped to that
+   bullet, not the section — assert `authority` appears, and that the bullet
+   names a unit smaller than the file, accepting either `block` or `section`.
+   `authority` alone catches nothing: deleting the rule leaves "the passages
+   sit at one authority" behind. `block` alone is a word choice, and fails the
+   contract-preserving rewording "authority is the section a passage sits in,
+   not the document". The set is the pin: the rule cannot exist without naming
+   the sub-file unit, and the noun it uses is free.
 2. In `ledger-format.md`'s Contradiction worked example, assert
    `precedence: irrelevant`. That token exists *only* because one authority
    leaves no ordering to invoke, so it fails if the rule is dropped from the
@@ -159,10 +163,17 @@ is shown rather than asserted.
 
 ## Boundaries And Non-Goals
 
-- Only `CoherenceAuditSkillTest` changes. No other test class, no skill file, no
-  installer or template content.
+- `CoherenceAuditSkillTest` is rewritten, and `MarkdownContractHelperTest` is
+  added beside it to cover the new parse helpers: a contract assertion is only
+  as good as the parse it rests on, so the helpers carry their own tests rather
+  than being proven incidentally by the class that calls them. No other test
+  class, no skill file, no installer or template content.
 - `EXTERNAL_INPUT_SKILLS`, the family map, and `SKILL_NAMES` ordering assertions
   are untouched — they pin identifiers, not prose, and did not break.
+- `bullet_body()` ends a body at its own list level — the next sibling bullet,
+  a de-indent, or the enclosing numbered step. Stopping only at the next `- `
+  makes the last sub-bullet of a nested list absorb the rest of the section,
+  which silently unscopes every pin written against it.
 - Not a rewrite of the shared helpers. `section_body()`, `skill_section()`,
   `resource_section()`, `normalized*()` stay as they are; new parsing helpers are
   added beside them.
@@ -173,7 +184,9 @@ is shown rather than asserted.
 
 | File | Change |
 |---|---|
-| `tests/test_skills.py` | rewrite `CoherenceAuditSkillTest`; add table/bullet parsing helpers |
+| `tests/test_skills.py` | rewrite `CoherenceAuditSkillTest`; add table/bullet parsing helpers; add `MarkdownContractHelperTest` |
+| `.trellis/spec/backend/quality-guidelines.md` | record the structural-surface, raising-parser, and enumerate-before-replacing rules this task established |
+| `.trellis/tasks/08-28-coherence-audit-test-contracts/implement.md` | validation plan covers both test classes |
 | `.trellis/tasks/08-28-coherence-audit-test-contracts/research/rewording-proof-*.md` | new; records the worked rewording and the deletion probes |
 
 No payload file changes, so no version bump and no `make generate` run.

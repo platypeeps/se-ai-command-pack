@@ -163,11 +163,17 @@ def _table_rows(text: str, heading: str) -> list[str]:
 
     Raises when the section carries no table, rather than returning empty: an
     empty return would let a deleted table pass as "no members to check"."""
-    rows = [
-        line.strip()
-        for line in section_lines(text, heading)
-        if line.strip().startswith("|")
-    ]
+    rows: list[str] = []
+    for line in section_lines(text, heading):
+        stripped = line.strip()
+        if stripped.startswith("|"):
+            rows.append(stripped)
+            continue
+        if rows:
+            # A blank line or prose ends the table. Collecting past it would
+            # splice a second, unrelated table's rows onto the first one's, and
+            # a name lookup would then resolve against the wrong table.
+            break
     if not rows:
         raise AssertionError(f"no table under heading: {heading}")
     split = [[_clean_cell(c) for c in row.strip("|").split("|")] for row in rows]
@@ -227,14 +233,28 @@ def bullet_body(text: str, heading: str, token: str) -> str:
     in the section from satisfying the assertion."""
     opener = f"- `{token}"
     collected: list[str] = []
+    indent = 0
     for line in section_lines(text, heading):
         stripped = line.strip()
         if collected:
-            if stripped.startswith("- ") or not stripped:
+            if not stripped:
+                break
+            here = len(line) - len(line.rstrip("\n").lstrip())
+            # A body ends where its own list level does. Stopping only at the
+            # next `- ` bullet reads the enclosing numbered step's remaining
+            # items as body, so the last sub-bullet of a nested list absorbs
+            # the rest of the section and any pin scoped to it stops meaning
+            # anything.
+            if here < indent:
+                break
+            if here == indent and (
+                stripped.startswith("- ") or re.match(r"\d+\. ", stripped)
+            ):
                 break
             collected.append(stripped)
             continue
         if stripped.startswith(opener):
+            indent = len(line) - len(line.rstrip("\n").lstrip())
             collected.append(stripped)
     if not collected:
         raise AssertionError(f"no bullet for {token!r} under {heading}")
@@ -258,11 +278,17 @@ def argument_names(name: str) -> set[str]:
     (``depth=standard|brief|deep``), so the name is the head truncated at the
     first ``=``. Matching ``- `x=` `` literally instead would find only the five
     arguments with a bare head and report the other three as deleted."""
-    heads = [
-        head.split("=", 1)[0]
-        for head in _bullet_heads(section_lines(skill_text(name), "## Arguments"))
-        if "=" in head
-    ]
+    return _argument_names(skill_text(name), name)
+
+
+def _argument_names(text: str, name: str) -> set[str]:
+    declared = _bullet_heads(section_lines(text, "## Arguments"))
+    # Every argument bullet is `- \`name=\`...`. Skipping a head without the
+    # `=` would report a malformed declaration as no declaration at all.
+    malformed = [head for head in declared if "=" not in head]
+    if malformed:
+        raise AssertionError(f"argument bullet without '=' in {name}: {malformed}")
+    heads = [head.split("=", 1)[0] for head in declared]
     if not heads:
         raise AssertionError(f"no argument bullets in {name}")
     # Projecting to a set would silently absorb a second bullet declaring an
@@ -277,7 +303,10 @@ def argument_values(name: str, argument: str) -> set[str]:
 
     Read from the pipe-separated tail of the backticked head when it carries
     one, and from the backticked tokens of the bullet body otherwise."""
-    text = skill_text(name)
+    return _argument_values(skill_text(name), argument, name)
+
+
+def _argument_values(text: str, argument: str, name: str) -> set[str]:
     for head in _bullet_heads(section_lines(text, "## Arguments")):
         if head.split("=", 1)[0] != argument:
             continue
@@ -290,7 +319,17 @@ def argument_values(name: str, argument: str) -> set[str]:
                 )
             return set(values)
         body = bullet_body(text, "## Arguments", f"{argument}=")
-        return set(re.findall(r"`([a-z_]+)`", body))
+        # The charset is deliberately wide. A narrow one silently omits a value
+        # the document added — the set assertion above would then pass while
+        # missing exactly the change it exists to catch.
+        values = re.findall(r"`([a-z0-9_-]+)`", body)
+        if not values:
+            raise AssertionError(f"no values declared for {argument}= in {name}")
+        if len(values) != len(set(values)):
+            raise AssertionError(
+                f"duplicate value in {argument}= of {name}: {values}"
+            )
+        return set(values)
     raise AssertionError(f"no argument named {argument!r} in {name}")
 
 
@@ -305,7 +344,7 @@ def criterion_slugs(name: str, relative: str, heading: str) -> set[str]:
     slugs = [
         match.group(1)
         for line in section_lines(text, heading)
-        if (match := re.match("- `([a-z-]+)` \u2014", line.strip()))
+        if (match := re.match("- `([a-z0-9-]+)` \u2014", line.strip()))
     ]
     if not slugs:
         raise AssertionError(f"no criterion bullets under {heading}")
@@ -4340,6 +4379,34 @@ Still inside Schema.
 ## Not a table
 
 | this | is | prose |
+
+## Two tables
+
+| field | rule |
+| --- | --- |
+| `first` | kept |
+
+Prose between them.
+
+| field | rule |
+| --- | --- |
+| `second` | separate |
+"""
+
+    NESTED = """## Nested
+
+1. Step one, which owns a sub-list:
+   - `inner` \u2014 body text
+     continued here
+   - `sibling` \u2014 other
+2. Step two, outer again.
+"""
+
+    ARGUMENTS = """## Arguments
+
+- `depth=brief|deep` — how far to go
+- `classes=` — which detectors, one of `alpha`, `beta`
+- `empty=` — nothing declared
 """
 
     def test_section_ends_at_the_next_same_or_higher_heading(self) -> None:
@@ -4384,6 +4451,43 @@ Still inside Schema.
         )
         with self.assertRaises(AssertionError):
             table_row(self.DOC, "## Schema", "absent")
+
+    def test_only_the_first_table_of_a_section_is_read(self) -> None:
+        # Collecting past the prose would splice the second table's rows onto
+        # the first, and a row lookup would resolve against the wrong table.
+        self.assertEqual(
+            ["first"], markdown_table_column(self.DOC, "## Two tables")
+        )
+        with self.assertRaises(AssertionError):
+            table_row(self.DOC, "## Two tables", "second")
+
+    def test_a_bullet_body_ends_where_its_list_level_does(self) -> None:
+        inner = bullet_body(self.NESTED, "## Nested", "inner")
+        self.assertIn("continued here", inner)
+        self.assertNotIn("other", inner)
+        # The last sub-bullet is the one that runs on: nothing at its own
+        # level follows it, so only the outer step's de-indent stops it.
+        sibling = bullet_body(self.NESTED, "## Nested", "sibling")
+        self.assertNotIn("Step two", sibling)
+
+    def test_an_argument_bullet_without_an_equals_is_malformed(self) -> None:
+        # Skipping it would report a malformed declaration as no declaration,
+        # and the set assertion would pass with the argument simply gone.
+        doc = self.ARGUMENTS.replace("`depth=brief|deep`", "`depth`")
+        with self.assertRaises(AssertionError):
+            _argument_names(doc, "fixture")
+
+    def test_an_argument_declaring_no_values_raises(self) -> None:
+        self.assertEqual(
+            {"alpha", "beta"}, _argument_values(self.ARGUMENTS, "classes", "f")
+        )
+        with self.assertRaises(AssertionError):
+            _argument_values(self.ARGUMENTS, "empty", "f")
+
+    def test_a_duplicated_value_is_not_absorbed_by_the_set(self) -> None:
+        doc = self.ARGUMENTS.replace("brief|deep", "brief|brief")
+        with self.assertRaises(AssertionError):
+            _argument_values(doc, "depth", "f")
 
     def test_bullet_body_takes_continuations_and_stops_at_the_next_bullet(
         self,
@@ -4654,12 +4758,24 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         )
 
     def test_authority_is_the_block_not_the_file(self) -> None:
-        """Two independent anchors, so rewording either leaves the other."""
+        """Two independent anchors, so rewording either leaves the other.
+
+        Anchor 1 is a vocabulary set, not a token. The contract is that
+        authority is scoped to something *smaller than the file*, and the
+        bullet has to name that unit for the rule to exist at all — but the
+        noun is a word choice, so "block" and "section" are both accepted.
+        Pinning "block" alone fails a rewording that keeps the contract;
+        pinning "authority" alone catches nothing, because deleting the rule
+        leaves "the passages sit at one authority" behind. Anchor 2 is
+        independent of the wording entirely."""
         contradiction = bullet_body(
             skill_text("se-coherence-audit"), "## Workflow", "contradiction`"
         ).lower()
         self.assertIn("authority", contradiction)
-        self.assertIn("block", contradiction)
+        self.assertTrue(
+            {"block", "section"} & set(re.findall(r"[a-z]+", contradiction)),
+            f"contradiction bullet names no sub-file unit: {contradiction}",
+        )
         # `precedence: irrelevant` exists only because one authority leaves no
         # ordering to invoke, so it fails if the rule leaves the model rather
         # than merely the sentence.
