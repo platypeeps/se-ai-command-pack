@@ -103,12 +103,13 @@ branch were pushed red for skipping exactly this.
 
 ## Documentation And Spec Updates
 
-- No `.trellis/spec/` change is required. The prose-contract section already
-  states the rule this task applies; nothing in it becomes wrong.
-- If the deletion probes surface a durable convention the spec does not yet
-  carry — most likely "assert the set, not a member" — add it under
-  `### Prose contracts: prove the pin can fail` as a short paragraph during
-  finish-work, not as a speculative edit now.
+- The prose-contract section already states the rule this task applies, so
+  nothing in it becomes wrong. It did gain the convention the probes earned:
+  "assert the set, not a member", the parser-must-raise rule, and the probe
+  inversion this task used, added under
+  `### Prose contracts: prove the pin can fail` during the update-spec step.
+  Both of the review findings against that paragraph — that `assertEqual`
+  already catches an empty parse — are folded into its final wording.
 - No release payload files change, so no version bump and no `make generate`.
   `make check`'s `release-check` lane confirms this rather than assuming it.
 

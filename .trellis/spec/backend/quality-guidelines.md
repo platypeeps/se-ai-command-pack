@@ -187,11 +187,14 @@ turned the suite red while two genuine rewordings left it green. Evidence:
 the task's
 `research/rewording-proof-2026-08-29.md`.
 
-**A parser that returns empty is a pin that can never fail.** Every helper that
-extracts a structural surface must raise `AssertionError` on a missing heading,
-a missing table, or an empty result. Returning `[]` lets a deleted table pass as
-"no members to check" — the same silent-pass failure this section exists to
-prevent, reintroduced one layer down.
+**Make the parser raise rather than return empty.** `assertEqual(expected,
+parsed)` already fails when the parse comes back empty, so the risk is narrower
+than "any empty result": it is *iterating* the parsed collection. A
+`for row in parsed: self.assertIn(...)` loop passes vacuously over `[]`, which is
+this section's silent-pass failure reintroduced one layer down. Raising
+`AssertionError` on a missing heading, a missing table, or an empty result closes
+that case whichever assertion style the caller reaches for, and it names the
+missing surface instead of reporting a set difference against nothing.
 
 Note the probe inversion when the *test* is what changed rather than the source.
 The block above restores the source to `HEAD` to prove a new pin fails without

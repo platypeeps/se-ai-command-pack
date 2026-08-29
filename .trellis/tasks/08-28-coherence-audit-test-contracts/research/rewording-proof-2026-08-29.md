@@ -102,3 +102,44 @@ sentence in either file contradicts it. Detecting that is `se-coherence-audit`'s
 own job — a `contradiction` finding at one authority — not a unit test's, and
 claiming otherwise would be the same overreach the skill's own near-miss rules
 exist to prevent.
+
+## Round 2 — after the local review findings
+
+The first review round returned ten local findings; all ten were verified true
+against the checkout and fixed. Three changed an assertion, so each was
+re-proved.
+
+| Probe | Edit | Result |
+|---|---|---|
+| P4 | delete the redaction carve-out from the `quotes` row | `FAILED (failures=1)` |
+| P5 | invert the ledger policy: "a withheld quote **drops** the finding" | `FAILED (failures=1)` |
+| P6 | invert the same policy at `SKILL.md:155` only | `OK` |
+| P6b | invert it at both `SKILL.md:155` **and** `:168` | `FAILED (failures=1)` |
+| P7 | delete the empty-scope stop rule from the workflow | `FAILED (failures=1)` |
+
+P5 is the finding gito and prism both raised: the first version of the
+assertion looked for a bare `drop` token, which matches "dropped" and so passed
+on a file stating the opposite policy. It now requires one of the negated forms
+(`never dropped`, `not dropped`, `neither drops`, `rather than dropping`,
+`rather than dropped`), and P5 turns it red.
+
+P6 passing is correct, and it is the documented bound made concrete rather than
+a gap. `SKILL.md` states the retention rule twice — at `:155` for the general
+case and at `:168` for `sensitivity=minimal`. Inverting one leaves the section
+carrying the contract *and* contradicting itself. A unit test asserting "this
+file states X" cannot see that; a corpus audit for `contradiction` at one
+authority can, which is what `se-coherence-audit` is for. P6b, which inverts
+both, is red.
+
+## Separator parsing
+
+`markdown_table_column` originally detected the separator row by joining the
+cells before cleaning, so `| --- | --- |` kept its inner spaces and was parsed as
+data. Both reference files write `|---|---|`, so nothing was wrong today and
+nothing would have been until someone reformatted a table. Cells are now cleaned
+individually:
+
+```
+spaced separator -> ['id', 'class']
+tight separator  -> ['id']
+```

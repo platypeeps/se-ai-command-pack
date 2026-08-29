@@ -173,13 +173,14 @@ def markdown_table_column(
         if not seen_header:
             seen_header = True
             continue
-        if set(_clean_cell("".join(row))) <= {"-", ":"}:
+        cleaned = [_clean_cell(cell) for cell in row]
+        if all(cell and set(cell) <= {"-", ":"} for cell in cleaned):
             continue
         if column >= len(row):
             raise AssertionError(
                 f"table under {heading} has no column {column}: {stripped}"
             )
-        cells.append(_clean_cell(row[column]))
+        cells.append(cleaned[column])
     if not cells:
         raise AssertionError(f"no table rows under heading: {heading}")
     return cells
@@ -4281,8 +4282,7 @@ class CoherenceAuditSkillTest(unittest.TestCase):
 
     These assertions pin the skill's *contract* — its argument set, its ledger
     schema, its classes and criteria — rather than the sentences that describe
-    it. Prose pins broke five times during PR #278 while the contract they
-    guarded never changed, each break a rewording rather than a regression. Per
+    it, because a reworded sentence is not a regression. Per
     "Prose contracts: prove the pin can fail" in
     ``.trellis/spec/backend/quality-guidelines.md``, a pin should be long enough
     that deleting the contract breaks it and short enough that rewording does
@@ -4315,16 +4315,29 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         finding unquotable; the finding is not dropped for it. Asserting the
         three together in each file is what stops ``SKILL.md`` and
         ``ledger-format.md`` from silently disagreeing about whether a withheld
-        quote survives as a finding — the divergence a Copilot thread caught on
-        PR #278.
+        quote survives as a finding.
 
         Bound worth stating: this proves each file carries the carve-out, not
         that no other sentence in it says the opposite. Detecting that is
         ``se-coherence-audit``'s own job, not a unit test's.
         """
         lowered = text.lower()
-        for token in ("sensitivity", "unquotable", "drop"):
+        for token in ("sensitivity", "unquotable"):
             self.assertIn(token, lowered, f"{label} drops the redaction carve-out")
+        # The retention half is the part with a policy in it. Matching a bare
+        # "drop" token would also match a file that said the finding *is*
+        # dropped, so require one of the negated forms.
+        retentions = (
+            "never dropped",
+            "not dropped",
+            "neither drops",
+            "rather than dropping",
+            "rather than dropped",
+        )
+        self.assertTrue(
+            any(phrase in lowered for phrase in retentions),
+            f"{label} does not say a withheld quote keeps its finding",
+        )
 
     def test_argument_surface_is_the_declared_set(self) -> None:
         self.assertEqual(
@@ -4361,6 +4374,7 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         workflow = skill_section("se-coherence-audit", "## Workflow").lower()
         self.assertIn("never read outside", workflow)
         self.assertIn("file count", workflow)
+        self.assertIn("scope is empty", workflow)
         # The three emptiness cases are the contract, not the sentence that
         # lists them: an absent argument, a path that does not exist, and paths
         # that exist and hold nothing readable.
@@ -4437,25 +4451,28 @@ class CoherenceAuditSkillTest(unittest.TestCase):
 
     def test_ledger_finding_schema_is_the_declared_field_set(self) -> None:
         ledger = self.ledger_text()
-        self.assertEqual(
-            [
-                "id",
-                "class",
-                "severity",
-                "locations",
-                "quotes",
-                "precedence",
-                "criterion",
-                "why",
-                "resolution",
-                "confidence",
-            ],
-            markdown_table_column(ledger, "## Finding schema"),
-        )
-        self.assertEqual(
-            ["read in full", "sampled", "skipped"],
-            markdown_table_column(ledger, "## Coverage block"),
-        )
+        for heading, expected in (
+            (
+                "## Finding schema",
+                {
+                    "id",
+                    "class",
+                    "severity",
+                    "locations",
+                    "quotes",
+                    "precedence",
+                    "criterion",
+                    "why",
+                    "resolution",
+                    "confidence",
+                },
+            ),
+            ("## Coverage block", {"read in full", "sampled", "skipped"}),
+        ):
+            rows = markdown_table_column(ledger, heading)
+            self.assertEqual(expected, set(rows), heading)
+            # Row order is not the contract; a duplicated row still is.
+            self.assertEqual(len(expected), len(rows), f"duplicate row in {heading}")
 
     def test_contradiction_and_redundancy_require_two_locations(self) -> None:
         for heading in ("## Contradiction", "## Redundancy"):
