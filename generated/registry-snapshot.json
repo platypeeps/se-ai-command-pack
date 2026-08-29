@@ -227,6 +227,10 @@
       "family": "improve"
     },
     {
+      "name": "se-coherence-audit",
+      "family": "improve"
+    },
+    {
       "name": "se-rust-design",
       "family": "engineer"
     },
@@ -401,7 +405,8 @@
       "se-video-notes",
       "se-watchlist",
       "se-weekly-review",
-      "se-brand-voice"
+      "se-brand-voice",
+      "se-coherence-audit"
     ],
     "_shared/references/personal-profile-contract.md": [
       "se-profile",

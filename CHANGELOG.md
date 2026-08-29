@@ -1,5 +1,37 @@
 # Changelog
 
+## 0.72.0 - 2026-08-28
+
+- **New skill: `se-coherence-audit`** (family Improve). Audits a bounded corpus
+  — a note vault, agent-instruction files, per-directory rule files, or a docs
+  tree — against **itself**, for four defects: contradiction, vagueness, bandaid
+  guidance, and redundancy. No other pack skill audits a corpus against itself
+  this way; `se-knowledge-gap` measures a corpus against a stated decision and
+  reports conflict only as a gap symptom, and `se-prose-lint` reads wording
+  rather than what two passages jointly require. It builds an
+  index of the corpus's own directives and assertions before comparing them, so
+  findings come from the text rather than from recall.
+
+  The skill is read-only and returns a prioritized ledger. Every finding carries
+  its `path:line` locations, the offending text quoted verbatim (both sides for
+  contradiction and redundancy), the named criterion it satisfies, and a
+  proposed resolution the user applies. Conflicts are classified by whether an
+  authority ordering could settle them at all: one that a declared ordering
+  settles is an observation rather than a defect, one that an ordering could
+  settle but none declares makes that missing precedence the finding, and one
+  that no ordering could settle is the contradiction itself.
+
+  Two guards address the class's primary failure mode — confidently pairing
+  passages that are not actually opposed. `references/detector-criteria.md`
+  gives every class at least one near-miss that must not be reported, and any
+  finding below `confidence: medium` is dropped rather than reported. Coverage
+  is stated before the ledger: files read in full, sampled, and skipped with the
+  reason, so a partial audit is never presented as complete.
+
+  `se-knowledge-gap` gains the reciprocal boundary statement: it reports
+  conflict as a gap symptom against a stated decision, while the new skill
+  reports it as a corpus defect with both sides quoted.
+
 ## 0.71.0 - 2026-08-26
 
 - **New skill family: Engineer.** Thirteen skills join the pack, carrying its
