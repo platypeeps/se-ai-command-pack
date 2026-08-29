@@ -4138,8 +4138,8 @@ class CoherenceAuditSkillTest(unittest.TestCase):
             self.assertIn(phrase, args)
         workflow = skill_section("se-coherence-audit", "## Workflow").lower()
         for phrase in (
-            "state the file count and total size before reading",
-            "stop if `input=` is absent or resolves to nothing",
+            "state the resulting file count and total size before reading",
+            "stop if `input=` is absent, or if the expansion is empty",
             "never read outside the resolved set",
         ):
             self.assertIn(phrase, workflow)
