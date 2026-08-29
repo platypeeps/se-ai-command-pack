@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import functools
 import re
 import unittest
 from unittest import mock
@@ -95,7 +96,10 @@ EXTERNAL_INPUT_SKILLS = (
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
 
+@functools.lru_cache(maxsize=None)
 def skill_text(name: str) -> str:
+    # Cached: the contract assertions read one skill from several helpers, and
+    # each call re-read and re-parsed the whole document.
     return (SKILLS_ROOT / name / "SKILL.md").read_text(encoding="utf-8")
 
 
@@ -144,12 +148,38 @@ def section_body(text: str, heading: str) -> str:
     return " ".join(" ".join(section_lines(text, heading)).split())
 
 
+def _unfenced(lines: list[str]) -> list[str]:
+    """``lines`` with fenced code blocks removed.
+
+    A fence holds examples, not declarations: a table drawn inside one, or a
+    ``- `x=` `` line in a sample invocation, is the document *showing* a shape
+    rather than declaring one. Reading them as structure lets an example
+    satisfy a contract assertion the document never made."""
+    kept: list[str] = []
+    fenced = False
+    for line in lines:
+        if line.lstrip().startswith("```"):
+            fenced = not fenced
+            continue
+        if not fenced:
+            kept.append(line)
+    return kept
+
+
 def _clean_cell(cell: str) -> str:
     return cell.replace("`", "").replace("**", "").strip()
 
 
+_SEPARATOR_CELL = re.compile(r"^:?-+:?$")
+
+
 def _is_separator(cells: list[str]) -> bool:
-    return bool(cells) and all(cell and set(cell) <= {"-", ":"} for cell in cells)
+    """A separator cell is dashes with optional alignment colons.
+
+    Testing ``set(cell) <= {"-", ":"}`` instead accepts ``:``, ``::``, and
+    ``-:-`` as structure, so a malformed table still parses and the rows under
+    it are read as declarations."""
+    return bool(cells) and all(_SEPARATOR_CELL.match(cell) for cell in cells)
 
 
 def _table_rows(text: str, heading: str) -> list[str]:
@@ -164,7 +194,7 @@ def _table_rows(text: str, heading: str) -> list[str]:
     Raises when the section carries no table, rather than returning empty: an
     empty return would let a deleted table pass as "no members to check"."""
     rows: list[str] = []
-    for line in section_lines(text, heading):
+    for line in _unfenced(section_lines(text, heading)):
         stripped = line.strip()
         if stripped.startswith("|"):
             rows.append(stripped)
@@ -234,7 +264,7 @@ def bullet_body(text: str, heading: str, token: str) -> str:
     opener = f"- `{token}"
     collected: list[str] = []
     indent = 0
-    for line in section_lines(text, heading):
+    for line in _unfenced(section_lines(text, heading)):
         stripped = line.strip()
         if collected:
             if not stripped:
@@ -264,8 +294,11 @@ def bullet_body(text: str, heading: str, token: str) -> str:
 def _bullet_heads(lines: list[str]) -> list[str]:
     """The backticked head of every top-level ``- `head` ...`` bullet."""
     heads: list[str] = []
-    for line in lines:
-        match = re.match(r"- `([^`]+)`", line.strip())
+    for line in _unfenced(lines):
+        # Anchored at column zero: an indented bullet is a sub-point of the
+        # declaration above it, and reading it as a declaration of its own
+        # invents arguments the document does not have.
+        match = re.match(r"- `([^`]+)`", line)
         if match:
             heads.append(match.group(1))
     return heads
@@ -318,11 +351,18 @@ def _argument_values(text: str, argument: str, name: str) -> set[str]:
                     f"duplicate value in {argument}= of {name}: {values}"
                 )
             return set(values)
-        body = bullet_body(text, "## Arguments", f"{argument}=")
+        # The bullet's own head is not one of its values; reading the whole
+        # backticked token means it would otherwise be counted as one.
+        body = re.sub(
+            r"^- `[^`]+`", "", bullet_body(text, "## Arguments", f"{argument}=")
+        )
         # The charset is deliberately wide. A narrow one silently omits a value
         # the document added — the set assertion above would then pass while
         # missing exactly the change it exists to catch.
-        values = re.findall(r"`([a-z0-9_-]+)`", body)
+        # The token is read whole. Any charset narrower than "what the
+        # backticks hold" silently drops a value the document added, and the
+        # set assertion above then passes while missing that exact change.
+        values = re.findall(r"`([^`]+)`", body)
         if not values:
             raise AssertionError(f"no values declared for {argument}= in {name}")
         if len(values) != len(set(values)):
@@ -343,8 +383,8 @@ def criterion_slugs(name: str, relative: str, heading: str) -> set[str]:
     text = (SKILLS_ROOT / name / relative).read_text(encoding="utf-8")
     slugs = [
         match.group(1)
-        for line in section_lines(text, heading)
-        if (match := re.match("- `([a-z0-9-]+)` \u2014", line.strip()))
+        for line in _unfenced(section_lines(text, heading))
+        if (match := re.match("- `([^`]+)` \u2014", line.strip()))
     ]
     if not slugs:
         raise AssertionError(f"no criterion bullets under {heading}")
@@ -4380,6 +4420,20 @@ Still inside Schema.
 
 | this | is | prose |
 
+## Fenced
+
+```text
+| field | rule |
+| --- | --- |
+| `sample` | only an example |
+```
+
+## Bad separator
+
+| field | rule |
+| : | :: |
+| `x` | y |
+
 ## Two tables
 
 | field | rule |
@@ -4405,6 +4459,7 @@ Prose between them.
     ARGUMENTS = """## Arguments
 
 - `depth=brief|deep` — how far to go
+  - `nested=` — a sub-point, not a declaration
 - `classes=` — which detectors, one of `alpha`, `beta`
 - `empty=` — nothing declared
 """
@@ -4451,6 +4506,25 @@ Prose between them.
         )
         with self.assertRaises(AssertionError):
             table_row(self.DOC, "## Schema", "absent")
+
+    def test_a_table_inside_a_fence_is_an_example_not_a_declaration(
+        self,
+    ) -> None:
+        # A fenced block shows a shape; reading it as structure lets an example
+        # satisfy a contract the document never declared.
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Fenced")
+
+    def test_a_malformed_separator_is_not_structure(self) -> None:
+        # `:` and `::` are not alignment cells. Accepting them parses a
+        # malformed table and reads whatever follows as declarations.
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Bad separator")
+
+    def test_an_indented_bullet_is_not_a_declaration(self) -> None:
+        self.assertEqual(
+            {"depth", "classes", "empty"}, _argument_names(self.ARGUMENTS, "f")
+        )
 
     def test_only_the_first_table_of_a_section_is_read(self) -> None:
         # Collecting past the prose would splice the second table's rows onto

@@ -180,10 +180,13 @@ enumeration the document already renders structurally — an argument list, a
 schema table, a set of `##` headings, backticked criterion slugs — parse it and
 assert the whole set with `assertEqual`, not one member with `assertIn`. A set
 assertion fails on a deletion *and* on an unannounced addition, and no rewording
-touches it. `CoherenceAuditSkillTest` is the worked example: its prose pins
-became contract assertions, and deletion probes (an argument bullet, a schema
-row, a detector section, the redaction carve-out) each turned the suite red
-while genuine rewordings left it green.
+touches it.
+
+Prove each one by deletion before you keep it: remove the contract from the
+document and require the suite to go red, then restore it and require green. An
+assertion that passes both ways is asserting nothing, and it reads identically
+to one that works. `CoherenceAuditSkillTest` and `MarkdownContractHelperTest`
+are the worked examples.
 
 **Enumerate what a pin asserts before replacing it.** One sentence usually
 carries more than one contract, and the structural half is the visible one. A

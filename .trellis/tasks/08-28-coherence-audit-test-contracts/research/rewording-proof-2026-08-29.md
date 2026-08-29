@@ -301,5 +301,35 @@ tells the two apart — the assertion itself reads the same either way.
   raises on empty and reads `[a-z0-9_-]+`.
 - Criterion slugs read `[a-z0-9-]+` for the same reason.
 
-Each parse decision has a case in `MarkdownContractHelperTest` rather than
-being proven incidentally by a caller.
+Each of these has a case in `MarkdownContractHelperTest` against a fixture
+document, rather than being proven incidentally by a caller. Coverage is by
+parse decision, not exhaustive: the cases fix the decisions that are not
+obvious from reading the helper — which rows are structure, where a body ends,
+what a fence means, and which inputs must raise.
+
+
+## Round 7: what the parsers still accepted
+
+Four more ways a parse could pass while meaning nothing, each fixed and each
+given a case against the fixture document:
+
+- A table drawn **inside a fenced block** parsed as a declaration. A fence
+  shows a shape; the document is not declaring one. `_unfenced()` now strips
+  fenced regions before every structural read — tables, bullet heads, bullet
+  bodies, criterion slugs.
+- `| : | :: |` passed as a separator, because the check was
+  `set(cell) <= {"-", ":"}`. A separator cell is now dashes with optional
+  alignment colons, so a malformed table fails instead of parsing.
+- An **indented** `- \`x=\`` bullet counted as an argument declaration. Heads
+  are read at column zero: a sub-point is part of the declaration above it.
+- The value and slug regexes read `[a-z0-9_-]+`, so a declared value carrying
+  any other character was invisible to the set assertion — the one change the
+  assertion exists to catch. Both now read the whole backticked token, with the
+  bullet's own head excluded from its values.
+
+`skill_text()` is cached, since the contract assertions read one document from
+several helpers.
+
+Probes after the change: **P20** (delete the block-level rule) FAILED, **P22**
+(delete the `precedence=` bullet) FAILED, **P23** (add a fifth value to
+`classes=`) FAILED. Baseline OK, `make check` green at 795 tests.
