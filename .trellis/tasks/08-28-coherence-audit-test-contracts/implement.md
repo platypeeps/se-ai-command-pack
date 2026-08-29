@@ -89,13 +89,19 @@ Deletion probe, once per target (expect `FAILED` then `OK`):
 FOCUSED=(.venv/bin/python -m unittest discover -s tests -p test_skills.py
          -k CoherenceAudit -k MarkdownContractHelper)
 probe() {  # probe <label> <file> <python edit applied to that file>
-  local label="$1" file="$2" edit="$3" backup
+  local label="$1" file="$2" edit="$3" backup status
   backup="$(mktemp)"
   cp "$file" "$backup"
-  trap 'cp "$backup" "$file"; rm -f "$backup"' RETURN  # restores on any exit
   python3 -c "$edit"
-  printf '%s: ' "$label"
-  "${FOCUSED[@]}" 2>&1 | tail -1   # expect FAILED
+  "${FOCUSED[@]}" >/dev/null 2>&1
+  status=$?
+  cp "$backup" "$file"          # restore before judging, so a red probe
+  rm -f "$backup"               # still leaves the document as written
+  if [ "$status" -eq 0 ]; then
+    printf '%s: PASSED — the contract was deleted and nothing failed\n' "$label"
+    return 1
+  fi
+  printf '%s: FAILED as required\n' "$label"
 }
 probe P-example templates/skills/se-coherence-audit/SKILL.md "
 from pathlib import Path
@@ -105,10 +111,17 @@ git status --porcelain templates/   # expect empty: every probe restored
 "${FOCUSED[@]}" 2>&1 | tail -1      # expect OK
 ```
 
-The restore is a `trap`, not a trailing `cp`: a probe that fails on the edit
-itself leaves the document mutated, and the next probe then measures a corpus
-nobody wrote. `git status --porcelain templates/` after the run is the check
-that every restore happened.
+The probe asserts its own outcome: a deletion probe that returns green has
+proven the assertion guards nothing, which is the result worth catching, so the
+function reports it and returns nonzero rather than printing a line a reader has
+to interpret. The restore runs before that judgement, so a red probe still
+leaves the document as written.
+
+Restoring inside the function covers the ordinary path only. A `RETURN` trap
+does not fire on an interrupt or on `set -e`, so an interrupted run leaves the
+document mutated — `git status --porcelain templates/` after the run is the
+check that every restore happened, and `git checkout -- templates/` is the
+recovery.
 
 Note the inversion against
 `.trellis/spec/backend/quality-guidelines.md:152-161`: that block restores the

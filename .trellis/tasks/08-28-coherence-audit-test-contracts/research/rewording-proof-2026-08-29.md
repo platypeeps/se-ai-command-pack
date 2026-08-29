@@ -180,9 +180,9 @@ token, so dropping one names which one.
 Both probes:
 
 ```
-P7  remove "Default all four." from SKILL.md
+P7b remove "Default all four." from SKILL.md
     -> FAILED: 'default all four' not found in '- `classes=` — ... `redundancy`.'
-P8  drop "globs" from the input= bullet
+P8b drop "globs" from the input= bullet
     -> FAILED: 'globs' not found in '- `input=` ...' : input= no longer accepts globs
 ```
 
@@ -481,3 +481,33 @@ heading written closed. Round-9 regression probes: **P30** (rename the `format=`
 argument) `FAILED`, **P31** (delete the `criterion` schema row) `FAILED`,
 restored `OK`, `git status --porcelain templates/` empty. Gate: 808 tests,
 `make check` green, prose-lint clean.
+
+## Round 11: the last three, and the stop
+
+Final round by decision — the loop is stopped here whatever this round found.
+
+**A closing sequence needs a space.** `_heading_title` stripped trailing hashes
+unconditionally, so `## Notes#tag` was read as `## Notes` — a heading the
+document does not have, matched against one it does. It now strips a trailing
+run only where a space precedes it, which is the Markdown rule.
+
+**Indented code was table structure.** A four-space-indented pipe block parsed
+as a declaration. `_table_rows` now skips indented lines, and ends the table if
+one follows the rows — fixture `## Indented sample` puts a sample table above
+the declared one and the declared one is what comes back.
+
+**An escaped pipe was a column.** `\|` exists so a cell can contain a pipe;
+splitting on it invented a column and shifted every projection past that row.
+`_split_row` splits on unescaped pipes and unescapes the survivors.
+
+Docs: probe numbers `P7`/`P8` were reused for a second round's different
+contracts and are now `P7b`/`P8b`. The probe recipe in `implement.md` asserted
+nothing — it printed a line for a reader to interpret, and its `RETURN` trap does
+not fire on an interrupt. It now restores before judging, reports a green
+deletion probe as the failure it is, and says plainly that an interrupted run is
+recovered with `git checkout -- templates/`.
+
+Gate: 811 tests, `make check` green, prose-lint clean. Remaining round-10
+findings are recorded in the review receipt as accepted rather than fixed: they
+are planning-artifact wording in a task about to be archived, and the assertions
+they concern are proven by the probes above.

@@ -161,6 +161,18 @@ def _closes(opened: str, delimiter: str, info: str) -> bool:
 _HEADING = re.compile(r"^ {0,3}(#{1,6})(?:\s|$)")
 
 
+def _heading_title(line: str) -> str:
+    """The text of an ATX heading, without an optional closing sequence.
+
+    Markdown closes a heading only with a run of ``#`` preceded by a space, so
+    ``## Notes#tag`` is a heading titled ``Notes#tag``. Stripping trailing
+    hashes unconditionally renames it, and the section then matches a heading
+    the document does not have."""
+    text = line.strip().lstrip("#").strip()
+    closing = re.search(r"\s#+$", text)
+    return text[: closing.start()].strip() if closing else text
+
+
 def _heading_level(line: str) -> int | None:
     """The ATX heading level of ``line``, or ``None`` when it is not one.
 
@@ -198,7 +210,7 @@ def section_lines(text: str, heading: str) -> list[str]:
         if (
             opened is None
             and _heading_level(line) is not None
-            and line.strip().rstrip("#").strip() == heading.rstrip("#").strip()
+            and _heading_title(line) == _heading_title(heading)
         ):
             start = index
             break
@@ -252,6 +264,20 @@ def _unfenced(lines: list[str]) -> list[str]:
     return kept
 
 
+_CELL_SPLIT = re.compile(r"(?<!\\)\|")
+
+
+def _split_row(row: str) -> list[str]:
+    """A table row's cells.
+
+    ``\\|`` is a pipe *in* a cell — the escape exists so a row can contain one.
+    Splitting on it invents a column, and every projection past that row reads
+    the wrong field."""
+    return [
+        cell.replace("\\|", "|") for cell in _CELL_SPLIT.split(row.strip("|"))
+    ]
+
+
 def _clean_cell(cell: str) -> str:
     return cell.replace("`", "").replace("**", "").strip()
 
@@ -282,6 +308,12 @@ def _table_rows(text: str, heading: str) -> list[str]:
     rows: list[str] = []
     for line in _unfenced(section_lines(text, heading)):
         stripped = line.strip()
+        # Four spaces of indent make the line an indented code block: it is the
+        # document showing a table, not declaring one.
+        if len(line) - len(line.lstrip(" ")) >= 4:
+            if rows:
+                break
+            continue
         if stripped.startswith("|"):
             rows.append(stripped)
             continue
@@ -292,7 +324,7 @@ def _table_rows(text: str, heading: str) -> list[str]:
             break
     if not rows:
         raise AssertionError(f"no table under heading: {heading}")
-    split = [[c.strip() for c in row.strip("|").split("|")] for row in rows]
+    split = [[c.strip() for c in _split_row(row)] for row in rows]
     if len(split) < 2 or not _is_separator(split[1]):
         raise AssertionError(
             f"pipe block under {heading} has no separator row: {rows[:2]}"
@@ -312,7 +344,7 @@ def _table_rows(text: str, heading: str) -> list[str]:
     if not data:
         raise AssertionError(f"no table rows under heading: {heading}")
     width = len(split[0])
-    ragged = [row for row in data if len(row.strip("|").split("|")) != width]
+    ragged = [row for row in data if len(_split_row(row)) != width]
     if ragged:
         # A row with the wrong number of cells is a malformed table, and every
         # column projection past the short row reads the wrong field.
@@ -333,7 +365,7 @@ def markdown_table_column(
     cardinality rule and the severity tiers are read from column 1."""
     cells: list[str] = []
     for row in _table_rows(text, heading):
-        split = [_clean_cell(c) for c in row.strip("|").split("|")]
+        split = [_clean_cell(c) for c in _split_row(row)]
         if column >= len(split):
             raise AssertionError(
                 f"table under {heading} has no column {column}: {row}"
@@ -353,7 +385,7 @@ def table_row(text: str, heading: str, key: str) -> str:
     starts would disagree about which row a name refers to."""
     rows = _table_rows(text, heading)
     for row in rows:
-        if _clean_cell(row.strip("|").split("|")[0]) == key:
+        if _clean_cell(_split_row(row)[0]) == key:
             return " ".join(row.split())
     keys = [_clean_cell(r.strip("|").split("|")[0]) for r in rows]
     raise AssertionError(f"no row named {key!r} under {heading}; rows are {keys}")
@@ -4538,7 +4570,7 @@ class MarkdownContractHelperTest(unittest.TestCase):
     and which inputs must raise instead of returning empty.
     """
 
-    DOC = """# Title
+    DOC = r"""# Title
 
 ## Schema
 
@@ -4655,6 +4687,26 @@ an example
 | field | rule |
 | --- | --- | --- |
 | `x` | y |
+
+## Indented sample
+
+    | field | rule |
+    | --- | --- |
+    | `indented` | an example |
+
+| field | rule |
+| --- | --- |
+| `declared` | the real one |
+
+## Escaped pipe
+
+| field | rule |
+| --- | --- |
+| `a \| b` | one cell |
+
+## Notes#tag
+
+Prose under a heading whose title carries a hash.
 """
 
     NESTED = """## Nested
@@ -4890,6 +4942,27 @@ Prose only, with no criterion bullet.
     def test_a_separator_must_have_one_cell_per_header_cell(self) -> None:
         with self.assertRaises(AssertionError):
             markdown_table_column(self.DOC, "## Wide separator")
+
+    def test_indented_code_is_not_table_structure(self) -> None:
+        # Four spaces of indent make it a code block: the document is showing a
+        # table, not declaring one.
+        self.assertEqual(
+            ["declared"], markdown_table_column(self.DOC, "## Indented sample")
+        )
+
+    def test_an_escaped_pipe_is_content_not_a_column(self) -> None:
+        self.assertEqual(
+            ["a | b"], markdown_table_column(self.DOC, "## Escaped pipe")
+        )
+
+    def test_trailing_hashes_close_a_heading_only_after_a_space(self) -> None:
+        # `## Notes#tag` is titled `Notes#tag`. Stripping the hashes renames it
+        # to a heading the document does not have.
+        self.assertIn(
+            "carries a hash", section_body(self.DOC, "## Notes#tag")
+        )
+        with self.assertRaises(AssertionError):
+            section_lines(self.DOC, "## Notes")
 
     def test_bullet_body_takes_continuations_and_stops_at_the_next_bullet(
         self,
