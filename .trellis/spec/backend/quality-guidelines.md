@@ -175,6 +175,30 @@ Note that `normalized*()` collapse whitespace, so a pinned phrase survives
 rewrapping. Pin the shortest phrase that carries the contract: long enough that
 deleting the contract breaks it, short enough that rewording does not.
 
+**Prefer a structural surface to any phrase.** When the contract is an
+enumeration the document already renders structurally — an argument list, a
+schema table, a set of `##` headings, backticked criterion slugs — parse it and
+assert the whole set with `assertEqual`, not one member with `assertIn`. A set
+assertion fails on a deletion *and* on an unannounced addition, and no rewording
+touches it. `CoherenceAuditSkillTest` is the worked example: eleven prose-pinning
+tests became seventeen contract assertions, and four deletion probes (an
+argument bullet, a schema row, a detector section, the redaction carve-out) each
+turned the suite red while two genuine rewordings left it green. Evidence:
+the task's
+`research/rewording-proof-2026-08-29.md`.
+
+**A parser that returns empty is a pin that can never fail.** Every helper that
+extracts a structural surface must raise `AssertionError` on a missing heading,
+a missing table, or an empty result. Returning `[]` lets a deleted table pass as
+"no members to check" — the same silent-pass failure this section exists to
+prevent, reintroduced one layer down.
+
+Note the probe inversion when the *test* is what changed rather than the source.
+The block above restores the source to `HEAD` to prove a new pin fails without
+its edit. When the source is already correct and the assertions are new, the
+probe removes a contract from the source instead and expects red. Same proof,
+opposite direction; say which direction the notes record.
+
 ### Test hermeticity: the machine's state is not the fixture
 
 A test that reads the developer's git configuration or an untracked file is

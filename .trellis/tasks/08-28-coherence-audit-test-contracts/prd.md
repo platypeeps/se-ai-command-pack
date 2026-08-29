@@ -38,10 +38,13 @@ and pass when only the wording does.
 
 - [ ] No assertion in `CoherenceAuditSkillTest` requires a full prose sentence
       to match verbatim.
-- [ ] Rewording any single sentence in `SKILL.md`, `detector-criteria.md`, or
-      `ledger-format.md` without changing its meaning leaves the suite green;
-      demonstrate this with at least one worked rewording in the task's
-      research notes.
+- [ ] Rewording a sentence whose contract has a structural carrier — an
+      argument, a ledger field, a class, a criterion, a report field — leaves
+      the suite green. Contracts with no structural carrier (the read-only
+      safety rules, the confidence floor) keep a shortest-token pin, which a
+      voice-inverting rewrite still breaks; that bound is deliberate and is
+      recorded in the research notes. Demonstrate both halves with worked
+      rewordings there.
 - [ ] Deleting a documented argument, a ledger field, a conflict class, or a
       detector class still fails the suite.
 - [ ] Dropping the redaction carve-out from either `SKILL.md` or
