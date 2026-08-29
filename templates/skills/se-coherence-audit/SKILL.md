@@ -8,7 +8,8 @@ description: Use when a knowledge corpus — a note vault, agent-instruction fil
 Run this skill to audit a bounded corpus against **itself**. Build an explicit
 index of the directives and assertions the corpus makes, compare them, and
 return a prioritized findings ledger in which every finding carries its
-locations and its verbatim text. The corpus is never edited.
+locations, and its verbatim text wherever `sensitivity=` permits reproducing it.
+The corpus is never edited.
 
 Detector criteria live in `references/detector-criteria.md`. The finding
 schema, severity model, and coverage block live in `references/ledger-format.md`.
@@ -89,15 +90,19 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
    `references/detector-criteria.md`. Group index entries by the subject they
    govern first, then compare pairwise **within a group** — a group spans files
    and includes entries that share one file, since a corpus contradicts itself
-   inside a document as readily as across two. Comparing every entry against
-   every other does not survive a corpus of any size, and two entries about
-   different subjects cannot contradict. State the
+   inside a document as readily as across two. Split a group that is still too
+   large to compare in full by a narrower subject and say in the report that you
+   did. Comparing every entry against every other does not survive a corpus of
+   any size, and two entries about different subjects cannot contradict. State the
    grouping in the report so a reader can see what was never compared. Scan
    entries individually for vagueness and bandaid. A finding is reportable only
    when it names the class criterion it satisfies.
-5. Classify each conflict, so exactly one label applies. Ask first whether an
-   authority ordering *could* settle it — whether each passage would be correct
-   if its own file governed — and only then what step 2 recorded:
+5. Classify each conflict step 4 left standing — a pair that a near-miss rule
+   already dropped, an explicit exception or a stated non-overlapping scope
+   among them, never reaches this step and is never a contradiction here. For
+   what remains, ask first whether an authority ordering *could* settle it —
+   whether each passage would be correct if its own file governed — and only
+   then what step 2 recorded:
    - `resolved-by-precedence` — an ordering could settle it, one is declared, it
      covers both sides, and it says which governs. An observation, not a defect.
    - `missing-precedence` — an ordering could settle it, but none that is
@@ -110,8 +115,8 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
      the finding.
 6. Score severity by consequence, per `references/ledger-format.md`: whether a
    reader acting on the passage would do the wrong thing, and whether the
-   passage is load-bearing. Sort by severity, then by number of affected
-   locations. Drop every finding below `confidence: medium` from the ledger,
+   passage is load-bearing. Sort most severe first, and within one severity
+   put the finding touching more locations first. Drop every finding below `confidence: medium` from the ledger,
    but keep a count of what was dropped and why — a silent drop is
    indistinguishable from having found nothing.
 7. Report in the order the Final report section fixes, and report the dropped
