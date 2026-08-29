@@ -104,7 +104,9 @@ verbatim text, in the order a reader must chain them.
 
 ## Redundancy
 
-The same rule in more than one place, which drifts.
+The same rule in more than one place. Copies that agree today still qualify —
+what makes redundancy a defect is that editing one leaves the others behind, not
+that they have already diverged.
 
 **Qualifies**
 

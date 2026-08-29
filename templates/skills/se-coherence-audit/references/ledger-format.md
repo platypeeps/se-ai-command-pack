@@ -27,7 +27,7 @@ of findings.
 | `id` | `C-1`, `M-2`, `V-3`, `B-2`, `R-4` — class letter and a number, stable within one report |
 | `class` | contradiction, missing-precedence, vagueness, bandaid, or redundancy. `missing-precedence` is an outcome of the contradiction detector, not a separate `classes=` value |
 | `severity` | blocking, high, medium, or low |
-| `locations` | every `path:line`; contradiction and redundancy require at least two |
+| `locations` | every `path:line`; contradiction, missing-precedence, and redundancy require at least two |
 | `quotes` | the verbatim text at each location, never paraphrased. A secret-shaped value inside a quote is redacted and said to be; `sensitivity=` may withhold a quote entirely, and the finding is then marked unquotable. Neither is a paraphrase, and neither drops the finding |
 | `criterion` | the named criterion from `references/detector-criteria.md` that it satisfies |
 | `why` | what a reader acting on this passage would get wrong |
