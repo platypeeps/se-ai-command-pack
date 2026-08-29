@@ -175,6 +175,42 @@ Note that `normalized*()` collapse whitespace, so a pinned phrase survives
 rewrapping. Pin the shortest phrase that carries the contract: long enough that
 deleting the contract breaks it, short enough that rewording does not.
 
+**Prefer a structural surface to any phrase.** When the contract is an
+enumeration the document already renders structurally — an argument list, a
+schema table, a set of `##` headings, backticked criterion slugs — parse it and
+assert the whole set with `assertEqual`, not one member with `assertIn`. A set
+assertion fails on a deletion *and* on an unannounced addition, and no rewording
+touches it.
+
+Prove each one by deletion before you keep it: remove the contract from the
+document and require the suite to go red, then restore it and require green. An
+assertion that passes both ways is asserting nothing, and it reads identically
+to one that works. `CoherenceAuditSkillTest` and `MarkdownContractHelperTest`
+are the worked examples.
+
+**Enumerate what a pin asserts before replacing it.** One sentence usually
+carries more than one contract, and the structural half is the visible one. A
+pin reading "a comma-separated list of paths, globs, or a vault" carries four:
+the separator syntax and each accepted form. Converting it to a set assertion
+over the forms silently drops the other. List the claims, then check the
+replacement covers each — the conversion is where coverage leaks, and the suite
+stays green while it does.
+
+**Make the parser raise rather than return empty.** `assertEqual(expected,
+parsed)` already fails when the parse comes back empty, so the risk is narrower
+than "any empty result": it is *iterating* the parsed collection. A
+`for row in parsed: self.assertIn(...)` loop passes vacuously over `[]`, which is
+this section's silent-pass failure reintroduced one layer down. Raising
+`AssertionError` on a missing heading, a missing table, or an empty result closes
+that case whichever assertion style the caller reaches for, and it names the
+missing surface instead of reporting a set difference against nothing.
+
+Note the probe inversion when the *test* is what changed rather than the source.
+The block above restores the source to `HEAD` to prove a new pin fails without
+its edit. When the source is already correct and the assertions are new, the
+probe removes a contract from the source instead and expects red. Same proof,
+opposite direction; say which direction the notes record.
+
 ### Test hermeticity: the machine's state is not the fixture
 
 A test that reads the developer's git configuration or an untracked file is

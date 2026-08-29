@@ -1824,3 +1824,56 @@ Advance the thin pack pin from 0.71.62 to 0.71.63.
 ### Next Steps
 
 - None - task complete
+
+
+## Session 197: Replace brittle prose pins in se-coherence-audit tests with contract assertions
+<!-- trellis-session: v=2 fp=4358c6f754b4e48f -->
+
+**Date**: 2026-08-29
+**Task**: Replace brittle prose pins in se-coherence-audit tests with contract assertions
+**Branch**: `test/coherence-audit-contract-assertions`
+
+### Summary
+
+CoherenceAuditSkillTest pinned exact prose sentences that broke five times during PR #278 without the guarded contract ever changing. Replaced them with assertions on the durable surfaces — argument sets, ledger schema fields, conflict classes, detector classes, criterion slugs — and added MarkdownContractHelperTest so the parsers those assertions rest on are themselves proven. Eleven review rounds hardened the Markdown reading to its actual rules: fence delimiters and bare closers, ATX heading indent and closing sequences, table separator width, escaped pipes, indented code, statement- and sentence-scoped co-location.
+
+### Main Changes
+
+- Replaced prose-sentence pins with closed-set assertions over the arguments, ledger fields, conflict classes, and detector classes the skill declares
+- Added MarkdownContractHelperTest: 49 cases covering every parse decision the contract assertions depend on
+- Fixed the section, heading, bullet, and table parsers to follow Markdown rules rather than first-character matching
+- Scoped the redaction carve-out to one statement and the scope-ordering rule to one sentence, so co-location is what passes rather than three unrelated hits
+- Recorded the two-tier contract bound in the PRD and the per-round rewording proofs in research/rewording-proof-2026-08-29.md
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6cd27f0` | test(skills): assert contracts instead of prose in coherence-audit tests |
+| `8b191da` | fix(tests): address local review findings on the coherence-audit contracts |
+| `8ae0098` | fix(tests): restore two contracts the prose-pin rewrite dropped |
+| `fc9906d` | fix(tests): restore the contracts the sibling audit found, prove the parsers |
+| `cd8d859` | fix(tests): require a table separator, share one row reader, pin three lists |
+| `93d8bf1` | fix(tests): scope bullet bodies to their list level, read one table (round 6) |
+| `5c3d94c` | fix(tests): read structure outside fences, whole tokens, top-level bullets |
+| `5b2e25b` | fix(tests): track fences while parsing sections, match bullet heads exactly |
+| `9738feb` | fix(tests): prove a rule holds in one statement, not three searches |
+| `9b61c07` | fix(tests): read Markdown by its rules, not by its first character |
+| `c15d015` | fix(tests): a heading closes on a space, a pipe can be escaped |
+| `b80f9b9` | fix(tests): read detector headings by the heading rules |
+| `6c63a22` | docs(task): mark coherence-audit test-contract criteria met |
+
+### Testing
+
+- [OK] python -m unittest discover -s tests — 811 tests, OK
+- [OK] make check — ruff, mypy, coverage 89.3%, generated-surface check, release-payload gate, trellis provenance, prose-lint all clean
+- [OK] deletion probes P1-P31 — each removed contract turns the suite red, restored green
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
