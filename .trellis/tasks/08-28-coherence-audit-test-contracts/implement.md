@@ -131,8 +131,15 @@ branch were pushed red for skipping exactly this.
   contract. Per the spec's rule, `grep` each new token against the unedited file
   first; a token that is already present elsewhere in the target section is the
   wrong token.
-- The diff is one test class plus five helpers. If it grows past that, scope
-  has slipped.
+- The diff is one test class plus the Markdown helpers it parses with, and a
+  second test class covering those helpers. Review rounds grew the helper set
+  past the five this plan started with — the parsers now track fence delimiters
+  (`_fence`, `_closes`, `_unfenced`), read a document through an mtime-keyed
+  cache (`document`, `resource_text`), match a bullet head exactly
+  (`_head_matches`), split a document into statements (`statements`), and expose
+  their internals for direct testing (`_argument_names`, `_argument_values`,
+  `_criterion_slugs`). Each addition answers a review finding about a parse that
+  accepted something it should not; anything beyond that shape is scope slip.
 - Converting a prose pin drops any second contract its sentence carried. Two
   were lost this way and restored in review round 2 — `classes=`'s default and
   `input=`'s accepted forms. Before replacing a pin, list what it asserts.

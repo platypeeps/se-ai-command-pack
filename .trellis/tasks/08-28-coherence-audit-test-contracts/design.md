@@ -55,7 +55,19 @@ one, the body otherwise; a naive `- \`name=\`` match finds only five of the eigh
 arguments and would report the other three as deleted.
 
 Enum values are backticked identifiers, immune to rewording of the prose around
-them. Scope each assertion to the bullet or table row that owns it, never the
+them. What "closed" means here is worth stating exactly, because the word
+promises more than the parser can deliver: the set is closed over the
+*declaration surface* — the pipe-separated tail, or the backticked tokens of the
+body — so a value added there reaches the `assertEqual` and fails it
+(`test_a_value_added_to_a_declaration_changes_the_set` proves that on both
+surfaces). It is not closed over the whole document: a value introduced in a
+neighbouring paragraph, or in a sentence of a bullet whose head already carries
+a tail, is invisible to it. Widening the parser to catch that is not available —
+`depth=`'s body legitimately backticks `min_severity=` and `low`, which are not
+its values — so the bound is the convention instead: a value set is declared in
+one of the two surfaces, and a value stated anywhere else is not declared.
+
+Scope each assertion to the bullet or table row that owns it, never the
 whole file:
 
 - `classes=` bullet holds `contradiction`, `vagueness`, `bandaid`, `redundancy`
@@ -97,8 +109,13 @@ schema-row half is new.
 
 ### 5. The two contracts the PRD requires preserving
 
-**Classification by settleable authority.** Two independent anchors, so a
-rewording of either leaves the other standing:
+**Classification by settleable authority.** Two anchors on two files. They are
+independent in what they read, not alternatives to each other: both are asserted,
+so a rewording that defeats either one fails the test. That is deliberate, and it
+bounds the tolerance claim — the rewording an anchor survives is the rewording
+*within* it, listed below, not the loss of the anchor itself. `authority` is the
+hard pin: it is the contract's name, and a document that stops saying it has
+changed the contract, not the wording.
 
 1. In the `contradiction` bullet of `## Workflow` step 5 — scoped to that
    bullet, not the section — assert `authority` appears, and that the bullet
@@ -238,7 +255,8 @@ which is the same silent-pass failure mode the spec warns about for pins.
 
 ## Validation
 
-1. `make check` green — the deterministic gate, currently 773 tests.
+1. `make check` green — the deterministic gate, with no test lost from the
+   suite it started with.
 2. **Rewording survives**, two probes, both expected green: reword a sentence
    whose contract is structural (an argument's description), and reword a
    prose-only safety sentence within its pinned token. Both recorded verbatim in

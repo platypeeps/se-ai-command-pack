@@ -371,3 +371,57 @@ The PRD's goal and the design's anchor now state their own bounds. The goal
 claimed rewording tolerance without qualification while an acceptance criterion
 carved out the prose-only contracts; the anchor tolerates the unit noun
 changing but not the word `authority` leaving the bullet, and says so.
+
+## Round 9: three sentences that were never one rule
+
+Round 8's remaining findings were all the same shape: an assertion that proved
+the *parts* of a contract exist without proving they belong together.
+
+**The carve-out was three unrelated searches.** `assert_states_redaction_carveout`
+asserted `sensitivity`, `unquotable`, and a retention phrase each appeared
+somewhere in the file. A document that described `sensitivity=` in its Arguments
+section, used "unquotable" in a report example, and promised "not dropped" about
+some other rule entirely would have passed — three true sentences, no carve-out.
+Fixed with `statements()`, which splits a document into bullets, table rows, and
+paragraphs; the assertion now requires one statement carrying all three. Probe
+P26 deletes `, and neither drops the finding` from the ledger row: `FAILED`. Both
+real documents state the rule inside a single bullet or cell, so the narrower
+assertion needed no document change.
+
+**The resolution prohibition matched four spellings of one thing.** It banned
+`## Resolutions`, `## Resolution`, `**Resolutions**`, `**Resolution**` as
+literals — so `### Resolution` or `## resolutions` was a section this test would
+not see. Replaced with a heading read: every unfenced ATX heading is normalized
+(strip `#`, strip emphasis, lower) and compared to the two words. Probe P27
+appends `### Resolutions` to the ledger: `FAILED`.
+
+**The criterion parser had no fixture.** `criterion_slugs()` ran only against the
+real document, so its parse decisions — a near-miss bullet is prose, a fenced
+bullet is an example, an empty class raises, a duplicate slug is not absorbed —
+were assumptions. Split into `_criterion_slugs(text, heading)` and covered by
+four cases against a fixture. Probe P28 deletes the criterion bullets from
+`detector-criteria.md`: `FAILED`.
+
+**"Closed value set" claimed more than the parser does.** The set is closed over
+the declaration surface — the head's pipe tail, or the body's backticked tokens —
+and `test_a_value_added_to_a_declaration_changes_the_set` proves an added value
+reaches the `assertEqual` on both. It is not closed over the document, and it
+cannot be: `depth=`'s body legitimately backticks `min_severity=` and `low`,
+neither of which is one of its values. Recorded as a convention in `design.md`
+rather than pretended away in the parser.
+
+**Two anchors are not two chances.** The design claimed the classification
+contract survived rewording because it had "two independent anchors"; both are
+asserted, so defeating either fails the test. Independent in what they read, not
+alternatives — and the tolerance is the rewording *within* an anchor (`block` or
+`section` for the unit noun), never the loss of the word `authority`, which is
+the contract's name. Corrected in `design.md` section 5.
+
+Also this round: fence delimiters now follow the Markdown rule (three or more of
+one character, closed by the same character at the same length or longer) instead
+of treating any ``` or ~~~ prefix as a toggle — a tilde line inside a backtick
+block used to invert the state and classify every following line backwards. A
+table whose rows do not all carry the header's column count now raises instead of
+projecting the wrong field past the short row. `ledger_text()` reads through the
+shared cache rather than the disk. Gate: 804 tests, `make check` green,
+prose-lint clean.

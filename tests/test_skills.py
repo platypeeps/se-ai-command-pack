@@ -132,8 +132,22 @@ def normalized_resource(name: str, relative: str) -> str:
     return " ".join(resource_text(name, relative).split())
 
 
-def _is_fence(stripped: str) -> bool:
-    return stripped.startswith("```") or stripped.startswith("~~~")
+_FENCE = re.compile(r"^(`{3,}|~{3,})")
+
+
+def _fence(stripped: str) -> str | None:
+    """The fence delimiter a line opens or closes with, if any.
+
+    Markdown wants three or more of one character, and a fence closes only on
+    the same character at the same length or longer. Treating any ``\u0060\u0060\u0060`` or
+    ``~~~`` prefix as a toggle lets a tilde line *inside* a backtick block flip
+    the state, after which every following line is classified backwards."""
+    match = _FENCE.match(stripped)
+    return match.group(1) if match else None
+
+
+def _closes(opened: str, delimiter: str) -> bool:
+    return delimiter[0] == opened[0] and len(delimiter) >= len(opened)
 
 
 def section_lines(text: str, heading: str) -> list[str]:
@@ -148,24 +162,30 @@ def section_lines(text: str, heading: str) -> list[str]:
     # section the document does not have, and ends a real section early — the
     # rest of it then reads as absent rather than as unmet.
     start = None
-    fenced = False
+    opened: str | None = None
     for index, line in enumerate(lines):
         stripped = line.strip()
-        if _is_fence(stripped):
-            fenced = not fenced
-            continue
-        if not fenced and stripped == heading:
+        delimiter = _fence(stripped)
+        if delimiter:
+            if opened is None:
+                opened = delimiter
+                continue
+            if _closes(opened, delimiter):
+                opened = None
+                continue
+        if opened is None and stripped == heading:
             start = index
             break
     if start is None:
         raise AssertionError(f"missing section heading: {heading}")
     body: list[str] = []
-    fenced = False
+    opened = None
     for line in lines[start + 1 :]:
         stripped = line.strip()
-        if _is_fence(stripped):
-            fenced = not fenced
-        elif not fenced and stripped.startswith("#") and len(stripped) - len(
+        delimiter = _fence(stripped)
+        if delimiter and (opened is None or _closes(opened, delimiter)):
+            opened = delimiter if opened is None else None
+        elif opened is None and stripped.startswith("#") and len(stripped) - len(
             stripped.lstrip("#")
         ) <= level:
             break
@@ -191,12 +211,13 @@ def _unfenced(lines: list[str]) -> list[str]:
     rather than declaring one. Reading them as structure lets an example
     satisfy a contract assertion the document never made."""
     kept: list[str] = []
-    fenced = False
+    opened: str | None = None
     for line in lines:
-        if _is_fence(line.lstrip()):
-            fenced = not fenced
+        delimiter = _fence(line.lstrip())
+        if delimiter and (opened is None or _closes(opened, delimiter)):
+            opened = delimiter if opened is None else None
             continue
-        if not fenced:
+        if opened is None:
             kept.append(line)
     return kept
 
@@ -246,9 +267,21 @@ def _table_rows(text: str, heading: str) -> list[str]:
         raise AssertionError(
             f"pipe block under {heading} has no separator row: {rows[:2]}"
         )
-    data = [row for row, cells in zip(rows[2:], split[2:], strict=True) if not _is_separator(cells)]
+    data = [
+        row
+        for row, cells in zip(rows[2:], split[2:], strict=True)
+        if not _is_separator(cells)
+    ]
     if not data:
         raise AssertionError(f"no table rows under heading: {heading}")
+    width = len(split[0])
+    ragged = [row for row in data if len(row.strip("|").split("|")) != width]
+    if ragged:
+        # A row with the wrong number of cells is a malformed table, and every
+        # column projection past the short row reads the wrong field.
+        raise AssertionError(
+            f"table under {heading} has rows of the wrong width: {ragged}"
+        )
     return data
 
 
@@ -430,9 +463,13 @@ def criterion_slugs(name: str, relative: str, heading: str) -> set[str]:
     the near-miss bullets in the same section are prose and open with no
     backticked token, so one rule over the whole class section yields the
     criteria and nothing else."""
+    return _criterion_slugs(resource_text(name, relative), heading)
+
+
+def _criterion_slugs(text: str, heading: str) -> set[str]:
     slugs = [
         match.group(1)
-        for line in _unfenced(section_lines(resource_text(name, relative), heading))
+        for line in _unfenced(section_lines(text, heading))
         if (match := re.match("- `([^`]+)` \u2014", line))
     ]
     if not slugs:
@@ -440,6 +477,32 @@ def criterion_slugs(name: str, relative: str, heading: str) -> set[str]:
     if len(slugs) != len(set(slugs)):
         raise AssertionError(f"duplicate criterion slug under {heading}: {slugs}")
     return set(slugs)
+
+
+def statements(text: str) -> list[str]:
+    """The document's statements: one bullet, table row, or paragraph each.
+
+    A contract that has to hold *together* — three clauses of one rule — is
+    only proven by finding them in one statement. Searching the whole file
+    proves each clause exists somewhere, which two unrelated sentences also
+    satisfy."""
+    units: list[str] = []
+    current: list[str] = []
+    for line in _unfenced(text.splitlines()):
+        stripped = line.strip()
+        starts = (
+            not stripped
+            or stripped.startswith(("- ", "* ", "|", "#"))
+            or re.match(r"^\d+\. ", stripped)
+        )
+        if starts and current:
+            units.append("\n".join(current))
+            current = []
+        if stripped:
+            current.append(line)
+    if current:
+        units.append("\n".join(current))
+    return units
 
 
 def skill_section(name: str, heading: str) -> str:
@@ -4526,6 +4589,25 @@ Prose between them.
 2. Step two, outer again.
 """
 
+    CRITERIA = """## Contradiction
+
+A class opens with prose that carries no backticked head.
+
+- `direct-negation` — one statement denies another
+  continued here
+- `scope-overlap` — two rules claim the same ground
+
+Near miss: two rules that differ only in scope are not a contradiction.
+
+```text
+- `sample-slug` — an example, not a criterion
+```
+
+## Empty class
+
+Prose only, with no criterion bullet.
+"""
+
     ARGUMENTS = """## Arguments
 
 - `depth=brief|deep` — how far to go
@@ -4656,6 +4738,57 @@ Prose between them.
         with self.assertRaises(AssertionError):
             _argument_values(doc, "depth", "f")
 
+    def test_criteria_are_the_backticked_bullets_of_their_class(self) -> None:
+        # Near-miss bullets share the section and open with prose, so the
+        # backticked-slug rule is what separates a criterion from a caveat.
+        self.assertEqual(
+            {"direct-negation", "scope-overlap"},
+            _criterion_slugs(self.CRITERIA, "## Contradiction"),
+        )
+
+    def test_a_fenced_criterion_bullet_is_an_example(self) -> None:
+        self.assertNotIn(
+            "sample-slug", _criterion_slugs(self.CRITERIA, "## Contradiction")
+        )
+
+    def test_a_class_declaring_no_criteria_raises(self) -> None:
+        # Returning an empty set would let a coverage assertion pass against a
+        # class whose criteria were deleted.
+        with self.assertRaises(AssertionError):
+            _criterion_slugs(self.CRITERIA, "## Empty class")
+
+    def test_a_duplicated_criterion_slug_is_not_absorbed(self) -> None:
+        doc = self.CRITERIA.replace("`scope-overlap`", "`direct-negation`")
+        with self.assertRaises(AssertionError):
+            _criterion_slugs(doc, "## Contradiction")
+
+    def test_a_value_added_to_a_declaration_changes_the_set(self) -> None:
+        # The point of an exact value set: a value the document adds must reach
+        # the assertion. Both declaration surfaces are exercised, because a
+        # parser that reads one and ignores the other silently keeps the old
+        # set for arguments declared the other way.
+        head = self.ARGUMENTS.replace("brief|deep", "brief|deep|exhaustive")
+        self.assertEqual(
+            {"brief", "deep", "exhaustive"}, _argument_values(head, "depth", "f")
+        )
+        body = self.ARGUMENTS.replace("`alpha`, `beta`", "`alpha`, `beta`, `gamma`")
+        self.assertEqual(
+            {"alpha", "beta", "gamma"}, _argument_values(body, "classes", "f")
+        )
+
+    def test_a_statement_is_one_bullet_row_or_paragraph(self) -> None:
+        # Co-location assertions are only meaningful if the unit really is one
+        # statement: a splitter that returns the whole document proves nothing,
+        # and one that splits per line breaks every multi-line rule.
+        units = statements(self.DOC)
+        self.assertIn("| `id` | stable |", units)
+        alpha = [unit for unit in units if unit.startswith("- `alpha=`")]
+        self.assertEqual(1, len(alpha))
+        self.assertIn("continued here", alpha[0])
+        self.assertNotIn("second", alpha[0])
+        # A fenced example is not a statement of the document.
+        self.assertFalse([unit for unit in units if "only an example" in unit])
+
     def test_bullet_body_takes_continuations_and_stops_at_the_next_bullet(
         self,
     ) -> None:
@@ -4693,9 +4826,7 @@ class CoherenceAuditSkillTest(unittest.TestCase):
     )
 
     def ledger_text(self) -> str:
-        return (SKILLS_ROOT / "se-coherence-audit" / self.LEDGER).read_text(
-            encoding="utf-8"
-        )
+        return resource_text("se-coherence-audit", self.LEDGER)
 
     def assert_states_redaction_carveout(self, label: str, text: str) -> None:
         """Both documents must carry all three parts of the carve-out.
@@ -4706,13 +4837,15 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         ``ledger-format.md`` from silently disagreeing about whether a withheld
         quote survives as a finding.
 
+        The three parts must hold in one statement. Asserting them over the
+        whole file passes on a document where ``sensitivity=`` is described in
+        one section, "unquotable" in another, and the retention promise belongs
+        to some unrelated rule — three true sentences that are not this rule.
+
         Bound worth stating: this proves each file carries the carve-out, not
         that no other sentence in it says the opposite. Detecting that is
         ``se-coherence-audit``'s own job, not a unit test's.
         """
-        lowered = text.lower()
-        for token in ("sensitivity", "unquotable"):
-            self.assertIn(token, lowered, f"{label} drops the redaction carve-out")
         # The retention half is the part with a policy in it. Matching a bare
         # "drop" token would also match a file that said the finding *is*
         # dropped, so require one of the negated forms.
@@ -4723,9 +4856,17 @@ class CoherenceAuditSkillTest(unittest.TestCase):
             "rather than dropping",
             "rather than dropped",
         )
+        carriers = [
+            unit
+            for unit in (statement.lower() for statement in statements(text))
+            if "sensitivity" in unit
+            and "unquotable" in unit
+            and any(phrase in unit for phrase in retentions)
+        ]
         self.assertTrue(
-            any(phrase in lowered for phrase in retentions),
-            f"{label} does not say a withheld quote keeps its finding",
+            carriers,
+            f"{label} has no single statement carrying the redaction carve-out: "
+            "a withheld quote marks the finding unquotable and keeps it",
         )
 
     def test_argument_surface_is_the_declared_set(self) -> None:
@@ -5024,16 +5165,25 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         )
         # A resolutions *section* would let a ledger carry findings with no
         # resolution beside them, which is why neither document has one.
-        # Singular and plural, heading and report field: any of the four would
-        # be the section this contract exists to forbid.
+        # Read the headings rather than matching four spellings of one: a
+        # literal list passes on `### Resolution`, on `## resolutions`, and on
+        # every other casing of the section it exists to forbid.
         for text in (ledger, skill_text("se-coherence-audit")):
-            for banned in (
-                "## Resolutions",
-                "## Resolution",
-                "**Resolutions**",
-                "**Resolution**",
-            ):
-                self.assertNotIn(banned, text, banned)
+            for line in _unfenced(text.splitlines()):
+                stripped = line.strip()
+                if not stripped.startswith("#"):
+                    continue
+                title = stripped.lstrip("#").strip().strip("*_ ").lower()
+                self.assertNotIn(
+                    title,
+                    ("resolution", "resolutions"),
+                    f"resolution is a finding field, not a section: {stripped}",
+                )
+            # A bolded run-in heading is the same section by another spelling.
+            self.assertIsNone(
+                re.search(r"\*\*\s*resolutions?\s*\*\*", text, re.IGNORECASE),
+                "resolution is a finding field, not a bolded report section",
+            )
 
     def test_coherence_audit_boundary_is_stated_from_both_sides(self) -> None:
         coherence = normalized("se-coherence-audit")
