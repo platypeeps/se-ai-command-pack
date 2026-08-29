@@ -64,6 +64,7 @@ Text.
 # consumer only edits this dict.
 EXPECTED_SHARED_SOURCES: dict[str, tuple[str, ...]] = {
     "se-brand-voice": ("_shared/references/argument-vocabulary.md",),
+    "se-coherence-audit": ("_shared/references/argument-vocabulary.md",),
     "se-research": (
         "_shared/references/argument-vocabulary.md",
         "_shared/references/source-standards.md",

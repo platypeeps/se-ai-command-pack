@@ -90,6 +90,7 @@ EXTERNAL_INPUT_SKILLS = (
     "se-video-notes",
     "se-watchlist",
     "se-brand-voice",
+    "se-coherence-audit",
 )
 INJECTION_RULE_FRAGMENT = "data, not instructions"
 
@@ -334,6 +335,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-video-notes",
                 "se-watchlist",
                 "se-brand-voice",
+                "se-coherence-audit",
                 "se-rust-design",
                 "se-rust-quality",
                 "se-rust-modules",
@@ -419,6 +421,7 @@ class SkillFamilyRegistryTest(unittest.TestCase):
                 "se-prose-lint": "engineer",
                 "se-humanizer": "engineer",
                 "se-adr-review": "engineer",
+                "se-coherence-audit": "improve",
             },
         )
 
@@ -4115,6 +4118,184 @@ class BrandVoiceSkillTest(unittest.TestCase):
             "**Handoffs and limits**",
         ):
             self.assertIn(field, raw)
+
+
+
+class CoherenceAuditSkillTest(unittest.TestCase):
+    """The corpus self-consistency audit.
+
+    Each phrase is pinned against the section that must carry it rather than
+    the whole file, so an incidental match elsewhere cannot satisfy an
+    assertion.
+    """
+
+    def test_coherence_audit_scope_is_supplied_and_never_widened(self) -> None:
+        args = skill_section("se-coherence-audit", "## Arguments").lower()
+        for phrase in (
+            "comma-separated list of paths, globs, or a vault",
+            "never inferred and never widened",
+        ):
+            self.assertIn(phrase, args)
+        workflow = skill_section("se-coherence-audit", "## Workflow").lower()
+        for phrase in (
+            "state the resulting file count and total size before reading",
+            "stop when the scope is empty, and say which emptiness it was",
+            "never read outside the resolved set",
+        ):
+            self.assertIn(phrase, workflow)
+
+    def test_coherence_audit_runs_four_detector_classes(self) -> None:
+        args = skill_section("se-coherence-audit", "## Arguments").lower()
+        self.assertIn(
+            "`contradiction`, `vagueness`, `bandaid`, `redundancy`. default all four",
+            args,
+        )
+        criteria = normalized_resource(
+            "se-coherence-audit", "references/detector-criteria.md"
+        )
+        for heading in (
+            "## Contradiction",
+            "## Vagueness",
+            "## Bandaid",
+            "## Redundancy",
+        ):
+            self.assertIn(
+                heading.removeprefix("## "),
+                criteria,
+                f"detector class missing: {heading}",
+            )
+
+    def test_every_detector_class_states_a_near_miss(self) -> None:
+        for heading in (
+            "## Contradiction",
+            "## Vagueness",
+            "## Bandaid",
+            "## Redundancy",
+        ):
+            body = resource_section(
+                "se-coherence-audit",
+                "references/detector-criteria.md",
+                heading,
+            ).lower()
+            self.assertIn("**qualifies**", body, heading)
+            self.assertIn("**evidence required**", body, heading)
+            self.assertIn("near-misses — do not report", body, heading)
+
+    def test_contradiction_and_redundancy_require_two_locations(self) -> None:
+        for heading in ("## Contradiction", "## Redundancy"):
+            body = resource_section(
+                "se-coherence-audit",
+                "references/detector-criteria.md",
+                heading,
+            ).lower()
+            self.assertIn("at least two `path:line` locations", body, heading)
+            self.assertIn("verbatim text", body, heading)
+
+    def test_coherence_audit_classifies_conflicts_against_precedence(
+        self,
+    ) -> None:
+        workflow = skill_section("se-coherence-audit", "## Workflow").lower()
+        for phrase in (
+            "`precedence: undeclared`",
+            "`resolved-by-precedence`",
+            "`missing-precedence`",
+            "the passages themselves are the finding",
+        ):
+            self.assertIn(phrase, workflow)
+
+    def test_coherence_audit_is_read_only_and_never_widens_scope(self) -> None:
+        safety = skill_section("se-coherence-audit", "## Safety rules").lower()
+        for phrase in (
+            "this skill is read-only",
+            "never edit, reorganize, rewrite, or reformat the corpus",
+            "never apply a proposed resolution",
+            "never widen scope beyond the resolved file set",
+        ):
+            self.assertIn(phrase, safety)
+
+    def test_findings_need_quotes_locations_and_confidence(self) -> None:
+        safety = skill_section("se-coherence-audit", "## Safety rules").lower()
+        for phrase in (
+            "a pairing you cannot produce the text of is not a finding",
+            "marked unquotable, with its locations intact",
+            "never report a low-confidence finding",
+            "never invent a location, quotation, criterion, severity, or resolution",
+        ):
+            self.assertIn(phrase, safety)
+        ledger = normalized_resource(
+            "se-coherence-audit", "references/ledger-format.md"
+        ).lower()
+        self.assertIn(
+            "a low-confidence finding is dropped, not reported", ledger
+        )
+
+    def test_partial_coverage_is_never_reported_as_complete(self) -> None:
+        safety = skill_section("se-coherence-audit", "## Safety rules").lower()
+        self.assertIn(
+            "reported as partially audited with the unaudited remainder named",
+            safety,
+        )
+        self.assertIn("never present a partial pass as complete", safety)
+        ledger = normalized_resource(
+            "se-coherence-audit", "references/ledger-format.md"
+        ).lower()
+        self.assertIn("read in full", ledger)
+        self.assertIn("sampled", ledger)
+        self.assertIn("skipped", ledger)
+        self.assertIn(
+            "coverage is never inferred from the number of findings", ledger
+        )
+
+    def test_severity_is_scored_by_consequence_not_count(self) -> None:
+        ledger = normalized_resource(
+            "se-coherence-audit", "references/ledger-format.md"
+        ).lower()
+        self.assertIn(
+            "severity is scored by consequence, not by how many locations",
+            ledger,
+        )
+        for tier in ("**blocking**", "**high**", "**medium**", "**low**"):
+            self.assertIn(tier, ledger)
+
+    def test_coherence_audit_boundary_is_stated_from_both_sides(self) -> None:
+        coherence = normalized("se-coherence-audit")
+        gap = normalized("se-knowledge-gap")
+        self.assertIn("`se-knowledge-gap`", coherence)
+        self.assertIn("`se-coherence-audit`", gap)
+        for sibling in (
+            "`se-fact-check`",
+            "`se-prose-lint`",
+            "`se-docs-bustest`",
+            "`se-red-team`",
+        ):
+            self.assertIn(sibling, coherence)
+        self.assertIn(
+            "Auditing a corpus against itself", gap
+        )
+
+    def test_coherence_audit_resources_and_final_report_contract(self) -> None:
+        raw = skill_text("se-coherence-audit")
+        for reference in (
+            "references/detector-criteria.md",
+            "references/ledger-format.md",
+            "references/argument-vocabulary.md",
+        ):
+            self.assertIn(reference, raw)
+        for field in (
+            "**Audit contract**",
+            "**Coverage**",
+            "**Findings ledger**",
+            "**Observations**",
+            "**Limits**",
+        ):
+            self.assertIn(field, raw)
+        # Resolution is a field of each finding, not a separate report section:
+        # a section would let a ledger carry findings with no resolution beside
+        # them.
+        self.assertIn(
+            "its\n  proposed resolution, which is a proposal and is never applied",
+            raw,
+        )
 
 
 class ReviewSkillsGotchaMandateTest(unittest.TestCase):

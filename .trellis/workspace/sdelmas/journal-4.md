@@ -1722,3 +1722,69 @@ Fleet refresh: advanced the se-ai-command-pack thin pin from 0.71.51 to 0.71.62.
 ### Next Steps
 
 - None - task complete
+
+
+## Session 195: Add se-coherence-audit skill for knowledge-corpus defect detection
+<!-- trellis-session: v=2 fp=f0fa5234aa255ad6 -->
+
+**Date**: 2026-08-28
+**Task**: Add se-coherence-audit skill for knowledge-corpus defect detection
+**Branch**: `feat/se-coherence-audit-skill`
+
+### Summary
+
+Added the se-coherence-audit skill: a read-only auditor that reads a knowledge corpus (note vault, agent-instruction files, or docs tree) against itself and returns a findings ledger for contradiction, vagueness, bandaid, and redundancy defects, with both sides of every conflict quoted and located. Conflicts are classified three ways — resolved-by-precedence, missing-precedence, contradiction — by asking whether any authority ordering could settle them, where authority is the block a passage lives in rather than the file. Dogfooded the skill against this repo's own agent instructions and recorded the resulting ledger as acceptance evidence.
+
+### Main Changes
+
+- Added templates/skills/se-coherence-audit/ — SKILL.md plus detector-criteria.md and ledger-format.md references
+- Registered the skill in installer/registry.py under the improve family, grouped with its siblings
+- Regenerated manifest.json, README.md catalog, generated/ skill copies, and the registry snapshot
+- Added CoherenceAuditSkillTest (11 tests) and pinned the skill's external-input and shared-source contracts
+- Recorded the dogfood ledger over AGENTS.md and .claude/rules/ as the A6 acceptance artifact
+- Documented the workflow boundary in docs/SE_AI_COMMAND_PACK.md and bumped the pack to 0.72.0
+- Captured the untracked-payload gotcha in .trellis/spec/backend/quality-guidelines.md
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `be56340` | feat(skills): add se-coherence-audit for corpus self-consistency audits |
+| `1d6396d` | docs(spec): record the untracked-payload gotcha and correct the task artifacts |
+| `bc289f4` | fix(skills): resolve se-coherence-audit review findings |
+| `123e18b` | fix(skills): resolve the second se-coherence-audit review round |
+| `5bc4318` | fix(skills): resolve the third se-coherence-audit review round |
+| `63fd295` | fix(skills): resolve the fourth se-coherence-audit review round |
+| `e2038c0` | fix(skills): address the Copilot review threads on quote handling |
+| `734b6df` | test(skills): pin the stable clause of the quote-or-drop rule |
+| `e68840a` | test(skills): finish repinning the quote-or-drop safety rule |
+| `d5f47bf` | fix(skills): classify conflicts by whether an ordering could settle them |
+| `ff742a8` | fix(skills): correct the contradiction example's remedy and two criteria |
+| `eb5808f` | style(skills): drop a hedge prose-lint flagged |
+| `89c47e6` | fix(skills): bound the grouping, fix the sort, and scope the classifier |
+| `541c67f` | fix(skills): require both locations for missing precedence, and drop the drift precondition |
+| `c5c061f` | fix(skills): add the precedence field and reject invalid argument values |
+| `6a5c860` | fix(skills): put the contradiction boundary where a ranking cannot reach |
+| `b071783` | fix(skills): expand directories, and make authority the block not the file |
+| `ba397cd` | test(skills): repin the scope literals after the directory-walk change |
+| `fac50cb` | fix(skills): align the worked example with block-level authority |
+| `4748289` | fix(skills): group the registry entry with its family and correct the ledger's precedence line |
+| `1fe109c` | fix(skills): carry the classification into the docs and define input syntax |
+| `2a31034` | fix(skills): correct the argument-validation sentence a reviewer flagged |
+| `0fa871e` | fix(skills): finish carrying block-level authority and the sensitivity carve-out |
+| `3f0ac9b` | fix(skills): report unresolved input paths instead of auditing a silently narrower corpus |
+
+### Testing
+
+- [OK] make check — Ran 773 tests, OK (test lint lock-check release-check shell-syntax trellis-provenance prose-lint)
+- [OK] sd-review scope=pr at 3f0ac9b — status ready, gate eligible (local-findings-accepted), 0 outstanding findings, 12 checks 0 blocking
+- [OK] Dogfood run of the skill over AGENTS.md and .claude/rules/ produced M-1 and R-1 findings with quoted both-sides evidence
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Task complete: se-coherence-audit shipped in 0.72.0
