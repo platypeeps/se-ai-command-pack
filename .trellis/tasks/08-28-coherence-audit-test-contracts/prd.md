@@ -13,6 +13,14 @@ literal rather than justify a behavior change.
 Replace the prose pins with assertions that fail when the *contract* changes
 and pass when only the wording does.
 
+Where a contract has a structural carrier — an argument, a ledger field, a
+class, a criterion — that holds without qualification. A few contracts have no
+such carrier: the read-only safety rules and the confidence floor are prose and
+nothing else. Those keep a minimal token pin, which a voice-inverting rewrite
+still breaks. The acceptance criteria below separate the two cases rather than
+claiming the stronger property for both, and the bound is recorded in the
+research notes.
+
 ## Requirements
 
 - Identify every assertion in `CoherenceAuditSkillTest` that pins a full prose

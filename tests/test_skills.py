@@ -5,6 +5,7 @@ from __future__ import annotations
 import functools
 import re
 import unittest
+from pathlib import Path
 from unittest import mock
 
 import yaml
@@ -97,10 +98,28 @@ INJECTION_RULE_FRAGMENT = "data, not instructions"
 
 
 @functools.lru_cache(maxsize=None)
+def _read_document(path: str, mtime_ns: int) -> str:
+    del mtime_ns  # part of the key, not the read
+    return Path(path).read_text(encoding="utf-8")
+
+
+def document(path: Path) -> str:
+    """One document, read once per revision of the file.
+
+    The contract assertions read a single document from several helpers, so the
+    uncached form re-read and re-parsed it for every projection. The file's
+    modification time is part of the cache key: a test that rewrites a fixture
+    inside one process must see its own write, and a cache keyed on the path
+    alone would serve the text from before it."""
+    return _read_document(str(path), path.stat().st_mtime_ns)
+
+
 def skill_text(name: str) -> str:
-    # Cached: the contract assertions read one skill from several helpers, and
-    # each call re-read and re-parsed the whole document.
-    return (SKILLS_ROOT / name / "SKILL.md").read_text(encoding="utf-8")
+    return document(SKILLS_ROOT / name / "SKILL.md")
+
+
+def resource_text(name: str, relative: str) -> str:
+    return document(SKILLS_ROOT / name / relative)
 
 
 def normalized(name: str) -> str:
@@ -110,9 +129,11 @@ def normalized(name: str) -> str:
 
 
 def normalized_resource(name: str, relative: str) -> str:
-    return " ".join(
-        (SKILLS_ROOT / name / relative).read_text(encoding="utf-8").split()
-    )
+    return " ".join(resource_text(name, relative).split())
+
+
+def _is_fence(stripped: str) -> bool:
+    return stripped.startswith("```") or stripped.startswith("~~~")
 
 
 def section_lines(text: str, heading: str) -> list[str]:
@@ -123,14 +144,28 @@ def section_lines(text: str, heading: str) -> list[str]:
     list bullet both stop being addressable once the newlines are gone."""
     lines = text.splitlines()
     level = len(heading) - len(heading.lstrip("#"))
-    try:
-        start = next(i for i, line in enumerate(lines) if line.strip() == heading)
-    except StopIteration:
-        raise AssertionError(f"missing section heading: {heading}") from None
+    # A `#` line inside a fence is sample text. Reading it as a heading finds a
+    # section the document does not have, and ends a real section early — the
+    # rest of it then reads as absent rather than as unmet.
+    start = None
+    fenced = False
+    for index, line in enumerate(lines):
+        stripped = line.strip()
+        if _is_fence(stripped):
+            fenced = not fenced
+            continue
+        if not fenced and stripped == heading:
+            start = index
+            break
+    if start is None:
+        raise AssertionError(f"missing section heading: {heading}")
     body: list[str] = []
+    fenced = False
     for line in lines[start + 1 :]:
         stripped = line.strip()
-        if stripped.startswith("#") and len(stripped) - len(
+        if _is_fence(stripped):
+            fenced = not fenced
+        elif not fenced and stripped.startswith("#") and len(stripped) - len(
             stripped.lstrip("#")
         ) <= level:
             break
@@ -158,7 +193,7 @@ def _unfenced(lines: list[str]) -> list[str]:
     kept: list[str] = []
     fenced = False
     for line in lines:
-        if line.lstrip().startswith("```"):
+        if _is_fence(line.lstrip()):
             fenced = not fenced
             continue
         if not fenced:
@@ -261,7 +296,10 @@ def bullet_body(text: str, heading: str, token: str) -> str:
     Scoping a pin to the bullet that owns a contract is the same move
     ``section_body`` makes for sections: it stops an incidental match elsewhere
     in the section from satisfying the assertion."""
-    opener = f"- `{token}"
+    # Matched against the parsed head, not as a prefix of the line: `- \`class=\``
+    # would otherwise be satisfied by the `classes=` bullet, and a pin scoped to
+    # a deleted argument would keep passing against its neighbour.
+    wanted = token.rstrip("`")
     collected: list[str] = []
     indent = 0
     for line in _unfenced(section_lines(text, heading)):
@@ -283,12 +321,24 @@ def bullet_body(text: str, heading: str, token: str) -> str:
                 break
             collected.append(stripped)
             continue
-        if stripped.startswith(opener):
+        head = re.match(r"- `([^`]+)`", stripped)
+        if head and _head_matches(head.group(1), wanted):
             indent = len(line) - len(line.rstrip("\n").lstrip())
             collected.append(stripped)
     if not collected:
         raise AssertionError(f"no bullet for {token!r} under {heading}")
     return " ".join(" ".join(collected).split())
+
+
+def _head_matches(head: str, wanted: str) -> bool:
+    """Whether a bullet head is the one asked for.
+
+    A head that states its values inline (``depth=standard|brief|deep``) is
+    addressed by its name, so ``depth=`` matches it; everything else matches
+    only exactly."""
+    if wanted.endswith("="):
+        return head.split("=", 1)[0] + "=" == wanted
+    return head == wanted
 
 
 def _bullet_heads(lines: list[str]) -> list[str]:
@@ -380,11 +430,10 @@ def criterion_slugs(name: str, relative: str, heading: str) -> set[str]:
     the near-miss bullets in the same section are prose and open with no
     backticked token, so one rule over the whole class section yields the
     criteria and nothing else."""
-    text = (SKILLS_ROOT / name / relative).read_text(encoding="utf-8")
     slugs = [
         match.group(1)
-        for line in _unfenced(section_lines(text, heading))
-        if (match := re.match("- `([^`]+)` \u2014", line.strip()))
+        for line in _unfenced(section_lines(resource_text(name, relative), heading))
+        if (match := re.match("- `([^`]+)` \u2014", line))
     ]
     if not slugs:
         raise AssertionError(f"no criterion bullets under {heading}")
@@ -399,7 +448,7 @@ def skill_section(name: str, heading: str) -> str:
 
 def resource_section(name: str, relative: str, heading: str) -> str:
     return section_body(
-        (SKILLS_ROOT / name / relative).read_text(encoding="utf-8"), heading
+        resource_text(name, relative), heading
     )
 
 
@@ -4415,6 +4464,7 @@ Still inside Schema.
 - `alpha=` — first line
   continued here
 - `beta=` — second
+- `betamax=` — a longer head that starts with a shorter one
 
 ## Not a table
 
@@ -4427,6 +4477,26 @@ Still inside Schema.
 | --- | --- |
 | `sample` | only an example |
 ```
+
+## Tilde fence
+
+~~~text
+| field | rule |
+| --- | --- |
+| `tilde` | only an example |
+~~~
+
+## Heading in a fence
+
+```text
+## Sample
+
+| field | rule |
+| --- | --- |
+| `sampled` | example |
+```
+
+Still inside the fenced-heading section.
 
 ## Bad separator
 
@@ -4506,6 +4576,29 @@ Prose between them.
         )
         with self.assertRaises(AssertionError):
             table_row(self.DOC, "## Schema", "absent")
+
+    def test_a_heading_inside_a_fence_is_sample_text(self) -> None:
+        # It neither names a section of its own nor ends the one it sits in;
+        # otherwise a real section's tail reads as absent rather than unmet.
+        with self.assertRaises(AssertionError):
+            section_lines(self.DOC, "## Sample")
+        self.assertIn(
+            "Still inside the fenced-heading section.",
+            section_body(self.DOC, "## Heading in a fence"),
+        )
+
+    def test_a_tilde_fence_is_a_fence(self) -> None:
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Tilde fence")
+
+    def test_a_bullet_is_found_by_its_head_not_by_a_prefix(self) -> None:
+        # `- \`beta=\`` must not be satisfied by the `betamax=` bullet: a pin
+        # scoped to a deleted argument would keep passing against its
+        # neighbour.
+        self.assertIn("second", bullet_body(self.DOC, "## Bullets", "beta="))
+        self.assertNotIn(
+            "longer head", bullet_body(self.DOC, "## Bullets", "beta=")
+        )
 
     def test_a_table_inside_a_fence_is_an_example_not_a_declaration(
         self,
@@ -4698,12 +4791,10 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         self.assertIn("nothing readable", workflow)
 
     def test_coherence_audit_runs_four_detector_classes(self) -> None:
-        criteria = (
-            SKILLS_ROOT / "se-coherence-audit" / self.CRITERIA
-        ).read_text(encoding="utf-8")
+        criteria = resource_text("se-coherence-audit", self.CRITERIA)
         headings = {
             line.strip()
-            for line in criteria.splitlines()
+            for line in _unfenced(criteria.splitlines())
             if line.startswith("## ")
         }
         self.assertEqual(set(self.DETECTOR_CLASSES), headings)

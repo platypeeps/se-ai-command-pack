@@ -333,3 +333,41 @@ several helpers.
 Probes after the change: **P20** (delete the block-level rule) FAILED, **P22**
 (delete the `precedence=` bullet) FAILED, **P23** (add a fifth value to
 `classes=`) FAILED. Baseline OK, `make check` green at 795 tests.
+
+
+## Round 8: fences, heads, and a cache that could lie
+
+The review found a stronger version of the fence problem than round 7 fixed. It
+is not only that a fenced table parsed as a declaration — a `#` line inside a
+fence was read as a *heading*, so a sample document in an example both named
+sections the document does not have and ended the real section it sat in. The
+tail of that section then read as absent rather than as unmet. `section_lines()`
+now tracks fences while locating the heading and while walking the body, and
+`~~~` counts as a fence alongside ```` ``` ````.
+
+Three more:
+
+- `bullet_body()` matched its token as a line prefix, so a pin scoped to
+  `` `beta=` `` was satisfied by the `betamax=` bullet — a deleted argument
+  would keep passing against its neighbour. Lookup is against the parsed head:
+  exact, except that a head stating its values inline is addressed by its name.
+- Criterion slugs were read from the stripped line, so an indented example
+  counted as a declaration. They are read at column zero, like argument heads.
+- The detector-class heading set was read from raw lines, so a `## ` inside a
+  worked example would have joined the set.
+
+The `skill_text()` cache added in round 7 was keyed on the skill name alone,
+which is a cache that can lie: a test rewriting a fixture inside one process
+would read the text from before its own write. The key is now the path plus the
+file's modification time, and the same reader serves the reference documents,
+which several projections had been re-reading.
+
+Probes after the change, each expected red and each red: **P20** (delete the
+block-level rule), **P24** (delete the `## Bandaid` detector class), **P25**
+(delete the `criterion` row from the ledger schema). Baseline OK, `make check`
+green at 798 tests.
+
+The PRD's goal and the design's anchor now state their own bounds. The goal
+claimed rewording tolerance without qualification while an acceptance criterion
+carved out the prose-only contracts; the anchor tolerates the unit noun
+changing but not the word `authority` leaving the bullet, and says so.
