@@ -66,14 +66,16 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
 
 1. Resolve scope. Expand `input=` minus `exclude=` into an explicit file list.
    State the file count and total size before reading. Stop if `input=` is
-   absent or resolves to nothing. Resolve every symlink and drop any whose
-   target lands outside the boundary, naming it as an exclusion — a corpus that
-   links out is common, and following the link is how an audit silently widens.
-   Never read outside the resolved set.
-2. Resolve precedence. Use `precedence=` when given; otherwise search the corpus
-   for a declared ordering. Record which of the two happened, or record
-   `precedence: undeclared` — that recorded value is what makes step 5 report a
-   missing precedence rather than a contradiction.
+   absent or resolves to nothing. Resolve every symlink against the boundary —
+   the expansion of `input=` minus `exclude=` — and drop any whose target lands
+   outside it, naming it as an exclusion: a corpus that links out is common, and
+   following the link is how an audit silently widens. Never read outside the
+   resolved set.
+2. Resolve precedence. Use `precedence=` when given; otherwise collect any
+   ordering the corpus declares while building the index in step 3, rather than
+   traversing the corpus a second time to look for one. Record which of the two
+   happened, or record `precedence: undeclared`, and settle that value before
+   classifying in step 5.
 3. Build the claim index. Read each file and extract its directives and
    assertions — statements telling a reader to do, prefer, forbid, or believe
    something — each with its `path:line` and its verbatim text. Compare this
@@ -91,15 +93,19 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
    grouping in the report so a reader can see what was never compared. Scan
    entries individually for vagueness and bandaid. A finding is reportable only
    when it names the class criterion it satisfies.
-5. Classify each conflict by what step 2 recorded, so exactly one label
-   applies:
-   - `resolved-by-precedence` — an ordering is declared, covers both sides, and
-     settles which governs. An observation, not a defect.
-   - `missing-precedence` — no ordering is declared over these two passages at
-     all. The absent precedence is the finding, not the passages.
-   - `contradiction` — an ordering is declared and covers both sides, yet still
-     does not settle them: they sit at the same authority level, or the
-     ordering leaves both live. The passages themselves are the finding.
+5. Classify each conflict, so exactly one label applies. Ask first whether an
+   authority ordering *could* settle it — whether each passage would be correct
+   if its own file governed — and only then what step 2 recorded:
+   - `resolved-by-precedence` — an ordering could settle it, one is declared, it
+     covers both sides, and it says which governs. An observation, not a defect.
+   - `missing-precedence` — an ordering could settle it, but none that is
+     declared reaches both sides. The absent ordering is the finding; the
+     passages may each be correct under their own authority.
+   - `contradiction` — no ordering could settle it. The passages cannot both be
+     followed in the same scope, so ranking their files changes nothing: a
+     direct negation on one subject and trigger is a contradiction whether or
+     not the corpus declares any precedence at all. The passages themselves are
+     the finding.
 6. Score severity by consequence, per `references/ledger-format.md`: whether a
    reader acting on the passage would do the wrong thing, and whether the
    passage is load-bearing. Sort by severity, then by number of affected

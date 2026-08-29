@@ -41,7 +41,8 @@ Three duplicated passages that currently agree are `low`; one contradiction on a
 destructive action is `blocking`.
 
 - **blocking** — a reader following the corpus would take a wrong, hard-to-undo
-  action, or two passages demand opposite actions on the same trigger.
+  action. Opposite actions on one trigger are not blocking by themselves;
+  they are blocking when acting on the wrong one is costly to reverse.
 - **high** — load-bearing guidance that a competent reader will plausibly
   misread.
 - **medium** — a real defect on a low-blast-radius or rarely-reached path.
@@ -54,37 +55,40 @@ One per class. Each shows the evidence the schema requires.
 
 ### Contradiction
 
-An ordering is declared and reaches both sides, and still does not settle them.
+No ordering could settle it: the two passages cannot both be followed in one
+scope, so ranking their files changes nothing.
 
 ```
 C-1  contradiction  blocking  confidence: high
-  criterion: exclusive-trigger
+  criterion: direct-negation
   docs/release.md:41
     "Tag the release before the gate runs, so the gate sees the tag."
   CONTRIBUTING.md:88
     "Never tag until the gate is green."
-  precedence: "docs/ and CONTRIBUTING.md are peers; neither overrides the other"
-  why: the same trigger — a release being cut — routes to two exclusive
-       orderings, and the declared precedence covers both files while leaving
-       both live.
-  resolution: state the ordering in one file and have the other point at it.
+  precedence: irrelevant — the two demands are on the same tag, in the same
+       scope, and cannot both be met whichever file governs
+  why: a release cannot be both tagged before the gate and untagged until it is
+       green; whoever cuts one takes an action the corpus also forbids, and
+       retagging a published release is costly to undo.
+  resolution: state the ordering once and have the other file point at it.
 ```
 
 ### Missing precedence
 
-No declared ordering reaches the two passages at all. The absent ordering is
-the finding; the passages may each be correct under their own authority.
+An ordering could settle it, but none that is declared reaches both sides. The
+absent ordering is the finding; each passage may be correct under its own
+authority.
 
 ```
 M-1  missing-precedence  high  confidence: high
-  criterion: exclusive-trigger
-  docs/release.md:41
-    "Tag the release before the gate runs, so the gate sees the tag."
-  CONTRIBUTING.md:88
-    "Never tag until the gate is green."
+  criterion: conflicting-order
+  docs/release.md:12
+    "Release notes are written after the tag, from the tag's commit range."
+  CONTRIBUTING.md:31
+    "Write the release notes before tagging, and tag the commit that adds them."
   precedence: undeclared
-  why: the corpus declares no ordering over these two files, so a reader cutting
-       a release cannot tell which one governs.
+  why: either sequence is workable on its own, so this is settled by saying
+       which file governs release procedure — and the corpus never does.
   resolution: declare which file governs release procedure, and have the other
        point at it.
 ```

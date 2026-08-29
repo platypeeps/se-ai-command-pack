@@ -15,9 +15,11 @@
   The skill is read-only and returns a prioritized ledger. Every finding carries
   its `path:line` locations, the offending text quoted verbatim (both sides for
   contradiction and redundancy), the named criterion it satisfies, and a
-  proposed resolution the user applies. A conflict that a declared precedence
-  settles is reported as an observation rather than a defect; a conflict with
-  **no** declared precedence makes that missing precedence the finding.
+  proposed resolution the user applies. Conflicts are classified by whether an
+  authority ordering could settle them at all: one that a declared ordering
+  settles is an observation rather than a defect, one that an ordering could
+  settle but none declares makes that missing precedence the finding, and one
+  that no ordering could settle is the contradiction itself.
 
   Two guards address the class's primary failure mode — confidently pairing
   passages that are not actually opposed. `references/detector-criteria.md`
