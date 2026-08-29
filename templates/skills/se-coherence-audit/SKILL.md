@@ -76,7 +76,11 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
    and total size before reading. Stop when the scope is empty, and say which
    emptiness it was: `input=` absent, a supplied path that does not exist, or
    paths that exist and hold nothing readable. They are three different
-   problems, and only the last one means the corpus was seen. Resolve every symlink against the boundary —
+   problems, and only the last one means the corpus was seen. When some
+   supplied paths resolve and others do not, do not stop — report every
+   unresolved path as a coverage limit before reading, and carry it into the
+   report. A partial corpus audited without saying so is the failure the
+   coverage rules exist to prevent. Resolve every symlink against the boundary —
    the expansion of `input=` minus `exclude=` — and drop any whose target lands
    outside it, naming it as an exclusion: a corpus that links out is common, and
    following the link is how an audit silently widens. Never read outside the
