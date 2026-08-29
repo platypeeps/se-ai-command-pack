@@ -148,6 +148,39 @@ def _clean_cell(cell: str) -> str:
     return cell.replace("`", "").replace("**", "").strip()
 
 
+def _is_separator(cells: list[str]) -> bool:
+    return bool(cells) and all(cell and set(cell) <= {"-", ":"} for cell in cells)
+
+
+def _table_rows(text: str, heading: str) -> list[str]:
+    """The data rows of the first pipe table under ``heading``, as written.
+
+    A Markdown table is a header, a separator, then rows. Accepting a pipe block
+    without its separator would let any pipe-delimited prose — a shell pipeline
+    in a fenced block, an inline alternation — parse as a table and supply
+    whatever cells it happened to contain. Requiring the separator is what makes
+    "this section declares a table" a checkable claim rather than an assumption.
+
+    Raises when the section carries no table, rather than returning empty: an
+    empty return would let a deleted table pass as "no members to check"."""
+    rows = [
+        line.strip()
+        for line in section_lines(text, heading)
+        if line.strip().startswith("|")
+    ]
+    if not rows:
+        raise AssertionError(f"no table under heading: {heading}")
+    split = [[_clean_cell(c) for c in row.strip("|").split("|")] for row in rows]
+    if len(split) < 2 or not _is_separator(split[1]):
+        raise AssertionError(
+            f"pipe block under {heading} has no separator row: {rows[:2]}"
+        )
+    data = [row for row, cells in zip(rows[2:], split[2:], strict=True) if not _is_separator(cells)]
+    if not data:
+        raise AssertionError(f"no table rows under heading: {heading}")
+    return data
+
+
 def markdown_table_column(
     text: str, heading: str, column: int = 0
 ) -> list[str]:
@@ -156,33 +189,15 @@ def markdown_table_column(
     Header and separator rows are dropped and backticks and bold markers are
     stripped, so the result is the identifiers the document declares rather than
     their formatting. Column 0 gives the field or set names; the ``locations``
-    cardinality rule and the severity tiers are read from column 1.
-
-    Raises when the section carries no table. An empty return would let a
-    deleted table pass as "no members to check", which is the silent-pass
-    failure mode this whole class exists to remove."""
+    cardinality rule and the severity tiers are read from column 1."""
     cells: list[str] = []
-    seen_header = False
-    for line in section_lines(text, heading):
-        stripped = line.strip()
-        if not stripped.startswith("|"):
-            if cells or seen_header:
-                break
-            continue
-        row = [c for c in stripped.strip("|").split("|")]
-        if not seen_header:
-            seen_header = True
-            continue
-        cleaned = [_clean_cell(cell) for cell in row]
-        if all(cell and set(cell) <= {"-", ":"} for cell in cleaned):
-            continue
-        if column >= len(row):
+    for row in _table_rows(text, heading):
+        split = [_clean_cell(c) for c in row.strip("|").split("|")]
+        if column >= len(split):
             raise AssertionError(
-                f"table under {heading} has no column {column}: {stripped}"
+                f"table under {heading} has no column {column}: {row}"
             )
-        cells.append(cleaned[column])
-    if not cells:
-        raise AssertionError(f"no table rows under heading: {heading}")
+        cells.append(split[column])
     return cells
 
 
@@ -192,21 +207,15 @@ def table_row(text: str, heading: str, key: str) -> str:
 
     Both the ``locations`` cardinality rule and the ``quotes`` redaction
     carve-out are assertions about one named row, so the lookup is by field name
-    and never by row index."""
-    keys = markdown_table_column(text, heading)
-    try:
-        index = keys.index(key)
-    except ValueError:
-        raise AssertionError(
-            f"no row named {key!r} under {heading}; rows are {keys}"
-        ) from None
-    rows = [
-        line.strip()
-        for line in section_lines(text, heading)
-        if line.strip().startswith("|")
-    ]
-    header_and_separator = 2
-    return " ".join(rows[index + header_and_separator].split())
+    and never by row index. It reads the same rows ``markdown_table_column``
+    does — two extractors with slightly different ideas of where the table
+    starts would disagree about which row a name refers to."""
+    rows = _table_rows(text, heading)
+    for row in rows:
+        if _clean_cell(row.strip("|").split("|")[0]) == key:
+            return " ".join(row.split())
+    keys = [_clean_cell(r.strip("|").split("|")[0]) for r in rows]
+    raise AssertionError(f"no row named {key!r} under {heading}; rows are {keys}")
 
 
 def bullet_body(text: str, heading: str, token: str) -> str:
@@ -274,7 +283,12 @@ def argument_values(name: str, argument: str) -> set[str]:
             continue
         tail = head.split("=", 1)[1]
         if tail:
-            return set(tail.split("|"))
+            values = tail.split("|")
+            if len(values) != len(set(values)):
+                raise AssertionError(
+                    f"duplicate value in {argument}= of {name}: {values}"
+                )
+            return set(values)
         body = bullet_body(text, "## Arguments", f"{argument}=")
         return set(re.findall(r"`([a-z_]+)`", body))
     raise AssertionError(f"no argument named {argument!r} in {name}")
@@ -4322,6 +4336,10 @@ Still inside Schema.
 - `alpha=` — first line
   continued here
 - `beta=` — second
+
+## Not a table
+
+| this | is | prose |
 """
 
     def test_section_ends_at_the_next_same_or_higher_heading(self) -> None:
@@ -4340,6 +4358,16 @@ Still inside Schema.
             ["id", "class"], markdown_table_column(self.DOC, "## Schema")
         )
         self.assertEqual(["x"], markdown_table_column(self.DOC, "## Other"))
+
+    def test_a_pipe_block_without_a_separator_is_not_a_table(self) -> None:
+        # Otherwise any pipe-delimited prose supplies whatever cells it holds,
+        # and a contract assertion reads them as the document's declarations.
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Not a table")
+
+    def test_column_and_row_readers_agree_on_the_same_rows(self) -> None:
+        for name in markdown_table_column(self.DOC, "## Schema"):
+            self.assertIn(name, table_row(self.DOC, "## Schema", name))
 
     def test_absent_table_and_absent_column_both_raise(self) -> None:
         with self.assertRaises(AssertionError):
@@ -4657,6 +4685,13 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         safety = skill_section("se-coherence-audit", "## Safety rules").lower()
         self.assertIn("not a finding", safety)
         self.assertIn("never report a low-confidence", safety)
+        # Each fabricable field is its own prohibition; the broad "never invent"
+        # token survives dropping any one of them from the list.
+        invented = safety.split("never invent", 1)[1].split(".", 1)[0]
+        for field in ("location", "quotation", "criterion", "severity", "resolution"):
+            self.assertIn(field, invented, f"never-invent rule dropped {field}")
+        # A withheld quote costs the quote, not the finding's addressability.
+        self.assertIn("locations intact", safety)
         confidence = table_row(
             self.ledger_text(), "## Finding schema", "confidence"
         ).lower()
@@ -4682,7 +4717,9 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         coverage = resource_section(
             "se-coherence-audit", self.LEDGER, "## Coverage block"
         ).lower()
-        self.assertIn("never inferred", coverage)
+        # The count is the specific wrong proxy the rule exists to forbid;
+        # "never inferred" alone survives dropping it.
+        self.assertIn("never inferred from the number", coverage)
 
     def test_severity_is_scored_by_consequence_not_count(self) -> None:
         ledger = self.ledger_text()

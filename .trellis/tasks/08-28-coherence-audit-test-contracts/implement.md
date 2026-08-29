@@ -69,8 +69,13 @@
 Focused, during the rewrite:
 
 ```bash
-.venv/bin/python -m unittest discover -s tests -p test_skills.py -k CoherenceAudit
+.venv/bin/python -m unittest discover -s tests -p test_skills.py \
+  -k CoherenceAudit -k MarkdownContractHelper
 ```
+
+The helper class is part of the focused lane, not an afterthought: the contract
+assertions are only as good as the parse under them, so a run that exercises the
+assertions without the parsers validates half the change.
 
 Deletion probe, once per target (expect `FAILED` then `OK`):
 

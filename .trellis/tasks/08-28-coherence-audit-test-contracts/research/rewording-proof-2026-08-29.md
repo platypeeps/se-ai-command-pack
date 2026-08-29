@@ -215,3 +215,39 @@ spellings are structure, that a missing heading, a missing table, an absent
 column, and an absent bullet each raise rather than return empty. A contract
 assertion over a silently-wrong parse asserts nothing, and until this class
 existed nothing proved the parse.
+
+## Round 5: the three I talked myself out of
+
+The round-4 sibling audit listed three dropped contracts and then dismissed each
+one as "close enough": the five fields `never invent` enumerates, the `locations
+intact` half of the redaction carve-out, and *what* coverage may not be inferred
+from. The review returned all three. Worth recording as a process note rather
+than a technical one — the audit found them, the judgement call lost them, and
+the shortest-token rule answers each cleanly. A broad token that survives
+deleting any one member of a list is not pinning the list.
+
+```
+P17  drop "quotation" from the never-invent list  -> FAILED
+P18  drop "with its locations intact"             -> FAILED
+P19  drop "from the number" in the coverage rule  -> FAILED
+```
+
+## Round 5: the parser findings
+
+Two defects in the helpers added in round 4, both real:
+
+`markdown_table_column` treated the first pipe-prefixed line as a header and
+never required a separator after it, so any pipe-delimited prose parsed as a
+table and supplied whatever cells it held. `table_row` then re-derived the rows
+with a *different* rule and indexed by `+2`, so the two readers could disagree
+about which row a name referred to. Both now read one `_table_rows` extractor
+that requires header, separator, rows — and `table_row` matches by name against
+the same list rather than computing an offset into a second parse.
+
+`argument_values` had the P16 defect one level down: an inline enum written
+`depth=standard|standard|deep` collapsed to two values in a set. It raises on a
+repeat now, like the two projections fixed in round 4.
+
+Also fixed: the focused validation command in `implement.md` excluded the helper
+class, and `-k "A or B"` is not a thing — `unittest -k` takes patterns, and
+multiple `-k` flags are what unions them.
