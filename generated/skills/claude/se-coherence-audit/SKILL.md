@@ -41,7 +41,10 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 
 Arguments arrive as free text with the invocation: `key=value` pairs and bare
 flags. Unknown argument names are an error — stop and report them before
-reading the corpus.
+reading the corpus. So is a value outside the set its argument names, a
+duplicated key, and a bare value where a pair belongs: report the argument, the
+value received, and the values it accepts, and read nothing. Never repair an
+argument by guessing what was meant.
 
 - `input=` — the corpus: paths, globs, or a vault root. Required. Never
   inferred and never widened.

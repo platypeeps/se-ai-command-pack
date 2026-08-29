@@ -29,6 +29,7 @@ of findings.
 | `severity` | blocking, high, medium, or low |
 | `locations` | every `path:line`; contradiction, missing-precedence, and redundancy require at least two |
 | `quotes` | the verbatim text at each location, never paraphrased. A secret-shaped value inside a quote is redacted and said to be; `sensitivity=` may withhold a quote entirely, and the finding is then marked unquotable. Neither is a paraphrase, and neither drops the finding |
+| `precedence` | on a conflict finding only: the ordering that was checked and what it settled, or `undeclared`, or `irrelevant` with why no ordering could settle it |
 | `criterion` | the named criterion from `references/detector-criteria.md` that it satisfies |
 | `why` | what a reader acting on this passage would get wrong |
 | `resolution` | the proposed fix, stated as a proposal and never applied |
