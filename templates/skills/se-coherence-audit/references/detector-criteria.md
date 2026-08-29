@@ -56,8 +56,9 @@ A directive with nothing a reader can act on or check.
   antecedent a reader can resolve from the passage.
 - `undefined-gate` — an undefined term used as a pass/fail condition ("ship when
   it is production-ready").
-- `missing-failure-branch` — a required check with no stated consequence for
-  failing it.
+- `missing-failure-branch` — a required check whose failure leaves a reader with
+  a real choice the corpus never makes: block, warn, retry, or proceed. A check
+  whose failure obviously stops the step it gates does not qualify.
 - `open-list-terminator` — "etc.", "and so on", "among others" carrying load in a
   list a reader must act from exhaustively.
 

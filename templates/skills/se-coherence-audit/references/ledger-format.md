@@ -70,7 +70,8 @@ C-1  contradiction  blocking  confidence: high
   why: a release cannot be both tagged before the gate and untagged until it is
        green; whoever cuts one takes an action the corpus also forbids, and
        retagging a published release is costly to undo.
-  resolution: state the ordering once and have the other file point at it.
+  resolution: change one of the two demands — ranking the files cannot help,
+       because the loser's rule still forbids what the winner's requires.
 ```
 
 ### Missing precedence

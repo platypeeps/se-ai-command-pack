@@ -64,7 +64,9 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
 
 ## Workflow
 
-1. Resolve scope. Expand `input=` minus `exclude=` into an explicit file list.
+1. Resolve scope. Expand `input=` minus `exclude=` into an explicit list of
+   regular text files, dropping directories, binaries, and anything else that
+   cannot be read as prose.
    State the file count and total size before reading. Stop if `input=` is
    absent or resolves to nothing. Resolve every symlink against the boundary —
    the expansion of `input=` minus `exclude=` — and drop any whose target lands
