@@ -72,11 +72,13 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
 
 ## Workflow
 
-1. Resolve scope. Expand `input=` minus `exclude=` into an explicit list of
-   regular text files, dropping directories, binaries, and anything else that
-   cannot be read as prose.
-   State the file count and total size before reading. Stop if `input=` is
-   absent or resolves to nothing. Resolve every symlink against the boundary —
+1. Resolve scope. Expand `input=` minus `exclude=` into an explicit file list:
+   walk a directory to the text files under it, and drop what cannot be read as
+   prose — binaries, images, anything not text. State the resulting file count
+   and total size before reading. Stop if `input=` is absent, or if the
+   expansion is empty; say which of the two it was, since a path that resolved
+   to a directory holding nothing readable is a different problem from a path
+   that did not resolve. Resolve every symlink against the boundary —
    the expansion of `input=` minus `exclude=` — and drop any whose target lands
    outside it, naming it as an exclusion: a corpus that links out is common, and
    following the link is how an audit silently widens. Never read outside the
@@ -116,9 +118,11 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
      declared reaches both sides. The absent ordering is the finding; the
      passages may each be correct under their own authority.
    - `contradiction` — no ordering could settle it, because the passages sit at
-     one authority: the same file or block, or two the corpus declares peers.
-     There is no ranking left to invoke, so the passages themselves are the
-     finding. Note what this excludes — two passages in two files that a
+     one authority. Authority is the block a passage lives in, not the file: one
+     file can hold two separately owned blocks, and those rank against each
+     other like any two files. It is one authority when the passages share a
+     block, or the corpus declares their blocks peers. There is no ranking left
+     to invoke, so the passages themselves are the finding. Note what this excludes — two passages in two files that a
      precedence *could* separate are `missing-precedence` until one is declared,
      however flatly they negate each other, because declaring it retires one of
      them.
