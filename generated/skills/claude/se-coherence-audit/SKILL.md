@@ -111,7 +111,7 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
    already dropped, an explicit exception or a stated non-overlapping scope
    among them, never reaches this step and is never a contradiction here. For
    what remains, ask first whether an authority ordering *could* settle it —
-   whether each passage would be correct if its own file governed — and only
+   whether each passage would be correct if its own block governed — and only
    then what step 2 recorded:
    - `resolved-by-precedence` — an ordering could settle it, one is declared, it
      covers both sides, and it says which governs. An observation, not a defect.
@@ -173,8 +173,9 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
   exclusions, detector classes run, precedence source (supplied, declared in the
   corpus, or undeclared), the effective severity floor and which argument set
   it, the sensitivity level, and overall confidence;
-- **Coverage** — files read in full, files sampled with the sampled portion, and
-  files skipped with the reason for each;
+- **Coverage** — files read in full, files sampled with the sampled portion,
+  files skipped with the reason for each, and the subject groups entries were
+  compared within, so a reader can see what was never compared against what;
 - **Findings ledger** — each finding with its id, class, severity, every
   `path:line`, the verbatim quote per location — redacted, or withheld and the
   finding marked unquotable, where `sensitivity=` requires — the named criterion

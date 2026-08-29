@@ -27,7 +27,10 @@ Two passages that cannot both be followed.
   exclusive actions.
 
 **Evidence required**: at least two `path:line` locations and the verbatim text
-of every side. A contradiction reported from one location is not reportable.
+of every side. A contradiction reported from one location is not reportable. As
+everywhere else, `sensitivity=` may redact or withhold the text of a side you
+read; the locations stay, and the finding is marked unquotable rather than
+dropped.
 
 **Near-misses — do not report**
 
