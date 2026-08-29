@@ -1788,3 +1788,39 @@ Added the se-coherence-audit skill: a read-only auditor that reads a knowledge c
 ### Next Steps
 
 - Task complete: se-coherence-audit shipped in 0.72.0
+
+
+## Session 196: Refresh sd-ai-command-pack to 0.71.63
+<!-- trellis-session: v=2 fp=d1d5f703a6163d9e -->
+
+**Date**: 2026-08-28
+**Task**: Refresh sd-ai-command-pack to 0.71.63
+**Branch**: `chore/pack-refresh-0.71.63`
+
+### Summary
+
+Advance the thin pack pin from 0.71.62 to 0.71.63.
+
+### Main Changes
+
+- Bumped .sd-ai-command-pack manifest and provenance to 0.71.63
+
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `931d0b8fab1782044a6996911c2a22b309640f96` | chore(pack): refresh sd-ai-command-pack to 0.71.63 |
+
+### Testing
+
+- [OK] bash $HOME/.agents/bin/sd-ai-command-pack-housekeeping.sh --self-test: all scenarios passed
+- [OK] node $HOME/.agents/bin/sd-ai-command-pack-review-preflight.mjs: 0 failures, 2 warnings
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
