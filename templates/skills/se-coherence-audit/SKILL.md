@@ -38,7 +38,7 @@ Argument names and value sets follow the shared vocabulary in `references/argume
 
 Arguments arrive as free text with the invocation: `key=value` pairs and bare
 flags. Unknown argument names are an error — stop and report them before
-reading the corpus. A value outside the set its argument names, a duplicated
+reading the corpus. A value outside the set its argument allows, a duplicated
 key, and a bare value where a pair belongs are errors on the same footing:
 report the argument, the value received, and the values it accepts, and read
 nothing. Never repair an
