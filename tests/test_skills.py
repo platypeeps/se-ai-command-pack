@@ -5368,15 +5368,16 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         # every other casing of the section it exists to forbid.
         for text in (ledger, skill_text("se-coherence-audit")):
             for line in _unfenced(text.splitlines()):
-                stripped = line.strip()
-                if not stripped.startswith("#"):
+                if _heading_level(line) is None:
                     continue
-                # `## Resolution ##` is the same heading written closed.
-                title = stripped.strip("#").strip().strip("*_ ").lower()
+                # `## Resolution ##` is the same heading written closed, and
+                # `_heading_title` is what knows that while leaving `#hashtag`
+                # prose and indented code out of the scan entirely.
+                title = _heading_title(line).strip("*_ ").lower()
                 self.assertNotIn(
                     title,
                     ("resolution", "resolutions"),
-                    f"resolution is a finding field, not a section: {stripped}",
+                    f"resolution is a finding field, not a section: {line}",
                 )
             # A bolded run-in heading is the same section by another spelling.
             self.assertIsNone(
