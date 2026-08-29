@@ -5128,10 +5128,13 @@ class CoherenceAuditSkillTest(unittest.TestCase):
 
     def test_coherence_audit_runs_four_detector_classes(self) -> None:
         criteria = resource_text("se-coherence-audit", self.CRITERIA)
+        # Read by the heading rules, not by the first three characters: a
+        # `## Notes ##` closing sequence and up to three spaces of indent are
+        # both valid, and either one hides a declared detector class.
         headings = {
-            line.strip()
+            f"## {_heading_title(line)}"
             for line in _unfenced(criteria.splitlines())
-            if line.startswith("## ")
+            if _heading_level(line) == 2
         }
         self.assertEqual(set(self.DETECTOR_CLASSES), headings)
 
@@ -5270,7 +5273,7 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         leaves "the passages sit at one authority" behind. Anchor 2 is
         independent of the wording entirely."""
         contradiction = bullet_body(
-            skill_text("se-coherence-audit"), "## Workflow", "contradiction`"
+            skill_text("se-coherence-audit"), "## Workflow", "contradiction"
         ).lower()
         self.assertIn("authority", contradiction)
         self.assertTrue(
