@@ -1,9 +1,20 @@
 # Rewording and deletion proofs — 2026-08-29
 
-Every run below is
-`.venv/bin/python -m unittest discover -s tests -p test_skills.py -k CoherenceAudit`,
-17 tests. Each probe copies the file to a `mktemp`, edits it, runs, and restores;
-`git status --porcelain templates/` was empty afterwards.
+Every run below is the focused lane:
+
+```bash
+.venv/bin/python -m unittest discover -s tests -p test_skills.py \
+  -k CoherenceAudit -k MarkdownContractHelper
+```
+
+It covered 17 tests when this file was started and 46 by the last round; the
+count is recorded per round rather than claimed once here, because each round
+added cases. Every probe is the same procedure: copy the file to a `mktemp`,
+apply the edit named in that round's entry, run the lane, restore the copy, run
+it again. `git status --porcelain templates/` was empty after each round, which
+is the evidence the restores happened. Probe numbers are unique per round and
+never reused; where an earlier round's probe is re-run against later code, the
+entry says so and keeps that probe's original number.
 
 Note the inversion against the runnable block in
 `.trellis/spec/backend/quality-guidelines.md:152-161`. That block restores the
@@ -425,3 +436,48 @@ table whose rows do not all carry the header's column count now raises instead o
 projecting the wrong field past the short row. `ledger_text()` reads through the
 shared cache rather than the disk. Gate: 804 tests, `make check` green,
 prose-lint clean.
+
+## Round 10: what "#" and "```" actually mean
+
+Round 9's findings were about the parser believing its own shorthand.
+
+**A `#` is not a heading.** `section_lines` ended a section at any stripped line
+starting with `#`, so `#hashtag` in prose and a four-space-indented `#### note`
+inside a code sample both truncated the section they sat in — and the contract
+below the truncation read as *absent*, which is the failure mode this whole
+class exists to remove. Replaced with the ATX rule: at most three spaces of
+indent, one to six `#`, then whitespace or end of line. `## Not headings` in the
+fixture carries both shapes above a table, and the table is still found.
+
+**A fence with an info string is not a closer.** ` ```python ` inside a block
+was read as closing it, so everything after it parsed as document structure.
+`_fence` now returns the delimiter *and* its info string, and `_closes` requires
+the info string to be empty. Fixture `## Reopened fence` puts a sample table
+after such a line; reading it now raises instead of returning the example's rows.
+
+**Deleting a fence joined what stood on either side.** `_unfenced` dropped the
+block's lines outright, so a table, a fenced example, and a second table became
+one table. It now leaves a blank line where the block was — the same separation
+the document has. Fixture `## Split by a fence` proves the second table stays
+separate.
+
+**A delimiter row has one cell per header cell.** The separator was checked for
+shape but not width, so `| --- | --- | --- |` under a two-column header parsed as
+a table. It now raises. The separator is also read from the raw cells rather than
+the cleaned ones, so `` | `---` | `` is no longer structure.
+
+**The scope contract lost its ordering half.** The test asserted `file count`,
+`total size`, and `before` all appeared in the workflow — but step 1 says
+"before" about unresolved paths too, so the measurement could move after the read
+and the test would still pass. Probe P29 rewrites the sentence to "state the
+resulting file count and total size once the corpus has been read": with the
+statement-wide search, `OK` — the contract was gone and nothing failed. Scoped to
+the sentence, `FAILED`. Kept.
+
+Also this round: the document cache keys on size as well as mtime, because a
+filesystem whose timestamps are coarser than the write reports one mtime for two
+revisions; the resolution prohibition reads `## Resolution ##` as the same
+heading written closed. Round-9 regression probes: **P30** (rename the `format=`
+argument) `FAILED`, **P31** (delete the `criterion` schema row) `FAILED`,
+restored `OK`, `git status --porcelain templates/` empty. Gate: 808 tests,
+`make check` green, prose-lint clean.

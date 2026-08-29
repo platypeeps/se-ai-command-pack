@@ -98,8 +98,8 @@ INJECTION_RULE_FRAGMENT = "data, not instructions"
 
 
 @functools.lru_cache(maxsize=None)
-def _read_document(path: str, mtime_ns: int) -> str:
-    del mtime_ns  # part of the key, not the read
+def _read_document(path: str, revision: tuple[int, int]) -> str:
+    del revision  # part of the key, not the read
     return Path(path).read_text(encoding="utf-8")
 
 
@@ -110,8 +110,11 @@ def document(path: Path) -> str:
     uncached form re-read and re-parsed it for every projection. The file's
     modification time is part of the cache key: a test that rewrites a fixture
     inside one process must see its own write, and a cache keyed on the path
-    alone would serve the text from before it."""
-    return _read_document(str(path), path.stat().st_mtime_ns)
+    alone would serve the text from before it. Size joins it because a
+    filesystem whose timestamps are coarser than the write can report the same
+    mtime for two revisions."""
+    stat = path.stat()
+    return _read_document(str(path), (stat.st_mtime_ns, stat.st_size))
 
 
 def skill_text(name: str) -> str:
@@ -132,22 +135,41 @@ def normalized_resource(name: str, relative: str) -> str:
     return " ".join(resource_text(name, relative).split())
 
 
-_FENCE = re.compile(r"^(`{3,}|~{3,})")
+_FENCE = re.compile(r"^(`{3,}|~{3,})(.*)$")
 
 
-def _fence(stripped: str) -> str | None:
-    """The fence delimiter a line opens or closes with, if any.
+def _fence(stripped: str) -> tuple[str, str] | None:
+    """The fence delimiter and info string a line carries, if any.
 
     Markdown wants three or more of one character, and a fence closes only on
     the same character at the same length or longer. Treating any ``\u0060\u0060\u0060`` or
     ``~~~`` prefix as a toggle lets a tilde line *inside* a backtick block flip
     the state, after which every following line is classified backwards."""
     match = _FENCE.match(stripped)
-    return match.group(1) if match else None
+    return (match.group(1), match.group(2).strip()) if match else None
 
 
-def _closes(opened: str, delimiter: str) -> bool:
-    return delimiter[0] == opened[0] and len(delimiter) >= len(opened)
+def _closes(opened: str, delimiter: str, info: str) -> bool:
+    """A closing fence is bare.
+
+    ``\u0060\u0060\u0060python`` inside a block opens nothing and closes nothing — it is a
+    line of the block's content. Accepting it as a closer ends the block early
+    and reads the rest of the sample as document structure."""
+    return not info and delimiter[0] == opened[0] and len(delimiter) >= len(opened)
+
+
+_HEADING = re.compile(r"^ {0,3}(#{1,6})(?:\s|$)")
+
+
+def _heading_level(line: str) -> int | None:
+    """The ATX heading level of ``line``, or ``None`` when it is not one.
+
+    ``#`` alone does not make a heading: ``#hashtag`` is prose, and four spaces
+    of indent make the line code. Reading either as a heading ends the section
+    it sits in, and the rest of that section then reads as absent rather than as
+    a contract the document failed to state."""
+    match = _HEADING.match(line)
+    return len(match.group(1)) if match else None
 
 
 def section_lines(text: str, heading: str) -> list[str]:
@@ -164,16 +186,20 @@ def section_lines(text: str, heading: str) -> list[str]:
     start = None
     opened: str | None = None
     for index, line in enumerate(lines):
-        stripped = line.strip()
-        delimiter = _fence(stripped)
-        if delimiter:
+        fence = _fence(line.strip())
+        if fence:
+            delimiter, info = fence
             if opened is None:
                 opened = delimiter
                 continue
-            if _closes(opened, delimiter):
+            if _closes(opened, delimiter, info):
                 opened = None
                 continue
-        if opened is None and stripped == heading:
+        if (
+            opened is None
+            and _heading_level(line) is not None
+            and line.strip().rstrip("#").strip() == heading.rstrip("#").strip()
+        ):
             start = index
             break
     if start is None:
@@ -181,14 +207,13 @@ def section_lines(text: str, heading: str) -> list[str]:
     body: list[str] = []
     opened = None
     for line in lines[start + 1 :]:
-        stripped = line.strip()
-        delimiter = _fence(stripped)
-        if delimiter and (opened is None or _closes(opened, delimiter)):
-            opened = delimiter if opened is None else None
-        elif opened is None and stripped.startswith("#") and len(stripped) - len(
-            stripped.lstrip("#")
-        ) <= level:
-            break
+        fence = _fence(line.strip())
+        if fence and (opened is None or _closes(opened, *fence)):
+            opened = fence[0] if opened is None else None
+        elif opened is None:
+            found = _heading_level(line)
+            if found is not None and found <= level:
+                break
         body.append(line)
     return body
 
@@ -213,9 +238,14 @@ def _unfenced(lines: list[str]) -> list[str]:
     kept: list[str] = []
     opened: str | None = None
     for line in lines:
-        delimiter = _fence(line.lstrip())
-        if delimiter and (opened is None or _closes(opened, delimiter)):
-            opened = delimiter if opened is None else None
+        fence = _fence(line.lstrip())
+        if fence and (opened is None or _closes(opened, *fence)):
+            opened = fence[0] if opened is None else None
+            # The block leaves a blank line behind. Deleting it outright joins
+            # what stood on either side, so a table before a fenced example and
+            # one after it parse as a single table.
+            if opened is None:
+                kept.append("")
             continue
         if opened is None:
             kept.append(line)
@@ -262,10 +292,17 @@ def _table_rows(text: str, heading: str) -> list[str]:
             break
     if not rows:
         raise AssertionError(f"no table under heading: {heading}")
-    split = [[_clean_cell(c) for c in row.strip("|").split("|")] for row in rows]
+    split = [[c.strip() for c in row.strip("|").split("|")] for row in rows]
     if len(split) < 2 or not _is_separator(split[1]):
         raise AssertionError(
             f"pipe block under {heading} has no separator row: {rows[:2]}"
+        )
+    if len(split[1]) != len(split[0]):
+        # Markdown wants one delimiter cell per header cell. A block that
+        # disagrees is not a table, and reading it as one projects columns the
+        # header never declared.
+        raise AssertionError(
+            f"pipe block under {heading} has a mismatched separator: {rows[:2]}"
         )
     data = [
         row
@@ -4578,6 +4615,46 @@ Prose between them.
 | field | rule |
 | --- | --- |
 | `second` | separate |
+
+## Not headings
+
+#hashtag is prose, not a heading.
+
+    #### four spaces of indent is code, not a heading
+
+| field | rule |
+| --- | --- |
+| `still` | inside |
+
+## Reopened fence
+
+```text
+sample text
+```python
+| field | rule |
+| --- | --- |
+| `sampled` | still an example |
+```
+
+## Split by a fence
+
+| field | rule |
+| --- | --- |
+| `before` | first table |
+
+```text
+an example
+```
+
+| field | rule |
+| --- | --- |
+| `after` | second table |
+
+## Wide separator
+
+| field | rule |
+| --- | --- | --- |
+| `x` | y |
 """
 
     NESTED = """## Nested
@@ -4789,6 +4866,31 @@ Prose only, with no criterion bullet.
         # A fenced example is not a statement of the document.
         self.assertFalse([unit for unit in units if "only an example" in unit])
 
+    def test_a_hash_that_is_not_a_heading_does_not_end_a_section(self) -> None:
+        # `#hashtag` has no space, and four spaces of indent make the line
+        # code. Reading either as a heading truncates the section, and the
+        # contract below it reads as absent rather than as unmet.
+        self.assertEqual(
+            ["still"], markdown_table_column(self.DOC, "## Not headings")
+        )
+
+    def test_a_closing_fence_carries_no_info_string(self) -> None:
+        # ```python inside a block is content, not a closer. Ending the block
+        # there reads the rest of the sample as the document's own structure.
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Reopened fence")
+
+    def test_a_fence_between_two_tables_keeps_them_apart(self) -> None:
+        # Dropping the fenced lines outright joins what stood on either side,
+        # and the second table's rows splice onto the first.
+        self.assertEqual(
+            ["before"], markdown_table_column(self.DOC, "## Split by a fence")
+        )
+
+    def test_a_separator_must_have_one_cell_per_header_cell(self) -> None:
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Wide separator")
+
     def test_bullet_body_takes_continuations_and_stops_at_the_next_bullet(
         self,
     ) -> None:
@@ -4918,10 +5020,30 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         self.assertIn("comma-separated", corpus)
         workflow = skill_section("se-coherence-audit", "## Workflow").lower()
         self.assertIn("never read outside", workflow)
-        # Both scope measurements are announced before any file is read;
-        # a count without a size hides a corpus too large to audit in full.
-        self.assertIn("file count", workflow)
-        self.assertIn("total size", workflow)
+        # Both scope measurements are announced before any file is read; a
+        # count without a size hides a corpus too large to audit in full, and
+        # either one stated after the read is not a scope announcement at all.
+        # One statement has to carry all three, or the ordering is only
+        # implied by where the sentences happen to sit.
+        # Sentence, not statement: step 1 says "before" about the unresolved
+        # paths too, so a statement-wide search reads that as the ordering and
+        # passes on a document that measures the corpus after reading it.
+        step_one = " ".join(
+            "\n".join(
+                section_lines(skill_text("se-coherence-audit"), "## Workflow")
+            ).split()
+        )
+        announced = [
+            sentence
+            for sentence in step_one.lower().split(". ")
+            if "file count" in sentence
+            and "total size" in sentence
+            and "before" in sentence
+        ]
+        self.assertTrue(
+            announced,
+            "no statement announces file count and total size before reading",
+        )
         self.assertIn("scope is empty", workflow)
         # Two contracts here, not one: the three emptiness cases exist, *and*
         # the skill must say which of them it hit. Naming the cases without
@@ -5173,7 +5295,8 @@ class CoherenceAuditSkillTest(unittest.TestCase):
                 stripped = line.strip()
                 if not stripped.startswith("#"):
                     continue
-                title = stripped.lstrip("#").strip().strip("*_ ").lower()
+                # `## Resolution ##` is the same heading written closed.
+                title = stripped.strip("#").strip().strip("*_ ").lower()
                 self.assertNotIn(
                     title,
                     ("resolution", "resolutions"),

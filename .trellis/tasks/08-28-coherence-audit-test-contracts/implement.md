@@ -50,14 +50,20 @@
      names, and the four closed value sets. Read each name as the backticked
      head truncated at `=`; `depth`, `sensitivity`, and `format` carry their
      values in that head, the rest in the bullet body.
-3. **Run the focused suite** after each group of methods:
-   `.venv/bin/python -m unittest discover -s tests -p test_skills.py -k CoherenceAudit`
-4. **Run the deletion probes** (step 3 of the design's validation) and record
+3. **Write `MarkdownContractHelperTest`** alongside the contract assertions —
+   one case per parse decision the helpers make, against fixtures in the class
+   rather than the real documents: which rows are structure, where a section
+   ends, what a fence hides, which inputs must raise. A contract assertion is a
+   claim about nothing if the parse under it is wrong, so this class is part of
+   the deliverable, not a follow-up.
+4. **Run the focused suite** after each group of methods, both classes together:
+   `.venv/bin/python -m unittest discover -s tests -p test_skills.py -k CoherenceAudit -k MarkdownContractHelper`
+5. **Run the deletion probes** (step 3 of the design's validation) and record
    each result.
-5. **Run both rewording probes** — one structural-carrier sentence, one
+6. **Run both rewording probes** — one structural-carrier sentence, one
    prose-only safety sentence reworded within its token — and record each
    reworded sentence verbatim. Both expected green.
-6. **Write the research notes** at
+7. **Write the research notes** at
    `research/rewording-proof-2026-08-29.md` (`mkdir -p` the directory; the task
    has none yet), holding both worked rewordings, the four deletion probes with
    their observed output line, the stated bound of the redaction assertion, and
@@ -80,14 +86,29 @@ assertions without the parsers validates half the change.
 Deletion probe, once per target (expect `FAILED` then `OK`):
 
 ```bash
-FILE=<the file the probe edits>
-TMP="$(mktemp)"
-cp "$FILE" "$TMP"
-# apply the deletion to "$FILE"
-.venv/bin/python -m unittest discover -s tests -p test_skills.py -k CoherenceAudit   # expect FAILED
-cp "$TMP" "$FILE" && rm -f "$TMP"
-.venv/bin/python -m unittest discover -s tests -p test_skills.py -k CoherenceAudit   # expect OK
+FOCUSED=(.venv/bin/python -m unittest discover -s tests -p test_skills.py
+         -k CoherenceAudit -k MarkdownContractHelper)
+probe() {  # probe <label> <file> <python edit applied to that file>
+  local label="$1" file="$2" edit="$3" backup
+  backup="$(mktemp)"
+  cp "$file" "$backup"
+  trap 'cp "$backup" "$file"; rm -f "$backup"' RETURN  # restores on any exit
+  python3 -c "$edit"
+  printf '%s: ' "$label"
+  "${FOCUSED[@]}" 2>&1 | tail -1   # expect FAILED
+}
+probe P-example templates/skills/se-coherence-audit/SKILL.md "
+from pathlib import Path
+p = Path('templates/skills/se-coherence-audit/SKILL.md')
+p.write_text(p.read_text().replace('- \`format=ledger|memo\`', ''))"
+git status --porcelain templates/   # expect empty: every probe restored
+"${FOCUSED[@]}" 2>&1 | tail -1      # expect OK
 ```
+
+The restore is a `trap`, not a trailing `cp`: a probe that fails on the edit
+itself leaves the document mutated, and the next probe then measures a corpus
+nobody wrote. `git status --porcelain templates/` after the run is the check
+that every restore happened.
 
 Note the inversion against
 `.trellis/spec/backend/quality-guidelines.md:152-161`: that block restores the
@@ -109,7 +130,7 @@ branch were pushed red for skipping exactly this.
 ## Documentation And Spec Updates
 
 - The prose-contract section already states the rule this task applies, so
-  nothing in it becomes wrong. It did gain the convention the probes earned:
+  nothing in it becomes wrong. It gains the conventions the probes earn:
   "assert the set, not a member", the parser-must-raise rule, and the probe
   inversion this task used, added under
   `### Prose contracts: prove the pin can fail` during the update-spec step.

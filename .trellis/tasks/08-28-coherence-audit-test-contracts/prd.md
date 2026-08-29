@@ -45,7 +45,10 @@ research notes.
 ## Acceptance Criteria
 
 - [ ] No assertion in `CoherenceAuditSkillTest` requires a full prose sentence
-      to match verbatim.
+      to match verbatim, and every contract with a structural carrier is
+      asserted against that carrier rather than against prose about it. A
+      surviving token pin is permitted only where the research notes name the
+      contract and show no structural surface exists for it.
 - [ ] Rewording a sentence whose contract has a structural carrier — an
       argument, a ledger field, a class, a criterion, a report field — leaves
       the suite green. Contracts with no structural carrier (the read-only

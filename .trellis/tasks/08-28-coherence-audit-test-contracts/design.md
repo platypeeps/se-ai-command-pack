@@ -233,7 +233,14 @@ def bullet_body(text: str, heading: str, token: str) -> str:
     vacuously."""
 
 def argument_names(name: str) -> set[str]:
-    """Argument identifiers declared as ``- `x=`` bullets under ``## Arguments``."""
+    """Argument identifiers declared as ``- `x=`` bullets under ``## Arguments``,
+    read at column zero so an indented sub-point is not a declaration."""
+
+def argument_values(name: str, argument: str) -> set[str]:
+    """One argument's value set, from whichever surface declares it: the
+    pipe-separated tail of the backticked head when it carries one, the
+    backticked tokens of the bullet body otherwise. Reading only the bullet
+    shape would report the three inline-enum arguments as valueless."""
 
 def criterion_slugs(name: str, relative: str, heading: str) -> set[str]:
     """Backticked slugs introduced by ``- `slug` —`` bullets in one section."""
@@ -247,7 +254,7 @@ which is the same silent-pass failure mode the spec warns about for pins.
 
 | Risk | Prevention |
 |---|---|
-| Parser silently returns empty and every set assertion trivially passes | Helpers raise on a missing heading, missing table, or empty result; the deletion probes in the validation plan exercise this directly |
+| Parser silently returns empty and every set assertion trivially passes | Helpers raise on a missing heading, missing table, or empty result — an `assertEqual` against an empty set would otherwise pass as "nothing to check". `MarkdownContractHelperTest` asserts the raise for each surface, and the deletion probes exercise it end to end |
 | A set assertion makes adding a legitimate new argument fail | Intended. An added argument is a contract change and should require a test edit; the failure names the unexpected member |
 | Bullet scoping too narrow, so a legitimate re-indent breaks the pin | `bullet_body()` collapses whitespace and follows continuation lines, matching the existing `normalized*()` behaviour |
 | The redaction helper passes on a file that carries the tokens but states the opposite rule | Real bound, stated in the research notes: the assertion proves both files carry the carve-out's three parts, not that no other sentence contradicts it. Full contradiction detection is `se-coherence-audit`'s own job, not a unit test's |
