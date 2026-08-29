@@ -127,9 +127,12 @@ against *itself* belongs to `se-coherence-audit`.
 defects: contradiction, vagueness, bandaid guidance, and redundancy. It resolves
 the file set from `input=` minus `exclude=`, states the count and size before
 reading, and builds an index of the corpus's own directives and assertions so
-comparisons come from the text rather than from recall. A conflict that a
-declared precedence settles is an observation; a conflict with no declared
-precedence makes that missing precedence the finding.
+comparisons come from the text rather than from recall. Conflicts are
+classified by whether an authority ordering could settle them at all: one a
+declared ordering settles is an observation, one an ordering could settle but
+none declares makes that missing precedence the finding, and one no ordering
+could reach — both passages in a single block, or in blocks the corpus declares
+peers — is the contradiction itself.
 
 Every reported finding carries its `path:line` locations, the offending text
 quoted verbatim — both sides for contradiction and redundancy — the named

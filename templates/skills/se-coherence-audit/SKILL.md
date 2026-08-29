@@ -44,7 +44,8 @@ report the argument, the value received, and the values it accepts, and read
 nothing. Never repair an
 argument by guessing what was meant.
 
-- `input=` — the corpus: paths, globs, or a vault root. Required. Never
+- `input=` — the corpus: a comma-separated list of paths, globs, or a vault
+  root, each resolved relative to the working directory. Required. Never
   inferred and never widened.
 - `exclude=` — paths, globs, or file classes outside the audit boundary.
 - `classes=` — which detectors to run, as a comma list of `contradiction`,
@@ -72,10 +73,10 @@ wins and the report states which: `depth=brief` raises the floor to `high`, and
 1. Resolve scope. Expand `input=` minus `exclude=` into an explicit file list:
    walk a directory to the text files under it, and drop what cannot be read as
    prose — binaries, images, anything not text. State the resulting file count
-   and total size before reading. Stop if `input=` is absent, or if the
-   expansion is empty; say which of the two it was, since a path that resolved
-   to a directory holding nothing readable is a different problem from a path
-   that did not resolve. Resolve every symlink against the boundary —
+   and total size before reading. Stop when the scope is empty, and say which
+   emptiness it was: `input=` absent, a supplied path that does not exist, or
+   paths that exist and hold nothing readable. They are three different
+   problems, and only the last one means the corpus was seen. Resolve every symlink against the boundary —
    the expansion of `input=` minus `exclude=` — and drop any whose target lands
    outside it, naming it as an exclusion: a corpus that links out is common, and
    following the link is how an audit silently widens. Never read outside the

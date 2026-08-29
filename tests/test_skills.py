@@ -4132,14 +4132,14 @@ class CoherenceAuditSkillTest(unittest.TestCase):
     def test_coherence_audit_scope_is_supplied_and_never_widened(self) -> None:
         args = skill_section("se-coherence-audit", "## Arguments").lower()
         for phrase in (
-            "the corpus: paths, globs, or a vault root. required.",
+            "comma-separated list of paths, globs, or a vault",
             "never inferred and never widened",
         ):
             self.assertIn(phrase, args)
         workflow = skill_section("se-coherence-audit", "## Workflow").lower()
         for phrase in (
             "state the resulting file count and total size before reading",
-            "stop if `input=` is absent, or if the expansion is empty",
+            "stop when the scope is empty, and say which emptiness it was",
             "never read outside the resolved set",
         ):
             self.assertIn(phrase, workflow)
