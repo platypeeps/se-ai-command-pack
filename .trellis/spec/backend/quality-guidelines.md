@@ -1331,6 +1331,24 @@ no code change is involved. This is the reverse of the hermeticity rule above:
 there the hazard is a test *reading* an untracked path, here it is a new payload
 file the tracked-files-only fixture cannot see.
 
+**Run `make check` before the commit, and again before the push.** Three commits
+on the `se-coherence-audit` branch (`734b6df`, `e2038c0`, `b071783`) were pushed
+red and each needed a repair commit, because the gate ran after the push instead
+of before it. The working order for a payload change is edit, `make generate`,
+`git add`, `make check`, commit, push — the stage step belongs before the check
+for the reason in the paragraph above, and the check belongs before the commit
+so a failure costs an amend rather than a public red head.
+
+**Invoke the release gate through `make`, never the script directly.**
+`.github/scripts/check-release-payload.py` defaults to `--base HEAD`, which
+measures uncommitted work only; the `Makefile` passes `--base auto`, which
+resolves to `origin/main`. Run bare on a branch that already committed its
+version bump, the script compares the branch tip against itself and reports
+`payload changed without a version bump (version is still <the new version>)`.
+Nothing is wrong with the tree, and bumping again to satisfy it makes the real
+gate fail on a two-step version change. The diagnostic names the version the
+branch already has, which is the tell.
+
 ### 7. Wrong vs Correct
 
 #### Wrong
