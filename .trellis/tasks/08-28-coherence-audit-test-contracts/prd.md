@@ -1,0 +1,59 @@
+# Replace brittle prose pins in se-coherence-audit skill tests with contract assertions
+
+## Goal
+
+`CoherenceAuditSkillTest` in `tests/test_skills.py` guards the
+`se-coherence-audit` skill by asserting that exact prose sentences appear in
+`SKILL.md` and its two references. During PR #278 those literals broke five
+separate times while the contract they guard never changed — each break was a
+rewording of the same rule, not a regression. The tests cost review rounds and
+gave no protection, because a reviewer rewording a sentence had to repin the
+literal rather than justify a behavior change.
+
+Replace the prose pins with assertions that fail when the *contract* changes
+and pass when only the wording does.
+
+## Requirements
+
+- Identify every assertion in `CoherenceAuditSkillTest` that pins a full prose
+  sentence, and classify each by the contract it is standing in for.
+- Replace each with an assertion on the durable surface: the argument set and
+  its allowed values, the ledger schema's field names and their cardinality
+  rules, the three conflict classes (`resolved-by-precedence`,
+  `missing-precedence`, `contradiction`), and the four detector classes.
+- Keep the two contracts that most needed guarding and were most fragile:
+  1. **Classification** — a conflict is classified by whether an authority
+     ordering could settle it, and authority is the block a passage lives in,
+     not the file.
+  2. **Redaction** — `sensitivity=` may withhold a quote, and a withheld quote
+     marks the finding unquotable rather than dropping it. `ledger-format.md`
+     and `SKILL.md` must agree on this; a divergence is exactly the defect a
+     Copilot thread caught on PR #278.
+- Do not weaken coverage: the replacement must still fail if the skill drops an
+  argument, a ledger field, a detector class, or either contract above.
+- Leave `EXTERNAL_INPUT_SKILLS`, the family map, and the `SKILL_NAMES` ordering
+  assertions alone — those pin identifiers, not prose, and did not break.
+
+## Acceptance Criteria
+
+- [ ] No assertion in `CoherenceAuditSkillTest` requires a full prose sentence
+      to match verbatim.
+- [ ] Rewording any single sentence in `SKILL.md`, `detector-criteria.md`, or
+      `ledger-format.md` without changing its meaning leaves the suite green;
+      demonstrate this with at least one worked rewording in the task's
+      research notes.
+- [ ] Deleting a documented argument, a ledger field, a conflict class, or a
+      detector class still fails the suite.
+- [ ] Dropping the redaction carve-out from either `SKILL.md` or
+      `ledger-format.md`, or letting the two disagree, fails the suite.
+- [ ] `make check` is green.
+
+## Notes
+
+- Related follow-up, out of this repository's scope: the `sd-review` remote
+  dispatch forwards the local attempt number as the remote attempt, so an
+  attempt above 1 with no prior remote attempt fails the action's
+  `request.rerequestOf` precondition and then reports `pending` forever because
+  the dispatch is idempotent. Observed on run 33221193956 during PR #278; the
+  workaround was a fresh `--attempt-id` at `--attempt 1`. The coordinator lives
+  in `platypeeps/sd-ai-command-pack`, not here.
