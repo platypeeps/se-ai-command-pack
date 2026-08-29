@@ -183,8 +183,15 @@ assertion fails on a deletion *and* on an unannounced addition, and no rewording
 touches it. `CoherenceAuditSkillTest` is the worked example: its prose pins
 became contract assertions, and deletion probes (an argument bullet, a schema
 row, a detector section, the redaction carve-out) each turned the suite red
-while genuine rewordings left it green. Evidence: the task's
-`research/rewording-proof-2026-08-29.md`.
+while genuine rewordings left it green.
+
+**Enumerate what a pin asserts before replacing it.** One sentence usually
+carries more than one contract, and the structural half is the visible one. A
+pin reading "a comma-separated list of paths, globs, or a vault" carries four:
+the separator syntax and each accepted form. Converting it to a set assertion
+over the forms silently drops the other. List the claims, then check the
+replacement covers each — the conversion is where coverage leaks, and the suite
+stays green while it does.
 
 **Make the parser raise rather than return empty.** `assertEqual(expected,
 parsed)` already fails when the parse comes back empty, so the risk is narrower

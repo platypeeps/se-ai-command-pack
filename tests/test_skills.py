@@ -205,8 +205,8 @@ def table_row(text: str, heading: str, key: str) -> str:
         for line in section_lines(text, heading)
         if line.strip().startswith("|")
     ]
-    # rows[0] is the header and rows[1] the separator.
-    return " ".join(rows[index + 2].split())
+    header_and_separator = 2
+    return " ".join(rows[index + header_and_separator].split())
 
 
 def bullet_body(text: str, heading: str, token: str) -> str:
@@ -249,11 +249,18 @@ def argument_names(name: str) -> set[str]:
     (``depth=standard|brief|deep``), so the name is the head truncated at the
     first ``=``. Matching ``- `x=` `` literally instead would find only the five
     arguments with a bare head and report the other three as deleted."""
-    heads = _bullet_heads(section_lines(skill_text(name), "## Arguments"))
-    names = {head.split("=", 1)[0] for head in heads if "=" in head}
-    if not names:
+    heads = [
+        head.split("=", 1)[0]
+        for head in _bullet_heads(section_lines(skill_text(name), "## Arguments"))
+        if "=" in head
+    ]
+    if not heads:
         raise AssertionError(f"no argument bullets in {name}")
-    return names
+    # Projecting to a set would silently absorb a second bullet declaring an
+    # argument that already exists, which is a contract defect, not a no-op.
+    if len(heads) != len(set(heads)):
+        raise AssertionError(f"duplicate argument bullet in {name}: {heads}")
+    return set(heads)
 
 
 def argument_values(name: str, argument: str) -> set[str]:
@@ -281,14 +288,16 @@ def criterion_slugs(name: str, relative: str, heading: str) -> set[str]:
     backticked token, so one rule over the whole class section yields the
     criteria and nothing else."""
     text = (SKILLS_ROOT / name / relative).read_text(encoding="utf-8")
-    slugs = {
+    slugs = [
         match.group(1)
         for line in section_lines(text, heading)
         if (match := re.match("- `([a-z-]+)` \u2014", line.strip()))
-    }
+    ]
     if not slugs:
         raise AssertionError(f"no criterion bullets under {heading}")
-    return slugs
+    if len(slugs) != len(set(slugs)):
+        raise AssertionError(f"duplicate criterion slug under {heading}: {slugs}")
+    return set(slugs)
 
 
 def skill_section(name: str, heading: str) -> str:
@@ -4277,6 +4286,87 @@ class BrandVoiceSkillTest(unittest.TestCase):
 
 
 
+class MarkdownContractHelperTest(unittest.TestCase):
+    """The parsers the contract assertions are built on.
+
+    A contract assertion is only as good as the parse under it: a helper that
+    quietly returns the wrong rows makes every ``assertEqual`` above it a claim
+    about nothing. These cases fix the parsing decisions that are not obvious
+    from reading the helpers — which rows are structure, where a section ends,
+    and which inputs must raise instead of returning empty.
+    """
+
+    DOC = """# Title
+
+## Schema
+
+| field | rule |
+| --- | --- |
+| `id` | stable |
+| **class** | one of four |
+
+Trailing prose.
+
+### Nested
+
+Still inside Schema.
+
+## Other
+
+| field | rule |
+|---|---|
+| `x` | y |
+
+## Bullets
+
+- `alpha=` — first line
+  continued here
+- `beta=` — second
+"""
+
+    def test_section_ends_at_the_next_same_or_higher_heading(self) -> None:
+        body = section_body(self.DOC, "## Schema")
+        self.assertIn("Still inside Schema.", body)
+        self.assertNotIn("| `x` | y |", body)
+
+    def test_missing_heading_raises_rather_than_returning_empty(self) -> None:
+        with self.assertRaises(AssertionError):
+            section_lines(self.DOC, "## Absent")
+
+    def test_separator_rows_are_structure_in_both_spellings(self) -> None:
+        # The spaced spelling is the one a naive join-before-clean check reads
+        # as data, so both are exercised deliberately.
+        self.assertEqual(
+            ["id", "class"], markdown_table_column(self.DOC, "## Schema")
+        )
+        self.assertEqual(["x"], markdown_table_column(self.DOC, "## Other"))
+
+    def test_absent_table_and_absent_column_both_raise(self) -> None:
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Bullets")
+        with self.assertRaises(AssertionError):
+            markdown_table_column(self.DOC, "## Schema", 5)
+
+    def test_row_lookup_is_by_name_not_position(self) -> None:
+        # Lookup is by cleaned name; the row comes back as written, because a
+        # caller asserting on it wants the document's own text.
+        self.assertEqual(
+            "| **class** | one of four |",
+            table_row(self.DOC, "## Schema", "class"),
+        )
+        with self.assertRaises(AssertionError):
+            table_row(self.DOC, "## Schema", "absent")
+
+    def test_bullet_body_takes_continuations_and_stops_at_the_next_bullet(
+        self,
+    ) -> None:
+        alpha = bullet_body(self.DOC, "## Bullets", "alpha=")
+        self.assertIn("continued here", alpha)
+        self.assertNotIn("second", alpha)
+        with self.assertRaises(AssertionError):
+            bullet_body(self.DOC, "## Bullets", "gamma=")
+
+
 class CoherenceAuditSkillTest(unittest.TestCase):
     """The corpus self-consistency audit.
 
@@ -4384,13 +4474,20 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         # support narrows what an audit can be pointed at.
         for form in ("paths", "globs", "vault"):
             self.assertIn(form, corpus, f"input= no longer accepts {form}")
+        # How the forms are separated is part of the syntax an operator types.
+        self.assertIn("comma-separated", corpus)
         workflow = skill_section("se-coherence-audit", "## Workflow").lower()
         self.assertIn("never read outside", workflow)
+        # Both scope measurements are announced before any file is read;
+        # a count without a size hides a corpus too large to audit in full.
         self.assertIn("file count", workflow)
+        self.assertIn("total size", workflow)
         self.assertIn("scope is empty", workflow)
-        # The three emptiness cases are the contract, not the sentence that
-        # lists them: an absent argument, a path that does not exist, and paths
-        # that exist and hold nothing readable.
+        # Two contracts here, not one: the three emptiness cases exist, *and*
+        # the skill must say which of them it hit. Naming the cases without
+        # requiring the report would let the skill stop with an unexplained
+        # empty result.
+        self.assertIn("say which", workflow)
         self.assertIn("does not exist", workflow)
         self.assertIn("nothing readable", workflow)
 
@@ -4514,6 +4611,9 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         ):
             self.assertIn(f"`{conflict_class}`", workflow)
         self.assertIn("`precedence: undeclared`", workflow)
+        # With no precedence to resolve against, the report is the conflicting
+        # passages themselves rather than a ruling on which one wins.
+        self.assertIn("passages themselves", workflow)
         # missing-precedence is an outcome of the contradiction detector, so it
         # is a ledger class without being a `classes=` value.
         self.assertIn(
@@ -4575,6 +4675,9 @@ class CoherenceAuditSkillTest(unittest.TestCase):
     def test_partial_coverage_is_never_reported_as_complete(self) -> None:
         safety = skill_section("se-coherence-audit", "## Safety rules").lower()
         self.assertIn("partially audited", safety)
+        # Naming the remainder is the part that makes a partial pass usable;
+        # without it "partially audited" is an unactionable disclaimer.
+        self.assertIn("unaudited remainder", safety)
         self.assertIn("never present a partial pass", safety)
         coverage = resource_section(
             "se-coherence-audit", self.LEDGER, "## Coverage block"
@@ -4592,6 +4695,8 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         ).lower()
         for tier in tiers:
             self.assertIn(f"**{tier}**", severity)
+        # Both halves: what severity is scored by, and what it is not.
+        self.assertIn("scored by consequence", severity)
         self.assertIn("not by how many locations", severity)
 
     def test_resolution_is_a_finding_field_not_a_report_section(self) -> None:
@@ -4601,9 +4706,16 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         )
         # A resolutions *section* would let a ledger carry findings with no
         # resolution beside them, which is why neither document has one.
+        # Singular and plural, heading and report field: any of the four would
+        # be the section this contract exists to forbid.
         for text in (ledger, skill_text("se-coherence-audit")):
-            self.assertNotIn("## Resolutions", text)
-            self.assertNotIn("**Resolutions**", text)
+            for banned in (
+                "## Resolutions",
+                "## Resolution",
+                "**Resolutions**",
+                "**Resolution**",
+            ):
+                self.assertNotIn(banned, text, banned)
 
     def test_coherence_audit_boundary_is_stated_from_both_sides(self) -> None:
         coherence = normalized("se-coherence-audit")

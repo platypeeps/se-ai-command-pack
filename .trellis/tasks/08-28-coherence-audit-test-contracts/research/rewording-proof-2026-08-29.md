@@ -94,8 +94,12 @@ rules at all. The tokens chosen are the shortest that die with their contract.
 
 `test_redaction_carveout_agrees_across_skill_and_ledger` asserts that
 `SKILL.md`'s `## Safety rules` and `ledger-format.md`'s `quotes` row each carry
-all three parts of the carve-out: `sensitivity`, `unquotable`, and a `drop`
-token. P4 confirms removing it from either side fails.
+all three parts of the carve-out: `sensitivity`, `unquotable`, and a retention
+marker. The marker is one of the negated forms ("never dropped", "not dropped",
+"neither drops", "rather than dropping/dropped"), not a bare `drop` substring —
+review round 1 showed the bare token also matches a file asserting the finding
+*is* dropped, so it accepted the inverted policy. P4 confirms removing the
+carve-out from either side fails.
 
 It proves each file carries the carve-out. It does not prove that no other
 sentence in either file contradicts it. Detecting that is `se-coherence-audit`'s
@@ -176,3 +180,38 @@ pin to a structural one silently drops any *second* contract the sentence was
 carrying. The set is the visible half; the default, the required-ness, the
 accepted forms are not. Enumerate what a pin asserts before replacing it, not
 what it looks like it asserts.
+
+## Round 4: the sibling audit
+
+Round 3 returned the same family again — five more contracts the conversion had
+dropped. Patching the two from round 3 one at a time was the wrong move; the
+right one was to enumerate every claim the old class made and check each against
+the new one. That audit found all five the reviewer named plus one it did not
+(the `total size` half of the scope announcement).
+
+Every restored contract, probed by deleting it from the source:
+
+```
+P9   drop "comma-separated" from input=            -> FAILED
+P10  drop "and total size" from the scope report   -> FAILED
+P11  drop "say which emptiness it was"             -> FAILED
+P12  drop "the passages themselves are the finding"-> FAILED
+P13  drop "with the unaudited remainder named"     -> FAILED
+P14  drop "scored by consequence" from Severity    -> FAILED
+P15  add a "## Resolution" section to the ledger   -> FAILED (3)
+P16  duplicate the `input=` argument bullet        -> FAILED
+```
+
+P16 is the one worth keeping in mind. `argument_names` and `criterion_slugs`
+returned sets, so a document declaring the same argument twice parsed as one —
+the set projection absorbed the defect instead of reporting it. Both helpers now
+raise on a duplicate before projecting. This is the same failure the table
+assertions guard with a length check, one layer further in: a set is the right
+*answer* and the wrong *intermediate*.
+
+Helper coverage. `MarkdownContractHelperTest` now fixes the parsing decisions the
+contract assertions rest on — where a section ends, that both separator
+spellings are structure, that a missing heading, a missing table, an absent
+column, and an absent bullet each raise rather than return empty. A contract
+assertion over a silently-wrong parse asserts nothing, and until this class
+existed nothing proved the parse.
