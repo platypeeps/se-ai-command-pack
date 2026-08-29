@@ -128,6 +128,9 @@ branch were pushed red for skipping exactly this.
   wrong token.
 - The diff is one test class plus five helpers. If it grows past that, scope
   has slipped.
+- Converting a prose pin drops any second contract its sentence carried. Two
+  were lost this way and restored in review round 2 — `classes=`'s default and
+  `input=`'s accepted forms. Before replacing a pin, list what it asserts.
 
 ## Rollback Points
 

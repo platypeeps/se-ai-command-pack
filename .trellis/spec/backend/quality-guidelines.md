@@ -180,11 +180,10 @@ enumeration the document already renders structurally — an argument list, a
 schema table, a set of `##` headings, backticked criterion slugs — parse it and
 assert the whole set with `assertEqual`, not one member with `assertIn`. A set
 assertion fails on a deletion *and* on an unannounced addition, and no rewording
-touches it. `CoherenceAuditSkillTest` is the worked example: eleven prose-pinning
-tests became seventeen contract assertions, and four deletion probes (an
-argument bullet, a schema row, a detector section, the redaction carve-out) each
-turned the suite red while two genuine rewordings left it green. Evidence:
-the task's
+touches it. `CoherenceAuditSkillTest` is the worked example: its prose pins
+became contract assertions, and deletion probes (an argument bullet, a schema
+row, a detector section, the redaction carve-out) each turned the suite red
+while genuine rewordings left it green. Evidence: the task's
 `research/rewording-proof-2026-08-29.md`.
 
 **Make the parser raise rather than return empty.** `assertEqual(expected,

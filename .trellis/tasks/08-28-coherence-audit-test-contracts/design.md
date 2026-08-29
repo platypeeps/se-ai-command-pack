@@ -115,8 +115,10 @@ Also assert the three conflict-class tokens (`resolved-by-precedence`,
 
 **Redaction carve-out.** One helper, applied to both files, asserting three
 tokens co-occur in the owning region: `sensitivity`, `unquotable`, and a
-not-dropped marker (`dropp` — matching "dropping"/"dropped" without pinning
-either inflection). Applied to `SKILL.md`'s `## Safety rules` and to
+retention marker. The marker must be one of the negated forms ("never dropped",
+"not dropped", "neither drops", "rather than dropping/dropped"): a bare `dropp`
+substring would also match a file asserting the finding *is* dropped, so it
+accepts the inverted policy. Applied to `SKILL.md`'s `## Safety rules` and to
 `ledger-format.md`'s `quotes` schema row. Dropping the carve-out from either
 file fails; the two can no longer silently diverge on whether a withheld quote
 survives as a finding.

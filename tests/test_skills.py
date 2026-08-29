@@ -261,14 +261,14 @@ def argument_values(name: str, argument: str) -> set[str]:
 
     Read from the pipe-separated tail of the backticked head when it carries
     one, and from the backticked tokens of the bullet body otherwise."""
-    heads = _bullet_heads(section_lines(skill_text(name), "## Arguments"))
-    for head in heads:
+    text = skill_text(name)
+    for head in _bullet_heads(section_lines(text, "## Arguments")):
         if head.split("=", 1)[0] != argument:
             continue
         tail = head.split("=", 1)[1]
         if tail:
             return set(tail.split("|"))
-        body = bullet_body(skill_text(name), "## Arguments", f"{argument}=")
+        body = bullet_body(text, "## Arguments", f"{argument}=")
         return set(re.findall(r"`([a-z_]+)`", body))
     raise AssertionError(f"no argument named {argument!r} in {name}")
 
@@ -4364,6 +4364,15 @@ class CoherenceAuditSkillTest(unittest.TestCase):
                 argument_values("se-coherence-audit", argument),
                 f"value set changed for {argument}=",
             )
+        # Which classes run when `classes=` is omitted is a separate contract
+        # from which values it accepts, and a default has no structural
+        # carrier to parse, so it keeps a shortest-phrase pin.
+        self.assertIn(
+            "default all four",
+            bullet_body(
+                skill_text("se-coherence-audit"), "## Arguments", "classes="
+            ).lower(),
+        )
 
     def test_coherence_audit_scope_is_supplied_and_never_widened(self) -> None:
         corpus = bullet_body(
@@ -4371,6 +4380,10 @@ class CoherenceAuditSkillTest(unittest.TestCase):
         ).lower()
         self.assertIn("required", corpus)
         self.assertIn("never inferred", corpus)
+        # Each accepted corpus form is its own contract: dropping glob or vault
+        # support narrows what an audit can be pointed at.
+        for form in ("paths", "globs", "vault"):
+            self.assertIn(form, corpus, f"input= no longer accepts {form}")
         workflow = skill_section("se-coherence-audit", "## Workflow").lower()
         self.assertIn("never read outside", workflow)
         self.assertIn("file count", workflow)

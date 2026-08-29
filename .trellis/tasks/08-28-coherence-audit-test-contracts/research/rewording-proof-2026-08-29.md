@@ -143,3 +143,36 @@ individually:
 spaced separator -> ['id', 'class']
 tight separator  -> ['id']
 ```
+
+## Round 3: two coverage gaps the review found
+
+Local review round 2 caught two contracts the rewrite dropped rather than
+converted. Both were assertions the old prose pins had carried and the new
+structural ones did not replace, because neither contract has a structural
+carrier to parse.
+
+`classes=` — the old pin `` `redundancy`. default all four `` asserted two
+things at once: the accepted value set *and* what runs when the argument is
+omitted. The set assertion replaced only the first half. A default is a
+statement about absence, so there is nothing in the document to enumerate; it
+keeps the shortest phrase that carries it.
+
+`input=` — the old pin `comma-separated list of paths, globs, or a vault`
+named the three accepted corpus forms. The replacement asserted only that the
+argument is required and never inferred. Each form is restored as its own
+token, so dropping one names which one.
+
+Both probes:
+
+```
+P7  remove "Default all four." from SKILL.md
+    -> FAILED: 'default all four' not found in '- `classes=` — ... `redundancy`.'
+P8  drop "globs" from the input= bullet
+    -> FAILED: 'globs' not found in '- `input=` ...' : input= no longer accepts globs
+```
+
+The general lesson, and the reason this is worth recording: converting a prose
+pin to a structural one silently drops any *second* contract the sentence was
+carrying. The set is the visible half; the default, the required-ness, the
+accepted forms are not. Enumerate what a pin asserts before replacing it, not
+what it looks like it asserts.
