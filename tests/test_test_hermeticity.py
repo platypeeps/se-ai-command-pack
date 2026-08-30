@@ -37,7 +37,10 @@ SUBPROCESS_CALLS = frozenset(
 # Measured floors. They exist so a half-broken walk fails loudly instead of
 # reporting zero violations over zero inspected sites.
 MIN_GIT_CALL_SITES = 13
-MIN_PACK_ROOT_PATHS = 25
+# 23 after the framework removal deleted the three test modules whose whole
+# subject was the vendored install; lowered here, in the change that
+# legitimately shrinks the surface, so the drop is visible to a reviewer.
+MIN_PACK_ROOT_PATHS = 23
 
 
 def tracked_test_modules() -> list[str]:
@@ -181,10 +184,6 @@ class GitSubprocessEnvironmentTest(unittest.TestCase):
         """A rule that matches nothing would pass the assertion above."""
         self.assertGreaterEqual(len(git_call_sites()), MIN_GIT_CALL_SITES)
 
-    def test_the_conditional_argv_site_is_visible(self) -> None:
-        """The `IfExp` arm is load-bearing: without it the scan finds 12."""
-        modules = {name for name, _, _ in git_call_sites()}
-        self.assertIn("tests/test_repo_tooling_ownership.py", modules)
 
 
 class UntrackedPathReadTest(unittest.TestCase):
