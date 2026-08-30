@@ -58,9 +58,15 @@ test, so `.coveragerc` enables `parallel` mode and
 `COVERAGE_PROCESS_START`) measures those child processes; the run is
 `coverage erase → run → combine → report --fail-under`.
 
-- **Current floor: 80%.** It was introduced deliberately below the measured
-  baseline (~88% on Python 3.13; the ubuntu-3.10 lane is lower because
-  `tomllib`-gated tests skip there) so the gate lands green with margin.
+- **Current floor: 88%.** It was 80 from introduction until 2026-08-30,
+  deliberately below the measured baseline so the gate would land green with
+  margin. That margin stopped being margin and became slack: the suite measures
+  89.1% and could have lost nine points of coverage without the gate saying a
+  word. Raised by the procedure below, off the run for #283:
+  `unittest (ubuntu-latest, 3.10)` 89.0%, `(ubuntu-latest, 3.13)` 89.1%,
+  `(macos-latest, 3.13)` 89.1% — minimum 89.0, floor set just under it. The
+  3.10 lane is the low one because `tomllib`-gated tests skip there; the gap is
+  currently 0.1 points, not the several the original note implied.
 - **Raising it:** read the real per-lane totals from a green CI `unittest` run,
   take the minimum across the 3.10/3.13 × ubuntu/macOS matrix, and raise
   `--fail-under` in both the `Makefile` `test` target and

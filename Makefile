@@ -103,7 +103,7 @@ test:
 	"$(RUN_PYTHON)" -m coverage erase
 	COVERAGE_PROCESS_START="$(CURDIR)/.coveragerc" PYTHONPATH="$(CURDIR)/tests/_coverage_subprocess$${PYTHONPATH:+:$$PYTHONPATH}" "$(RUN_PYTHON)" -m coverage run -m unittest discover -s tests
 	"$(RUN_PYTHON)" -m coverage combine
-	"$(RUN_PYTHON)" -m coverage report --fail-under=80
+	"$(RUN_PYTHON)" -m coverage report --fail-under=88
 
 # Runs the suite the way a runner sees the repository: tracked files only, in a
 # throwaway git repository, under a git configuration built to break it. Not
