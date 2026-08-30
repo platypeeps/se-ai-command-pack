@@ -170,7 +170,7 @@ so a lock pushed with it would never re-trigger `tests` and the PR would sit
 permanently unmergeable. Grouped updates cap this at roughly one PR a week, and
 that did not justify a standing write credential. The full comparison, including
 the isolated `pull_request_target` design that was rejected, is archived at
-`docs/work/archive/2026-08/08-14-dependabot-lock-automation/design.md`.
+`docs/work/archive/2026-08/2026-08-14-dependabot-lock-automation/design.md`.
 
 Enablement: this repository is not a fork, so committing `dependabot.yml` to the
 default branch is itself the enablement — version updates start automatically,

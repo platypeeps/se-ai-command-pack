@@ -36,7 +36,7 @@ lock-check:
 # deliberately a local helper and not CI automation: pushing a lock from a
 # workflow needs a writable credential in a job triggered by a bot branch, and
 # that standing risk buys back only a few minutes a week. See
-# docs/work/archive/2026-08/08-14-dependabot-lock-automation/design.md for
+# docs/work/archive/2026-08/2026-08-14-dependabot-lock-automation/design.md for
 # the full comparison.
 #
 # Three refusals, all before any checkout:
