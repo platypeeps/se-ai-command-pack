@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify canonical source ownership, generated parity, release metadata, shared-reference fan-out, and focused plus full gates."}
-{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Verify the canonical template, registry, generated catalogs, manifest targets, documentation, and tests remain one consistent cross-platform contract."}

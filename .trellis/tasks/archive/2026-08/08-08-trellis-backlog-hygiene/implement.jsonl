@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Sanctions empty/scaffold context files as acceptable resting states and forbids churn transitions; the hygiene sweep must not contradict this."}
-{"file": ".trellis/tasks/08-08-trellis-backlog-hygiene/research/order-semantics.md", "reason": "Evidence that the ranker applies priority band before order, so the documented write-set sequence must be band-aware, never a flat cross-band number line."}

@@ -1,4 +1,0 @@
-{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Verify skill evidence, privacy, authority, registry, generated surfaces, payload version, and release gates."}
-{"file":".trellis/spec/backend/directory-structure.md","reason":"Verify canonical ownership, flat resource shape, and generated platform fan-out."}
-{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Check new prose and registration against existing shared contracts and sibling skill patterns."}
-{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Check every downstream surface and supported platform from canonical source to installed payload."}

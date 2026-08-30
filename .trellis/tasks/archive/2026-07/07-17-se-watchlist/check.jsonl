@@ -1,2 +1,0 @@
-{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Focused safety, generation parity, release, install, and full-gate expectations."}
-{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Verify source-to-checkpoint-to-delta-to-report identity and generated platform consistency."}

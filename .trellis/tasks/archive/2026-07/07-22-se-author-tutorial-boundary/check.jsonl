@@ -1,3 +1,0 @@
-{"file": "tests/test_skills.py", "reason": "Run focused author/tutorial routing contract tests."}
-{"file": "templates/skills/se-author/SKILL.md", "reason": "Verify authoring ownership and preserved boundaries."}
-{"file": "templates/skills/se-tutorial/SKILL.md", "reason": "Verify tutorial ownership and preserved boundaries."}

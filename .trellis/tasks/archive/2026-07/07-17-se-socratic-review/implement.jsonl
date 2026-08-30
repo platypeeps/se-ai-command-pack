@@ -1,3 +1,0 @@
-{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Own the canonical skill template, registry entry, flat resource shape, and generated fan-out from their documented source locations."}
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Apply the skill-family, shared-reference, payload-version, changelog, generation, and focused-test contracts."}
-{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Search neighboring learning skills first and avoid extracting one-off semantic judgment into a bundled helper."}

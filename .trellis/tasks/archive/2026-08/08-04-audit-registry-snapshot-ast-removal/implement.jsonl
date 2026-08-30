@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Lines 295, 318-319, and 835-838 document snapshot-preferred resolution with an AST fallback as current behaviour; read them before editing so every claim about the fallback is updated together rather than one site at a time."}

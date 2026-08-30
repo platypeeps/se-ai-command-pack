@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Generated-surface conventions: README catalog table is generator-owned; restructure must respect the generate-skill-surfaces ownership rules recorded here."}
-{"file": ".trellis/spec/backend/index.md", "reason": "Spec index; locates documentation and generated-file guidance relevant to README and install-output changes."}

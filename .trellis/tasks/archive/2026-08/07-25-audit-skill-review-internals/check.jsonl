@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the contracts recorded here; confirm one path-containment predicate and one authoritative frontmatter grammar remain, and that the generator-side classification still agrees with the consumer's."}

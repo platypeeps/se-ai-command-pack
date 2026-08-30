@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Line 296 defines the shipped-payload release cost and 835-845 the snapshot's purpose and sole-writer contract; both price any proposal to extend schemaVersion, so read them before assigning a verdict to a candidate."}

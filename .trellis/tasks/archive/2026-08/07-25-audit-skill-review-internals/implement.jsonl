@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Scenario: Installed Skill Review Inventory (:800) and Scenario: Skill-Owned References And Deterministic Scripts (:382) define the boundary-check and frontmatter contracts skill_review.py implements; read both before collapsing two predicates into one, since the containment check is a security boundary."}

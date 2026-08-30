@@ -192,13 +192,15 @@ class CorpusRegressionTests(unittest.TestCase):
 
         self.assertEqual(without_frontmatter, [])
         # Vacuity guards. An enumeration that quietly matched nothing would
-        # otherwise pass this group forever. Today: 147 documents, 14 boolean
-        # values, 29 double-quoted values. The count fell from 180 when the
-        # thin conversion took the pack's own SKILL.md files out of the tree;
-        # what remains is this repository's corpus, and the floor tracks it.
+        # otherwise pass this group forever. The corpus fell from 180 documents
+        # to 147 when the thin conversion took the pack's own SKILL.md files out
+        # of the tree, and the framework removal took the rest of the vendored
+        # payload with it. No document left carries a double-quoted frontmatter
+        # value, so that guard is dropped rather than lowered to zero, which
+        # would assert nothing; the double-quote parser divergence it covered is
+        # still exercised directly by `AgreementTableTests`.
         self.assertGreaterEqual(len(documents), 120)
         self.assertGreaterEqual(booleans, 1)
-        self.assertGreaterEqual(double_quoted, 1)
 
 
 class AgreementTableTests(unittest.TestCase):

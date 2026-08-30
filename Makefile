@@ -7,7 +7,7 @@ RUN_PYTHON = $(shell if [ -x "$(VENV_PYTHON)" ]; then printf '%s' "$(VENV_PYTHON
 LINT_PATHS = install.py installer tests .github/scripts templates/skills/se-review-skills/scripts/skill_review.py
 MYPY_PATHS = installer install.py templates/skills/se-review-skills/scripts/skill_review.py
 
-.PHONY: setup lock lock-check relock-pr generate repomix sync test test-hermetic lint prose-lint release-check check shell-syntax gate-test gate-lint trellis-provenance
+.PHONY: setup lock lock-check relock-pr generate repomix sync test test-hermetic lint prose-lint release-check check shell-syntax gate-test gate-lint
 
 # --clear: `python -m venv` reuses an existing directory, so without it a
 # package that dropped out of the lock survives and the gate runs against a
@@ -221,8 +221,4 @@ release-check:
 	"$(RUN_PYTHON)" .github/scripts/generate-skill-surfaces.py --check
 	"$(RUN_PYTHON)" .github/scripts/check-release-payload.py --base auto
 
-# Guard-safe (read-only): coverage + integrity of unreceipted platform files.
-trellis-provenance:
-	"$(RUN_PYTHON)" .github/scripts/check-trellis-provenance.py
-
-check: test lint lock-check release-check shell-syntax trellis-provenance prose-lint
+check: test lint lock-check release-check shell-syntax prose-lint

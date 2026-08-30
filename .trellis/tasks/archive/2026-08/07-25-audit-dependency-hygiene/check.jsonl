@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the determinism conventions recorded here; confirm every third-party fetch is pinned and no lifecycle script runs un-reviewed."}
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Vendored-Artifact Ownership And Upstream Route (:755): verify no Registry A file was edited and that the A-032 record carries all four fields, including the explicit 'no upstream pull request was opened' line (:866)."}

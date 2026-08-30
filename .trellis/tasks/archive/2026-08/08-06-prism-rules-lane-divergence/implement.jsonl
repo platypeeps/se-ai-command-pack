@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Holds the Review And Retry Conventions section, the sanctioned home for the local-only disposition; read it before adding a subsection so the lane divergence sits beside the existing scaffold and stop-retrying conventions rather than in a new file."}

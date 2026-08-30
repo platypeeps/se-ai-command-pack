@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against this file; confirm each candidate verdict is recorded with file/line evidence and that any snapshot verdict carries the two-producer rollout plan the shipped-payload contract requires."}

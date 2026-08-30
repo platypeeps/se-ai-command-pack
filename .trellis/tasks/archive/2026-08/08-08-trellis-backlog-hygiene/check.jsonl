@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify the sweep touched only sanctioned targets: no scaffold/empty-file churn, archive content otherwise untouched."}

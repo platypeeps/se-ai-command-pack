@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the ownership conventions recorded here; confirm a contributor can tell repo-own source from vendored product without opening a registry, and that no dead entry point remains."}

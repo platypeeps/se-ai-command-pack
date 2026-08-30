@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Checks this task's own deliverable: the record must not edit a vendored file, must carry the upstream route, and must leave the local-disposition guidance in this file consistent with the installed coordinator."}
