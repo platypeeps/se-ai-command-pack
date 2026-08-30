@@ -58,16 +58,14 @@ tests/                      # unittest modules mirroring installer concerns
   deterministic contract and leave semantic judgment and mutation authority in
   `SKILL.md`.
 - Put repo-own tooling in `.github/scripts/`, which the `Makefile` and
-  `.github/workflows/tests.yml` both call. `scripts/` holds SD-pack installs
-  only and has no exception, so a file appearing there is vendored by
-  definition; `tests/test_repo_tooling_ownership.py` enforces both halves.
-  A new `.github` file is an `uncovered:` provenance finding until it is
-  curated into `repoOwn` in `.github/trellis-provenance.json` — curate it
-  rather than absorbing it into `files`, which would hash-pin a file the
-  repository is meant to edit.
-- Keep root `package.json` limited to dependency-free wrappers for shared SD
-  tooling. Python and Make remain the repository's implementation and quality
-  interfaces; do not add a package lockfile.
+  `.github/workflows/tests.yml` both call. `scripts/` is gone: everything it
+  held was framework payload and was deleted with the framework, so there is no
+  longer a vendored-versus-repo-own question for a new file to answer. The
+  provenance registry that used to answer it, `.github/trellis-provenance.json`,
+  and the ownership test that read it are both gone too.
+- Keep root `package.json` dependency-free. Python and Make remain the
+  repository's implementation and quality interfaces; do not add a package
+  lockfile.
 - Add focused modules when a lifecycle concern has its own data flow. For
   example, `installer/management.py` owns status and update rather than adding
   Git subprocess details to `install.py`.

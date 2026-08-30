@@ -1,6 +1,6 @@
 # Coverage configuration for the repo-own coverage floor (task A-020).
-# Scope: repo-owned Python only. Vendored scripts/ and .trellis/ are excluded
-# by omission from `source`. Much of this code runs via subprocess under test
+# Scope: repo-owned Python only; everything outside `source` is excluded by
+# omission. Much of this code runs via subprocess under test
 # (install.py, .github/scripts/*), so `parallel` + subprocess bootstrap
 # (tests/_coverage_subprocess/sitecustomize.py, activated by
 # COVERAGE_PROCESS_START) is required for an honest total.

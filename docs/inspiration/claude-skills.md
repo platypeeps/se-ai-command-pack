@@ -22,8 +22,8 @@ someone who was not here. The `opencode-cfg` pin is provenance only. It names
 the revision the agent trio was designed against on one machine, and nobody
 else can fetch it — so it records where an idea came from and never feeds the
 harvest. The ritual below covers the upstream source alone; changes on the
-private side reach this pack as an ordinary Trellis task, described in the
-task rather than diffed from a pin.
+private side reach this pack as an ordinary work item under `docs/work/`,
+described in the item rather than diffed from a pin.
 
 ## Inspiration map
 
@@ -43,7 +43,7 @@ task rather than diffed from a pin.
 | `se-humanizer` | `humanizer` | Substance re-derived; no upstream text and no license header carried over. Same graceful-degradation clause. |
 | `se-adr-review` | `adr-review` | Narrowed to the review process only, per an explicit product decision. It never authors or templates a record. |
 | `se-rust-write`, `se-rust-fill`, `se-rust-reviewer` | `opencode-cfg` agent roster | Foreign model pins dropped (they inherit the session model). The deny-by-default posture survives as prose plus tool grants, never as copied permission data. |
-| Planning thinking guide (`.trellis/spec/guides/planning-thinking-guide.md`) | `plan-discipline` | Folded rather than shipped as a skill: it competed with the Trellis planning workflow. Trellis still owns when planning starts; the upstream trigger and gate ladder were dropped. |
+| Planning thinking guide (`docs/spec/guides/planning-thinking-guide.md`) | `plan-discipline` | Folded rather than shipped as a skill: it competed with the Trellis planning workflow. Trellis still owns when planning starts; the upstream trigger and gate ladder were dropped. |
 | Prism required checks `fail-loud`, `single-traversal-projection`, `comment-intent` | `python-review`, `python-quality` | Folded into the existing local review provider. The click, pytest, and uv mandates were dropped: this repository uses argparse and unittest. |
 
 ## Declined, with reasons
@@ -62,8 +62,8 @@ Recorded so a later harvest does not re-litigate settled decisions.
 
 ## Harvest ritual
 
-On demand, or roughly quarterly. The ritual produces Trellis tasks or nothing
-at all — it never edits `templates/` directly.
+On demand, or roughly quarterly. The ritual produces work items under
+`docs/work/`, or nothing at all — it never edits `templates/` directly.
 
 1. Fetch the upstream checkout and list what moved since the pin:
 
