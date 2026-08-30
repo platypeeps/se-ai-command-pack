@@ -44,7 +44,7 @@ jobs:
           PYTHONPATH="$GITHUB_WORKSPACE/tests/_coverage_subprocess${PYTHONPATH:+:$PYTHONPATH}" \
             python -m coverage run -m unittest discover -s tests
           python -m coverage combine
-          python -m coverage report --fail-under=80
+          python -m coverage report --fail-under=88
 
   test-hermetic:
     # The suite against a tracked-files-only copy under a hostile git
