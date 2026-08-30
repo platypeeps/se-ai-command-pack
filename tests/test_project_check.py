@@ -9,19 +9,13 @@ PACKAGE_JSON = ROOT / "package.json"
 
 
 class ProjectCheckConfigurationTest(unittest.TestCase):
-    def test_package_json_owns_dependency_free_full_check_wrapper(self) -> None:
+    def test_package_json_stays_dependency_free(self) -> None:
         payload = json.loads(PACKAGE_JSON.read_text(encoding="utf-8"))
 
         self.assertIs(payload.get("private"), True)
         self.assertEqual(
             payload.get("scripts"),
-            {
-                "check": "make check",
-                "check:full": (
-                    "npm run check && "
-                    "bash ~/.agents/bin/sd-ai-command-pack-full-check.sh"
-                ),
-            },
+            {"check": "make check"},
         )
         for field in (
             "dependencies",

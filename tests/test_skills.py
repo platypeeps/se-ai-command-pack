@@ -4981,7 +4981,7 @@ class CoherenceAuditSkillTest(unittest.TestCase):
     schema, its classes and criteria — rather than the sentences that describe
     it, because a reworded sentence is not a regression. Per
     "Prose contracts: prove the pin can fail" in
-    ``.trellis/spec/backend/quality-guidelines.md``, a pin should be long enough
+    ``docs/spec/backend/quality-guidelines.md``, a pin should be long enough
     that deleting the contract breaks it and short enough that rewording does
     not; a structural surface satisfies both, so it is preferred wherever one
     exists, and a shortest-token pin is the fallback where none does.
@@ -5428,7 +5428,7 @@ class ReviewSkillsGotchaMandateTest(unittest.TestCase):
     assertion, and every phrase was verified absent from its target section
     before that section gained the contract. Substituting a phrase requires
     repeating that check: see "Prose contracts: prove the pin can fail" in
-    ``.trellis/spec/backend/quality-guidelines.md`` for the runnable procedure.
+    ``docs/spec/backend/quality-guidelines.md`` for the runnable procedure.
     """
 
     def test_created_tasks_require_a_gotchas_section_in_the_target(
@@ -5489,7 +5489,7 @@ class ReviewSkillsSessionScopeTest(unittest.TestCase):
     Each phrase is pinned against the section that must carry it rather than
     the whole file, and every phrase was verified absent from its target
     before the section gained the contract, per "Prose contracts: prove the
-    pin can fail" in ``.trellis/spec/backend/quality-guidelines.md``.
+    pin can fail" in ``docs/spec/backend/quality-guidelines.md``.
     """
 
     def test_scope_accepts_session_as_a_post_inventory_filter(self) -> None:

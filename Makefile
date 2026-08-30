@@ -36,7 +36,7 @@ lock-check:
 # deliberately a local helper and not CI automation: pushing a lock from a
 # workflow needs a writable credential in a job triggered by a bot branch, and
 # that standing risk buys back only a few minutes a week. See
-# .trellis/tasks/archive/2026-08/08-14-dependabot-lock-automation/design.md for
+# docs/work/archive/2026-08/08-14-dependabot-lock-automation/design.md for
 # the full comparison.
 #
 # Three refusals, all before any checkout:
@@ -193,7 +193,7 @@ prose-lint:
 	    "firing, so a clean corpus proves nothing" >&2; \
 	  exit 1; \
 	fi; \
-	out="$$(vale --output=line README.md CONTRIBUTING.md AGENTS.md templates/skills)" || { \
+	out="$$(vale --output=line README.md CONTRIBUTING.md templates/skills)" || { \
 	  printf '%s\n' "$$out"; exit 1; }; \
 	if [ -n "$$out" ]; then \
 	  printf '%s\n' "$$out"; \
@@ -202,8 +202,8 @@ prose-lint:
 	fi; \
 	echo "prose-lint: clean"
 
-# Guard-safe variants for sd-check registration (.sd-ai-command-pack/check.json):
-# no coverage data, no linter caches — nothing under sd-check's GUARDED_PATHS.
+# Guard-safe variants: no coverage data, no linter caches. They exist so an
+# external runner can invoke the suite without writing into the working tree.
 gate-test:
 	"$(RUN_PYTHON)" -m unittest discover -s tests
 
@@ -212,9 +212,8 @@ gate-lint:
 	"$(RUN_PYTHON)" -m mypy $(MYPY_PATHS)
 
 shell-syntax:
-	# The repository owns exactly one shell script since the thin
-	# conversion; everything that lived under scripts/ was pack payload and
-	# is syntax-checked where the pack builds it, not here.
+	# The repository owns exactly one shell script. Everything that lived
+	# under scripts/ was framework payload and was deleted with it.
 	bash -n .github/scripts/update-repomix
 
 release-check:

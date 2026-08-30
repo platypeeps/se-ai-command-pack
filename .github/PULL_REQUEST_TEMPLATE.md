@@ -11,7 +11,7 @@ described in ~/.agents/docs. -->
 <!-- Focused checks first, then the local gate. -->
 
 - [ ] Focused local checks:
-- [ ] Local gate: `bash ~/.agents/bin/sd-ai-command-pack-full-check.sh`
+- [ ] Local gate: `make check`
 
 ## Pre-PR checklist
 

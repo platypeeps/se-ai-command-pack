@@ -22,54 +22,18 @@ unittest-output.log
 # The repository's dependency interface is requirements-dev.lock via `make
 # setup`; a uv lockfile here is a stray artifact of an ad-hoc interpreter run,
 # not a second source of truth (see "do not add a package lockfile" in
-# .trellis/spec/backend/directory-structure.md).
+# docs/spec/backend/directory-structure.md).
 uv.lock
 
 # Generated repository map: gitignored, never committed, produced on demand via
-# `make repomix` (policy A-025; see .trellis/spec/backend/quality-guidelines.md).
+# `make repomix` (policy A-025; see docs/spec/backend/quality-guidelines.md).
 docs/repomix-map.md
 
-# Trellis local/runtime state (see also .trellis/.gitignore).
-.trellis/.template-hashes.json
-.trellis/worktrees/
+# Agent-tool local state. The tracked platform trees are gone with the framework
+# removal, but a local session still writes into the checkout.
+.claude/settings.local.json
+.claude/**/*.local.*
 
-# Claude Code local state is handled by the narrow `.claude/**` rules inside the
-# managed sd-ai-command-pack block below -- the same shape the rest of the fleet
-# uses. Nothing is needed here.
-#
-# NOTE: do not add a wholesale `.claude/` or `.claude/*` rule. Git cannot descend
-# into a wholesale-ignored directory, so such a rule silently shadows the managed
-# block and drops every tracked adapter, agent, hook, and settings.json from a
-# fresh clone.
-
-# Codex local state; config/hooks/agents stay tracked.
-.codex/**/.cache/
-.codex/**/cache/
-.codex/**/logs/
-.codex/**/sessions/
-.codex/**/tmp/
-.codex/**/*.log
-
-# Gemini CLI local state; settings/hooks/agents stay tracked.
-.gemini/settings.local.json
-.gemini/**/.cache/
-.gemini/**/cache/
-.gemini/**/logs/
-.gemini/**/tmp/
-.gemini/**/*.log
-
-# OpenCode local state; plugins/lib/agents stay tracked.
-.opencode/**/.cache/
-.opencode/**/cache/
-.opencode/**/logs/
-.opencode/**/tmp/
-.opencode/**/state/
-.opencode/**/sessions/
-.opencode/node_modules/
-.opencode/**/*.log
-
-# --- adopted from sd-ai-command-pack; repo-owned since the thin conversion ---
-# Ignore local/runtime files without hiding shared Trellis or AI-tool adapters.
 # Common local secrets and environment files.
 .env
 .env.*
@@ -77,142 +41,12 @@ docs/repomix-map.md
 !.env.ci
 !.env.test
 
-# Trellis local/runtime state.
-.trellis/.developer
-.trellis/.backup-*
-.trellis/worktrees/
-.trellis/.template-hashes.json
-.trellis/.runtime/
-.trellis/.cache/
-
 # Review/build artifacts.
 .build/
 code-review-report.json
 code-review-report.md
-sd-ai-command-pack-gito.*
-sd-ai-command-pack-review-paths.*
-sd-ai-command-pack-review-filters.*
-sd-ai-command-pack-prism-codebase.*
-sd-ai-command-pack-ci-paths.*
-sd-ai-command-pack-uv-cache/
-sd-ai-command-pack-uv-tools/
 
-# AI-tool local state; keep shared platform adapters tracked.
-.agent/**/*.local.*
-.agent/**/.cache/
-.agent/**/cache/
-.agent/**/logs/
-.agent/**/tmp/
-.agent/**/*.log
-.claude/settings.local.json
-.claude/**/*.local.*
-.claude/**/.cache/
-.claude/**/cache/
-.claude/**/logs/
-.claude/**/tmp/
-.claude/**/*.log
-.codebuddy/**/*.local.*
-.codebuddy/**/.cache/
-.codebuddy/**/cache/
-.codebuddy/**/logs/
-.codebuddy/**/tmp/
-.codebuddy/**/*.log
-.codex/**/*.local.*
-.codex/**/.cache/
-.codex/**/cache/
-.codex/**/logs/
-.codex/**/sessions/
-.codex/**/tmp/
-.codex/**/*.log
-.cursor/**/*.local.*
-.cursor/**/.cache/
-.cursor/**/cache/
-.cursor/**/logs/
-.cursor/**/tmp/
-.cursor/**/*.log
-.devin/**/*.local.*
-.devin/**/.cache/
-.devin/**/cache/
-.devin/**/logs/
-.devin/**/tmp/
-.devin/**/*.log
-.factory/**/*.local.*
-.factory/**/.cache/
-.factory/**/cache/
-.factory/**/logs/
-.factory/**/tmp/
-.factory/**/*.log
-.gemini/settings.local.json
-.gemini/**/*.local.*
-.gemini/**/.cache/
-.gemini/**/cache/
-.gemini/**/logs/
-.gemini/**/tmp/
-.gemini/**/*.log
-.gito/**/*.local.*
-.gito/**/.cache/
-.gito/**/cache/
-.gito/**/logs/
-.gito/**/tmp/
-.gito/**/*.log
-.kiro/**/*.local.*
-.kiro/**/.cache/
-.kiro/**/cache/
-.kiro/**/logs/
-.kiro/**/tmp/
-.kiro/**/*.log
-.kilocode/**/*.local.*
-.kilocode/**/.cache/
-.kilocode/**/cache/
-.kilocode/**/logs/
-.kilocode/**/tmp/
-.kilocode/**/*.log
-.opencode/**/*.local.*
-.opencode/**/.cache/
-.opencode/**/cache/
-.opencode/**/logs/
-.opencode/**/tmp/
-.opencode/**/state/
-.opencode/**/sessions/
-.opencode/node_modules/
-.opencode/**/*.log
-.pi/**/*.local.*
-.pi/**/.cache/
-.pi/**/cache/
-.pi/**/logs/
-.pi/**/tmp/
-.pi/**/*.log
-.qoder/**/*.local.*
-.qoder/**/.cache/
-.qoder/**/cache/
-.qoder/**/logs/
-.qoder/**/tmp/
-.qoder/**/*.log
-.reasonix/**/*.local.*
-.reasonix/**/.cache/
-.reasonix/**/cache/
-.reasonix/**/logs/
-.reasonix/**/tmp/
-.reasonix/**/*.log
-.trae/**/*.local.*
-.trae/**/.cache/
-.trae/**/cache/
-.trae/**/logs/
-.trae/**/tmp/
-.trae/**/*.log
-.zcode/**/*.local.*
-.zcode/**/.cache/
-.zcode/**/cache/
-.zcode/**/logs/
-.zcode/**/tmp/
-.zcode/**/*.log
 node_modules/
 
-# Project-local personal ignores can be added below this managed block.
-# --- end adopted sd-ai-command-pack rules ---
-
-# sd-ai-command-pack obsidian-kb start
-# Generated by sd-ai-command-pack. DO NOT EDIT MANUALLY.
 # Generated Obsidian KB copy folder; source docs remain in normal repo paths.
 /.obsidian-kb
-# sd-ai-command-pack obsidian-kb end

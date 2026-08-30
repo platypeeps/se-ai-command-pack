@@ -44,7 +44,6 @@ def payload(**overrides: str) -> dict[str, dict[str, str]]:
         "lint": "success",
         "prose-lint": "success",
         "release-payload-gate": "success",
-        "review-preflight": "success",
         "auto-tag-release": "skipped",
     }
     for lane, result in overrides.items():
@@ -75,15 +74,10 @@ class EvaluateTests(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("failed lanes: unittest", messages)
 
-    def test_review_preflight_skipped_fails(self) -> None:
-        code, messages = aggregate.evaluate(payload(review_preflight="skipped"))
+    def test_required_lane_failure_fails(self) -> None:
+        code, messages = aggregate.evaluate(payload(prose_lint="failure"))
         self.assertEqual(code, 1)
-        self.assertIn("failed lanes: review-preflight", messages)
-
-    def test_review_preflight_failure_fails(self) -> None:
-        code, messages = aggregate.evaluate(payload(review_preflight="failure"))
-        self.assertEqual(code, 1)
-        self.assertIn("failed lanes: review-preflight", messages)
+        self.assertIn("failed lanes: prose-lint", messages)
 
     def test_conditional_lane_skipped_passes(self) -> None:
         code, _ = aggregate.evaluate(payload(auto_tag_release="skipped"))

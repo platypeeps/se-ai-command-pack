@@ -51,8 +51,8 @@ it, and CI does.
 
 `make test` and the CI `unittest` lane measure statement coverage of repo-own
 Python and fail below a floor. Scope is `installer/`, `install.py`, and
-`.github/scripts/` (vendored `.trellis/` is out of scope; `scripts/` holds
-nothing since the thin conversion). Much of this code runs via subprocess under
+`.github/scripts/`; every other tracked path is either not Python or not
+executed by the suite. Much of this code runs via subprocess under
 test, so `.coveragerc` enables `parallel` mode and
 `tests/_coverage_subprocess/sitecustomize.py` (activated by
 `COVERAGE_PROCESS_START`) measures those child processes; the run is
@@ -170,7 +170,7 @@ so a lock pushed with it would never re-trigger `tests` and the PR would sit
 permanently unmergeable. Grouped updates cap this at roughly one PR a week, and
 that did not justify a standing write credential. The full comparison, including
 the isolated `pull_request_target` design that was rejected, is archived at
-`.trellis/tasks/archive/2026-08/08-14-dependabot-lock-automation/design.md`.
+`docs/work/archive/2026-08/08-14-dependabot-lock-automation/design.md`.
 
 Enablement: this repository is not a fork, so committing `dependabot.yml` to the
 default branch is itself the enablement — version updates start automatically,
@@ -181,12 +181,9 @@ suppressed by disabling Dependabot at the repository or organization level
 
 Deliberately out of scope for now:
 
-- **npm.** The root `package.json` declares no dependencies, and the only npm
-  manifest with any (`.opencode/package.json`) is an upstream-Trellis vendored
-  file: its unused `@opencode-ai/plugin` dependency cannot be removed here,
-  because the next Trellis refresh would restore it. See the local-only record
-  in `.trellis/spec/backend/quality-guidelines.md` ("Scenario: Vendored OpenCode
-  npm Manifest"). Add an `npm` ecosystem block only if a real npm dependency is
+- **npm.** The root `package.json` declares no dependencies, and the one
+  manifest that did (`.opencode/package.json`) was deleted with the framework
+  payload. Add an `npm` ecosystem block only if a real npm dependency is
   introduced into a repository-owned manifest.
 - **A scheduled CVE / `pip-audit` lane.** The four dev-only pins have a small
   blast radius and Dependabot already surfaces version bumps. Revisit if the
@@ -199,15 +196,10 @@ Deliberately out of scope for now:
 
 ### `.claude/` tracking policy
 
-Everything under `.claude/` is **tracked** except genuine local state, so a fresh
-clone reproduces the whole dogfooded Claude surface: the sd-ai-command-pack
-adapters (`commands/sd/`, `skills/sd-*/`, `rules/sd-*.md`, `sd-ai-command-pack/`),
-the Trellis surfaces (`agents/`, `hooks/`, `commands/trellis/`,
-`skills/trellis-*/`), and `settings.json`, which wires those hooks up.
-
-Only local state is ignored — `settings.local.json`, any `*.local.*`, and the
-`.cache/`, `cache/`, `logs/`, `tmp/`, `*.log` paths — through the narrow
-`.claude/**` rules in `.gitignore`.
+There is nothing left to track. The framework removal deleted every adapter,
+agent, hook, command and settings file under `.claude/`, and the tracking
+policy that kept them in a fresh clone went with them. `.gitignore` keeps one
+rule for `settings.local.json`, because a local session still writes it.
 
 This is the shape the rest of the fleet uses, and it is the durable fix this
 section previously described as pending: narrow `.claude/**` local-state rules

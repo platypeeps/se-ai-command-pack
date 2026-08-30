@@ -2,18 +2,16 @@
 
 > Code quality standards for backend development.
 
-> **Reading the sd-ai-command-pack paths below.** This checkout installs the
-> pack in **thin** mode, so `scripts/sd-ai-command-pack-*`,
-> `docs/SD_AI_COMMAND_PACK.md` [absent: named here precisely because it is not in this tree], `.agents/skills/sd-*`, and `.claude/skills/sd-*`
-> are not in this tree. Findings recorded before the conversion cite them by
-> the repository-relative path they had at the time; those citations are kept
-> verbatim because they are what the commit and the line numbers refer to.
-> Resolve any of them against the machine install with
-> `.sd-ai-command-pack/bin/sd-ai-command-pack-review-layout.py --resolve <name>`.
-> Cite the machine form, `~/.agents/...`, in anything written from here on.
-> Each kept citation carries an `[absent: ...]` marker so the review preflight
-> does not read it as a dangling path. The marker is bookkeeping; the citation
-> itself is the finding's evidence and is not rewritten.
+> **Reading the framework paths below.** Trellis and the sd-ai-command-pack
+> were removed from this repository, so every `scripts/sd-ai-command-pack-*`,
+> `.trellis/**`, `.sd-ai-command-pack/**`, and platform `sd-*`/`trellis-*` path
+> cited here is gone. Findings recorded before the removal cite them by the
+> repository-relative path they had at the time, and those citations are kept
+> verbatim: they are what the commit and the line numbers refer to, and
+> rewriting them to agree with today would falsify the evidence. Read this
+> page as a record of how those defects were found, not as a description of
+> the current tree. Nothing in it can be resolved against a live path any
+> more, and no new finding should cite one.
 
 ---
 

@@ -30,7 +30,6 @@ contract.
 - [What gets installed where](#what-gets-installed-where)
 - [Install](#install) · [Update](#update) · [Remove](#remove)
 - [How it works](#how-it-works)
-- [Why a fresh clone shows `/sd:*` commands](#why-a-fresh-clone-shows-sd-commands)
 - [Maintaining the pack](#maintaining-the-pack)
 - [Repository map](#repository-map)
 - [Non-goals in v0.1](#non-goals-in-v01-designed-for-not-built)
@@ -279,16 +278,6 @@ directories are pruned.
   - `installed-targets.txt` — every installed path, the removal record.
 - CI gates: the manifest must match the generated surfaces, and any payload
   change must bump the version with a dated `CHANGELOG.md` heading.
-
-## Why a fresh clone shows `/sd:*` commands
-
-This repository dogfoods its sibling `sd-ai-command-pack` and Trellis for its
-own development. The `/sd:*` commands, `trellis-*` skills, `.trellis/`
-directory, and `.agents/` adapters you see in a fresh clone are the
-**development workflow of this repository**, not part of the installed
-payload — `install.py` installs only the `se-*` skills from
-`templates/skills/`. Contributors: see
-[CONTRIBUTING.md](CONTRIBUTING.md) for how the sd surfaces are used.
 
 ## Maintaining the pack
 

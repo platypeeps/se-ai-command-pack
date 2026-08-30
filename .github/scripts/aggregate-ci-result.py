@@ -23,7 +23,6 @@ REQUIRED_LANES = {
     "lint",
     "prose-lint",
     "release-payload-gate",
-    "review-preflight",
 }
 CONDITIONAL_LANES = {"auto-tag-release"}
 
