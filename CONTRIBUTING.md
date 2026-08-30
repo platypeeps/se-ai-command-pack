@@ -201,15 +201,8 @@ agent, hook, command and settings file under `.claude/`, and the tracking
 policy that kept them in a fresh clone went with them. `.gitignore` keeps one
 rule for `settings.local.json`, because a local session still writes it.
 
-This is the shape the rest of the fleet uses, and it is the durable fix this
-section previously described as pending: narrow `.claude/**` local-state rules
-like the ones already emitted for `.gemini`, rather than a wholesale deny plus a
-re-include allowlist. The former allowlist kept `agents/`, `hooks/`,
-`settings*.json`, and `commands/trellis/` out of the repo, which meant a fresh
-clone silently lost the hook wiring that `settings.json` references.
-
-Do **not** re-assert a wholesale `.claude/` or `.claude/*` ignore. Git cannot
-descend into a wholesale-ignored directory, so every tracked adapter would
-vanish from a fresh clone and no re-include below could bring it back. If you
-re-run `trellis init`, verify it did not put such a rule back.
+Do **not** add a wholesale `.claude/` or `.claude/*` ignore even so. Git cannot
+descend into a wholesale-ignored directory, so a rule like that would also
+shadow any narrow re-include added later, and the failure is silent: the file
+never appears in a fresh clone at all.
 

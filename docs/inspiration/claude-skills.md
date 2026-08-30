@@ -22,8 +22,8 @@ someone who was not here. The `opencode-cfg` pin is provenance only. It names
 the revision the agent trio was designed against on one machine, and nobody
 else can fetch it — so it records where an idea came from and never feeds the
 harvest. The ritual below covers the upstream source alone; changes on the
-private side reach this pack as an ordinary Trellis task, described in the
-task rather than diffed from a pin.
+private side reach this pack as an ordinary work item under `docs/work/`,
+described in the item rather than diffed from a pin.
 
 ## Inspiration map
 
@@ -62,8 +62,8 @@ Recorded so a later harvest does not re-litigate settled decisions.
 
 ## Harvest ritual
 
-On demand, or roughly quarterly. The ritual produces Trellis tasks or nothing
-at all — it never edits `templates/` directly.
+On demand, or roughly quarterly. The ritual produces work items under
+`docs/work/`, or nothing at all — it never edits `templates/` directly.
 
 1. Fetch the upstream checkout and list what moved since the pin:
 

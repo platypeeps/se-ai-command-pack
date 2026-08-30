@@ -42,8 +42,6 @@ process. User-facing install/update/remove instructions live in the
   with `se-brand-voice`.
 - **Pack lifecycle commands** are the `install.py` install, status, refresh,
   update, and remove operations. They manage the pack; they are not skills.
-- **Repo-local SD and Trellis helpers** support development in this checkout.
-  They are not registered product skills and are not installed by this pack.
 - **Per-platform command adapters** are a possible future thin invocation
   surface. None are currently shipped, and family names do not create nested
   command namespaces.
