@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the conventions recorded here; confirm the guidance classifies the PR #155 signature as infrastructure and the PR #157 signature as unresolved threads, names the exact command for each, and states the fail-toward-blocking property explicitly."}

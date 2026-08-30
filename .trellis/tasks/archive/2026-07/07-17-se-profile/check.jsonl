@@ -1,3 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Verify profile safety pins, generated parity, tests, public-data hygiene, and version/changelog release behavior."}
-{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Verify canonical source ownership, shared-reference fan-out, and flat installed paths on every platform."}
-{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Verify the profile contract remains consistent across skill text, registry, generated catalogs, docs, and manifest rows."}

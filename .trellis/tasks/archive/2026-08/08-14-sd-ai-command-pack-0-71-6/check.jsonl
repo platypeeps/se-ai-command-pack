@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Defines where installer-managed files belong, used to confirm the refresh diff stayed in scope."}
-{"file": ".trellis/spec/backend/error-handling.md", "reason": "Standards the housekeeping self-test output is interpreted against."}

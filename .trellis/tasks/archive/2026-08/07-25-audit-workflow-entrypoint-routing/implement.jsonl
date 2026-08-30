@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Scenario: Skill Family Registry And Generated Catalog (:233) governs the per-platform surfaces the routing docs point at; read it before declaring a canonical entry point so the declaration matches what is actually generated per platform."}
-{"file": ".trellis/spec/backend/directory-structure.md", "reason": "Records where each platform's surfaces live, which is what makes one entry point canonical and another a bypass."}

@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the session-evidence and inventory contracts recorded here; confirm the new scope states its precedence, its behaviour when no session evidence exists, and that it does not weaken the existing selection paths."}

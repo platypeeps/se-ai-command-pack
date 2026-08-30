@@ -1,2 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Scenario: Pack Lifecycle CLI Changes (:1147) documents the update command whose trust checks this task hardens; it is the contract any re-verification must not break."}
-{"file": ".trellis/spec/backend/error-handling.md", "reason": "The fail-closed conventions a narrowed trust window must preserve: a check that cannot be re-verified at use has to fail rather than proceed."}

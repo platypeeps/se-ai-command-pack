@@ -1,1 +1,0 @@
-{"file": ".trellis/spec/backend/quality-guidelines.md", "reason": "Acceptance criteria are checked against the boundary declared here; confirm templates/skills/ holds only hand-edited sources, or that the single exception is documented at the declaration site."}

@@ -1,4 +1,0 @@
-{"file":".trellis/spec/backend/quality-guidelines.md","reason":"Owns the canonical skill authoring, registry registration, generated-catalog parity, shared-reference, test, and release-metadata contracts this task must satisfy."}
-{"file":".trellis/spec/backend/directory-structure.md","reason":"Defines templates/skills and installer/registry.py as sources of truth and generated/** as derived output that must never be hand-edited."}
-{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Registry row, runtime profile, shared references, manifest, generated claude overlay, tests, and docs all fan out from one skill addition and must stay aligned."}
-{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Requires mirroring the se-brand-voice precedent and the existing se-knowledge-gap skill shape rather than inventing new structure."}
