@@ -1,6 +1,7 @@
 ---
 title: Relay the gemini-CLI retirement decision to sd-ai-command-pack
 status: planning
+parked: 2026-09-01 bulk-park (D2)
 created: 2026-08-25
 ---
 # Relay the gemini-CLI retirement decision to sd-ai-command-pack
