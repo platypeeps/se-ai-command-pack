@@ -1,6 +1,7 @@
 ---
 title: Upstream canonical-entry-point mechanisms (pack installer + Trellis injected routing) — both deliverables relayed
 status: planning
+parked: 2026-09-01 bulk-park (D2)
 created: 2026-08-10
 ---
 # Upstream canonical-entry-point mechanisms
